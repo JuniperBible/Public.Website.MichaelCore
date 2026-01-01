@@ -1,0 +1,119 @@
+{{/*
+  Template: baseof.html
+  Purpose: Base HTML template for all pages
+
+  Blocks:
+  - "main": Page content
+  - "scripts": Page-specific JavaScript
+
+  Security:
+  - CSP meta tag restricts resource loading
+  - unsafe-inline required for Hugo's style fingerprinting
+
+  Note: For production with custom domains, consider moving CSP to HTTP headers
+*/}}
+<!doctype html>
+<html lang="{{ .Site.Language.Lang | default "en" }}" data-hugo-env="{{ hugo.Environment }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>{{- if .IsHome -}}{{ .Site.Title }}{{- else -}}{{ .Title }} | {{ .Site.Title }}{{- end -}}</title>
+  <meta name="description" content="{{ with .Description }}{{ . }}{{ else }}{{ with .Summary }}{{ . | plainify }}{{ else }}{{ .Site.Params.description }}{{ end }}{{ end }}">
+  {{/* Content Security Policy - restrictive by default */}}
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; font-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self';">
+  {{ with .Permalink }}<link rel="canonical" href="{{ . }}">{{ end }}
+  {{ with .OutputFormats.Get "rss" }}<link rel="alternate" type="application/rss+xml" title="{{ $.Site.Title }}" href="{{ .Permalink }}">{{ end }}
+  {{- template "_internal/opengraph.html" . -}}
+  {{- template "_internal/twitter_cards.html" . -}}
+
+  {{/* Focus with Justin — Starter Theme (concatenate modular CSS files) */}}
+  {{ $colors := resources.Get "css/theme-colors.css" }}
+  {{ $main := resources.Get "css/theme.css" }}
+  {{ $compare := resources.Get "css/theme-compare.css" }}
+  {{ $share := resources.Get "css/theme-share.css" }}
+  {{ $strongs := resources.Get "css/theme-strongs.css" }}
+  {{ $pwa := resources.Get "css/theme-pwa.css" }}
+  {{ $offline := resources.Get "css/theme-offline.css" }}
+  {{ $print := resources.Get "css/theme-print.css" }}
+  {{ $custom := resources.Get "css/theme-custom.css" }}
+  {{ $theme := slice $colors $main $compare $share $strongs $pwa $offline $print $custom | resources.Concat "css/theme.bundle.css" | minify | fingerprint }}
+  <link rel="stylesheet" href="{{ $theme.RelPermalink }}" integrity="{{ $theme.Data.Integrity }}">
+
+  {{/* PWA Support */}}
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#1a3230">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Michael">
+  <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/icons/icon-32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/icons/icon-16.png">
+</head>
+<body>
+  <a href="#main-content" class="skip-link">{{ i18n "skipToContent" | default "Skip to content" }}</a>
+  {{ partial "header.html" . }}
+
+  {{ block "main" . }}{{ end }}{{/* main content block — pages should include id="main-content" */}}
+
+  {{ partial "footer.html" . }}
+
+  {{/* Page-specific scripts */}}
+  {{ block "scripts" . }}{{ end }}
+
+  {{/* Service Worker registration */}}
+  {{ partial "michael/sw-register.html" . }}
+
+  {{/* Shared Utilities (loaded before page-specific scripts) */}}
+  {{ $domUtils := resources.Get "js/michael/dom-utils.js" }}
+  {{ if $domUtils }}<script src="{{ $domUtils.RelPermalink }}" defer></script>{{ end }}
+
+  {{/* PWA Core Scripts */}}
+  {{ $userStorage := resources.Get "js/michael/user-storage.js" }}
+  {{ if $userStorage }}<script src="{{ $userStorage.RelPermalink }}" defer></script>{{ end }}
+  {{ $readingTracker := resources.Get "js/michael/reading-tracker.js" }}
+  {{ if $readingTracker }}<script src="{{ $readingTracker.RelPermalink }}" defer></script>{{ end }}
+
+  {{/* PWA Install Banner */}}
+  {{ partial "michael/pwa-install-banner.html" . }}
+
+  {{/* Detect PWA standalone mode */}}
+  <script>
+    (function() {
+      // Detect PWA standalone mode using multiple methods
+      var displayModes = ['standalone', 'fullscreen', 'minimal-ui', 'window-controls-overlay'];
+      var isStandalone = false;
+
+      // Check all display modes
+      for (var i = 0; i < displayModes.length; i++) {
+        if (window.matchMedia('(display-mode: ' + displayModes[i] + ')').matches) {
+          isStandalone = true;
+          break;
+        }
+      }
+
+      // iOS Safari standalone
+      if (window.navigator.standalone === true) {
+        isStandalone = true;
+      }
+
+      // Android TWA
+      if (document.referrer.includes('android-app://')) {
+        isStandalone = true;
+      }
+
+      // Height heuristic for PWA mode
+      if (!isStandalone && window.outerHeight && window.innerHeight) {
+        var heightDiff = window.outerHeight - window.innerHeight;
+        if (heightDiff < 100 && heightDiff >= 0) {
+          isStandalone = true;
+        }
+      }
+
+      if (isStandalone) {
+        document.documentElement.classList.add('pwa-standalone');
+        document.body.classList.add('pwa-standalone');
+      }
+    })();
+  </script>
+</body>
+</html>

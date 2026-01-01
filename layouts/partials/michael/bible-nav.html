@@ -1,0 +1,166 @@
+{{/*
+  Partial: bible-nav.html
+  Purpose: Bible navigation component with book/chapter dropdowns and prev/next links
+
+  Description:
+    This partial provides a complete navigation interface for browsing Bible translations,
+    books, and chapters. It renders dropdown selectors for Bible translation and book
+    selection, as well as chapter navigation with previous/next buttons. The component
+    adapts based on the current context (Bible overview, book list, or chapter view).
+
+  Parameters (via dict):
+    - page: Current page context (required) - provides access to site data and params
+    - bible: Bible ID string (required) - identifies which translation to display (e.g., "kjv", "web")
+    - book: Current book ID (optional) - lowercase book identifier (e.g., "gen", "matt")
+    - chapter: Current chapter number (optional) - integer chapter number
+    - basePath: Base URL path for Bible content (optional, defaults to "/bible")
+
+  Data Sources:
+    - .Site.Data.bibles.bibles: Bible metadata including ID, abbreviation, and display name
+    - .Site.Data.bibles_auxiliary: Book/chapter structure for each Bible translation
+    - .Params.validBooks: Optional page param to restrict visible books (used on overview pages)
+
+  Usage Examples:
+
+    # On a Bible overview page (shows Bible selector and book dropdown):
+    {{ partial "michael/bible-nav.html" (dict "page" . "bible" .Params.bible) }}
+
+    # On a book overview page (adds book context):
+    {{ partial "michael/bible-nav.html" (dict "page" . "bible" .Params.bible "book" .Params.book) }}
+
+    # On a chapter page (full navigation with chapter selector and prev/next):
+    {{ partial "michael/bible-nav.html" (dict "page" . "bible" .Params.bible "book" .Params.book "chapter" .Params.chapter) }}
+
+    # With custom base path:
+    {{ partial "michael/bible-nav.html" (dict "page" . "bible" .Params.bible "book" .Params.book "chapter" .Params.chapter "basePath" "/custom/path") }}
+
+  Features:
+    - Bible translation selector: Dropdown of all available Bible translations with auxiliary data
+    - Book dropdown: Lists all available books (respects validBooks param if provided)
+    - Chapter selector: Dynamically populated based on selected book's chapter count
+    - Previous/Next navigation: Arrow buttons for sequential chapter navigation
+    - Accessible: Includes ARIA labels and proper semantic HTML
+    - i18n support: Uses internationalization keys for labels
+    - Handles versification differences: Chapter counts vary between translations
+    - Responsive: Adapts display based on available context (Bible/book/chapter)
+
+  Notes:
+    - Only Bibles with auxiliary data (book/chapter structure) are shown in the selector
+    - Book IDs are normalized to lowercase for consistency
+    - Navigation buttons are disabled (not hidden) at boundaries for better UX
+    - URLs are generated using relLangURL for multi-language support
+    - The component uses the .reader-bar and .select CSS classes for styling
+*/}}
+
+{{ $page := .page }}
+{{ $bible := .bible }}
+{{ $book := .book }}
+{{ $chapter := .chapter }}
+{{ $basePath := .basePath | default "/bible" }}
+
+{{ $bibleData := index $page.Site.Data.bibles_auxiliary $bible }}
+
+{{/* Get valid books from page params if available, otherwise use all books from data */}}
+{{ $validBooks := $page.Params.validBooks }}
+
+{{/* Find current book data once (used by chapter selector and navigation) */}}
+{{ $bookData := dict }}
+{{ $chapterCount := 0 }}
+{{ if and $book $chapter }}
+  {{ range $bibleData.books }}
+    {{ if eq (.id | lower) $book }}
+      {{ $bookData = . }}
+    {{ end }}
+  {{ end }}
+  {{ $chapterCount = len $bookData.chapters }}
+{{ end }}
+
+<nav class="reader-bar row bible-nav" aria-label="{{ i18n "bibleNavigation" | default "Bible Navigation" }}">
+  <!-- Bible selector (always shown when bible is set) -->
+  {{/* Preserve book/chapter context when switching translations */}}
+  {{ with $bible }}
+  <label for="bible-select" class="sr-only">{{ i18n "selectBibleTranslation" | default "Select Bible Translation" }}</label>
+  <select id="bible-select"
+          class="select bible-nav__select"
+          data-base-path="{{ $basePath }}"
+          {{ with $book }}data-book="{{ . }}"{{ end }}
+          {{ with $chapter }}data-chapter="{{ . }}"{{ end }}
+          aria-label="{{ i18n "selectBibleTranslation" | default "Select Bible Translation" }}">
+    {{ range (partialCached "michael/bible-data.html" $page.Site) }}
+      {{/* Only show bibles that have auxiliary data */}}
+      {{ $hasAuxData := index $page.Site.Data.bibles_auxiliary .id }}
+      {{ if $hasAuxData }}
+    <option value="{{ .id }}" {{ if eq .id $bible }}selected{{ end }}>
+      {{ .abbrev }}
+    </option>
+      {{ end }}
+    {{ end }}
+  </select>
+  {{ end }}
+
+  <!-- Book selector (always shown - uses validBooks if available) -->
+  {{ if $bible }}
+  <label for="book-select" class="sr-only">{{ i18n "selectBook" | default "Select Book" }}</label>
+  <select id="book-select"
+          class="select bible-nav__select"
+          aria-label="{{ i18n "selectBook" | default "Select Book" }}">
+    {{/* Show placeholder when no book selected */}}
+    {{ if not $book }}
+    <option value="" selected disabled>{{ i18n "selectBook" | default "Select Book" }}</option>
+    {{ end }}
+    {{/* Use validBooks if available (from Bible overview page), otherwise use all books */}}
+    {{ if $validBooks }}
+      {{ range $validBooks }}
+      <option value="{{ printf "%s/%s/%s/" $basePath $bible .id | relLangURL }}" {{ if eq .id $book }}selected{{ end }}>
+        {{ .name }}
+      </option>
+      {{ end }}
+    {{ else }}
+      {{/* Show all books from auxiliary data */}}
+      {{ range $bibleData.books }}
+        {{ $bookIdLower := .id | lower }}
+        <option value="{{ printf "%s/%s/%s/" $basePath $bible $bookIdLower | relLangURL }}" {{ if eq $bookIdLower $book }}selected{{ end }}>
+          {{ .name }}
+        </option>
+      {{ end }}
+    {{ end }}
+  </select>
+  {{ end }}
+
+  <!-- Chapter selector (if viewing a chapter) -->
+  {{ with $chapter }}
+  <label for="chapter-select" class="sr-only">{{ i18n "selectChapter" | default "Select Chapter" }}</label>
+  <select id="chapter-select"
+          class="select bible-nav__select"
+          aria-label="{{ i18n "selectChapter" | default "Select Chapter" }}">
+    {{ range $i := seq $chapterCount }}
+    <option value="{{ printf "%s/%s/%s/%d/" $basePath $bible $book $i | relLangURL }}" {{ if eq $i $chapter }}selected{{ end }}>
+      {{ i18n "chapter" | default "Ch" }} {{ $i }}
+    </option>
+    {{ end }}
+  </select>
+
+  <!-- Prev/Next Navigation -->
+  {{ if gt $chapter 1 }}
+  <a href="{{ printf "%s/%s/%s/%d/" $basePath $bible $book (sub $chapter 1) | relLangURL }}"
+     class="btn btn--sm"
+     aria-label="{{ i18n "previousChapter" | default "Previous Chapter" }}"
+     title="{{ i18n "previousChapter" | default "Previous Chapter" }}">
+    ←
+  </a>
+  {{ else }}
+  <button type="button" class="btn btn--sm" disabled aria-label="{{ i18n "previousChapter" | default "Previous Chapter" }} {{ i18n "disabled" | default "(disabled)" }}">&larr;</button>
+  {{ end }}
+
+  {{ if lt $chapter $chapterCount }}
+  <a href="{{ printf "%s/%s/%s/%d/" $basePath $bible $book (add $chapter 1) | relLangURL }}"
+     class="btn btn--sm"
+     aria-label="{{ i18n "nextChapter" | default "Next Chapter" }}"
+     title="{{ i18n "nextChapter" | default "Next Chapter" }}">
+    →
+  </a>
+  {{ else }}
+  <button type="button" class="btn btn--sm" disabled aria-label="{{ i18n "nextChapter" | default "Next Chapter" }} {{ i18n "disabled" | default "(disabled)" }}">&rarr;</button>
+  {{ end }}
+  {{ end }}
+</nav>

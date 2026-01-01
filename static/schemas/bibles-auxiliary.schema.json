@@ -1,0 +1,89 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://focuswithjustin.com/schemas/bibles-auxiliary.schema.json",
+  "title": "Bible Content",
+  "description": "Schema for bibles_auxiliary/{id}.json - actual Bible text content",
+  "type": "object",
+  "required": ["books"],
+  "properties": {
+    "books": {
+      "type": "array",
+      "description": "List of books in this Bible",
+      "items": {
+        "type": "object",
+        "required": ["id", "name", "chapters"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "OSIS book identifier (e.g., 'Gen', 'Matt', 'Rev')"
+          },
+          "name": {
+            "type": "string",
+            "description": "Full book name"
+          },
+          "abbrev": {
+            "type": "string",
+            "description": "Book abbreviation"
+          },
+          "testament": {
+            "type": "string",
+            "description": "Testament identifier",
+            "enum": ["OT", "NT", "AP"]
+          },
+          "chapters": {
+            "type": "array",
+            "description": "Chapters in this book",
+            "items": {
+              "type": "object",
+              "required": ["number", "verses"],
+              "properties": {
+                "number": {
+                  "type": "integer",
+                  "description": "Chapter number",
+                  "minimum": 1
+                },
+                "verses": {
+                  "type": "array",
+                  "description": "Verses in this chapter",
+                  "items": {
+                    "type": "object",
+                    "required": ["number", "text"],
+                    "properties": {
+                      "number": {
+                        "type": "integer",
+                        "description": "Verse number",
+                        "minimum": 1
+                      },
+                      "text": {
+                        "type": "string",
+                        "description": "Verse text content"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "sections": {
+      "type": "array",
+      "description": "Optional custom sections for the Bible page",
+      "items": {
+        "type": "object",
+        "required": ["heading"],
+        "properties": {
+          "heading": {
+            "type": "string",
+            "description": "Section heading"
+          },
+          "content": {
+            "type": "string",
+            "description": "Section content (markdown)"
+          }
+        }
+      }
+    }
+  }
+}

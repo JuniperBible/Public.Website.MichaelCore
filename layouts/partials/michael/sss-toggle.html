@@ -1,0 +1,39 @@
+{{/*
+  SSS Mode Toggle Button Partial
+
+  Description:
+    Renders a toggle button for SSS (Side by Side Scripture) mode with an SVG icon
+    and status indicator. The button uses CSS classes for styling instead of inline
+    styles for better maintainability.
+
+  Parameters (pass as dict):
+    - id:            (string, required) Button element ID
+    - statusId:      (string, required) Status span element ID
+    - defaultStatus: (string, required) Initial status text ("OFF" or "ON")
+
+  Example Usage:
+    {{ partial "michael/sss-toggle.html" (dict "id" "sss-mode-btn" "statusId" "sss-mode-status" "defaultStatus" "OFF") }}
+    {{ partial "michael/sss-toggle.html" (dict "id" "sss-toggle-btn" "statusId" "sss-status" "defaultStatus" "ON") }}
+
+  Accessibility:
+    - Includes aria-label for screen readers
+    - SVG marked as aria-hidden to avoid redundancy
+    - Status text provides visual feedback
+
+  CSS Classes Required:
+    - btn btn--secondary: Button styling
+    - sss-toggle-icon: SVG icon styling (width: 16px; height: 16px)
+
+  Created: 2026-01-25
+*/}}
+{{- $id := .id -}}
+{{- $statusId := .statusId -}}
+{{- $defaultStatus := .defaultStatus -}}
+<button id="{{ $id }}" class="btn btn--secondary" aria-label="Toggle Side by Side Scripture mode">
+  <svg class="sss-toggle-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" focusable="false" aria-hidden="true">
+    <polygon points="12,2 22,20 2,20" stroke-width="2" stroke-linejoin="round"/>
+    <circle cx="12" cy="14" r="5" stroke-width="2"/>
+    <circle cx="12" cy="14" r="1.5" fill="currentColor" stroke="none"/>
+  </svg>
+  <span>SSS <span id="{{ $statusId }}">{{ $defaultStatus }}</span></span>
+</button>

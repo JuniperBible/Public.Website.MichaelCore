@@ -1,0 +1,238 @@
+{{/*
+  Template: sw-register.html
+  Purpose: Service Worker registration script
+
+  Features:
+  - Feature detection for serviceWorker support
+  - Register service worker on DOMContentLoaded
+  - Handle registration success and errors gracefully
+  - Only register in production environment
+  - Handle service worker updates with SKIP_WAITING
+  - Log useful debugging information
+
+  Usage:
+  Include this partial in baseof.html before closing </body> tag:
+  {{ partial "michael/sw-register.html" . }}
+
+  Environment Detection:
+  - Checks HUGO_ENVIRONMENT to only register in production
+  - Can be overridden with .Site.Params.michael.enableSW in dev
+*/}}
+
+<script>
+  /**
+   * Service Worker Registration
+   *
+   * This script registers the service worker for offline support.
+   * It only runs in production or when explicitly enabled.
+   */
+
+  (function() {
+    'use strict';
+
+    // Check if service workers are supported
+    if (!('serviceWorker' in navigator)) {
+      console.log('[SW] Service workers not supported in this browser');
+      return;
+    }
+
+    // Environment check - only register in production
+    {{ if not (or (eq (getenv "HUGO_ENVIRONMENT") "production") (.Site.Params.michael.enableSW | default false)) }}
+    console.log('[SW] Service worker disabled in development environment');
+    {{ if not (.Site.Params.michael.enableSW | default false) }}
+    console.log('[SW] To enable in development, set params.michael.enableSW = true in config');
+    {{ end }}
+    return;
+    {{ end }}
+
+    // Store reference to waiting service worker
+    let waitingWorker = null;
+
+    /**
+     * Register the service worker
+     */
+    function registerServiceWorker() {
+      navigator.serviceWorker
+        .register('/sw.js', {
+          scope: '/'
+        })
+        .then(function(registration) {
+          console.log('[SW] Registration successful. Scope:', registration.scope);
+
+          // Store registration globally for other scripts to use
+          window.swRegistration = registration;
+
+          // Check if there's already a waiting worker
+          if (registration.waiting) {
+            waitingWorker = registration.waiting;
+            showUpdateNotification();
+          }
+
+          // Check for updates periodically
+          registration.addEventListener('updatefound', function() {
+            const newWorker = registration.installing;
+            console.log('[SW] Update found. Installing new service worker...');
+
+            newWorker.addEventListener('statechange', function() {
+              console.log('[SW] Service worker state:', newWorker.state);
+
+              if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                // New service worker available and waiting
+                waitingWorker = newWorker;
+                console.log('[SW] New version available! Showing update notification.');
+                showUpdateNotification();
+              }
+            });
+          });
+
+          // Check for updates every hour
+          setInterval(function() {
+            registration.update();
+          }, 60 * 60 * 1000);
+
+          // Initial update check
+          registration.update();
+        })
+        .catch(function(error) {
+          console.error('[SW] Registration failed:', error);
+        });
+    }
+
+    /**
+     * Send SKIP_WAITING message to activate the new service worker
+     */
+    function skipWaiting() {
+      if (!waitingWorker) {
+        console.warn('[SW] No waiting worker to activate');
+        return;
+      }
+
+      console.log('[SW] Sending SKIP_WAITING message to service worker');
+      waitingWorker.postMessage({ type: 'SKIP_WAITING' });
+    }
+
+    /**
+     * Show update notification to user
+     */
+    function showUpdateNotification() {
+      // Check if user wants notifications
+      const showNotification = localStorage.getItem('sw-show-update-notification') !== 'false';
+
+      if (!showNotification) {
+        // If notifications are disabled, auto-update silently
+        skipWaiting();
+        return;
+      }
+
+      // Don't show duplicate banners
+      if (document.getElementById('sw-update-banner')) {
+        return;
+      }
+
+      // Create notification banner
+      const banner = document.createElement('div');
+      banner.id = 'sw-update-banner';
+      banner.className = 'sw-update-banner';
+      banner.setAttribute('role', 'alert');
+      banner.setAttribute('aria-live', 'polite');
+
+      banner.innerHTML = `
+        <div class="sw-update-banner__content">
+          <svg class="sw-update-banner__icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" focusable="false" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+          </svg>
+          <div class="sw-update-banner__text">
+            <div class="sw-update-banner__title">{{ i18n "swUpdateAvailable" | default "Update Available" }}</div>
+            <div class="sw-update-banner__message">{{ i18n "swUpdateMessage" | default "A new version is ready to install." }}</div>
+          </div>
+        </div>
+        <div class="sw-update-banner__actions">
+          <button
+            id="sw-update-reload-btn"
+            class="sw-update-banner__reload-btn"
+            type="button"
+          >
+            {{ i18n "swUpdateNow" | default "Update Now" }}
+          </button>
+          <button
+            id="sw-update-dismiss-btn"
+            class="sw-update-banner__dismiss-btn"
+            type="button"
+            aria-label="{{ i18n "swDismissUpdate" | default "Dismiss update notification" }}"
+          >
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+      `;
+
+      document.body.appendChild(banner);
+
+      // Move focus to the reload button so screen readers announce the banner
+      var reloadBtn = document.getElementById('sw-update-reload-btn');
+      if (reloadBtn) reloadBtn.focus();
+
+      // Handle reload button click
+      document.getElementById('sw-update-reload-btn').addEventListener('click', function() {
+        // Send skip waiting and reload when the new SW takes control
+        skipWaiting();
+      });
+
+      // Handle dismiss button click
+      document.getElementById('sw-update-dismiss-btn').addEventListener('click', function() {
+        banner.remove();
+      });
+
+      // Auto-dismiss after 60 seconds (but update will still be pending)
+      setTimeout(function() {
+        const existingBanner = document.getElementById('sw-update-banner');
+        if (existingBanner) {
+          existingBanner.remove();
+        }
+      }, 60000);
+    }
+
+    /**
+     * Handle controller change (new service worker activated)
+     * This fires when SKIP_WAITING causes the new SW to take control
+     */
+    navigator.serviceWorker.addEventListener('controllerchange', function() {
+      console.log('[SW] Controller changed. Reloading page to use new version.');
+      // Reload the page to use the new service worker
+      window.location.reload();
+    });
+
+    /**
+     * Listen for messages from the service worker
+     */
+    navigator.serviceWorker.addEventListener('message', function(event) {
+      console.log('[SW] Message received from service worker:', event.data);
+
+      // Handle different message types
+      if (event.data && event.data.type === 'CACHE_UPDATED') {
+        console.log('[SW] Cache has been updated');
+      }
+    });
+
+    /**
+     * Initialize on DOMContentLoaded
+     */
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', registerServiceWorker);
+    } else {
+      // DOM already loaded
+      registerServiceWorker();
+    }
+
+    // Expose skipWaiting for manual triggering if needed
+    window.Michael = window.Michael || {};
+    window.Michael.SWUpdate = {
+      skipWaiting: skipWaiting,
+      checkForUpdate: function() {
+        if (window.swRegistration) {
+          window.swRegistration.update();
+        }
+      }
+    };
+
+  })();
+</script>

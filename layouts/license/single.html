@@ -1,0 +1,218 @@
+{{ define "main" }}
+{{- $licenseId := .Params.licenseId -}}
+
+{{- /* Collect Bibles using this license */ -}}
+{{- $bibles := slice -}}
+{{- range (partialCached "michael/bible-data.html" .Site) -}}
+  {{- if eq .license $licenseId -}}
+    {{- $bibles = $bibles | append . -}}
+  {{- end -}}
+{{- end -}}
+
+{{- /* Get SPDX license metadata */ -}}
+{{- $spdxLicenses := .Site.Data.spdx.licenses.licenses -}}
+{{- $spdxInfo := dict -}}
+{{- range $spdxLicenses -}}
+  {{- if eq (lower .licenseId) (lower $licenseId) -}}
+    {{- $spdxInfo = . -}}
+  {{- end -}}
+{{- end -}}
+
+{{- /* Get choosealicense.com license data */ -}}
+{{- $choosealicenseLicenses := .Site.Data.choosealicense.licenses.licenses -}}
+{{- $choosealicenseRules := .Site.Data.choosealicense.rules -}}
+{{- $licenseRights := dict -}}
+
+{{- /* Try exact match first, then case-insensitive, then base license ID */ -}}
+{{- /* Strip -or-later, -only suffixes for base matching */ -}}
+{{- $baseLicenseId := replaceRE "-or-later$|-only$" "" $licenseId -}}
+{{- range $id, $data := $choosealicenseLicenses -}}
+  {{- if eq $id $licenseId -}}
+    {{- $licenseRights = $data -}}
+  {{- else if eq (lower $id) (lower $licenseId) -}}
+    {{- $licenseRights = $data -}}
+  {{- else if eq (lower $id) (lower $baseLicenseId) -}}
+    {{- $licenseRights = $data -}}
+  {{- end -}}
+{{- end -}}
+
+{{- /* Build lookup maps for rules */ -}}
+{{- $permissionRules := dict -}}
+{{- range $choosealicenseRules.permissions -}}
+  {{- $permissionRules = $permissionRules | merge (dict .tag .) -}}
+{{- end -}}
+{{- $conditionRules := dict -}}
+{{- range $choosealicenseRules.conditions -}}
+  {{- $conditionRules = $conditionRules | merge (dict .tag .) -}}
+{{- end -}}
+{{- $limitationRules := dict -}}
+{{- range $choosealicenseRules.limitations -}}
+  {{- $limitationRules = $limitationRules | merge (dict .tag .) -}}
+{{- end -}}
+
+<main class="container pad-3-2">
+  <article class="panel">
+    <header class="page-header">
+      <h1>{{ .Title }}</h1>
+      <p>{{ i18n "spdxLicenseIdentifier" | default "SPDX License Identifier" }}: <code>{{ $licenseId }}</code></p>
+    </header>
+
+    <div class="license-content">
+      {{- /* License badges */ -}}
+      <div class="row gap-1 mb-2">
+        {{ if .Params.isOsiApproved }}
+        <span class="badge badge--success">{{ i18n "osiApproved" | default "OSI Approved" }}</span>
+        {{ end }}
+        {{ if $spdxInfo }}
+        <span class="badge">{{ i18n "spdxStandardLicense" | default "SPDX Standard License" }}</span>
+        {{ else if strings.HasPrefix $licenseId "LicenseRef-" }}
+        <span class="badge badge--warning">{{ i18n "customLicense" | default "Custom License" }}</span>
+        {{ end }}
+      </div>
+
+      {{- /* License description from choosealicense */ -}}
+      {{ with $licenseRights.description }}
+      <section class="panel--inner license-section">
+        <h2 class="mt-0">{{ i18n "aboutThisLicense" | default "About This License" }}</h2>
+        <p>{{ . }}</p>
+        {{ with $licenseRights.how }}
+        <h3>{{ i18n "howToApply" | default "How to Apply" }}</h3>
+        <p>{{ . }}</p>
+        {{ end }}
+        {{ with $licenseRights.note }}
+        <p><strong>{{ i18n "note" | default "Note:" }}</strong> {{ . }}</p>
+        {{ end }}
+      </section>
+      {{ end }}
+
+      {{- /* Rights table - using choosealicense data */ -}}
+      {{ if or $licenseRights.permissions $licenseRights.conditions $licenseRights.limitations }}
+      <section class="panel--inner license-section">
+        <h2 class="mt-0">{{ i18n "yourRights" | default "Your Rights" }}</h2>
+
+        <div class="license-rights-grid">
+          {{- /* Permissions */ -}}
+          {{ with $licenseRights.permissions }}
+          <div class="license-rights-col license-rights-col--permissions">
+            <h3>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" focusable="false" aria-hidden="true">
+                <circle cx="12" cy="12" r="10"/>
+                <path d="m9 12 2 2 4-4"/>
+              </svg>
+              {{ i18n "permissions" | default "Permissions" }}
+            </h3>
+            <ul>
+              {{ range . }}
+              {{- $rule := index $permissionRules . -}}
+              <li title="{{ with $rule }}{{ .description }}{{ end }}">
+                {{ with $rule }}{{ .label }}{{ else }}{{ . }}{{ end }}
+              </li>
+              {{ end }}
+            </ul>
+          </div>
+          {{ end }}
+
+          {{- /* Conditions */ -}}
+          {{ with $licenseRights.conditions }}
+          <div class="license-rights-col license-rights-col--conditions">
+            <h3>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" focusable="false" aria-hidden="true">
+                <circle cx="12" cy="12" r="10"/>
+                <path d="M12 8v4M12 16h.01"/>
+              </svg>
+              {{ i18n "conditions" | default "Conditions" }}
+            </h3>
+            <ul>
+              {{ range . }}
+              {{- $rule := index $conditionRules . -}}
+              <li title="{{ with $rule }}{{ .description }}{{ end }}">
+                {{ with $rule }}{{ .label }}{{ else }}{{ . }}{{ end }}
+              </li>
+              {{ end }}
+            </ul>
+          </div>
+          {{ end }}
+
+          {{- /* Limitations */ -}}
+          {{ with $licenseRights.limitations }}
+          <div class="license-rights-col license-rights-col--limitations">
+            <h3>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" focusable="false" aria-hidden="true">
+                <circle cx="12" cy="12" r="10"/>
+                <path d="m15 9-6 6M9 9l6 6"/>
+              </svg>
+              {{ i18n "limitations" | default "Limitations" }}
+            </h3>
+            <ul>
+              {{ range . }}
+              {{- $rule := index $limitationRules . -}}
+              <li title="{{ with $rule }}{{ .description }}{{ end }}">
+                {{ with $rule }}{{ .label }}{{ else }}{{ . }}{{ end }}
+              </li>
+              {{ end }}
+            </ul>
+          </div>
+          {{ end }}
+        </div>
+      </section>
+      {{ end }}
+
+      {{- /* Bible-specific license texts */ -}}
+      {{ if $bibles }}
+      <section class="panel--inner license-section">
+        <h2 class="mt-0">{{ i18n "licenseStatementsFromBibles" | default "License Statements from Bible Modules" }}</h2>
+        <p class="muted mb-2">{{ i18n "licenseStatementsDescription" | default "Each Bible module includes its own license statement from the publisher:" }}</p>
+
+        {{ range $bible := $bibles }}
+        {{ with $bible.licenseText }}
+        <details class="license-details">
+          <summary>
+            {{ $bible.title }} ({{ $bible.abbrev }})
+          </summary>
+          <div class="license-text-display">{{ . }}</div>
+        </details>
+        {{ end }}
+        {{ end }}
+      </section>
+      {{ end }}
+
+      {{- /* Additional resources from SPDX */ -}}
+      {{ with $spdxInfo.seeAlso }}
+      <section class="panel--inner license-section">
+        <h2 class="mt-0">{{ i18n "additionalResources" | default "Additional Resources" }}</h2>
+        <ul class="mb-0">
+          {{ range . }}
+          <li><a href="{{ . }}" target="_blank" rel="noopener noreferrer">{{ . }}</a></li>
+          {{ end }}
+        </ul>
+      </section>
+      {{ end }}
+
+      {{- /* Bible translations using this license */ -}}
+      <h2>{{ i18n "bibleTranslationsUsingLicense" | default "Bible Translations Using This License" }}</h2>
+      {{ if $bibles }}
+      <div class="grid-2">
+        {{ range $bibles }}
+        <a href="{{ printf "/bible/%s/" .id | relLangURL }}" class="card">
+          <h3 class="card__title">{{ .title }}</h3>
+          <p class="card__meta">{{ .abbrev }}</p>
+          {{ with .language }}<span class="badge">{{ . }}</span>{{ end }}
+        </a>
+        {{ end }}
+      </div>
+      {{ else }}
+      <p class="muted">{{ i18n "noBibleTranslationsUseLicense" | default "No Bible translations currently use this license." }}</p>
+      {{ end }}
+    </div>
+
+    <nav class="actions">
+      <a href="{{ "/licenses/" | relLangURL }}" class="btn">
+        &larr; {{ i18n "allLicenses" | default "All Licenses" }}
+      </a>
+      <a href="{{ "/bible/" | relLangURL }}" class="btn">
+        {{ i18n "allBibles" | default "All Bibles" }}
+      </a>
+    </nav>
+  </article>
+</main>
+{{ end }}

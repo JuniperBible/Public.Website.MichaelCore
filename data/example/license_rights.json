@@ -1,0 +1,76 @@
+{
+  "licenses": {
+    "CC-BY-4.0": {
+      "name": "Creative Commons Attribution 4.0 International",
+      "description": "This license lets others distribute, remix, adapt, and build upon the work, even commercially, as long as they credit the original creator.",
+      "permissions": [
+        {"key": "commercial", "label": "Commercial use", "description": "You may use the work for commercial purposes"},
+        {"key": "modify", "label": "Modify", "description": "You may remix, transform, or build upon the work"},
+        {"key": "distribute", "label": "Distribute", "description": "You may copy and redistribute the work in any medium or format"},
+        {"key": "private", "label": "Private use", "description": "You may use the work for private purposes"}
+      ],
+      "conditions": [
+        {"key": "attribution", "label": "Attribution", "description": "You must give appropriate credit, provide a link to the license, and indicate if changes were made"},
+        {"key": "notice", "label": "License notice", "description": "You must indicate the license and provide a link to the license text"}
+      ],
+      "limitations": [
+        {"key": "liability", "label": "No liability", "description": "The licensor is not liable for any damages"},
+        {"key": "warranty", "label": "No warranty", "description": "The work is provided without any warranty"}
+      ]
+    },
+    "CC-PDDC": {
+      "name": "Creative Commons Public Domain Dedication and Certification",
+      "description": "The Creative Commons Public Domain Dedication waives copyright interest in a work and dedicates it to the world-wide public domain.",
+      "permissions": [
+        {"key": "commercial", "label": "Commercial use", "description": "You may use the work for commercial purposes"},
+        {"key": "modify", "label": "Modify", "description": "You may remix, transform, or build upon the work"},
+        {"key": "distribute", "label": "Distribute", "description": "You may copy and redistribute the work in any medium or format"},
+        {"key": "private", "label": "Private use", "description": "You may use the work for private purposes"}
+      ],
+      "conditions": [],
+      "limitations": [
+        {"key": "liability", "label": "No liability", "description": "The licensor is not liable for any damages"},
+        {"key": "warranty", "label": "No warranty", "description": "The work is provided without any warranty"}
+      ]
+    },
+    "GPL-3.0-or-later": {
+      "name": "GNU General Public License v3.0 or later",
+      "description": "Permissions of this strong copyleft license are conditioned on making available complete source code of licensed works and modifications under the same license.",
+      "permissions": [
+        {"key": "commercial", "label": "Commercial use", "description": "You may use the work for commercial purposes"},
+        {"key": "modify", "label": "Modify", "description": "You may remix, transform, or build upon the work"},
+        {"key": "distribute", "label": "Distribute", "description": "You may copy and redistribute the work in any medium or format"},
+        {"key": "patent", "label": "Patent use", "description": "This license provides an express grant of patent rights from contributors"},
+        {"key": "private", "label": "Private use", "description": "You may use the work for private purposes"}
+      ],
+      "conditions": [
+        {"key": "disclose", "label": "Disclose source", "description": "Source code must be made available when distributing the software"},
+        {"key": "license", "label": "Same license", "description": "Modifications must be released under the same license"},
+        {"key": "notice", "label": "License notice", "description": "A copy of the license and copyright notice must be included with the software"},
+        {"key": "state-changes", "label": "State changes", "description": "Changes made to the code must be documented"}
+      ],
+      "limitations": [
+        {"key": "liability", "label": "No liability", "description": "The licensor is not liable for any damages"},
+        {"key": "warranty", "label": "No warranty", "description": "The work is provided without any warranty"}
+      ]
+    },
+    "LicenseRef-Copyrighted-Free": {
+      "name": "Copyrighted but Free to Use",
+      "description": "This work is copyrighted but the copyright holder has granted permission for free use under certain conditions specified in the module.",
+      "permissions": [
+        {"key": "private", "label": "Private use", "description": "You may use the work for private, non-commercial purposes"},
+        {"key": "distribute", "label": "Distribute", "description": "You may redistribute the work in its original form"}
+      ],
+      "conditions": [
+        {"key": "notice", "label": "Copyright notice", "description": "The original copyright notice must be retained"},
+        {"key": "attribution", "label": "Attribution", "description": "You must give appropriate credit to the original author"}
+      ],
+      "limitations": [
+        {"key": "commercial", "label": "Commercial use restricted", "description": "Commercial use may require additional permission"},
+        {"key": "modify", "label": "Modifications restricted", "description": "Modifications may require permission from the copyright holder"},
+        {"key": "liability", "label": "No liability", "description": "The licensor is not liable for any damages"},
+        {"key": "warranty", "label": "No warranty", "description": "The work is provided without any warranty"}
+      ]
+    }
+  }
+}

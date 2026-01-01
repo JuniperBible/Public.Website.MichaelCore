@@ -1,0 +1,40 @@
+{{ define "main" }}
+<main class="container pwa-home">
+  {{/* Continue Reading banner */}}
+  {{ partial "michael/continue-reading.html" . }}
+
+  <div class="panel">
+    <header class="page-header">
+      <h1>{{ .Site.Title }}</h1>
+      {{ with .Site.Params.description }}<p>{{ . }}</p>{{ end }}
+    </header>
+
+    {{/* Try /bible first (standalone), then /religion/bible (module) */}}
+    {{ $biblesPage := .Site.GetPage "/bible" }}
+    {{ if not $biblesPage }}{{ $biblesPage = .Site.GetPage "/religion/bible" }}{{ end }}
+
+    {{ with $biblesPage }}
+    <section>
+      <h2>{{ i18n "bibles" | default "Bible Translations" }}</h2>
+      <div class="grid-2 bible-grid">
+        {{ range (partialCached "michael/bible-data.html" .Site) }}
+        <div class="card">
+          <h3 class="card__title">
+            <a href="{{ printf "/bible/%s/" .id | relLangURL }}">{{ .title }}</a>
+          </h3>
+          {{ with .description }}<p class="card__description">{{ . }}</p>{{ end }}
+          <div class="card__footer">
+            <span class="badge">{{ .abbrev }}</span>
+            {{ with .language }}<span class="badge">{{ . }}</span>{{ end }}
+          </div>
+        </div>
+        {{ end }}
+      </div>
+      <nav class="actions">
+        <a href="{{ .RelPermalink }}" class="btn btn--primary">{{ i18n "viewAllBibles" | default "View All Bibles" }}</a>
+      </nav>
+    </section>
+    {{ end }}
+  </div>
+</main>
+{{ end }}

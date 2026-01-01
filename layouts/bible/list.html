@@ -1,0 +1,146 @@
+{{/*
+================================================================================
+FILE: layouts/bible/list.html
+PURPOSE: Bible translations list/grid page
+DESCRIPTION: Displays available Bible translations as filterable cards with
+             tags, allowing users to browse and select translations for
+             reading or comparison. Includes offline settings panel for
+             cache management.
+
+DEPENDENCIES:
+  - Data: .Site.Data.bibles (bibles.json)
+  - Data: .Site.Data.bibles_auxiliary (per-translation data)
+  - CSS: assets/css/theme.css (.card, .grid-2, .badge, offline-settings, etc.)
+  - JS: assets/js/michael/offline-manager.js - Cache management API
+  - JS: assets/js/michael/offline-settings-ui.js - UI initialization
+  - Partial: partials/michael/offline-settings.html - Settings panel markup
+  - i18n: compareTranslations, searchBible
+  - Config: .Site.Params.michael.basePath
+
+TEMPLATE VARIABLES:
+  - .Title: Page title from front matter
+  - .Description: Page description from front matter
+  - .Site.Data.bibles.bibles: Array of Bible metadata objects
+
+DATA STRUCTURE (bibles.json):
+  {
+    "id": "kjv",
+    "title": "King James Version",
+    "abbrev": "KJV",
+    "language": "English",
+    "versification": "kjva",
+    "license": "CC-PDDC"
+  }
+
+URL PATTERN: /bible/ or /{lang}/bible/
+
+RELATED:
+  - layouts/bible/single.html - Individual chapter view
+  - layouts/bible/compare.html - Translation comparison
+  - layouts/bible/search.html - Bible search
+  - static/sw.js - Service worker for offline support
+================================================================================
+*/}}
+
+{{/*
+================================================================================
+SCRIPTS BLOCK
+Load offline functionality JavaScript modules.
+These are loaded with defer to avoid blocking page rendering.
+================================================================================
+*/}}
+{{ define "scripts" }}
+{{ $showMore := resources.Get "js/michael/show-more.js" }}
+{{ if $showMore }}<script src="{{ $showMore.RelPermalink }}" defer></script>{{ end }}
+{{ $offlineManager := resources.Get "js/michael/offline-manager.js" }}
+{{ if $offlineManager }}<script src="{{ $offlineManager.RelPermalink }}" defer></script>{{ end }}
+{{ $offlineUI := resources.Get "js/michael/offline-settings-ui.js" }}
+{{ if $offlineUI }}<script src="{{ $offlineUI.RelPermalink }}" defer></script>{{ end }}
+{{ end }}
+
+{{ define "main" }}
+{{ $basePath := .Site.Params.michael.basePath | default "/bible" }}
+<main class="container pad-3-2">
+  <div class="panel">
+    {{/*
+    ============================================================================
+    PAGE HEADER
+    Displays the page title and optional description from front matter.
+    ============================================================================
+    */}}
+    <header class="page-header">
+      <h1>{{ .Title }}</h1>
+      {{ with .Description }}<p>{{ . }}</p>{{ end }}
+    </header>
+
+    {{/*
+    ============================================================================
+    QUICK NAVIGATION LINKS
+    Provides shortcuts to comparison and search features.
+    Links use relLangURL for multilingual support.
+    ============================================================================
+    */}}
+    <nav class="actions mb-2">
+      <a href="{{ printf "%s/compare/" $basePath | relLangURL }}" class="btn btn--secondary">
+        {{ i18n "compareTranslations" | default "Compare Translations" }}
+      </a>
+      <a href="{{ printf "%s/search/" $basePath | relLangURL }}" class="btn btn--secondary">
+        {{ i18n "searchBible" | default "Search Bible" }}
+      </a>
+    </nav>
+
+    {{/*
+    ============================================================================
+    BIBLE TRANSLATIONS GRID
+    Renders available Bible translations as clickable cards in a 2-column
+    responsive grid with pagination (9 items initially, "Show More" for rest).
+    Each card displays:
+      - Title: Full translation name
+      - Abbreviation: Short form (e.g., KJV, NIV)
+      - Language badge: If .language is set
+      - License badge: If .license is set
+
+    Cards link to the individual translation's chapter browser page.
+    Data source: .Site.Data.bibles.bibles array from data/bible.json
+    ============================================================================
+    */}}
+    {{ $bibles := partialCached "michael/bible-data.html" .Site }}
+    {{ $pageSize := 9 }}
+    {{ $total := len $bibles }}
+    <section class="grid-2" id="bible-grid">
+      {{ range $index, $bible := $bibles }}
+      <div class="card{{ if ge $index $pageSize }} hidden bible-extra{{ end }}">
+        <h2 class="card__title">
+          <a href="{{ printf "%s/%s/" $basePath $bible.id | relLangURL }}">{{ $bible.title }}</a>
+        </h2>
+        {{ with $bible.description }}<p class="card__description">{{ . }}</p>{{ end }}
+        <div class="card__footer">
+          <span class="badge">{{ $bible.abbrev }}</span>
+          {{ with $bible.language }}<span class="badge">{{ . }}</span>{{ end }}
+          {{ with $bible.license }}
+          <a href="{{ printf "/license/%s/" (. | lower) | relLangURL }}" class="badge">{{ . }}</a>
+          {{ end }}
+        </div>
+      </div>
+      {{ end }}
+    </section>
+    {{ if gt $total $pageSize }}
+    <nav class="actions mt-2">
+      <button id="show-more-bibles" class="btn btn--secondary">
+        {{ i18n "showMore" | default "Show More" }} ({{ sub $total $pageSize }} {{ i18n "more" | default "more" }})
+      </button>
+    </nav>
+    {{ end }}
+
+    {{/*
+    ============================================================================
+    OFFLINE SETTINGS PANEL
+    Collapsible panel for managing offline Bible content and cache.
+    Allows users to download translations for offline reading and manage cache.
+    Requires offline-manager.js for functionality.
+    ============================================================================
+    */}}
+    {{ partial "michael/offline-settings.html" (dict "page" . "basePath" $basePath) }}
+  </div>
+</main>
+{{ end }}

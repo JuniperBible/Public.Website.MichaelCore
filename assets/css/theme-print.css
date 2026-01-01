@@ -1,0 +1,456 @@
+/* ==========================================================================
+   Michael Bible Module — Print Stylesheet
+   Optimized for Bible study, sharing, and archival printing
+   ========================================================================== */
+
+@media print {
+  /* ===== 1) HIDE NON-ESSENTIAL INTERACTIVE ELEMENTS ===== */
+
+  /* Navigation and chrome */
+  .chrome,
+  header.chrome,
+  footer.chrome,
+  .nav,
+  .reader-bar,
+  .actions,
+  nav.actions {
+    display: none !important;
+  }
+
+  /* Interactive controls */
+  .btn,
+  .btn--primary,
+  .btn--secondary,
+  .btn--sm,
+  .chip,
+  button,
+  select,
+  input[type="checkbox"],
+  label:has(input[type="checkbox"]) {
+    display: none !important;
+  }
+
+  /* Verse selection grid and controls */
+  #verse-grid,
+  #sss-verse-grid,
+  #verse-buttons,
+  #sss-verse-buttons,
+  .verse-btn,
+  .book-grid,
+  .chapter-grid,
+  .book-link,
+  .chapter-link,
+  .tile {
+    display: none !important;
+  }
+
+  /* Share buttons and menus */
+  .share-menu,
+  .share-menu-item,
+  [id*="share"],
+  [class*="share"] {
+    display: none !important;
+  }
+
+  /* Color picker and SSS toggle */
+  [id*="color-picker"],
+  [id*="color-btn"],
+  .sss-toggle-icon,
+  [id*="sss-mode-btn"],
+  [id*="sss-toggle"],
+  [id*="sss-back"] {
+    display: none !important;
+  }
+
+  /* Chapter dropdown selectors */
+  #book-select,
+  #chapter-select,
+  #bible-select,
+  #sss-book-select,
+  #sss-chapter-select,
+  #sss-bible-left,
+  #sss-bible-right {
+    display: none !important;
+  }
+
+  /* Loading states and skeleton screens */
+  .loading,
+  .skeleton {
+    display: none !important;
+  }
+
+  /* ===== 2) PAGE SETUP AND TYPOGRAPHY ===== */
+
+  @page {
+    margin: 0.75in 0.5in;
+    size: letter portrait;
+    @bottom-right {
+      content: "Printed: " counter(page);
+    }
+  }
+
+  html,
+  body {
+    background: white !important;
+    color: #000 !important;
+    font-family: "Garamond", "Georgia", "Times New Roman", serif !important;
+    font-size: 11pt !important;
+    line-height: 1.6 !important;
+    margin: 0;
+    padding: 0;
+  }
+
+  /* ===== 3) CONTAINER AND PANEL CLEANUP ===== */
+
+  .container {
+    max-width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  .panel,
+  .panel--inner,
+  .panel--tight {
+    background: white !important;
+    border: none !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  .card {
+    background: white !important;
+    border: 1px solid #ccc !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    padding: 12pt !important;
+    margin-bottom: 12pt !important;
+    page-break-inside: avoid;
+  }
+
+  /* ===== 4) BIBLE TEXT OPTIMIZATION ===== */
+
+  .prose {
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    color: #000 !important;
+    font-size: 11pt !important;
+    line-height: 1.6 !important;
+  }
+
+  .prose p {
+    margin: 0 0 8pt 0 !important;
+    orphans: 3;
+    widows: 3;
+    page-break-inside: avoid;
+  }
+
+  /* ===== 5) HEADINGS AND PAGE HEADER ===== */
+
+  .page-header {
+    text-align: left !important;
+    margin-bottom: 16pt !important;
+    padding-bottom: 8pt !important;
+    border-bottom: 2px solid #000 !important;
+  }
+
+  .page-header h1 {
+    font-size: 18pt !important;
+    font-weight: bold !important;
+    color: #000 !important;
+    margin: 0 0 4pt 0 !important;
+  }
+
+  .page-header p {
+    font-size: 10pt !important;
+    color: #333 !important;
+    margin: 0 !important;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    color: #000 !important;
+    page-break-after: avoid;
+    page-break-inside: avoid;
+  }
+
+  /* ===== 6) VERSE FORMATTING ===== */
+
+  .verse-num,
+  .prose [data-verse],
+  verse {
+    font-weight: bold !important;
+    color: #000 !important;
+    font-size: 9pt !important;
+    vertical-align: super !important;
+    margin-right: 3pt !important;
+  }
+
+  .prose verse,
+  .prose [class*="verse"] {
+    display: inline !important;
+    page-break-inside: avoid;
+  }
+
+  /* ===== 7) STRONG'S NUMBERS HANDLING ===== */
+
+  .strongs-ref,
+  .strongs-tooltip,
+  w[lemma],
+  w[morph],
+  [data-strongs] {
+    display: none !important;
+  }
+
+  /* ===== 8) NOTES AND CROSS-REFERENCES ===== */
+
+  .prose note {
+    display: inline !important;
+    font-size: 9pt !important;
+    color: #333 !important;
+    font-style: italic !important;
+  }
+
+  .prose note::before {
+    content: " [" !important;
+  }
+
+  .prose note::after {
+    content: "]" !important;
+  }
+
+  .prose note catchWord {
+    font-weight: 600 !important;
+    font-style: normal !important;
+  }
+
+  /* ===== 9) TRANSLATION METADATA (BADGES) ===== */
+
+  .badge,
+  .badge--success {
+    display: inline-block !important;
+    border: 1px solid #000 !important;
+    background: white !important;
+    color: #000 !important;
+    padding: 2pt 6pt !important;
+    margin: 0 4pt 4pt 0 !important;
+    font-size: 9pt !important;
+    border-radius: 0 !important;
+  }
+
+  /* ===== 10) LINKS - SHOW URLS ===== */
+
+  a {
+    color: #000 !important;
+    text-decoration: underline !important;
+  }
+
+  a[href^="http"]::after,
+  a[href^="https://"]::after {
+    content: " (" attr(href) ")" !important;
+    font-size: 9pt !important;
+    color: #555 !important;
+    word-break: break-all;
+  }
+
+  a[href^="#"]::after,
+  a[href^="/"]::after {
+    content: "" !important;
+  }
+
+  /* ===== 11) COMPARE VIEW - STACK VERTICALLY ===== */
+
+  #parallel-content {
+    display: block !important;
+    margin: 0 !important;
+  }
+
+  .grid-2,
+  #sss-panes {
+    display: block !important;
+    grid-template-columns: 1fr !important;
+  }
+
+  .grid-2 > *,
+  #sss-panes > * {
+    margin-bottom: 16pt !important;
+    page-break-inside: avoid;
+  }
+
+  #sss-left-pane h2,
+  #sss-right-pane h2,
+  .card__title,
+  [data-translation-title] {
+    font-size: 14pt !important;
+    font-weight: bold !important;
+    color: #000 !important;
+    margin: 0 0 8pt 0 !important;
+    padding-bottom: 4pt !important;
+    border-bottom: 1px solid #000 !important;
+  }
+
+  .card[data-translation]::before {
+    content: attr(data-translation) !important;
+    display: block !important;
+    font-size: 14pt !important;
+    font-weight: bold !important;
+    margin-bottom: 8pt !important;
+    padding-bottom: 4pt !important;
+    border-bottom: 1px solid #000 !important;
+  }
+
+  /* ===== 12) DIFF HIGHLIGHTING - GRAYSCALE PRINT ===== */
+
+  .diff-insert {
+    background: transparent !important;
+    text-decoration: underline !important;
+    text-decoration-style: solid !important;
+    text-underline-offset: 2pt !important;
+    color: #000 !important;
+  }
+
+  .diff-punct {
+    background: transparent !important;
+    border-bottom: 1px dotted #666 !important;
+    color: #000 !important;
+  }
+
+  .diff-spelling {
+    background: transparent !important;
+    border-bottom: 1px dashed #666 !important;
+    color: #000 !important;
+  }
+
+  .diff-subst {
+    background: transparent !important;
+    text-decoration: underline double !important;
+    text-underline-offset: 2pt !important;
+    color: #000 !important;
+  }
+
+  .diff-omit {
+    background: transparent !important;
+    text-decoration: line-through !important;
+    color: #666 !important;
+  }
+
+  .diff-legend {
+    font-size: 9pt !important;
+    color: #333 !important;
+    margin: 12pt 0 !important;
+    padding: 8pt !important;
+    border: 1px solid #ccc !important;
+  }
+
+  /* ===== 13) OSIS STRUCTURAL ELEMENTS ===== */
+
+  .prose milestone,
+  .prose chapter {
+    display: contents !important;
+  }
+
+  .prose div[type="x-milestone"],
+  .prose div[type="x-p"],
+  .prose div[subType],
+  .prose div[sID],
+  .prose div[eID] {
+    display: none !important;
+  }
+
+  .prose transChange[type="added"] {
+    font-style: italic !important;
+  }
+
+  /* ===== 14) PAGE BREAKS ===== */
+
+  .card,
+  .prose p,
+  .page-header,
+  blockquote,
+  .notice {
+    page-break-inside: avoid;
+  }
+
+  h2 {
+    page-break-before: auto;
+  }
+
+  /* ===== 15) EMPTY AND ERROR STATES ===== */
+
+  .empty-state,
+  .error-state {
+    display: none !important;
+  }
+
+  /* ===== 16) UTILITY CLASSES ===== */
+
+  .hidden {
+    display: none !important;
+  }
+
+  .sr-only {
+    position: static !important;
+    width: auto !important;
+    height: auto !important;
+    clip: auto !important;
+  }
+
+  /* ===== 17) COMPARISON VIEW SPECIFIC ===== */
+
+  #sss-mode,
+  #normal-mode {
+    display: block !important;
+  }
+
+  #sss-mode-btn,
+  #sss-toggle-btn,
+  #highlight-toggle,
+  #sss-highlight-toggle {
+    display: none !important;
+  }
+
+  #sss-left-pane,
+  #sss-right-pane {
+    border: 1px solid #000 !important;
+    padding: 12pt !important;
+    margin-bottom: 16pt !important;
+  }
+
+  /* ===== 19) FORMS AND INPUTS ===== */
+
+  input,
+  select,
+  textarea,
+  .input,
+  .select,
+  .textarea {
+    display: none !important;
+  }
+
+  /* ===== 20) MISC CLEANUP ===== */
+
+  * {
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+
+  .panel--inner,
+  .notice,
+  .notice--success {
+    background: white !important;
+    border: 1px solid #ccc !important;
+    color: #000 !important;
+  }
+
+  svg:not(.keep-in-print),
+  .empty-state::before,
+  .error-state::before {
+    display: none !important;
+  }
+
+  /* Hide offline settings in print */
+  .offline-settings {
+    display: none !important;
+  }
+}

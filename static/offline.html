@@ -1,0 +1,382 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Offline - Michael Bible Reader</title>
+  <meta name="theme-color" content="#1a3230">
+  <link rel="icon" type="image/png" sizes="32x32" href="/icons/icon-32.png">
+  <style>
+    /*
+     * Inline styles to work without external resources
+     * Based on Michael's theme but simplified for offline use
+     */
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --color-bg: #e7ddc4;
+      --color-surface: #f1ead6;
+      --color-text: #1d1b1f;
+      --color-border: rgba(0, 0, 0, 0.18);
+      --color-accent: #6b4c6b;
+      --color-accent-hover: #684580;
+      --color-muted: #565056;
+      --spacing-1: 0.5rem;
+      --spacing-2: 1rem;
+      --spacing-3: 1.5rem;
+      --spacing-4: 2rem;
+      --radius: 8px;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --color-bg: #1a1a1a;
+        --color-surface: #2a2a2a;
+        --color-text: #f5f5f5;
+        --color-border: #444444;
+        --color-accent: #9a7a9a;
+        --color-accent-hover: #b090b0;
+        --color-muted: #9ca3af;
+      }
+    }
+
+    body {
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      line-height: 1.5;
+      color: var(--color-text);
+      background-color: var(--color-bg);
+      padding: var(--spacing-2);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .container {
+      max-width: 600px;
+      width: 100%;
+    }
+
+    .panel {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      padding: var(--spacing-4);
+      box-shadow: 0 1px 0 rgba(0,0,0,.14), 0 3px 10px rgba(0,0,0,.10);
+    }
+
+    .logo {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto var(--spacing-3);
+      display: block;
+    }
+
+    .icon {
+      width: 64px;
+      height: 64px;
+      margin: 0 auto var(--spacing-3);
+      display: block;
+      opacity: 0.5;
+      color: var(--color-accent);
+    }
+
+    h1 {
+      font-size: 2rem;
+      margin-bottom: var(--spacing-2);
+      text-align: center;
+      color: var(--color-text);
+    }
+
+    p {
+      margin-bottom: var(--spacing-2);
+      color: var(--color-muted);
+      text-align: center;
+    }
+
+    .cached-content {
+      margin: var(--spacing-3) 0;
+      padding: var(--spacing-2);
+      background: var(--color-bg);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+    }
+
+    .cached-content h2 {
+      font-size: 1.25rem;
+      margin-bottom: var(--spacing-2);
+      color: var(--color-text);
+    }
+
+    .cached-content ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .cached-content li {
+      padding: var(--spacing-1) 0;
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .cached-content li:last-child {
+      border-bottom: none;
+    }
+
+    .cached-content a {
+      color: var(--color-accent);
+      text-decoration: none;
+      display: block;
+      padding: var(--spacing-1);
+      border-radius: 4px;
+      transition: background-color 0.2s;
+    }
+
+    .cached-content a:hover {
+      background-color: rgba(107, 76, 107, 0.1);
+      text-decoration: underline;
+    }
+
+    .actions {
+      display: flex;
+      gap: var(--spacing-2);
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: var(--spacing-3);
+    }
+
+    .btn {
+      display: inline-block;
+      padding: var(--spacing-1) var(--spacing-3);
+      background-color: var(--color-accent);
+      color: white;
+      text-decoration: none;
+      border-radius: var(--radius);
+      border: none;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background-color 0.2s;
+      font-family: inherit;
+    }
+
+    .btn:hover {
+      background-color: var(--color-accent-hover);
+    }
+
+    .btn-secondary {
+      background-color: transparent;
+      color: var(--color-accent);
+      border: 1px solid var(--color-accent);
+    }
+
+    .btn-secondary:hover {
+      background-color: rgba(107, 76, 107, 0.1);
+    }
+
+    .status {
+      text-align: center;
+      margin-top: var(--spacing-2);
+      padding: var(--spacing-1);
+      border-radius: 4px;
+      font-size: 0.875rem;
+    }
+
+    .status.offline {
+      background-color: rgba(239, 68, 68, 0.1);
+      color: #ef4444;
+    }
+
+    .status.online {
+      background-color: rgba(34, 197, 94, 0.1);
+      color: #22c55e;
+    }
+
+    @media (max-width: 600px) {
+      h1 {
+        font-size: 1.5rem;
+      }
+
+      .panel {
+        padding: var(--spacing-3);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="panel">
+      <!-- Michael Logo -->
+      <img src="/icons/icon-192.png" alt="Michael Bible Reader" class="logo">
+
+      <!-- Offline indicator icon -->
+      <svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636a9 9 0 010 12.728m0 0l-2.829-2.829m2.829 2.829L21 21M15.536 8.464a5 5 0 010 7.072m0 0l-2.829-2.829m-4.243 2.829a4.978 4.978 0 01-1.414-2.83m-1.414 5.658a9 9 0 01-2.167-9.238m7.824 2.167a1 1 0 111.414 1.414m-1.414-1.414L3 3" />
+      </svg>
+
+      <h1>You're Offline</h1>
+      <p>It looks like you've lost your internet connection. Don't worry, you can still access some cached content below.</p>
+
+      <div id="connection-status" class="status offline">
+        No internet connection
+      </div>
+
+      <!-- Cached content section -->
+      <div class="cached-content">
+        <h2>Available Offline</h2>
+        <p style="text-align: left; font-size: 0.875rem; margin-bottom: var(--spacing-2);">
+          These chapters have been cached and are available to read offline:
+        </p>
+        <ul id="cached-list">
+          <li><a href="/bible/kjva/gen/1/">Genesis 1 (KJVA)</a></li>
+          <li><a href="/bible/kjva/ps/23/">Psalm 23 (KJVA)</a></li>
+          <li><a href="/bible/kjva/matt/1/">Matthew 1 (KJVA)</a></li>
+          <li><a href="/bible/kjva/john/1/">John 1 (KJVA)</a></li>
+        </ul>
+      </div>
+
+      <!-- Actions -->
+      <div class="actions">
+        <button class="btn" onclick="retryConnection()">Retry Connection</button>
+        <a href="/" class="btn btn-secondary">Go to Home</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /**
+     * Offline page functionality
+     * - Check connection status
+     * - Retry connection
+     * - List cached chapters dynamically
+     */
+
+    // Check if we're actually online
+    function updateConnectionStatus() {
+      const statusEl = document.getElementById('connection-status');
+      if (navigator.onLine) {
+        statusEl.textContent = 'Connection restored!';
+        statusEl.className = 'status online';
+      } else {
+        statusEl.textContent = 'No internet connection';
+        statusEl.className = 'status offline';
+      }
+    }
+
+    // Retry connection by attempting to reload
+    function retryConnection() {
+      if (navigator.onLine) {
+        // Try to reload the page
+        window.location.reload();
+      } else {
+        // Still offline, show message
+        const statusEl = document.getElementById('connection-status');
+        statusEl.textContent = 'Still offline - please check your connection';
+        statusEl.className = 'status offline';
+
+        // Reset after 3 seconds
+        setTimeout(updateConnectionStatus, 3000);
+      }
+    }
+
+    // Listen for online/offline events
+    window.addEventListener('online', () => {
+      updateConnectionStatus();
+
+      // Auto-reload after 1 second when connection is restored
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
+    });
+
+    window.addEventListener('offline', () => {
+      updateConnectionStatus();
+    });
+
+    // Try to get cached chapters from service worker
+    async function loadCachedChapters() {
+      if (!('caches' in window)) {
+        showCacheError('Cache API is not supported in this browser');
+        return;
+      }
+
+      try {
+        const cacheNames = await caches.keys();
+        const chaptersCache = cacheNames.find(name => name.includes('chapters'));
+
+        if (!chaptersCache) {
+          return;
+        }
+
+        const cache = await caches.open(chaptersCache);
+        const requests = await cache.keys();
+
+        // Filter for Bible chapter URLs
+        const chapterUrls = requests
+          .map(req => {
+            try {
+              return new URL(req.url);
+            } catch (e) {
+              console.error('Invalid URL in cache:', req.url, e);
+              return null;
+            }
+          })
+          .filter(url => url !== null)
+          .filter(url => {
+            const pattern = /^\/bible\/[^/]+\/[^/]+\/\d+\/?$/;
+            return pattern.test(url.pathname);
+          })
+          .map(url => url.pathname);
+
+        if (chapterUrls.length === 0) {
+          return;
+        }
+
+        // Update the cached list
+        const listEl = document.getElementById('cached-list');
+        listEl.innerHTML = '';
+
+        chapterUrls.forEach(url => {
+          const li = document.createElement('li');
+          const a = document.createElement('a');
+          a.href = url;
+
+          // Parse URL to create friendly name
+          const parts = url.split('/').filter(p => p);
+          if (parts.length >= 4) {
+            const bible = parts[1].toUpperCase();
+            const book = parts[2].charAt(0).toUpperCase() + parts[2].slice(1);
+            const chapter = parts[3];
+            a.textContent = `${book} ${chapter} (${bible})`;
+          } else {
+            a.textContent = url;
+          }
+
+          li.appendChild(a);
+          listEl.appendChild(li);
+        });
+
+      } catch (error) {
+        console.error('Error loading cached chapters:', error);
+        showCacheError('Unable to load cached content. Please try again later.');
+      }
+    }
+
+    // Show error message to user when cache operations fail
+    function showCacheError(message) {
+      const cachedContent = document.querySelector('.cached-content');
+      const errorDiv = document.createElement('div');
+      errorDiv.style.cssText = 'padding: var(--spacing-2); background-color: rgba(239, 68, 68, 0.1); color: #ef4444; border-radius: 4px; margin-top: var(--spacing-2); text-align: center; font-size: 0.875rem;';
+      errorDiv.textContent = message;
+      cachedContent.appendChild(errorDiv);
+    }
+
+    // Initialize on load
+    updateConnectionStatus();
+    loadCachedChapters();
+  </script>
+</body>
+</html>

@@ -1,0 +1,375 @@
+/* ==========================================================================
+   Michael Bible Module — PWA Standalone Mode Styles
+   Styles for when app is installed as PWA (Add to Home Screen)
+
+   Two detection paths, one set of rules:
+   1. CSS @media display-mode (modern browsers)
+   2. JS-added .pwa-standalone class (iOS Safari, TWA, height heuristic)
+
+   The media query adds .pwa-standalone via JS at runtime (baseof.html).
+   Both paths are covered by the class-based selectors below.
+   The media query block ONLY handles edge cases where JS hasn't run yet.
+   ========================================================================== */
+
+/* Display-mode media query — ensures styles apply even before JS runs */
+@media all and (display-mode: standalone),
+       all and (display-mode: fullscreen),
+       all and (display-mode: minimal-ui),
+       all and (display-mode: window-controls-overlay) {
+  html:not(.pwa-standalone) {
+    /* Redundant once JS adds the class, but covers the brief pre-JS window */
+  }
+
+  html, html body {
+    height: 100vh;
+    height: 100dvh;
+    max-height: 100vh;
+    max-height: 100dvh;
+    overflow: hidden;
+  }
+
+  body {
+    min-height: 100vh;
+    min-height: 100dvh;
+    padding-top: env(safe-area-inset-top, 0);
+    padding-bottom: env(safe-area-inset-bottom, 0);
+    padding-left: env(safe-area-inset-left, 0);
+    padding-right: env(safe-area-inset-right, 0);
+  }
+
+  body > main {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .pwa-install-banner,
+  .pwa-ios-instructions { display: none !important; }
+  footer.chrome { display: none !important; }
+  .footer-copyright { flex-shrink: 0; padding: 2px 0; }
+  .footer-copyright p {
+    padding: 2px 0 !important;
+    font-size: 0.7rem !important;
+    margin: 0;
+    line-height: 1.3;
+  }
+  .footer-copyright .container { padding: 0 var(--pad-1); }
+  .chrome { flex-shrink: 0; }
+}
+
+/* JS class-based styles — primary path once JS runs.
+   Also covers iOS Safari standalone and TWA where media query won't match. */
+html.pwa-standalone,
+html.pwa-standalone body {
+  height: 100vh;
+  height: 100dvh;
+  max-height: 100vh;
+  max-height: 100dvh;
+  overflow: hidden;
+}
+
+html.pwa-standalone body {
+  min-height: 100vh;
+  min-height: 100dvh;
+  padding-top: env(safe-area-inset-top, 0);
+  padding-bottom: env(safe-area-inset-bottom, 0);
+  padding-left: env(safe-area-inset-left, 0);
+  padding-right: env(safe-area-inset-right, 0);
+}
+
+html.pwa-standalone body > main {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+
+html.pwa-standalone .pwa-install-banner,
+html.pwa-standalone .pwa-ios-instructions {
+  display: none !important;
+}
+
+:is(html, body).pwa-standalone footer.chrome {
+  display: none !important;
+}
+
+html.pwa-standalone .footer-copyright {
+  flex-shrink: 0;
+  padding: 2px 0;
+}
+
+:is(html, body).pwa-standalone .footer-copyright p {
+  padding: 2px 0 !important;
+  font-size: 0.7rem !important;
+  margin: 0;
+  line-height: 1.3;
+}
+
+html.pwa-standalone .footer-copyright .container {
+  padding: 0 var(--pad-1);
+}
+
+html.pwa-standalone .chrome {
+  flex-shrink: 0;
+}
+
+/* PWA compact layout adjustments (class-based only — these are visual
+   refinements that don't need pre-JS coverage) */
+html.pwa-standalone main.pwa-home { padding: var(--pad-2) var(--pad-1); }
+html.pwa-standalone main.pwa-home .panel { padding: var(--pad-2); }
+html.pwa-standalone .page-header { padding: var(--pad-1) 0; }
+html.pwa-standalone .page-header h1 { font-size: 1.25rem; margin-bottom: 0.25rem; }
+html.pwa-standalone .page-header p { font-size: 0.85rem; margin: 0; }
+html.pwa-standalone .card { padding: var(--pad-1); }
+html.pwa-standalone main.pwa-home h2 { font-size: 1rem; margin: var(--pad-1) 0; }
+html.pwa-standalone .continue-reading { padding: var(--pad-1); margin-bottom: var(--pad-1); }
+
+/* ==========================================================================
+   PWA Install Banner
+   ========================================================================== */
+
+/* Shared styles for both install banners */
+.pwa-install-banner,
+.pwa-ios-instructions {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: var(--z-overlay);
+  background: var(--chrome-900);
+  color: rgba(255,255,255,.95);
+  padding: var(--pad-2);
+  padding-bottom: calc(var(--pad-2) + env(safe-area-inset-bottom, 0px));
+  box-shadow: 0 -2px 10px rgba(0,0,0,.2);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--pad-1);
+  max-width: 100%;
+}
+
+.pwa-install-content {
+  display: flex;
+  align-items: center;
+  gap: var(--pad-1);
+  flex: 1;
+  min-width: 0;
+}
+
+.pwa-install-icon {
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+  border-radius: 8px;
+}
+
+.pwa-install-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.pwa-install-text strong {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+.pwa-install-text span {
+  display: block;
+  font-size: 0.85rem;
+  opacity: 0.9;
+}
+
+.pwa-install-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.pwa-install-button {
+  padding: 8px 16px;
+  border-radius: var(--radius-1);
+  border: none;
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.9rem;
+  background: var(--brand-500);
+  color: var(--surface-2);
+}
+
+.pwa-install-button:hover {
+  background: var(--brand-600);
+}
+
+.pwa-install-button:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+.pwa-install-dismiss {
+  padding: 6px 10px;
+  border-radius: var(--radius-1);
+  border: 1px solid rgba(255,255,255,.3);
+  background: transparent;
+  color: rgba(255,255,255,.8);
+  cursor: pointer;
+  font: inherit;
+  font-size: 1.2rem;
+  line-height: 1;
+}
+
+.pwa-install-dismiss:hover {
+  background: rgba(255,255,255,.1);
+}
+
+.pwa-install-dismiss:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+/* Responsive: stack on small screens */
+@media (max-width: 420px) {
+  .pwa-install-banner,
+  .pwa-ios-instructions {
+    flex-wrap: wrap;
+  }
+
+  .pwa-install-icon {
+    width: 36px;
+    height: 36px;
+  }
+
+  .pwa-install-actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+}
+
+/* ==========================================================================
+   Service Worker Update Banner
+   ========================================================================== */
+
+.sw-update-banner {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: var(--z-overlay-above);
+  background: var(--brand-500);
+  color: var(--surface-2);
+  padding: var(--pad-1) var(--pad-2);
+  box-shadow: 0 2px 10px rgba(0,0,0,.2);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--pad-2);
+}
+
+.sw-update-banner__content {
+  display: flex;
+  align-items: center;
+  gap: var(--pad-1);
+  flex: 1;
+}
+
+.sw-update-banner__icon {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+}
+
+.sw-update-banner__text {
+  flex: 1;
+}
+
+.sw-update-banner__title {
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.sw-update-banner__message {
+  font-size: 0.85rem;
+  opacity: 0.9;
+}
+
+.sw-update-banner__actions {
+  display: flex;
+  gap: 8px;
+}
+
+.sw-update-banner__reload-btn {
+  padding: 6px 14px;
+  border-radius: var(--radius-1);
+  border: none;
+  background: var(--surface-2);
+  color: var(--brand-600);
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.sw-update-banner__reload-btn:hover {
+  background: var(--brand-100);
+}
+
+.sw-update-banner__reload-btn:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+.sw-update-banner__dismiss-btn {
+  padding: 6px 10px;
+  border-radius: var(--radius-1);
+  border: 1px solid rgba(255,255,255,.4);
+  background: transparent;
+  color: var(--surface-2);
+  cursor: pointer;
+  font: inherit;
+  font-size: 1.1rem;
+  line-height: 1;
+}
+
+.sw-update-banner__dismiss-btn:hover {
+  background: rgba(255,255,255,.1);
+}
+
+.sw-update-banner__dismiss-btn:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+/* ==========================================================================
+   Continue Reading Component
+   ========================================================================== */
+
+.continue-reading {
+  background: var(--brand-100);
+  border: 1px solid var(--brand-500);
+  border-radius: var(--radius-1);
+  padding: var(--pad-2);
+  margin-bottom: var(--pad-2);
+}
+
+.continue-reading__title {
+  font-size: 0.9rem;
+  color: var(--text-700);
+  margin: 0 0 8px 0;
+}
+
+.continue-reading__link {
+  font-weight: 600;
+  color: var(--brand-600);
+}
+
+.continue-reading__link:hover {
+  color: var(--brand-500);
+}
+
+.continue-reading__meta {
+  font-size: 0.85rem;
+  color: var(--text-500);
+  margin-top: 4px;
+}

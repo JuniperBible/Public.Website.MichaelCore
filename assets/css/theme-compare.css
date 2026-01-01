@@ -1,0 +1,384 @@
+/* ==========================================================================
+   Michael Bible Module — Compare Page Styles
+   Side-by-side Bible comparison, diff highlighting, and related controls
+   ========================================================================== */
+
+/* -----------------------------
+   Compare Controls
+------------------------------ */
+.compare-controls {
+  background: var(--bg-light);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-1);
+  padding: 8px 12px;
+  margin-bottom: var(--pad-2);
+}
+
+.compare-controls--compact {
+  padding: 6px 10px;
+  margin-bottom: var(--pad-1);
+}
+
+.compare-controls--compact .compare-controls__row {
+  gap: 6px;
+}
+
+.sss-bible-pair {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  flex-wrap: nowrap;
+}
+
+#sss-back-btn {
+  flex-shrink: 0;
+}
+
+.compare-controls__row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.compare-controls__row + .compare-controls__row {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border);
+}
+
+.compare-controls__translations {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.chip--compact {
+  padding: 4px 8px;
+  font-size: 0.8rem;
+}
+
+.chip--compact input[type="checkbox"] {
+  margin-right: 4px;
+}
+
+.select--compact {
+  padding: 6px 10px;
+  font-size: 0.85rem;
+}
+
+/* -----------------------------
+   Compare Panes
+------------------------------ */
+.compare-panes {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--pad-2);
+  margin-top: var(--pad-2);
+}
+
+.compare-pane-wrapper {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.compare-pane-wrapper > .footnotes-section {
+  margin-top: var(--pad-2);
+  padding-top: var(--pad-1);
+  border-top: 1px solid var(--border);
+}
+
+.compare-pane {
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-1);
+  padding: var(--pad-2);
+  min-height: 400px;
+  min-width: 0;
+  max-width: 100%;
+  overflow: auto;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  word-break: break-word;
+  display: grid;
+  grid-auto-rows: auto;
+  align-content: start;
+}
+
+.compare-pane .parallel-verse {
+  border-bottom: 1px solid var(--border);
+  padding-bottom: var(--pad-1);
+  margin-bottom: var(--pad-1);
+}
+
+.compare-content {
+  flex: 1;
+  min-height: 300px;
+}
+
+.compare-content .card {
+  height: 100%;
+}
+
+/* -----------------------------
+   Notes Row (Footnotes + Strong's)
+------------------------------ */
+.compare-notes-row,
+.chapter-notes-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--pad-2);
+  margin-top: var(--pad-3);
+  padding-top: var(--pad-2);
+  border-top: 1px solid var(--border);
+}
+
+.compare-notes-row .footnotes-section,
+.compare-notes-row .strongs-notes-section,
+.chapter-notes-row .footnotes-section,
+.chapter-notes-row .strongs-notes-section {
+  padding: var(--pad-2) 0;
+}
+
+/* Hide header when list is empty */
+.compare-notes-row .footnotes-section:has(ol:empty) h2,
+.compare-notes-row .strongs-notes-section:has(ol:empty) h2,
+.chapter-notes-row .footnotes-section:has(ol:empty) h2,
+.chapter-notes-row .strongs-notes-section:has(ol:empty) h2 {
+  display: none;
+}
+
+.compare-notes-row h2,
+.chapter-notes-row h2 {
+  font-size: 1rem;
+  margin: 0 0 var(--pad-1) 0;
+  color: var(--brand-500);
+}
+
+.strongs-notes-section ol,
+.footnotes-section ol {
+  margin: 0;
+  padding-left: 1.5rem;
+}
+
+.strongs-notes-section li,
+.footnotes-section li {
+  margin-bottom: 0.5rem;
+  line-height: 1.5;
+}
+
+@media (max-width: 768px) {
+  .compare-notes-row,
+  .chapter-notes-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* -----------------------------
+   Color Picker
+------------------------------ */
+.color-picker-btn {
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: 2px solid var(--border);
+  border-radius: var(--radius-1);
+}
+
+.color-picker-btn:hover {
+  border-color: var(--text-500);
+}
+
+.color-picker-btn:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+  border-color: var(--brand-500);
+}
+
+.color-picker-dropdown {
+  position: absolute;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-1);
+  padding: 6px;
+  box-shadow: 0 2px 8px rgba(0,0,0,.15);
+  z-index: var(--z-dropdown);
+}
+
+.color-picker-options {
+  gap: 4px;
+}
+
+.color-option-btn {
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: 2px solid transparent;
+  border-radius: var(--radius-1);
+}
+
+.color-option-btn:hover,
+.color-option-btn.is-active {
+  border-color: var(--text-900);
+}
+
+.color-option-btn:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+/* -----------------------------
+   Diff Highlighting
+------------------------------ */
+/* Base diff class - shared styles */
+.diff-insert,
+.diff-punct,
+.diff-spelling,
+.diff-subst,
+.diff-omit {
+  padding: 2px 0;
+  border-radius: 3px;
+}
+
+/* Individual diff colors */
+.diff-insert {
+  background: var(--diff-add);
+}
+
+.diff-punct {
+  background: var(--diff-punct);
+}
+
+.diff-spelling {
+  background: var(--diff-spelling);
+}
+
+.diff-subst {
+  background: var(--diff-subst);
+}
+
+.diff-omit {
+  background: var(--diff-omit);
+  text-decoration: line-through;
+  color: var(--text-500);
+}
+
+/* Diff legend */
+.diff-legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  padding: 6px 10px;
+  font-size: 0.8rem;
+  color: var(--text-700);
+}
+
+.diff-legend__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.diff-legend__swatch {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+  border: 1px solid var(--border);
+}
+
+.diff-legend__swatch--add { background: var(--diff-add); }
+.diff-legend__swatch--omit {
+  background: var(--diff-omit);
+  position: relative;
+}
+.diff-legend__swatch--omit::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 1px;
+  right: 1px;
+  height: 2px;
+  background: var(--text-500);
+  transform: translateY(-50%);
+}
+.diff-legend__swatch--subst { background: var(--diff-subst); }
+.diff-legend__swatch--spelling { background: var(--diff-spelling); }
+.diff-legend__swatch--punct { background: var(--diff-punct); }
+
+/* -----------------------------
+   Footnotes Section
+------------------------------ */
+/* Hide inline notes in verse text - shown in footnotes section */
+.prose note,
+.compare-pane note,
+#parallel-content note {
+  display: none;
+}
+
+/* Footnote reference marker (superscript) */
+.footnote-ref {
+  font-size: 0.75em;
+  vertical-align: super;
+  color: var(--brand-500);
+  cursor: pointer;
+  text-decoration: none;
+  margin-left: 1px;
+}
+
+.footnote-ref:hover {
+  text-decoration: underline;
+}
+
+/* Footnotes section - reset margins/border when inside notes-row */
+.chapter-notes-row .footnotes-section,
+.compare-notes-row .footnotes-section {
+  margin-top: 0;
+  margin-bottom: 0;
+  padding-top: 0;
+  border-top: none;
+}
+
+/* Standalone footnotes section */
+.footnotes-section {
+  margin-top: var(--pad-3);
+  margin-bottom: var(--pad-3);
+  padding-top: var(--pad-2);
+  border-top: 1px solid var(--border);
+}
+
+.footnotes-section h2 {
+  font-size: 1rem;
+  margin-bottom: var(--pad-1);
+  color: var(--text-700);
+}
+
+.footnotes-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--text-700);
+}
+
+.footnotes-list li {
+  margin-bottom: 0.5em;
+  padding-left: 1.5em;
+  text-indent: -1.5em;
+}
+
+.footnote-num {
+  font-weight: 600;
+  color: var(--brand-500);
+  margin-right: 0.25em;
+}
+
+.footnote-catchword {
+  font-style: italic;
+}
+
+.footnote-literal {
+  font-style: italic;
+}

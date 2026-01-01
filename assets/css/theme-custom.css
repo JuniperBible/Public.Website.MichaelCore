@@ -1,0 +1,115 @@
+/* ==========================================================================
+   Michael Bible Module — Custom Theme Overrides
+
+   This file is for site-specific customizations that override the default
+   theme styles. It is loaded last, so all rules here take precedence.
+
+   Color palette and font sourced from juniperbible.org
+   ========================================================================== */
+
+/* -----------------------------
+   Patrick Hand font (self-hosted)
+   License: SIL Open Font License 1.1
+   Source: Google Fonts — Patrick Hand by Patrick Wagesreiter
+------------------------------ */
+@font-face {
+  font-family: "Patrick Hand";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/patrick-hand-latin.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+    U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191,
+    U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: "Patrick Hand";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/patrick-hand-latin-ext.woff2") format("woff2");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7,
+    U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F,
+    U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F,
+    U+A720-A7FF;
+}
+
+/* -----------------------------
+   Custom Color Overrides
+   Matched to juniperbible.org
+------------------------------ */
+:root {
+  /* Brand - Muted purple (juniperbible accent) */
+  --brand-100: #f0e0f0;
+  --brand-400: #7d5c7d;
+  --brand-500: #6b4c6b;
+  --brand-600: #684580;
+
+  /* Success - Green */
+  --success-100: #e8f5e9;
+  --success-500: #16a34a;
+
+  /* Chrome (header/footer) - Dark teal */
+  --chrome-800: #223836;
+  --chrome-900: #1a3230;
+
+  /* Background / Surfaces (warm parchment) */
+  --bg-0: #b8a080;
+  --surface-0: #e6ddc0;
+  --surface-1: #ebe5d8;
+  --surface-2: #ffffff;
+
+  /* Text */
+  --text-900: #1a1a1a;
+  --text-700: #4a4540;
+  --text-500: #6b6560;
+  --text-400: #857f78;
+
+  /* Links */
+  --link: var(--brand-500);
+
+  /* Borders */
+  --border: #d4cfc5;
+  --border-strong: #b8b2a6;
+
+  /* Shadows */
+  --shadow-0: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-1: 0 4px 6px rgba(0, 0, 0, 0.07), 0 1px 3px rgba(0, 0, 0, 0.05);
+
+  /* Focus ring */
+  --focus-ring: 0 0 0 3px rgba(107, 76, 107, 0.35);
+
+  /* Font */
+  --font-hand: "Patrick Hand", cursive;
+}
+
+/* -----------------------------
+   Custom Component Overrides
+   Apply handwritten font to UI elements
+------------------------------ */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-hand);
+}
+
+.btn,
+.badge,
+.chrome a,
+.chrome .site-title,
+.nav a {
+  font-family: var(--font-hand);
+}
+
+/* Header/footer nav and site title — doubled from default */
+.nav a {
+  font-size: 2rem;
+  padding: 20px 12px;
+}
+
+.nav a:first-child strong {
+  font-size: 2rem;
+}
+
+.footer-copyright {
+  font-size: 0.65rem;
+}
+

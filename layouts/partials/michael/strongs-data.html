@@ -1,0 +1,46 @@
+{{- /*
+  Strong's Definitions Data Loader
+
+  Generates a cacheable external JS file containing Strong's Hebrew and Greek
+  lexicon data, loaded via <script src>. The browser caches this file so it's
+  only downloaded once, rather than inlining ~3MB into every page.
+
+  Usage: {{ partial "michael/strongs-data.html" . }}
+*/ -}}
+
+{{- $hebrewData := "" -}}
+{{- $greekData := "" -}}
+
+{{- /* Try loading from Hugo's data directory first */ -}}
+{{- if isset site.Data "strongs" -}}
+  {{- if isset site.Data.strongs "hebrew" -}}
+    {{- $hebrewData = site.Data.strongs.hebrew -}}
+  {{- end -}}
+  {{- if isset site.Data.strongs "greek" -}}
+    {{- $greekData = site.Data.strongs.greek -}}
+  {{- end -}}
+{{- else -}}
+  {{- /* Fallback to resources.Get */ -}}
+  {{- with resources.Get "data/strongs/hebrew.json" -}}
+    {{- $hebrewData = . | transform.Unmarshal -}}
+  {{- end -}}
+  {{- with resources.Get "data/strongs/greek.json" -}}
+    {{- $greekData = . | transform.Unmarshal -}}
+  {{- end -}}
+{{- end -}}
+
+{{- /* Build JS content string */ -}}
+{{- $jsContent := "window.Michael=window.Michael||{};window.Michael.StrongsData=window.Michael.StrongsData||{};" -}}
+{{- if $hebrewData -}}
+  {{- $jsContent = printf "%swindow.Michael.StrongsData.hebrew=%s;" $jsContent ($hebrewData | jsonify) -}}
+{{- end -}}
+{{- if $greekData -}}
+  {{- $jsContent = printf "%swindow.Michael.StrongsData.greek=%s;" $jsContent ($greekData | jsonify) -}}
+{{- end -}}
+
+{{- /* Create a cacheable JS resource */ -}}
+{{- $strongsJS := resources.FromString "js/strongs-data.js" $jsContent -}}
+{{- if hugo.IsProduction -}}
+  {{- $strongsJS = $strongsJS | minify | fingerprint -}}
+{{- end -}}
+<script src="{{ $strongsJS.RelPermalink }}" defer></script>

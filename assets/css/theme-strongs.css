@@ -1,0 +1,71 @@
+/* ==========================================================================
+   Michael Bible Module — Strong's Concordance Styles
+   Tooltip and reference styling for Strong's number integration
+   ========================================================================== */
+
+/* -----------------------------
+   Strong's Tooltip
+------------------------------ */
+.strongs-tooltip {
+  position: absolute;
+  z-index: var(--z-overlay-above);
+  max-width: 320px;
+
+  background: var(--surface-2);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-1);
+  box-shadow: var(--shadow-1);
+
+  padding: var(--pad-1);
+  font-size: 0.92rem;
+  line-height: 1.4;
+}
+
+/* -----------------------------
+   Strong's Reference Badge
+------------------------------ */
+.strongs-ref {
+  display: inline-block;
+  padding: 1px 4px;
+  margin: 0 2px;
+
+  border-radius: 4px;
+  border: 1px solid var(--border);
+  background: var(--brand-bg-light);
+  color: var(--brand-600);
+
+  font-size: 0.75em;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: help;
+  user-select: none;
+}
+
+.strongs-ref:hover {
+  background: var(--brand-bg-medium);
+  border-color: var(--brand-500);
+}
+
+.strongs-ref:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+/* -----------------------------
+   OSIS <w> Elements with Strong's
+------------------------------ */
+.strongs-word {
+  cursor: help;
+  border-bottom: 1px dotted var(--brand-500);
+  transition: background-color 0.15s ease;
+}
+
+.strongs-word:hover {
+  background: var(--brand-bg);
+}
+
+.strongs-word:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+  border-radius: 2px;
+}

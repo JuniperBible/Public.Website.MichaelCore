@@ -1,0 +1,81 @@
+================================================================================
+MICHAEL BIBLE PWA - PLANNED TASKS
+================================================================================
+Updated: 2026-01-27
+
+================================================================================
+FUTURE FEATURES
+================================================================================
+
+[ ] Dark mode support
+    - juniperbible.org has dark mode variables already defined
+    - Add [data-theme="dark"] overrides to theme-custom.css
+    - Add theme toggle button to header
+
+[ ] Integrate _content.gotmpl with bible-data.html partial
+    - Content adapter currently reads raw bibles.json for titles
+    - Could use override titles in page generation for HTML <title> tags
+    - Would fix "King James Version (1769) with Strongs..." in browser tab
+
+[ ] Deprecate legacy <strong> verse format in bible-api.js
+    - Strategy 2 (strong elements) and Strategy 5 (regex) can be removed
+    - All content now uses modern .verse[data-verse] format
+    - Keep legacy fallback for cached pages until cache expires
+
+[ ] Review and clean up theme-colors.css defaults
+    - Default values are now overridden by theme-custom.css
+    - Consider whether defaults should match juniperbible or stay generic
+
+[ ] Performance optimization
+    - Audit CSS bundle size after modularization
+    - Consider lazy-loading non-critical CSS (print, compare, strongs)
+    - Profile font loading impact
+
+================================================================================
+TESTING
+================================================================================
+
+[ ] Unit Tests for JavaScript Modules
+    - Set up test framework (Jest or Vitest)
+    - Test offline-manager.js, pwa-install.js, offline-settings-ui.js
+
+[ ] Service Worker Tests
+    - Test install, activate, and fetch strategy events
+    - Test message handlers (CACHE_BIBLE, GET_CACHE_STATUS, etc.)
+
+[ ] Integration Tests
+    - Set up Playwright or Puppeteer
+    - Test full download flow, offline navigation, cache clearing
+
+[ ] PWA Audit Tests
+    - Run Lighthouse PWA audit
+    - Test install flow on Android, iOS, Desktop
+
+[ ] Accessibility Tests
+    - Keyboard navigation for all interactive elements
+    - Screen reader compatibility
+    - Focus management
+
+[ ] Performance Tests
+    - Cache operation performance
+    - Memory usage during downloads
+    - Startup time after install
+
+================================================================================
+DEPLOYMENT
+================================================================================
+
+[ ] Pre-deployment Verification
+    - All Lighthouse PWA checks pass
+    - Manifest validates without errors
+    - Icons display correctly at all sizes
+    - Install works on Android, iOS, Desktop
+    - Offline mode works completely
+    - No console errors in production build
+
+[ ] Server Configuration
+    - Verify HTTPS is enforced
+    - Verify correct MIME types for manifest and SW
+    - Add Cache-Control headers for static assets
+
+================================================================================

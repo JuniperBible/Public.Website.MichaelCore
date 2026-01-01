@@ -1,0 +1,14 @@
+<footer class="chrome">
+  <div class="container">
+    <nav class="nav">
+      <a href="{{ "/" | relLangURL }}">{{ i18n "home" | default "Home" }}</a>
+    </nav>
+  </div>
+</footer>
+<div class="footer-copyright">
+  <div class="container">
+    <p class="footer-copyright__text">
+      &copy; 2024-{{ now.Year }} <a href="https://focuswithjustin.com" target="_blank" rel="noopener noreferrer">Justin</a> {{ i18n "footerAndContributors" | default "and" }} <a href="{{ "/license/" | relLangURL }}">{{ i18n "footerContributors" | default "contributors" }}</a>. {{ i18n "footerAllRightsReserved" | default "All rights reserved. Unauthorized duplication or distribution is strictly prohibited." }} {{ i18n "footerFindMore" | default "Find more" }} <a href="https://juniperbible.org" target="_blank" rel="noopener noreferrer">{{ i18n "footerBibleTranslations" | default "bible translations" }}</a> {{ i18n "footerAndRelatedWorks" | default "and related works at" }} <a href="https://juniperbible.org" target="_blank" rel="noopener noreferrer">JuniperBible.org</a>. {{ i18n "footerClosing" | default "All good things start and end with" }} <a href="{{ "/bible/" | relLangURL }}">{{ i18n "footerGod" | default "God" }}</a>.
+    </p>
+  </div>
+</div>

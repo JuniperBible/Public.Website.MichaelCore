@@ -1,0 +1,105 @@
+# Michael - Hugo Bible Module
+# A plug-and-play Bible reading and comparison module for Hugo sites
+#
+# This module works in two modes:
+# 1. As a Hugo module: imported by consuming sites via go.mod
+# 2. Standalone: run `make dev` to start a local development server
+
+# Base URL for local development - override this in production (e.g., via --baseURL flag or environment variable)
+baseURL = "http://localhost:1313/"
+title = "Michael Bible Module"
+languageCode = "en"
+
+[params]
+  description = "A Hugo module for Bible reading, comparison, and search"
+
+[params.michael]
+  basePath = "/bible"
+  backLink = "/"
+
+# Enable raw HTML in markdown (required for Bible verse formatting)
+[markup.goldmark.renderer]
+  unsafe = true
+
+# Minification settings for optimized output
+[minify]
+  minifyOutput = true
+  [minify.tdewolff]
+    [minify.tdewolff.html]
+      keepWhitespace = false
+    [minify.tdewolff.css]
+      version = 4
+    [minify.tdewolff.js]
+      keepVarNames = false
+
+# Security settings for Hugo's security policy
+[security]
+  [security.exec]
+    allow = ['^go$', '^npx$', '^postcss$']
+  [security.funcs]
+    getenv = ['^HUGO_', '^CI$']
+
+# Output formats for SBOM
+[outputFormats.JSON]
+  mediaType = "application/json"
+  baseName = "sbom"
+  isPlainText = true
+
+# Output format for Service Worker (generated with fingerprinted asset paths)
+[outputFormats.SW]
+  mediaType = "text/javascript"
+  baseName = "sw"
+  isPlainText = true
+  notAlternative = true
+
+[outputs]
+  home = ["HTML", "RSS", "SW"]
+  section = ["HTML", "RSS"]
+  page = ["HTML"]
+
+[module]
+  # Default mount configuration for the module
+  # These can be overridden by the consuming site
+
+  [[module.mounts]]
+    source = "layouts"
+    target = "layouts"
+
+  [[module.mounts]]
+    source = "assets"
+    target = "assets"
+
+  [[module.mounts]]
+    source = "i18n"
+    target = "i18n"
+
+  [[module.mounts]]
+    source = "static"
+    target = "static"
+
+  # Mount example data for standalone development
+  [[module.mounts]]
+    source = "data/example"
+    target = "data"
+
+  # Mount Strong's concordance data
+  [[module.mounts]]
+    source = "data/strongs"
+    target = "data/strongs"
+    includeFiles = ["*.json"]
+
+  # Mount SPDX license data (maintained locally)
+  [[module.mounts]]
+    source = "data/spdx"
+    target = "data/spdx"
+    includeFiles = ["*.json"]
+
+  # Mount choosealicense.com data for license rights
+  [[module.mounts]]
+    source = "tools/juniper/vendor_external/choosealicense"
+    target = "data/choosealicense"
+    includeFiles = ["licenses.json", "rules.json"]
+
+  [[module.mounts]]
+    source = "content"
+    target = "content"

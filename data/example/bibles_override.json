@@ -1,0 +1,45 @@
+{
+  "_comment": "Override any field for any Bible translation without touching the auto-generated bibles.json. Keyed by Bible ID. Only fields present here will override bibles.json values.",
+  "overrides": {
+    "asv": {
+      "title": "American Standard Version",
+      "description": "The American Standard Version (1901) is an Americanization of the English Revised Bible, itself a revision of the KJV toward greater translation accuracy. Produced by over 50 Evangelical scholars, it has been called 'The Rock of Biblical Honesty' and uses 'Jehovah' for God's proper name. The ASV served as the basis for several modern translations including the World English Bible and the NASB. This edition includes Strong's number tagging for original-language word study."
+    },
+    "drc": {
+      "title": "Douay-Rheims Bible",
+      "description": "The Douay-Rheims Bible is the first complete English translation of the Catholic canon, with the Old Testament published at Douay (1609) and the New Testament at Rheims (1582). This edition reflects Bishop Richard Challoner's thorough revision (1749-1752) which modernized the language while retaining fidelity to the Latin Vulgate. It remains the standard traditional English Bible for Roman Catholics and includes the deuterocanonical books."
+    },
+    "geneva1599": {
+      "title": "Geneva Bible",
+      "description": "The Geneva Bible (1599) was the primary English Bible of the Protestant Reformation and the Bible of Shakespeare, John Bunyan, and the Pilgrim Fathers. First published in 1560, it was the first English Bible to use verse numbering throughout and featured extensive marginal notes with Calvinist theological commentary. This 1599 edition represents the final major revision of the text."
+    },
+    "kjva": {
+      "title": "King James Version with Apocrypha",
+      "description": "The King James Version (1769 Oxford edition) is the most widely published English Bible in history. Commissioned by King James I and completed in 1611 by 47 scholars, it shaped the English language for over four centuries. This edition includes Strong's concordance numbers and morphological tagging for Greek and Hebrew word study, as well as the Apocrypha (deuterocanonical books) found in the original 1611 printing."
+    },
+    "lxx": {
+      "title": "Septuagint (Rahlfs')",
+      "description": "The Septuagint (LXX) is the ancient Greek translation of the Hebrew Scriptures, produced in Alexandria between the 3rd and 1st centuries BC. This edition follows Alfred Rahlfs' critical text with morphological tagging and Strong's numbers. The LXX was the Old Testament of the early Church, is extensively quoted in the New Testament, and includes books not found in the Hebrew Masoretic text. It is indispensable for studying how the New Testament authors read and interpreted the Old Testament."
+    },
+    "osmhb": {
+      "title": "Open Scriptures Hebrew Bible",
+      "description": "The Open Scriptures Morphological Hebrew Bible is based on the Westminster Leningrad Codex (WLC), the oldest complete manuscript of the Hebrew Bible in the Masoretic tradition, dated to approximately 1008 AD. This digitized edition is maintained by the OpenScriptures project and includes Strong's number tagging for lexical study. It provides the standard critical Hebrew text used by scholars worldwide."
+    },
+    "sblgnt": {
+      "title": "SBL Greek New Testament",
+      "description": "The SBL Greek New Testament is a critically edited Greek text prepared by Michael W. Holmes for the Society of Biblical Literature and Logos Bible Software (2010). Holmes drew on all major critical apparatuses, printed editions, and the latest manuscript discoveries to establish the text. It differs from the standard Nestle-Aland/UBS text in over 540 variation units, offering a valuable independent witness for New Testament textual study."
+    },
+    "tyndale": {
+      "title": "Tyndale Bible",
+      "description": "William Tyndale's Bible comprises his 1526 New Testament and 1530 Pentateuch, the first English translations made directly from the Greek and Hebrew. Tyndale was martyred in 1536 before completing the Old Testament, having only published the Pentateuch, Jonah, and portions of the historical books. His translation profoundly shaped all subsequent English Bibles — an estimated 84% of the King James New Testament retains Tyndale's wording."
+    },
+    "vulgate": {
+      "title": "Latin Vulgate",
+      "description": "The Latin Vulgate is Jerome's late 4th-century (AD 382-405) translation of the Bible into Latin, commissioned by Pope Damasus I. It became the authoritative text of Western Christianity for over a millennium and was declared the official Latin Bible of the Catholic Church at the Council of Trent (1546). This edition includes the Psalms variant and the deuterocanonical books (Apocrypha)."
+    },
+    "web": {
+      "title": "World English Bible",
+      "description": "The World English Bible (WEB) is a modern-language update of the American Standard Version (1901), produced by volunteers and released into the Public Domain in 1997. It updates archaic vocabulary and grammar while preserving the ASV's reputation for translation accuracy. The WEB uses 'Yahweh' for God's proper name in the Old Testament and is freely available for any use without restriction."
+    }
+  }
+}

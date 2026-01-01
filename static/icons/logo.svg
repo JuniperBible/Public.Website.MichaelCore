@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Shield Background -->
+  <path d="M256 16 L480 80 L480 240 C480 360 380 460 256 496 C132 460 32 360 32 240 L32 80 Z"
+        fill="#7a00b0" stroke="#5a0090" stroke-width="8"/>
+
+  <!-- Shield Inner Highlight -->
+  <path d="M256 48 L448 104 L448 240 C448 344 360 432 256 464 C152 432 64 344 64 240 L64 104 Z"
+        fill="#8a10c0" opacity="0.3"/>
+
+  <!-- Sword Blade -->
+  <path d="M256 96 L272 96 L272 340 L256 360 L240 340 L240 96 Z"
+        fill="#e7ddc4" stroke="#c0b090" stroke-width="2"/>
+
+  <!-- Sword Blade Center Line -->
+  <line x1="256" y1="110" x2="256" y2="330" stroke="#d0c4a0" stroke-width="4"/>
+
+  <!-- Sword Guard (Cross-guard) -->
+  <rect x="200" y="340" width="112" height="20" rx="4"
+        fill="#d4af37" stroke="#b8960c" stroke-width="2"/>
+
+  <!-- Sword Grip -->
+  <rect x="244" y="360" width="24" height="60" rx="2"
+        fill="#8b4513" stroke="#6b3510" stroke-width="2"/>
+
+  <!-- Grip Wrapping -->
+  <g stroke="#d4af37" stroke-width="3" fill="none">
+    <line x1="244" y1="370" x2="268" y2="375"/>
+    <line x1="244" y1="385" x2="268" y2="390"/>
+    <line x1="244" y1="400" x2="268" y2="405"/>
+  </g>
+
+  <!-- Crown on Pommel -->
+  <g transform="translate(256, 440)">
+    <!-- Crown Base -->
+    <ellipse cx="0" cy="20" rx="28" ry="10" fill="#d4af37" stroke="#b8960c" stroke-width="2"/>
+    <!-- Crown Band -->
+    <rect x="-26" y="0" width="52" height="20" fill="#d4af37" stroke="#b8960c" stroke-width="2"/>
+    <!-- Crown Points -->
+    <path d="M-26 0 L-26 -20 L-16 -8 L-6 -24 L0 -8 L6 -24 L16 -8 L26 -20 L26 0 Z"
+          fill="#d4af37" stroke="#b8960c" stroke-width="2"/>
+    <!-- Crown Jewels -->
+    <circle cx="-16" cy="-12" r="4" fill="#7a00b0"/>
+    <circle cx="0" cy="-16" r="5" fill="#e7ddc4" stroke="#c0b090"/>
+    <circle cx="16" cy="-12" r="4" fill="#7a00b0"/>
+  </g>
+</svg>

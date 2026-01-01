@@ -1,0 +1,68 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://focuswithjustin.com/schemas/bibles.schema.json",
+  "title": "Bible Metadata",
+  "description": "Schema for bibles.json - metadata about available Bible translations",
+  "type": "object",
+  "required": ["bibles"],
+  "properties": {
+    "bibles": {
+      "type": "array",
+      "description": "List of Bible translations",
+      "items": {
+        "type": "object",
+        "required": ["id", "title", "abbrev"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique identifier for the Bible (e.g., 'kjv', 'drc')",
+            "pattern": "^[a-z0-9-]+$"
+          },
+          "title": {
+            "type": "string",
+            "description": "Full title of the Bible translation"
+          },
+          "abbrev": {
+            "type": "string",
+            "description": "Short abbreviation (e.g., 'KJV', 'DRC')"
+          },
+          "description": {
+            "type": "string",
+            "description": "Brief description of the translation"
+          },
+          "language": {
+            "type": "string",
+            "description": "Primary language of the translation"
+          },
+          "license": {
+            "type": "string",
+            "description": "SPDX license identifier (e.g., 'public-domain', 'CC-BY-SA-4.0')"
+          },
+          "versification": {
+            "type": "string",
+            "description": "Versification scheme (e.g., 'kjv', 'catholic', 'lxx')"
+          },
+          "features": {
+            "type": "array",
+            "description": "Special features of this translation",
+            "items": {
+              "type": "string",
+              "enum": ["Strong's Numbers", "Morphology", "Footnotes", "Cross-references"]
+            }
+          },
+          "tags": {
+            "type": "array",
+            "description": "Tags for filtering and categorization",
+            "items": {
+              "type": "string"
+            }
+          },
+          "weight": {
+            "type": "integer",
+            "description": "Sort order weight (lower = higher priority)"
+          }
+        }
+      }
+    }
+  }
+}

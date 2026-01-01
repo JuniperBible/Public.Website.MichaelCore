@@ -1,0 +1,1100 @@
+/* ==========================================================================
+   Focus with Justin — Starter Theme
+   Drop-in CSS: tokens + shared components
+   Goal: unify header/footer, panels, buttons, chips, badges, cards, forms,
+         chapter grid, and reading controls across all pages.
+   ========================================================================== */
+
+/* ==========================================================================
+   Focus with Justin — Starter Theme
+   Drop-in CSS: tokens + shared components
+
+   NOTE: This file is concatenated with other theme-*.css modules via Hugo.
+   See layouts/_default/baseof.html for the bundle order:
+   1. theme-colors.css    - Color tokens
+   2. theme.css           - Core styles (this file)
+   3. theme-compare.css   - Compare page, diff highlighting
+   4. theme-share.css     - Share menu, toasts
+   5. theme-strongs.css   - Strong's concordance
+   6. theme-pwa.css       - PWA standalone mode
+   7. theme-offline.css   - Offline settings
+   8. theme-print.css     - Print stylesheet
+   9. theme-custom.css    - Custom overrides (loaded last)
+   ========================================================================== */
+
+/* -----------------------------
+   0) Design Tokens (non-color)
+------------------------------ */
+:root {
+  /* Shape + spacing */
+  --radius-1: 8px;
+  --radius-2: 14px;
+  --pad-1: 10px;
+  --pad-2: 16px;
+  --pad-3: 24px;
+
+  /* Touch targets */
+  --touch-min: 44px;
+
+  /* Layout dimensions (for PWA standalone calculations) */
+  --header-height: 48px;
+  --footer-height: 40px;
+}
+
+/* -----------------------------
+   0b) Skip Navigation Link
+------------------------------ */
+.skip-link {
+  position: absolute;
+  top: -100%;
+  left: var(--pad-1);
+  z-index: var(--z-toast);
+  padding: var(--pad-1) var(--pad-2);
+  background: var(--brand-500);
+  color: var(--surface-2);
+  border-radius: 0 0 var(--radius-1) var(--radius-1);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.skip-link:focus {
+  top: 0;
+}
+
+/* Error / 404 page */
+.error-page {
+  text-align: center;
+  padding: var(--pad-3) var(--pad-1);
+}
+
+/* Flex utility */
+.flex-1 { flex: 1; }
+
+/* -----------------------------
+   1) Base / Layout Helpers
+------------------------------ */
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  color: var(--text-900);
+  background: var(--bg-0);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  line-height: 1.5;
+  overflow-x: hidden;
+  max-width: 100vw;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+body > main {
+  flex: 1;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+img { max-width: 100%; height: auto; }
+
+/* Give content a consistent feel */
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 var(--pad-2);
+  box-sizing: border-box;
+  width: 100%;
+}
+
+/* Home page container */
+main.pwa-home {
+  padding: var(--pad-3) var(--pad-2);
+}
+
+/* Main page "panel" (the centered parchment block) */
+.panel {
+  background: var(--surface-0);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-2);
+  box-shadow: var(--shadow-1);
+  padding: var(--pad-3);
+  overflow-x: auto;
+  box-sizing: border-box;
+  max-width: 100%;
+  overflow-wrap: break-word;
+}
+
+.panel--tight { padding: var(--pad-2); }
+.panel--inner {
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-2);
+  box-shadow: var(--shadow-0);
+  overflow: hidden;
+}
+
+
+/* -----------------------------
+   2) Links (consistent everywhere)
+------------------------------ */
+a {
+  color: var(--link);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+}
+
+a:hover {
+  color: var(--brand-600);
+  text-decoration-thickness: 2px;
+}
+
+a:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+  border-radius: 6px;
+}
+
+/* -----------------------------
+   3) Header/Footer "Chrome"
+   Apply to your existing header/footer wrappers
+------------------------------ */
+.chrome {
+  background: var(--chrome-900);
+  color: var(--chrome-text);
+}
+
+.chrome a {
+  color: var(--chrome-text);
+  text-decoration: none;
+}
+
+.chrome a:hover { color: var(--surface-2); }
+
+.footer-copyright {
+  background: var(--chrome-900);
+  color: var(--chrome-text);
+  text-align: center;
+}
+.footer-copyright a {
+  color: var(--chrome-text);
+  text-decoration: underline;
+}
+.footer-copyright a:hover { color: var(--surface-2); }
+
+.footer-copyright__text {
+  padding: 6px 0;
+  font-size: 0.65rem;
+}
+
+.nav {
+  display: flex;
+  gap: 18px;
+  align-items: center;
+}
+
+.nav a {
+  display: inline-block;
+  padding: 10px 6px;
+  border-bottom: 2px solid transparent;
+}
+
+.nav a.is-active,
+.nav a[aria-current="page"] {
+  border-bottom-color: var(--brand-500);
+}
+
+/* -----------------------------
+   4) Buttons (ONLY TWO TIERS)
+   .btn, .btn--primary, .btn--secondary
+------------------------------ */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  padding: 10px 14px;
+  border-radius: var(--radius-1);
+  border: 1px solid var(--border-strong);
+  background: var(--surface-2);
+  color: var(--text-900);
+
+  box-shadow: var(--shadow-0);
+  cursor: pointer;
+  user-select: none;
+  text-decoration: none;
+  font: inherit;
+  line-height: 1;
+}
+
+.btn:hover { transform: translateY(-1px); }
+.btn:active { transform: translateY(0); box-shadow: none; }
+
+.btn:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+.btn[disabled],
+.btn.is-disabled {
+  opacity: .55;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Primary */
+.btn--primary {
+  background: var(--brand-500);
+  border-color: rgba(0,0,0,.2);
+  color: var(--surface-2);
+}
+
+.btn--primary:hover {
+  background: var(--brand-600);
+  color: var(--surface-2);
+  text-decoration: none;
+}
+
+/* Secondary */
+.btn--secondary {
+  background: var(--surface-1);
+  border-color: var(--brand-500);
+  color: var(--brand-500);
+}
+
+.btn--secondary:hover {
+  background: var(--brand-100);
+  border-color: var(--brand-600);
+  color: var(--brand-600);
+}
+
+/* Compact button (arrows, small controls) */
+.btn--sm { padding: 8px 10px; border-radius: 7px; }
+
+/* -----------------------------
+   5) Chips vs Badges
+   Chips = controls (filters/tags)
+   Badges = metadata (labels)
+------------------------------ */
+
+/* Chips (clickable) */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+
+  padding: 7px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--border-strong);
+  background: var(--surface-2);
+  color: var(--text-900);
+  font-size: 0.92rem;
+  line-height: 1;
+  text-decoration: none;
+  cursor: pointer;
+  user-select: none;
+}
+
+.chip:hover {
+  background: var(--surface-1);
+  border-color: var(--border-hover);
+}
+
+.chip:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+/* Chip "active/selected" */
+.chip.is-active,
+.chip[aria-pressed="true"],
+.chip[aria-selected="true"] {
+  background: var(--brand-500);
+  border-color: rgba(0,0,0,.25);
+  color: var(--surface-2);
+}
+
+/* Softer active (optional): use instead of purple fill if you prefer */
+.chip.is-active--soft {
+  background: var(--brand-100);
+  border-color: var(--brand-500);
+  color: var(--brand-600);
+}
+
+/* Badge (metadata) */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+
+  padding: 4px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--surface-alpha);
+  color: var(--text-700);
+  font-size: 0.82rem;
+  line-height: 1;
+}
+
+/* Semantic badge variants */
+.badge--success {
+  border-color: var(--success-border);
+  color: var(--success-text);
+  background: var(--success-bg-light);
+}
+
+/* -----------------------------
+   6) Cards (Bible translations, etc.)
+------------------------------ */
+.card {
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-2);
+  box-shadow: var(--shadow-1);
+  padding: var(--pad-2);
+}
+
+
+.card__title {
+  margin: 0 0 8px 0;
+  font-size: 1.15rem;
+  color: var(--text-900);
+}
+
+.card__meta {
+  color: var(--text-500);
+  font-size: 0.92rem;
+}
+
+.card__description {
+  color: var(--text-700);
+  font-size: 0.88rem;
+  line-height: 1.55;
+  margin: 8px 0 0 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.card__footer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: auto;
+  padding-top: 10px;
+}
+
+/* -----------------------------
+   7) Forms (Contact page)
+------------------------------ */
+.field { display: grid; gap: 6px; }
+
+.label {
+  font-size: 0.92rem;
+  color: var(--text-700);
+}
+
+.input, .select, .textarea {
+  width: 100%;
+  padding: 10px 12px;
+
+  border-radius: var(--radius-1);
+  border: 1px solid var(--border-strong);
+  background: var(--surface-2);
+  color: var(--text-900);
+
+  box-shadow: inset 0 1px 0 rgba(0,0,0,.08);
+  font: inherit;
+}
+
+.textarea { min-height: 120px; resize: vertical; }
+
+.input:focus, .select:focus, .textarea:focus {
+  outline: none;
+  border-color: var(--brand-500);
+  box-shadow: var(--focus-ring);
+}
+
+/* Simple notice blocks */
+.notice {
+  border-radius: var(--radius-1);
+  border: 1px solid var(--border);
+  background: var(--surface-alpha);
+  padding: 10px 12px;
+  color: var(--text-700);
+}
+
+.notice--success {
+  border-color: var(--success-border);
+  background: var(--success-bg-light);
+  color: var(--success-text);
+}
+
+/* -----------------------------
+   8) Bible: chapter grid tiles (the numbered squares)
+------------------------------ */
+.tile {
+  width: 40px;
+  height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 10px;
+  border: 1px solid var(--border-strong);
+  background: var(--surface-2);
+  color: var(--text-900);
+
+  text-decoration: none;
+  box-shadow: var(--shadow-0);
+}
+
+.tile:hover {
+  background: var(--surface-1);
+  border-color: var(--border-hover);
+}
+
+.tile:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+.tile.is-active,
+.tile[aria-current="page"] {
+  background: var(--brand-100);
+  border-color: var(--brand-500);
+  color: var(--brand-600);
+}
+
+/* -----------------------------
+   9) Reading view: verse numbers + control bars
+------------------------------ */
+.reader-bar {
+  background: rgba(0,0,0,.08);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-1);
+  padding: 6px;
+}
+.reader-bar .select {
+  width: auto;
+  padding: 6px 10px;
+}
+
+/* Spacing between reader-bar and adjacent prose content */
+.prose + .reader-bar,
+.reader-bar + .prose {
+  margin-top: 16px;
+}
+
+.verse-num {
+  color: var(--brand-500);
+  font-weight: 700;
+  margin-right: 6px;
+}
+
+/* Make long reading text comfortable */
+.prose {
+  max-width: 90ch;
+  margin: 0 auto;
+  color: var(--text-900);
+  line-height: 1.8;
+  font-size: 1.08rem;
+}
+
+/* -----------------------------
+   10) Small utility classes
+------------------------------ */
+.row { display: flex; gap: 10px; flex-wrap: wrap; }
+.row--center { justify-content: center; }
+.row--wrap { flex-wrap: wrap; }
+
+/* Verse grid layout */
+.verse-grid-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.verse-grid-row > .muted {
+  flex-shrink: 0;
+  line-height: 32px; /* Match button height for vertical alignment */
+}
+.verse-buttons-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  align-items: center;
+  flex: 1;
+  min-width: 0; /* Allow shrinking below content size */
+}
+.center { display: grid; place-items: center; }
+.muted { color: var(--text-500); }
+.mt-1 { margin-top: 8px; }
+.mt-2 { margin-top: 16px; }
+.mt-3 { margin-top: 24px; }
+.mb-2 { margin-bottom: var(--pad-2); }
+.mr-1 { margin-right: 4px; }
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0); /* Legacy fallback for older browsers */
+  clip-path: inset(50%); /* Modern replacement for clip */
+  white-space: nowrap;
+  border: 0;
+}
+.hidden { display: none !important; }
+
+/* Padding utilities */
+.pad-3-2 {
+  padding: var(--pad-3) var(--pad-2);
+}
+
+/* Width utilities */
+.w-auto {
+  width: auto;
+}
+
+/* Cursor utilities */
+.cursor-pointer {
+  cursor: pointer;
+}
+
+/* -----------------------------
+   11) Grid layouts
+------------------------------ */
+.grid-2 {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--pad-2);
+}
+.grid-2 > .card {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+/* -----------------------------
+   12) Page sections
+------------------------------ */
+.page-header {
+  text-align: center;
+  margin-bottom: var(--pad-3);
+}
+
+.page-header h1 {
+  margin: 0 0 8px 0;
+}
+
+.page-header p {
+  color: var(--text-500);
+  margin: 0;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--pad-1);
+  margin-top: var(--pad-2);
+}
+
+/* -----------------------------
+   13) Bible content (generated from juniper)
+------------------------------ */
+
+/* Book and chapter grids */
+.book-grid,
+.chapter-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: var(--pad-2) 0;
+}
+
+.book-link,
+.chapter-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 10px;
+  min-width: 48px;
+  min-height: 44px;
+  border-radius: var(--radius-1);
+  border: 1px solid var(--border-strong);
+  background: var(--surface-2);
+  color: var(--text-900);
+  text-decoration: none;
+  box-shadow: var(--shadow-0);
+}
+
+.book-link:hover,
+.chapter-link:hover {
+  background: var(--surface-1);
+  border-color: var(--border-hover);
+  text-decoration: none;
+}
+
+.book-link:focus-visible,
+.chapter-link:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+/* Bible verse text */
+.prose p {
+  margin: 0 0 0.5em 0;
+}
+
+.prose .verse {
+  display: inline;
+  line-height: 1.6;
+}
+
+.prose .verse sup {
+  color: var(--brand-500);
+  font-weight: 700;
+  font-size: 0.7em;
+  margin-right: 0.15em;
+  margin-left: 0.2em;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+}
+
+.prose .verse:first-child sup {
+  margin-left: 0;
+}
+
+/* On verse hover, hide the verse number and show the share icon in its place */
+.prose .verse:hover sup {
+  opacity: 0;
+  width: 0;
+  overflow: hidden;
+  margin: 0;
+}
+
+/* Verse highlight (from ?v= URL parameter or share link) */
+.prose .verse.highlight-verse {
+  background: var(--brand-100);
+  border-radius: 3px;
+  padding: 1px 3px;
+}
+
+/* Share button — replaces verse number on hover */
+.verse-share-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  padding: 0 2px;
+  margin: 0;
+  cursor: pointer;
+  opacity: 0;
+  width: 0;
+  overflow: hidden;
+  font-size: 0.7em;
+  color: var(--brand-500);
+  vertical-align: super;
+  transition: opacity 0.15s ease, width 0.15s ease;
+}
+
+.prose .verse:hover .verse-share-btn,
+.prose .verse:focus-within .verse-share-btn,
+.verse-share-btn:focus-visible {
+  opacity: 0.7;
+  width: auto;
+  overflow: visible;
+  margin-left: 0.2em;
+  margin-right: 0.15em;
+}
+
+.verse-share-btn:hover {
+  opacity: 1;
+}
+
+/* Strong's number markers */
+.prose w {
+  display: inline;
+}
+
+/* Notes and cross-references */
+.prose note {
+  display: inline;
+  font-size: 0.85em;
+  color: var(--text-500);
+  font-style: italic;
+}
+
+.prose note::before {
+  content: " [";
+}
+
+.prose note::after {
+  content: "] ";
+}
+
+.prose note catchWord {
+  font-weight: 600;
+  font-style: normal;
+}
+
+.prose note rdg {
+  font-style: italic;
+}
+
+/* Added text markers */
+.prose transChange[type="added"] {
+  font-style: italic;
+}
+
+/* OSIS structural markers - hide paragraph/milestone elements in Bible text
+   NOTE: We use display:contents (not display:none) for milestone/chapter because
+   HTML5 parsers treat self-closing custom tags like <milestone/> as unclosed,
+   so all subsequent content becomes children. display:contents allows children to render. */
+.prose milestone,
+.prose chapter {
+  display: contents;
+}
+.prose div[type="x-milestone"],
+.prose div[type="x-p"],
+.prose div[subType],
+.prose div[sID],
+.prose div[eID] {
+  display: none;
+}
+
+/* -----------------------------
+   14) Verse button component
+------------------------------ */
+.verse-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: var(--touch-min);
+  min-height: var(--touch-min);
+  padding: 10px 12px;
+
+  border-radius: var(--radius-1);
+  border: 1px solid var(--border-strong);
+  background: var(--surface-2);
+  color: var(--text-900);
+
+  box-shadow: var(--shadow-0);
+  cursor: pointer;
+  user-select: none;
+  text-decoration: none;
+  font: inherit;
+  line-height: 1;
+}
+
+.verse-btn:hover {
+  background: var(--surface-1);
+  border-color: var(--border-hover);
+  transform: translateY(-1px);
+}
+
+.verse-btn:active {
+  transform: translateY(0);
+  box-shadow: none;
+}
+
+.verse-btn.is-active,
+.verse-btn[aria-pressed="true"] {
+  background: var(--brand-100);
+  border-color: var(--brand-500);
+  color: var(--brand-600);
+}
+
+.verse-btn:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+/* -----------------------------
+   15) Loading states
+------------------------------ */
+.loading {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--text-500);
+}
+
+.loading::before {
+  content: "";
+  display: block;
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--border);
+  border-top-color: var(--state-loading);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--surface-1) 0%,
+    var(--surface-2) 50%,
+    var(--surface-1) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+  border-radius: var(--radius-1);
+  min-height: 20px;
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* -----------------------------
+   16) Error and empty states
+------------------------------ */
+.error-state {
+  padding: var(--pad-2);
+  border-radius: var(--radius-1);
+  border: 1px solid var(--state-error);
+  background: var(--state-error-bg);
+  color: var(--state-error);
+  text-align: center;
+}
+
+.error-state::before {
+  content: "⚠️";
+  display: block;
+  font-size: 2rem;
+  margin-bottom: 8px;
+}
+
+.empty-state {
+  padding: var(--pad-3);
+  text-align: center;
+  color: var(--text-500);
+}
+
+.empty-state::before {
+  content: "📭";
+  display: block;
+  font-size: 2.5rem;
+  margin-bottom: 10px;
+  opacity: 0.6;
+}
+
+/* -----------------------------
+   17) Accessibility enhancements
+------------------------------ */
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .btn:hover,
+  .verse-btn:hover {
+    transform: none;
+  }
+}
+
+/* Enhanced contrast for users who prefer it */
+@media (prefers-contrast: more) {
+  :root {
+    --border: rgba(0, 0, 0, 0.35);
+    --border-strong: rgba(0, 0, 0, 0.55);
+  }
+
+  .btn,
+  .chip,
+  .verse-btn,
+  .book-link,
+  .chapter-link,
+  .tile {
+    border-width: 2px;
+  }
+
+  .strongs-ref {
+    border-width: 1.5px;
+  }
+}
+
+/* Enhanced focus styles for keyboard navigation
+   Uses box-shadow for interactive components (provides consistent rounded appearance)
+   and outline for other elements (form inputs, etc.) */
+.btn:focus-visible,
+.chip:focus-visible,
+.verse-btn:focus-visible,
+.book-link:focus-visible,
+.chapter-link:focus-visible,
+.tile:focus-visible,
+a:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+/* Fallback focus for elements without specific styling */
+*:focus-visible:not(.btn):not(.chip):not(.verse-btn):not(.book-link):not(.chapter-link):not(.tile):not(a):not(.input):not(.select):not(.textarea):not(.strongs-ref):not(.share-menu-item):not(.offline-settings__summary) {
+  outline: 3px solid var(--brand-500);
+  outline-offset: 2px;
+}
+
+/* ==========================================================================
+   18) License Pages - Extracted from inline styles
+   ========================================================================== */
+
+/* Gap utilities for flexbox/grid */
+.gap-1 {
+  gap: var(--pad-1);
+}
+
+.gap-2 {
+  gap: var(--pad-2);
+}
+
+/* Spacing utilities (see also line ~532 for .mb-2, .gap-* — these are additional) */
+.mb-1 {
+  margin-bottom: var(--pad-1);
+}
+
+.mt-0 {
+  margin-top: 0;
+}
+
+.mb-0 {
+  margin-bottom: 0;
+}
+
+.mt-xs {
+  margin-top: 4px;
+}
+
+.ml-1 {
+  margin-left: 8px;
+}
+
+/* License section with inner padding */
+.license-section {
+  padding: var(--pad-2);
+  margin-bottom: var(--pad-2);
+}
+
+/* License rights grid - 3 columns on desktop, responsive */
+.license-rights-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--pad-2);
+}
+
+/* License rights columns */
+.license-rights-col h3 {
+  margin-top: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.license-rights-col ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.license-rights-col li {
+  padding: 4px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+/* License rights type colors */
+.license-rights-col--permissions h3 {
+  color: var(--success-500);
+}
+
+.license-rights-col--conditions h3 {
+  color: var(--warning-500);
+}
+
+.license-rights-col--limitations h3 {
+  color: var(--state-error);
+}
+
+/* License text display - pre-formatted with wrapping */
+.license-text-display {
+  background: var(--surface-1);
+  padding: var(--pad-2);
+  border-radius: var(--radius-1);
+  font-size: 0.875rem;
+  white-space: pre-wrap;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  margin-top: 8px;
+}
+
+/* Details/summary for license texts */
+.license-details {
+  margin-bottom: var(--pad-1);
+}
+
+.license-details summary {
+  cursor: pointer;
+  font-weight: 600;
+  padding: 8px 0;
+}
+
+/* Table styles for license pages */
+.license-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: var(--pad-2);
+}
+
+.license-table:last-child {
+  margin-bottom: 0;
+}
+
+.license-table thead tr {
+  border-bottom: 1px solid var(--border);
+}
+
+.license-table tbody tr {
+  border-bottom: 1px solid var(--border);
+}
+
+.license-table th,
+.license-table td {
+  text-align: left;
+  padding: 8px 12px;
+}
+
+/* Row with space-between alignment */
+.row--space-between {
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+/* Offline settings spacing class */
+.offline-settings--spacing {
+  padding: var(--pad-2);
+  margin-bottom: var(--pad-2);
+}
+

@@ -1,0 +1,10 @@
+# Magellan submodule placeholder
+# This directory previously held the magellan submodule (git@github.com:FocuswithJustin/magellan.git).
+# It was temporarily removed from .gitmodules because the repo is private and
+# Cloudflare Pages cannot clone it during CI builds.
+#
+# To restore:
+#   1. Make the magellan repo public, OR configure CI with a deploy key
+#   2. Re-add the submodule:
+#      git submodule add -b development https://github.com/FocuswithJustin/magellan.git tools/magellan
+#   3. Remove this .gitkeep file

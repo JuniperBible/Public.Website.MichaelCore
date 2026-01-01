@@ -1,0 +1,30 @@
+{{/*
+  Bible Data Partial — Returns Bible list with overrides applied
+
+  Merges data/bibles_override.json onto data/bibles.json at render time.
+  Any field in the override (title, description, abbrev, language, etc.)
+  replaces the corresponding field from the auto-generated data.
+
+  Input:  Site object (pass .Site or $.Site)
+  Output: slice of Bible dicts with overrides applied
+
+  Usage:
+    {{ $bibles := partialCached "michael/bible-data.html" .Site }}
+*/}}
+{{- $bibles := .Data.bibles.bibles -}}
+{{- $overrides := dict -}}
+{{- with .Data.bibles_override -}}
+  {{- with .overrides -}}
+    {{- $overrides = . -}}
+  {{- end -}}
+{{- end -}}
+{{- $merged := slice -}}
+{{- range $bible := $bibles -}}
+  {{- $override := index $overrides $bible.id -}}
+  {{- if $override -}}
+    {{- $merged = $merged | append (merge $bible $override) -}}
+  {{- else -}}
+    {{- $merged = $merged | append $bible -}}
+  {{- end -}}
+{{- end -}}
+{{- return $merged -}}
