@@ -1,0 +1,2141 @@
+{
+  "$schema": "https://focuswithjustin.com/schemas/skills-auxiliary.schema.json",
+  "skills": {
+    "access-control": {
+      "content": "Access Control encompasses the policies, procedures, and technologies used to manage and restrict access to systems, data, and resources based on identity and authorization.",
+      "sections": [
+        {
+          "heading": "Access Control Models",
+          "list": [
+            "Discretionary Access Control (DAC) - Owner-controlled permissions",
+            "Mandatory Access Control (MAC) - System-enforced labels and classifications",
+            "Role-Based Access Control (RBAC) - Access based on job function",
+            "Attribute-Based Access Control (ABAC) - Policy-based on attributes",
+            "Rule-Based Access Control - Access governed by specific rules"
+          ]
+        },
+        {
+          "heading": "Key Concepts",
+          "list": [
+            "Principle of Least Privilege",
+            "Separation of Duties",
+            "Need-to-Know basis",
+            "Defense in Depth"
+          ]
+        },
+        {
+          "heading": "Implementation Technologies",
+          "list": [
+            "Identity and Access Management (IAM) systems",
+            "Single Sign-On (SSO)",
+            "Multi-Factor Authentication (MFA)",
+            "Privileged Access Management (PAM)",
+            "Directory Services (Active Directory, LDAP)"
+          ]
+        }
+      ]
+    },
+    "automation": {
+      "content": "Automation in cybersecurity involves using technology to perform repetitive tasks, streamline processes, and improve security operations efficiency.",
+      "sections": [
+        {
+          "heading": "Automation Areas",
+          "list": [
+            "Security Orchestration, Automation and Response (SOAR)",
+            "Infrastructure as Code (IaC)",
+            "Continuous Integration/Continuous Deployment (CI/CD)",
+            "Patch Management",
+            "Compliance Monitoring"
+          ]
+        },
+        {
+          "heading": "Benefits",
+          "list": [
+            "Reduced human error",
+            "Faster incident response",
+            "Consistent security configurations",
+            "Scalable security operations",
+            "Improved compliance"
+          ]
+        },
+        {
+          "heading": "Tools",
+          "list": [
+            "Ansible, Puppet, Chef for configuration management",
+            "Terraform for infrastructure provisioning",
+            "Python and PowerShell for scripting",
+            "SOAR platforms for security automation"
+          ]
+        }
+      ]
+    },
+    "aws-security": {
+      "content": "AWS Security encompasses the services, features, and best practices for securing workloads and data in Amazon Web Services cloud environments.",
+      "sections": [
+        {
+          "heading": "Core Security Services",
+          "list": [
+            "IAM - Identity and Access Management",
+            "AWS Organizations - Multi-account management",
+            "AWS SSO (Identity Center) - Centralized access management",
+            "AWS KMS - Key Management Service",
+            "AWS Secrets Manager - Secrets storage and rotation",
+            "AWS Certificate Manager - TLS certificate management"
+          ]
+        },
+        {
+          "heading": "Security Monitoring & Detection",
+          "list": [
+            "Amazon GuardDuty - Threat detection",
+            "AWS Security Hub - Security posture management",
+            "Amazon Inspector - Vulnerability assessment",
+            "AWS CloudTrail - API activity logging",
+            "Amazon CloudWatch - Monitoring and alerting",
+            "AWS Config - Configuration compliance"
+          ]
+        },
+        {
+          "heading": "Network Security",
+          "list": [
+            "VPC - Virtual Private Cloud isolation",
+            "Security Groups - Instance-level firewall",
+            "Network ACLs - Subnet-level firewall",
+            "AWS WAF - Web application firewall",
+            "AWS Shield - DDoS protection",
+            "AWS Network Firewall - Managed network firewall"
+          ]
+        },
+        {
+          "heading": "Compliance & Governance",
+          "list": [
+            "AWS Artifact for compliance reports",
+            "Service Control Policies (SCPs)",
+            "AWS Audit Manager",
+            "AWS Well-Architected Framework",
+            "Shared Responsibility Model"
+          ]
+        }
+      ]
+    },
+    "azure-security": {
+      "content": "Azure Security encompasses the services, features, and best practices for securing workloads and data in Microsoft Azure cloud environments.",
+      "sections": [
+        {
+          "heading": "Identity & Access",
+          "list": [
+            "Azure Active Directory (Entra ID)",
+            "Privileged Identity Management (PIM)",
+            "Conditional Access policies",
+            "Multi-Factor Authentication (MFA)"
+          ]
+        },
+        {
+          "heading": "Security Services",
+          "list": [
+            "Microsoft Defender for Cloud",
+            "Azure Security Center",
+            "Azure Sentinel (SIEM/SOAR)",
+            "Azure Key Vault",
+            "Azure DDoS Protection"
+          ]
+        },
+        {
+          "heading": "Network Security",
+          "list": [
+            "Azure Firewall",
+            "Network Security Groups (NSGs)",
+            "Azure Private Link",
+            "Azure VPN Gateway",
+            "Azure Application Gateway with WAF"
+          ]
+        }
+      ]
+    },
+    "cloud-security": {
+      "content": "Cloud Security encompasses the policies, technologies, and controls deployed to protect data, applications, and infrastructure in cloud computing environments.",
+      "sections": [
+        {
+          "heading": "Key Concepts",
+          "list": [
+            "Shared Responsibility Model",
+            "Cloud Security Posture Management (CSPM)",
+            "Cloud Workload Protection Platforms (CWPP)",
+            "Cloud Access Security Brokers (CASB)",
+            "Secure Access Service Edge (SASE)"
+          ]
+        },
+        {
+          "heading": "Security Domains",
+          "list": [
+            "Identity and Access Management",
+            "Data Protection and Encryption",
+            "Network Security",
+            "Application Security",
+            "Compliance and Governance"
+          ]
+        },
+        {
+          "heading": "Cloud Service Models",
+          "list": [
+            "IaaS - Infrastructure as a Service",
+            "PaaS - Platform as a Service",
+            "SaaS - Software as a Service",
+            "Serverless/FaaS - Function as a Service"
+          ]
+        }
+      ]
+    },
+    "cmmc": {
+      "content": "The Cybersecurity Maturity Model Certification (CMMC) is a unified standard for implementing cybersecurity across the Defense Industrial Base (DIB).",
+      "sections": [
+        {
+          "heading": "CMMC Levels",
+          "list": [
+            "Level 1 - Foundational (17 practices)",
+            "Level 2 - Advanced (110 practices based on NIST 800-171)",
+            "Level 3 - Expert (110+ practices including NIST 800-172)"
+          ]
+        },
+        {
+          "heading": "Key Requirements",
+          "list": [
+            "Protection of Controlled Unclassified Information (CUI)",
+            "Third-party assessment for Level 2 and above",
+            "Continuous monitoring and improvement",
+            "Flow-down to subcontractors"
+          ]
+        },
+        {
+          "heading": "Assessment Process",
+          "list": [
+            "Gap assessment and remediation",
+            "System Security Plan (SSP) development",
+            "Plan of Action and Milestones (POA&M)",
+            "Third-party assessment by C3PAO"
+          ]
+        }
+      ]
+    },
+    "container-security": {
+      "content": "Container Security involves protecting containerized applications and their infrastructure throughout the development lifecycle and runtime.",
+      "sections": [
+        {
+          "heading": "Security Areas",
+          "list": [
+            "Image Security - Scanning and trusted registries",
+            "Runtime Security - Container isolation and monitoring",
+            "Network Security - Segmentation and policies",
+            "Secrets Management - Secure credential handling",
+            "Compliance - Configuration standards"
+          ]
+        },
+        {
+          "heading": "Best Practices",
+          "list": [
+            "Use minimal base images",
+            "Scan images for vulnerabilities",
+            "Implement least privilege",
+            "Use read-only file systems",
+            "Network policies and segmentation"
+          ]
+        },
+        {
+          "heading": "Tools",
+          "list": [
+            "Trivy, Clair for image scanning",
+            "Falco for runtime security",
+            "OPA/Gatekeeper for policy enforcement",
+            "Aqua, Sysdig, Prisma Cloud for platforms"
+          ]
+        }
+      ]
+    },
+    "cryptography": {
+      "content": "Cryptography is the practice of securing information through mathematical techniques to ensure confidentiality, integrity, authentication, and non-repudiation.",
+      "sections": [
+        {
+          "heading": "Cryptographic Types",
+          "list": [
+            "Symmetric Encryption - Same key for encrypt/decrypt (AES, DES)",
+            "Asymmetric Encryption - Public/private key pairs (RSA, ECC)",
+            "Hashing - One-way functions (SHA-256, SHA-3)",
+            "Digital Signatures - Authentication and integrity"
+          ]
+        },
+        {
+          "heading": "Key Concepts",
+          "list": [
+            "Key Management and lifecycle",
+            "Public Key Infrastructure (PKI)",
+            "Certificate Authorities and trust chains",
+            "Key exchange protocols (Diffie-Hellman)",
+            "Cryptographic protocols (TLS, SSH)"
+          ]
+        },
+        {
+          "heading": "Applications",
+          "list": [
+            "Data encryption at rest and in transit",
+            "Digital signatures and code signing",
+            "Secure communications",
+            "Password hashing",
+            "Blockchain and cryptocurrencies"
+          ]
+        }
+      ]
+    },
+    "devsecops": {
+      "content": "DevSecOps integrates security practices within the DevOps process, embedding security at every phase of the software development lifecycle.",
+      "sections": [
+        {
+          "heading": "Key Practices",
+          "list": [
+            "Shift-left security - Early security integration",
+            "Security as Code - Automated security policies",
+            "Continuous Security Testing - Automated scanning",
+            "Infrastructure as Code Security - Secure configurations",
+            "Security Champions - Embedded security advocates"
+          ]
+        },
+        {
+          "heading": "Security Tools in Pipeline",
+          "list": [
+            "SAST - Static Application Security Testing",
+            "DAST - Dynamic Application Security Testing",
+            "SCA - Software Composition Analysis",
+            "Container scanning",
+            "Secrets detection"
+          ]
+        },
+        {
+          "heading": "Benefits",
+          "list": [
+            "Earlier vulnerability detection",
+            "Faster remediation",
+            "Reduced security costs",
+            "Improved collaboration",
+            "Consistent security standards"
+          ]
+        }
+      ]
+    },
+    "dfars": {
+      "content": "DFARS (Defense Federal Acquisition Regulation Supplement) contains cybersecurity requirements for Department of Defense contractors handling Controlled Unclassified Information.",
+      "sections": [
+        {
+          "heading": "Key Clauses",
+          "list": [
+            "DFARS 252.204-7012 - Safeguarding Covered Defense Information",
+            "DFARS 252.204-7019 - NIST 800-171 Assessment Requirements",
+            "DFARS 252.204-7020 - NIST 800-171 DoD Assessment Requirements",
+            "DFARS 252.204-7021 - CMMC Requirements"
+          ]
+        },
+        {
+          "heading": "Requirements",
+          "list": [
+            "Implement NIST SP 800-171 controls",
+            "Report cyber incidents within 72 hours",
+            "Provide access for forensic analysis",
+            "Flow down requirements to subcontractors"
+          ]
+        },
+        {
+          "heading": "Compliance",
+          "list": [
+            "Self-assessment and SPRS score submission",
+            "Medium/High assessments by DoD",
+            "CMMC certification (phased implementation)"
+          ]
+        }
+      ]
+    },
+    "documentation": {
+      "content": "Documentation in cybersecurity involves creating, organizing, and maintaining written records of security policies, procedures, architectures, and incidents.",
+      "sections": [
+        {
+          "heading": "Types of Security Documentation",
+          "list": [
+            "Policies - High-level security requirements and guidelines",
+            "Standards - Specific mandatory requirements",
+            "Procedures - Step-by-step instructions for tasks",
+            "Guidelines - Recommended practices and suggestions",
+            "Baselines - Minimum security configurations"
+          ]
+        },
+        {
+          "heading": "Key Documentation Areas",
+          "list": [
+            "Security architecture and design documents",
+            "Incident response runbooks",
+            "Business continuity and disaster recovery plans",
+            "Risk assessments and treatment plans",
+            "Compliance evidence and audit trails"
+          ]
+        },
+        {
+          "heading": "Best Practices",
+          "list": [
+            "Version control and change management",
+            "Regular review and updates",
+            "Accessible and searchable storage",
+            "Clear ownership and accountability",
+            "Alignment with frameworks (NIST, ISO 27001)"
+          ]
+        }
+      ]
+    },
+    "ethical-hacking": {
+      "content": "Ethical Hacking involves authorized attempts to bypass system security to identify vulnerabilities that malicious hackers could exploit.",
+      "sections": [
+        {
+          "heading": "Types of Ethical Hacking",
+          "list": [
+            "Network Penetration Testing",
+            "Web Application Testing",
+            "Wireless Security Testing",
+            "Social Engineering",
+            "Physical Security Testing"
+          ]
+        },
+        {
+          "heading": "Methodology",
+          "list": [
+            "Reconnaissance and information gathering",
+            "Scanning and enumeration",
+            "Gaining access",
+            "Maintaining access",
+            "Covering tracks",
+            "Reporting"
+          ]
+        },
+        {
+          "heading": "Legal and Ethical Considerations",
+          "list": [
+            "Written authorization required",
+            "Defined scope and rules of engagement",
+            "Respect for privacy and data",
+            "Professional conduct and disclosure"
+          ]
+        }
+      ]
+    },
+    "exploit-development": {
+      "content": "Exploit Development is the process of creating code that takes advantage of software vulnerabilities to gain unauthorized access or control over systems.",
+      "sections": [
+        {
+          "heading": "Key Concepts",
+          "list": [
+            "Buffer overflows (stack, heap)",
+            "Format string vulnerabilities",
+            "Use-after-free exploits",
+            "Return-oriented programming (ROP)",
+            "Shellcode development"
+          ]
+        },
+        {
+          "heading": "Development Process",
+          "list": [
+            "Vulnerability research and analysis",
+            "Proof-of-concept development",
+            "Exploit refinement and reliability",
+            "Payload development",
+            "Evasion technique integration"
+          ]
+        },
+        {
+          "heading": "Tools",
+          "list": [
+            "Debuggers (GDB, WinDbg, x64dbg)",
+            "Disassemblers (IDA Pro, Ghidra)",
+            "Fuzzers (AFL, libFuzzer)",
+            "Exploit frameworks (Metasploit, Cobalt Strike)"
+          ]
+        }
+      ]
+    },
+    "exploitation": {
+      "content": "Exploitation is the process of taking advantage of vulnerabilities in software, hardware, or human behavior to gain unauthorized access or cause unintended behavior in systems.",
+      "sections": [
+        {
+          "heading": "Exploitation Categories",
+          "list": [
+            "Memory Corruption - Buffer overflows, use-after-free, format strings",
+            "Web Application - SQL injection, XSS, CSRF, SSRF",
+            "Authentication Bypass - Credential attacks, session hijacking",
+            "Privilege Escalation - Local and domain privilege elevation",
+            "Logic Flaws - Business logic vulnerabilities"
+          ]
+        },
+        {
+          "heading": "Techniques",
+          "list": [
+            "Exploit development and modification",
+            "Payload creation and encoding",
+            "Evasion techniques",
+            "Chaining vulnerabilities",
+            "Social engineering integration"
+          ]
+        },
+        {
+          "heading": "Defensive Applications",
+          "content": "Understanding exploitation techniques is essential for:",
+          "list": [
+            "Building secure systems",
+            "Developing effective defenses",
+            "Incident response and forensics",
+            "Security testing and validation",
+            "Threat modeling and risk assessment"
+          ]
+        }
+      ]
+    },
+    "gcp-security": {
+      "content": "GCP Security encompasses the services, features, and best practices for securing workloads and data in Google Cloud Platform environments.",
+      "sections": [
+        {
+          "heading": "Identity & Access",
+          "list": [
+            "Cloud IAM - Identity and Access Management",
+            "Cloud Identity - Identity management",
+            "BeyondCorp Enterprise - Zero trust access"
+          ]
+        },
+        {
+          "heading": "Security Services",
+          "list": [
+            "Security Command Center",
+            "Chronicle Security Operations",
+            "Cloud Armor - DDoS and WAF",
+            "Cloud KMS - Key management",
+            "Secret Manager"
+          ]
+        },
+        {
+          "heading": "Network Security",
+          "list": [
+            "VPC Service Controls",
+            "Cloud Firewall",
+            "Private Google Access",
+            "Cloud NAT"
+          ]
+        }
+      ]
+    },
+    "governance": {
+      "content": "Security Governance encompasses the framework of policies, processes, and organizational structures that ensure security objectives align with business goals and regulatory requirements.",
+      "sections": [
+        {
+          "heading": "Key Components",
+          "list": [
+            "Security Strategy - Long-term security direction and objectives",
+            "Policies and Standards - Formal security requirements",
+            "Organizational Structure - Roles, responsibilities, and accountability",
+            "Risk Management - Identifying and managing security risks",
+            "Compliance - Meeting regulatory and contractual obligations"
+          ]
+        },
+        {
+          "heading": "Governance Frameworks",
+          "list": [
+            "COBIT (Control Objectives for Information Technologies)",
+            "ISO 27001/27002",
+            "NIST Cybersecurity Framework",
+            "ITIL for IT service management"
+          ]
+        },
+        {
+          "heading": "Board and Executive Involvement",
+          "list": [
+            "Security reporting to leadership",
+            "Risk appetite definition",
+            "Resource allocation decisions",
+            "Strategic security initiatives",
+            "Incident escalation procedures"
+          ]
+        },
+        {
+          "heading": "Metrics and Measurement",
+          "list": [
+            "Key Performance Indicators (KPIs)",
+            "Key Risk Indicators (KRIs)",
+            "Security program maturity assessments",
+            "Audit findings and remediation tracking"
+          ]
+        }
+      ]
+    },
+    "hardware": {
+      "content": "Hardware security involves understanding computer components, peripherals, and the security considerations for physical computing devices.",
+      "sections": [
+        {
+          "heading": "Key Areas",
+          "list": [
+            "Computer components and architecture",
+            "Storage devices and data protection",
+            "Network hardware security",
+            "Mobile device security",
+            "IoT device security"
+          ]
+        },
+        {
+          "heading": "Security Considerations",
+          "list": [
+            "Physical access controls",
+            "Hardware encryption (TPM, HSM)",
+            "Secure boot processes",
+            "Firmware security",
+            "Supply chain integrity"
+          ]
+        }
+      ]
+    },
+    "help-desk": {
+      "content": "Help Desk encompasses the front-line IT support services that assist users with technical issues, service requests, and security-related concerns.",
+      "sections": [
+        {
+          "heading": "Core Functions",
+          "list": [
+            "Incident Management - Responding to and resolving user issues",
+            "Service Requests - Handling access requests and provisioning",
+            "Problem Management - Identifying root causes of recurring issues",
+            "Knowledge Management - Documenting solutions and procedures",
+            "User Communication - Keeping users informed of status and resolutions"
+          ]
+        },
+        {
+          "heading": "Security Responsibilities",
+          "list": [
+            "Password resets and account unlocks",
+            "Phishing report triage",
+            "Security awareness support",
+            "Access request verification",
+            "Incident escalation to security teams"
+          ]
+        },
+        {
+          "heading": "Tools and Technologies",
+          "list": [
+            "Ticketing systems (ServiceNow, Jira, Zendesk)",
+            "Remote support tools",
+            "Knowledge bases and documentation",
+            "Asset management systems",
+            "Communication platforms"
+          ]
+        },
+        {
+          "heading": "Best Practices",
+          "list": [
+            "First-call resolution focus",
+            "Clear escalation procedures",
+            "User satisfaction measurement",
+            "Continuous training and development",
+            "Security-aware service delivery"
+          ]
+        }
+      ]
+    },
+    "hipaa": {
+      "content": "HIPAA (Health Insurance Portability and Accountability Act) establishes national standards for protecting sensitive patient health information.",
+      "sections": [
+        {
+          "heading": "Key Rules",
+          "list": [
+            "Privacy Rule - Protects PHI disclosure",
+            "Security Rule - Safeguards for electronic PHI",
+            "Breach Notification Rule - Reporting requirements",
+            "Enforcement Rule - Penalties and procedures"
+          ]
+        },
+        {
+          "heading": "Security Rule Safeguards",
+          "list": [
+            "Administrative Safeguards - Policies and procedures",
+            "Physical Safeguards - Facility and device security",
+            "Technical Safeguards - Access controls and encryption"
+          ]
+        },
+        {
+          "heading": "Compliance Requirements",
+          "list": [
+            "Risk analysis and management",
+            "Workforce training",
+            "Business Associate Agreements",
+            "Incident response procedures",
+            "Documentation and audit trails"
+          ]
+        }
+      ]
+    },
+    "hitrust": {
+      "content": "HITRUST CSF (Common Security Framework) is a certifiable framework that provides organizations with a comprehensive approach to regulatory compliance and risk management.",
+      "sections": [
+        {
+          "heading": "Framework Components",
+          "list": [
+            "Control Categories spanning 14 domains",
+            "Implementation Requirements",
+            "Assessment Methodology",
+            "Certification Levels"
+          ]
+        },
+        {
+          "heading": "Certification Types",
+          "list": [
+            "e1 Assessment - Entry-level validation",
+            "i1 Assessment - Intermediate certification",
+            "r2 Assessment - Full certification"
+          ]
+        },
+        {
+          "heading": "Benefits",
+          "list": [
+            "Unified compliance framework",
+            "Reduces audit fatigue",
+            "Industry-recognized certification",
+            "Risk-based approach"
+          ]
+        }
+      ]
+    },
+    "identity-access-management": {
+      "content": "Identity and Access Management (IAM) is the framework of policies, processes, and technologies that enables organizations to manage digital identities and control user access to critical information.",
+      "sections": [
+        {
+          "heading": "Core Components",
+          "list": [
+            "Identity Governance - Lifecycle management and access certification",
+            "Access Management - Authentication and authorization services",
+            "Privileged Access Management (PAM) - Securing privileged accounts",
+            "Directory Services - Centralized identity stores",
+            "Federation - Cross-domain identity sharing"
+          ]
+        },
+        {
+          "heading": "Key Capabilities",
+          "list": [
+            "Single Sign-On (SSO) - One credential for multiple applications",
+            "Multi-Factor Authentication (MFA) - Layered authentication",
+            "Role-Based Access Control (RBAC) - Access based on job function",
+            "Just-In-Time Access - Temporary elevated permissions",
+            "Access Certification - Periodic access reviews"
+          ]
+        },
+        {
+          "heading": "Technologies & Protocols",
+          "list": [
+            "SAML 2.0, OAuth 2.0, OpenID Connect",
+            "LDAP and Active Directory",
+            "SCIM for provisioning",
+            "FIDO2/WebAuthn for passwordless",
+            "Conditional access policies"
+          ]
+        },
+        {
+          "heading": "Enterprise Considerations",
+          "list": [
+            "Identity lifecycle automation",
+            "Orphaned account detection",
+            "Separation of duties enforcement",
+            "Regulatory compliance (SOX, HIPAA, GDPR)",
+            "Cloud identity integration",
+            "Zero Trust architecture alignment"
+          ]
+        }
+      ]
+    },
+    "incident-response": {
+      "content": "Incident Response is the organized approach to addressing and managing security breaches or cyberattacks, minimizing damage and reducing recovery time and costs.",
+      "sections": [
+        {
+          "heading": "Incident Response Phases",
+          "list": [
+            "Preparation - Developing plans, tools, and team capabilities",
+            "Identification - Detecting and confirming security incidents",
+            "Containment - Limiting the spread and impact of incidents",
+            "Eradication - Removing threats from the environment",
+            "Recovery - Restoring systems to normal operations",
+            "Lessons Learned - Analyzing incidents to improve defenses"
+          ]
+        },
+        {
+          "heading": "Key Activities",
+          "list": [
+            "Alert triage and investigation",
+            "Forensic evidence collection",
+            "Malware analysis",
+            "Threat hunting",
+            "Stakeholder communication",
+            "Regulatory notification"
+          ]
+        },
+        {
+          "heading": "Team Structure",
+          "list": [
+            "Incident Commander",
+            "Security Analysts",
+            "Forensic Investigators",
+            "Communications Lead",
+            "Legal and Compliance Representatives"
+          ]
+        },
+        {
+          "heading": "Frameworks",
+          "list": [
+            "NIST SP 800-61 (Computer Security Incident Handling Guide)",
+            "SANS Incident Response Process",
+            "MITRE ATT&CK for incident analysis"
+          ]
+        }
+      ]
+    },
+    "infrastructure": {
+      "content": "Infrastructure encompasses the physical and virtual components that support an organization's IT operations, including hardware, software, networks, and facilities.",
+      "sections": [
+        {
+          "heading": "Core Components",
+          "list": [
+            "Compute - Servers, virtual machines, containers",
+            "Storage - SAN, NAS, object storage, backup systems",
+            "Networking - Routers, switches, firewalls, load balancers",
+            "Data Centers - Physical facilities, power, cooling",
+            "Cloud Infrastructure - IaaS, PaaS resources"
+          ]
+        },
+        {
+          "heading": "Security Considerations",
+          "list": [
+            "Network segmentation and micro-segmentation",
+            "Defense in depth architecture",
+            "High availability and disaster recovery",
+            "Patch and configuration management",
+            "Infrastructure monitoring and logging"
+          ]
+        },
+        {
+          "heading": "Modern Approaches",
+          "list": [
+            "Infrastructure as Code (IaC)",
+            "Software-Defined Networking (SDN)",
+            "Containerization and orchestration",
+            "Hybrid and multi-cloud architectures",
+            "Zero Trust network architecture"
+          ]
+        },
+        {
+          "heading": "Management Practices",
+          "list": [
+            "Capacity planning",
+            "Change management",
+            "Asset inventory and lifecycle",
+            "Performance monitoring",
+            "Vendor management"
+          ]
+        }
+      ]
+    },
+    "iso-27001": {
+      "content": "ISO/IEC 27001 is the international standard for establishing, implementing, maintaining, and continually improving an Information Security Management System (ISMS).",
+      "sections": [
+        {
+          "heading": "Core Components",
+          "list": [
+            "Context of the Organization - Understanding internal and external factors",
+            "Leadership - Top management commitment and policy",
+            "Planning - Risk assessment and treatment",
+            "Support - Resources, competence, awareness, communication, and documentation",
+            "Operation - Implementing and operating the ISMS",
+            "Performance Evaluation - Monitoring, measurement, analysis, and evaluation",
+            "Improvement - Continual improvement of the ISMS"
+          ]
+        },
+        {
+          "heading": "Annex A Control Domains",
+          "list": [
+            "Organizational controls",
+            "People controls",
+            "Physical controls",
+            "Technological controls"
+          ]
+        },
+        {
+          "heading": "Certification Process",
+          "list": [
+            "Gap analysis and scoping",
+            "Risk assessment and treatment plan",
+            "ISMS documentation development",
+            "Implementation and awareness training",
+            "Internal audit",
+            "Management review",
+            "Stage 1 audit (documentation review)",
+            "Stage 2 audit (implementation audit)",
+            "Surveillance audits (annual)",
+            "Recertification (every 3 years)"
+          ]
+        }
+      ]
+    },
+    "it-support": {
+      "content": "IT Support involves providing technical assistance to users and maintaining IT systems, ensuring operational efficiency and security across the organization.",
+      "sections": [
+        {
+          "heading": "Support Tiers",
+          "list": [
+            "Tier 1 - First-line support, basic troubleshooting",
+            "Tier 2 - Advanced technical support",
+            "Tier 3 - Expert-level support and escalation",
+            "Tier 4 - Vendor and external support"
+          ]
+        },
+        {
+          "heading": "Core Competencies",
+          "list": [
+            "Hardware troubleshooting and repair",
+            "Software installation and configuration",
+            "Network connectivity issues",
+            "User account management",
+            "Mobile device support"
+          ]
+        },
+        {
+          "heading": "Security in IT Support",
+          "list": [
+            "Secure remote support practices",
+            "Identity verification procedures",
+            "Secure password handling",
+            "Malware identification and escalation",
+            "Security awareness reinforcement"
+          ]
+        },
+        {
+          "heading": "Tools and Technologies",
+          "list": [
+            "Remote desktop tools",
+            "Ticketing and ITSM platforms",
+            "Diagnostic utilities",
+            "Imaging and deployment tools",
+            "Documentation systems"
+          ]
+        }
+      ]
+    },
+    "linux": {
+      "content": "Linux is an open-source operating system kernel that forms the basis for numerous distributions used in servers, containers, embedded systems, and security tools.",
+      "sections": [
+        {
+          "heading": "Key Skills",
+          "list": [
+            "Command Line - Shell navigation and scripting",
+            "File Systems - Permissions, ownership, structure",
+            "Process Management - Services, daemons, scheduling",
+            "Package Management - apt, yum, dnf, pacman",
+            "Networking - Configuration, firewalls, services"
+          ]
+        },
+        {
+          "heading": "Security Hardening",
+          "list": [
+            "User and group management",
+            "SELinux and AppArmor",
+            "Firewall configuration (iptables, nftables, firewalld)",
+            "SSH hardening",
+            "Audit logging and monitoring",
+            "File integrity monitoring"
+          ]
+        },
+        {
+          "heading": "Common Distributions",
+          "list": [
+            "Red Hat Enterprise Linux / CentOS / Rocky Linux",
+            "Ubuntu / Debian",
+            "SUSE Linux Enterprise",
+            "Kali Linux (security-focused)",
+            "Alpine Linux (containers)"
+          ]
+        },
+        {
+          "heading": "Security Applications",
+          "content": "Linux is the platform of choice for:",
+          "list": [
+            "Security tools and penetration testing",
+            "Server infrastructure",
+            "Container hosts",
+            "Network appliances",
+            "Security research"
+          ]
+        }
+      ]
+    },
+    "network-administration": {
+      "content": "Network Administration involves the configuration, management, and maintenance of computer networks to ensure reliable, secure, and efficient communication.",
+      "sections": [
+        {
+          "heading": "Core Responsibilities",
+          "list": [
+            "Network Design - Planning and implementing network architecture",
+            "Configuration - Setting up routers, switches, and firewalls",
+            "Monitoring - Tracking network performance and availability",
+            "Troubleshooting - Diagnosing and resolving connectivity issues",
+            "Documentation - Maintaining network diagrams and configurations"
+          ]
+        },
+        {
+          "heading": "Key Technologies",
+          "list": [
+            "Routing protocols (BGP, OSPF, EIGRP)",
+            "Switching (VLANs, STP, port security)",
+            "Wireless networking (802.11, WPA3)",
+            "VPN technologies",
+            "Software-defined networking (SDN)"
+          ]
+        },
+        {
+          "heading": "Security Integration",
+          "list": [
+            "Network access control (NAC)",
+            "Network segmentation",
+            "Intrusion detection/prevention",
+            "Traffic analysis and monitoring",
+            "Secure network design principles"
+          ]
+        },
+        {
+          "heading": "Certifications",
+          "list": [
+            "Cisco CCNA/CCNP",
+            "CompTIA Network+",
+            "Juniper JNCIA/JNCIS"
+          ]
+        }
+      ]
+    },
+    "network-security": {
+      "content": "Network Security encompasses the policies, practices, and technologies designed to protect the integrity, confidentiality, and accessibility of computer networks and data.",
+      "sections": [
+        {
+          "heading": "Key Components",
+          "list": [
+            "Firewalls - Perimeter and internal traffic filtering",
+            "Intrusion Detection/Prevention - IDS/IPS systems",
+            "VPNs - Secure remote access and site-to-site connectivity",
+            "Network Access Control - Endpoint compliance and authentication",
+            "Segmentation - Isolating network zones and resources"
+          ]
+        },
+        {
+          "heading": "Security Technologies",
+          "list": [
+            "Next-generation firewalls (NGFW)",
+            "Web application firewalls (WAF)",
+            "Network detection and response (NDR)",
+            "Secure web gateways",
+            "DNS security"
+          ]
+        },
+        {
+          "heading": "Monitoring and Analysis",
+          "list": [
+            "Network traffic analysis",
+            "Flow data collection (NetFlow, sFlow)",
+            "Packet capture and analysis",
+            "Security information and event management (SIEM)",
+            "Threat intelligence integration"
+          ]
+        },
+        {
+          "heading": "Architecture Principles",
+          "list": [
+            "Defense in depth",
+            "Zero Trust networking",
+            "Least privilege access",
+            "Encryption in transit",
+            "Network micro-segmentation"
+          ]
+        }
+      ]
+    },
+    "nist-800-171": {
+      "content": "NIST Special Publication 800-171 provides requirements for protecting the confidentiality of Controlled Unclassified Information (CUI) in non-federal systems and organizations.",
+      "sections": [
+        {
+          "heading": "Control Families",
+          "list": [
+            "Access Control - Limiting system access to authorized users",
+            "Awareness and Training - Security awareness for personnel",
+            "Audit and Accountability - Creating and protecting audit records",
+            "Configuration Management - Establishing and maintaining baseline configurations",
+            "Identification and Authentication - Identifying and authenticating users",
+            "Incident Response - Establishing incident handling capabilities",
+            "Maintenance - Performing system maintenance",
+            "Media Protection - Protecting and sanitizing media",
+            "Personnel Security - Screening individuals prior to access",
+            "Physical Protection - Limiting physical access",
+            "Risk Assessment - Assessing operational risk",
+            "Security Assessment - Assessing security controls",
+            "System and Communications Protection - Protecting communications",
+            "System and Information Integrity - Identifying and managing flaws"
+          ]
+        },
+        {
+          "heading": "Key Requirements",
+          "list": [
+            "110 security requirements across 14 families",
+            "Basis for CMMC Level 2 certification",
+            "Required for DoD contractors handling CUI",
+            "Self-assessment and POA&M development",
+            "Integration with System Security Plans (SSP)"
+          ]
+        }
+      ]
+    },
+    "nist-800-53": {
+      "content": "NIST Special Publication 800-53 provides a catalog of security and privacy controls for federal information systems and organizations.",
+      "sections": [
+        {
+          "heading": "Control Families",
+          "list": [
+            "Access Control (AC) - Managing system access",
+            "Awareness and Training (AT) - Security awareness",
+            "Audit and Accountability (AU) - Audit capabilities",
+            "Assessment, Authorization, and Monitoring (CA) - Security assessments",
+            "Configuration Management (CM) - System configurations",
+            "Contingency Planning (CP) - Continuity of operations",
+            "Identification and Authentication (IA) - Identity verification",
+            "Incident Response (IR) - Incident handling",
+            "Maintenance (MA) - System maintenance",
+            "Media Protection (MP) - Media safeguarding",
+            "Physical and Environmental Protection (PE) - Physical security",
+            "Planning (PL) - Security planning",
+            "Program Management (PM) - Enterprise security program",
+            "Personnel Security (PS) - Personnel screening",
+            "PII Processing and Transparency (PT) - Privacy controls",
+            "Risk Assessment (RA) - Risk analysis",
+            "System and Services Acquisition (SA) - System development",
+            "System and Communications Protection (SC) - Communications security",
+            "System and Information Integrity (SI) - Information integrity",
+            "Supply Chain Risk Management (SR) - Supply chain security"
+          ]
+        },
+        {
+          "heading": "Control Baselines",
+          "list": [
+            "Low impact baseline",
+            "Moderate impact baseline",
+            "High impact baseline",
+            "Privacy control baseline"
+          ]
+        }
+      ]
+    },
+    "operating-systems": {
+      "content": "Operating Systems knowledge encompasses understanding the architecture, administration, and security of the software that manages computer hardware and provides services for applications.",
+      "sections": [
+        {
+          "heading": "Major Platforms",
+          "list": [
+            "Windows - Desktop and server editions",
+            "Linux - Various distributions for servers and security",
+            "macOS - Apple desktop operating system",
+            "Unix - Commercial Unix variants (AIX, Solaris, HP-UX)",
+            "Mobile - iOS and Android"
+          ]
+        },
+        {
+          "heading": "Core Concepts",
+          "list": [
+            "Process and memory management",
+            "File systems and storage",
+            "User and permissions management",
+            "Networking stack",
+            "System services and daemons"
+          ]
+        },
+        {
+          "heading": "Security Considerations",
+          "list": [
+            "Hardening and secure configuration",
+            "Patch management",
+            "Access control mechanisms",
+            "Audit logging",
+            "Endpoint protection integration"
+          ]
+        },
+        {
+          "heading": "Administration Skills",
+          "list": [
+            "Installation and deployment",
+            "Configuration management",
+            "Performance tuning",
+            "Backup and recovery",
+            "Troubleshooting and diagnostics"
+          ]
+        }
+      ]
+    },
+    "penetration-testing": {
+      "content": "Penetration Testing is a systematic process of probing for vulnerabilities in networks, systems, and applications by simulating attacks that a malicious actor might use.",
+      "sections": [
+        {
+          "heading": "Testing Methodology",
+          "list": [
+            "Planning and Scoping - Defining objectives and boundaries",
+            "Reconnaissance - Information gathering about targets",
+            "Scanning and Enumeration - Identifying systems and services",
+            "Vulnerability Analysis - Identifying potential weaknesses",
+            "Exploitation - Attempting to compromise systems",
+            "Post-Exploitation - Assessing impact and lateral movement",
+            "Reporting - Documenting findings and recommendations"
+          ]
+        },
+        {
+          "heading": "Testing Types",
+          "list": [
+            "Black Box - No prior knowledge of the target",
+            "White Box - Full knowledge including source code",
+            "Gray Box - Partial knowledge, simulating insider threat",
+            "External - Testing from outside the network",
+            "Internal - Testing from within the network"
+          ]
+        },
+        {
+          "heading": "Common Tools",
+          "list": [
+            "Reconnaissance: Nmap, Recon-ng, Shodan",
+            "Web Testing: Burp Suite, OWASP ZAP",
+            "Exploitation: Metasploit, Cobalt Strike",
+            "Password Attacks: Hashcat, John the Ripper",
+            "Reporting: Dradis, PlexTrac"
+          ]
+        },
+        {
+          "heading": "Standards and Frameworks",
+          "list": [
+            "PTES (Penetration Testing Execution Standard)",
+            "OWASP Testing Guide",
+            "NIST SP 800-115",
+            "CREST methodology"
+          ]
+        }
+      ]
+    },
+    "privilege-escalation": {
+      "content": "Privilege Escalation refers to techniques used to gain elevated access to resources that are normally protected from an application or user, moving from lower to higher privilege levels.",
+      "sections": [
+        {
+          "heading": "Types",
+          "list": [
+            "Vertical Escalation - Gaining higher privileges (user to admin)",
+            "Horizontal Escalation - Accessing other users' resources at the same level"
+          ]
+        },
+        {
+          "heading": "Linux Techniques",
+          "list": [
+            "SUID/SGID misconfigurations",
+            "Sudo misconfigurations",
+            "Kernel exploits",
+            "Cron job exploitation",
+            "Path hijacking",
+            "Capability abuse"
+          ]
+        },
+        {
+          "heading": "Windows Techniques",
+          "list": [
+            "Unquoted service paths",
+            "DLL hijacking",
+            "Token impersonation",
+            "AlwaysInstallElevated",
+            "Credential harvesting",
+            "Kernel exploits"
+          ]
+        },
+        {
+          "heading": "Defense Strategies",
+          "list": [
+            "Principle of least privilege",
+            "Regular privilege audits",
+            "Patch management",
+            "Application whitelisting",
+            "Credential protection",
+            "Monitoring for privilege abuse"
+          ]
+        },
+        {
+          "heading": "Tools",
+          "list": [
+            "LinPEAS/WinPEAS",
+            "PowerUp/SharpUp",
+            "BeRoot",
+            "GTFOBins/LOLBAS reference"
+          ]
+        }
+      ]
+    },
+    "project-management": {
+      "content": "Project Management in cybersecurity involves planning, organizing, and managing resources to successfully complete security initiatives, implementations, and improvements.",
+      "sections": [
+        {
+          "heading": "Key Processes",
+          "list": [
+            "Initiation - Defining project scope and objectives",
+            "Planning - Developing detailed project plans",
+            "Execution - Implementing the project work",
+            "Monitoring and Control - Tracking progress and managing changes",
+            "Closing - Completing and documenting the project"
+          ]
+        },
+        {
+          "heading": "Security Project Types",
+          "list": [
+            "Security tool implementations",
+            "Compliance initiatives",
+            "Security program development",
+            "Incident response improvements",
+            "Architecture redesigns",
+            "Migration projects"
+          ]
+        },
+        {
+          "heading": "Methodologies",
+          "list": [
+            "Waterfall for structured projects",
+            "Agile/Scrum for iterative work",
+            "Hybrid approaches",
+            "Security-specific frameworks"
+          ]
+        },
+        {
+          "heading": "Key Skills",
+          "list": [
+            "Stakeholder management",
+            "Resource allocation",
+            "Risk management",
+            "Communication",
+            "Budget management",
+            "Schedule management"
+          ]
+        }
+      ]
+    },
+    "red-team": {
+      "content": "Red Teaming is an adversary simulation approach that tests an organization's detection and response capabilities by emulating real-world threat actors' tactics, techniques, and procedures.",
+      "sections": [
+        {
+          "heading": "Red Team vs Penetration Testing",
+          "list": [
+            "Penetration Testing - Find vulnerabilities within scope",
+            "Red Team - Test detection and response with realistic attack scenarios"
+          ]
+        },
+        {
+          "heading": "Objectives",
+          "list": [
+            "Evaluate security controls effectiveness",
+            "Test incident detection capabilities",
+            "Assess response team readiness",
+            "Identify gaps in security posture",
+            "Provide realistic threat simulation"
+          ]
+        },
+        {
+          "heading": "Techniques",
+          "list": [
+            "Advanced persistent threat (APT) emulation",
+            "Social engineering campaigns",
+            "Physical security testing",
+            "Custom malware and tooling",
+            "Living off the land techniques",
+            "Evasion and stealth operations"
+          ]
+        },
+        {
+          "heading": "Frameworks",
+          "list": [
+            "MITRE ATT&CK for technique mapping",
+            "Cyber Kill Chain",
+            "Diamond Model",
+            "CBEST/TIBER frameworks"
+          ]
+        },
+        {
+          "heading": "Collaboration",
+          "content": "Red teams work with blue teams (defenders) and purple teams (collaborative improvement) to enhance overall security posture."
+        }
+      ]
+    },
+    "reverse-engineering": {
+      "content": "Reverse Engineering is the process of analyzing software, hardware, or systems to understand their design, functionality, and behavior without access to source code or documentation.",
+      "sections": [
+        {
+          "heading": "Applications in Security",
+          "list": [
+            "Malware Analysis - Understanding malicious software behavior",
+            "Vulnerability Research - Finding security flaws in software",
+            "Exploit Development - Creating proof-of-concept exploits",
+            "Protocol Analysis - Understanding communication protocols",
+            "Forensics - Analyzing artifacts and evidence"
+          ]
+        },
+        {
+          "heading": "Techniques",
+          "list": [
+            "Static analysis (without execution)",
+            "Dynamic analysis (runtime observation)",
+            "Code flow analysis",
+            "Data structure recovery",
+            "API and library identification"
+          ]
+        },
+        {
+          "heading": "Tools",
+          "list": [
+            "Disassemblers - IDA Pro, Ghidra, Binary Ninja",
+            "Debuggers - x64dbg, WinDbg, GDB",
+            "Decompilers - Hex-Rays, Ghidra decompiler",
+            "Dynamic Analysis - Process Monitor, API Monitor, strace"
+          ]
+        },
+        {
+          "heading": "Skills Required",
+          "list": [
+            "Assembly language knowledge",
+            "Understanding of operating systems internals",
+            "Programming proficiency",
+            "Patience and analytical thinking",
+            "Documentation skills"
+          ]
+        }
+      ]
+    },
+    "risk-management": {
+      "content": "Risk Management is the systematic process of identifying, analyzing, evaluating, and treating risks to minimize their impact on an organization's objectives.",
+      "sections": [
+        {
+          "heading": "Risk Management Process",
+          "list": [
+            "Risk Identification - Finding potential risks",
+            "Risk Analysis - Understanding likelihood and impact",
+            "Risk Evaluation - Prioritizing risks",
+            "Risk Treatment - Selecting and implementing controls",
+            "Monitoring and Review - Ongoing risk assessment"
+          ]
+        },
+        {
+          "heading": "Risk Treatment Options",
+          "list": [
+            "Avoid - Eliminate the risk source",
+            "Mitigate - Reduce likelihood or impact",
+            "Transfer - Share risk through insurance or contracts",
+            "Accept - Acknowledge and monitor the risk"
+          ]
+        },
+        {
+          "heading": "Frameworks and Standards",
+          "list": [
+            "NIST Risk Management Framework (RMF)",
+            "ISO 31000",
+            "FAIR (Factor Analysis of Information Risk)",
+            "OCTAVE",
+            "COSO ERM"
+          ]
+        },
+        {
+          "heading": "Key Deliverables",
+          "list": [
+            "Risk registers",
+            "Risk assessments",
+            "Risk treatment plans",
+            "Risk appetite statements",
+            "Risk reporting to leadership"
+          ]
+        }
+      ]
+    },
+    "security-architecture": {
+      "content": "Security Architecture involves designing, building, and maintaining the security structures and frameworks that protect an organization's information systems and data.",
+      "sections": [
+        {
+          "heading": "Core Principles",
+          "list": [
+            "Defense in Depth - Multiple layers of security controls",
+            "Least Privilege - Minimum necessary access",
+            "Separation of Duties - Dividing critical functions",
+            "Zero Trust - Never trust, always verify",
+            "Secure by Design - Building security into systems from the start"
+          ]
+        },
+        {
+          "heading": "Architecture Components",
+          "list": [
+            "Network security architecture",
+            "Identity and access management",
+            "Data protection and encryption",
+            "Application security",
+            "Cloud security architecture",
+            "Endpoint security"
+          ]
+        },
+        {
+          "heading": "Frameworks",
+          "list": [
+            "SABSA (Sherwood Applied Business Security Architecture)",
+            "TOGAF Security Architecture",
+            "NIST Cybersecurity Framework",
+            "Zero Trust Architecture (ZTA)"
+          ]
+        },
+        {
+          "heading": "Deliverables",
+          "list": [
+            "Security architecture documents",
+            "Reference architectures",
+            "Security standards and patterns",
+            "Technology roadmaps",
+            "Architecture review processes"
+          ]
+        }
+      ]
+    },
+    "security-hardening": {
+      "content": "Security Hardening is the process of securing a system by reducing its attack surface through configuration changes, removing unnecessary services, and applying security controls.",
+      "sections": [
+        {
+          "heading": "Hardening Areas",
+          "list": [
+            "Operating Systems - Windows, Linux, macOS hardening",
+            "Applications - Web servers, databases, applications",
+            "Network Devices - Routers, switches, firewalls",
+            "Cloud Resources - IaaS, PaaS, SaaS configurations",
+            "Containers - Docker, Kubernetes security"
+          ]
+        },
+        {
+          "heading": "Common Hardening Steps",
+          "list": [
+            "Remove unnecessary software and services",
+            "Apply security patches and updates",
+            "Configure strong authentication",
+            "Implement least privilege access",
+            "Enable logging and monitoring",
+            "Encrypt data at rest and in transit",
+            "Configure host-based firewalls"
+          ]
+        },
+        {
+          "heading": "Benchmarks and Guidelines",
+          "list": [
+            "CIS Benchmarks",
+            "DISA STIGs",
+            "Vendor security guides",
+            "NIST guidelines",
+            "Industry-specific requirements"
+          ]
+        },
+        {
+          "heading": "Automation",
+          "list": [
+            "Configuration management tools (Ansible, Puppet)",
+            "Security configuration scanning",
+            "Compliance as code",
+            "Continuous monitoring"
+          ]
+        }
+      ]
+    },
+    "security-management": {
+      "content": "Security Management encompasses the leadership, planning, and oversight of an organization's information security program to protect assets and achieve business objectives.",
+      "sections": [
+        {
+          "heading": "Key Responsibilities",
+          "list": [
+            "Security strategy development",
+            "Policy and standards management",
+            "Team leadership and development",
+            "Budget and resource management",
+            "Stakeholder communication",
+            "Vendor and third-party management"
+          ]
+        },
+        {
+          "heading": "Program Components",
+          "list": [
+            "Governance - Policies, standards, procedures",
+            "Risk Management - Assessment and treatment",
+            "Compliance - Regulatory and contractual requirements",
+            "Operations - Day-to-day security activities",
+            "Incident Management - Response and recovery",
+            "Awareness - Training and culture"
+          ]
+        },
+        {
+          "heading": "Metrics and Reporting",
+          "list": [
+            "Key Performance Indicators (KPIs)",
+            "Key Risk Indicators (KRIs)",
+            "Security maturity assessments",
+            "Board and executive reporting",
+            "Audit and compliance status"
+          ]
+        },
+        {
+          "heading": "Leadership Skills",
+          "list": [
+            "Strategic thinking",
+            "Communication and influence",
+            "Business acumen",
+            "Team development",
+            "Change management"
+          ]
+        }
+      ]
+    },
+    "security-program": {
+      "content": "A Security Program is the comprehensive framework of policies, procedures, technologies, and people that work together to protect an organization's information assets.",
+      "sections": [
+        {
+          "heading": "Program Elements",
+          "list": [
+            "Governance - Leadership, policies, and accountability",
+            "Risk Management - Identifying and treating risks",
+            "Asset Management - Inventory and classification",
+            "Access Control - Identity and authorization",
+            "Operations Security - Day-to-day protective measures",
+            "Physical Security - Facilities and hardware protection",
+            "Incident Response - Detection and response capabilities",
+            "Business Continuity - Resilience and recovery"
+          ]
+        },
+        {
+          "heading": "Building a Program",
+          "list": [
+            "Assess current state and gaps",
+            "Define security strategy and roadmap",
+            "Develop policies and standards",
+            "Implement controls and technologies",
+            "Train and build awareness",
+            "Monitor and measure effectiveness",
+            "Continuously improve"
+          ]
+        },
+        {
+          "heading": "Frameworks",
+          "list": [
+            "NIST Cybersecurity Framework",
+            "ISO 27001/27002",
+            "CIS Controls",
+            "COBIT"
+          ]
+        },
+        {
+          "heading": "Maturity Models",
+          "list": [
+            "CMMI",
+            "NIST CSF Implementation Tiers",
+            "C2M2 (Cybersecurity Capability Maturity Model)"
+          ]
+        }
+      ]
+    },
+    "shell-scripting": {
+      "content": "Shell Scripting involves writing programs for command-line interpreters to automate tasks, manage systems, and perform security operations.",
+      "sections": [
+        {
+          "heading": "Common Shells",
+          "list": [
+            "Bash - Default on most Linux distributions",
+            "Zsh - Extended Bourne shell with improvements",
+            "PowerShell - Windows automation and scripting",
+            "sh - POSIX-compliant Bourne shell"
+          ]
+        },
+        {
+          "heading": "Core Concepts",
+          "list": [
+            "Variables and data types",
+            "Control structures (if, for, while)",
+            "Functions and modularity",
+            "Input/output redirection",
+            "Pipes and command chaining",
+            "Regular expressions"
+          ]
+        },
+        {
+          "heading": "Security Applications",
+          "list": [
+            "Log analysis and parsing",
+            "Automated security checks",
+            "Incident response automation",
+            "System hardening scripts",
+            "Backup and recovery automation",
+            "Security tool orchestration"
+          ]
+        },
+        {
+          "heading": "Best Practices",
+          "list": [
+            "Error handling and logging",
+            "Input validation",
+            "Secure credential handling",
+            "Code comments and documentation",
+            "Version control",
+            "Testing and validation"
+          ]
+        }
+      ]
+    },
+    "stakeholder-management": {
+      "content": "Stakeholder Management in cybersecurity involves identifying, engaging, and communicating with individuals and groups who have an interest in or influence over security initiatives.",
+      "sections": [
+        {
+          "heading": "Key Stakeholders",
+          "list": [
+            "Executive Leadership - Strategic direction and funding",
+            "Board of Directors - Governance and oversight",
+            "Business Units - Operational requirements",
+            "IT Teams - Technical implementation",
+            "Legal and Compliance - Regulatory requirements",
+            "External Parties - Vendors, regulators, customers"
+          ]
+        },
+        {
+          "heading": "Engagement Strategies",
+          "list": [
+            "Identify stakeholder interests and concerns",
+            "Tailor communication to audience",
+            "Build relationships and trust",
+            "Manage expectations",
+            "Provide regular updates",
+            "Gather and incorporate feedback"
+          ]
+        },
+        {
+          "heading": "Communication Methods",
+          "list": [
+            "Executive briefings and dashboards",
+            "Technical reports and documentation",
+            "Risk assessments and recommendations",
+            "Project status updates",
+            "Incident notifications",
+            "Training and awareness programs"
+          ]
+        },
+        {
+          "heading": "Success Factors",
+          "list": [
+            "Understanding business context",
+            "Clear and concise communication",
+            "Active listening",
+            "Building consensus",
+            "Managing conflicts",
+            "Demonstrating value"
+          ]
+        }
+      ]
+    },
+    "system-administration": {
+      "content": "System Administration encompasses the management, maintenance, and operation of computer systems, servers, and networked environments to ensure reliability, performance, and security.",
+      "sections": [
+        {
+          "heading": "Key Responsibilities",
+          "list": [
+            "Server Management - Installing, configuring, and maintaining servers",
+            "User Administration - Managing user accounts, permissions, and access",
+            "System Monitoring - Tracking performance, availability, and health",
+            "Backup and Recovery - Implementing data protection and disaster recovery",
+            "Patch Management - Applying updates and security patches"
+          ]
+        },
+        {
+          "heading": "Core Skills",
+          "list": [
+            "Operating system administration (Windows Server, Linux)",
+            "Active Directory and LDAP management",
+            "Virtualization platforms (VMware, Hyper-V)",
+            "Scripting and automation (PowerShell, Bash)",
+            "Storage management and RAID configurations",
+            "Network services (DNS, DHCP, NTP)"
+          ]
+        },
+        {
+          "heading": "Tools & Technologies",
+          "list": [
+            "Configuration management (Ansible, Puppet, Chef)",
+            "Monitoring systems (Nagios, Zabbix, Prometheus)",
+            "Backup solutions (Veeam, Commvault)",
+            "Remote management tools",
+            "Ticketing and documentation systems"
+          ]
+        }
+      ]
+    },
+    "tcp-ip": {
+      "content": "TCP/IP is the foundational protocol suite for internet and network communications, enabling data transmission across interconnected networks.",
+      "sections": [
+        {
+          "heading": "Protocol Layers",
+          "list": [
+            "Application Layer - HTTP, HTTPS, FTP, SMTP, DNS, SSH",
+            "Transport Layer - TCP, UDP",
+            "Internet Layer - IP, ICMP, ARP",
+            "Network Access Layer - Ethernet, Wi-Fi"
+          ]
+        },
+        {
+          "heading": "Key Concepts",
+          "list": [
+            "IP Addressing - IPv4 and IPv6 addressing schemes",
+            "Subnetting - Network segmentation and CIDR notation",
+            "Routing - Static and dynamic routing protocols",
+            "Port Numbers - Well-known, registered, and dynamic ports",
+            "Three-Way Handshake - TCP connection establishment",
+            "NAT/PAT - Network and port address translation"
+          ]
+        },
+        {
+          "heading": "Security Considerations",
+          "list": [
+            "Packet filtering and firewalls",
+            "TCP/IP stack vulnerabilities",
+            "Man-in-the-middle attacks",
+            "IP spoofing and SYN floods",
+            "Network segmentation",
+            "Encryption protocols (TLS/SSL)"
+          ]
+        },
+        {
+          "heading": "Troubleshooting Tools",
+          "list": [
+            "ping, traceroute, pathping",
+            "netstat, ss, nmap",
+            "tcpdump, Wireshark",
+            "dig, nslookup"
+          ]
+        }
+      ]
+    },
+    "threat-analysis": {
+      "content": "Threat Analysis is the process of identifying, examining, and understanding potential threats to an organization's assets, systems, and data.",
+      "sections": [
+        {
+          "heading": "Analysis Components",
+          "list": [
+            "Threat Identification - Discovering potential threat actors and vectors",
+            "Threat Assessment - Evaluating likelihood and potential impact",
+            "Threat Modeling - Systematic analysis of attack scenarios",
+            "Intelligence Gathering - Collecting and correlating threat data"
+          ]
+        },
+        {
+          "heading": "Threat Categories",
+          "list": [
+            "Nation-state actors",
+            "Cybercriminal organizations",
+            "Hacktivists",
+            "Insider threats",
+            "Script kiddies",
+            "Advanced Persistent Threats (APTs)"
+          ]
+        },
+        {
+          "heading": "Methodologies",
+          "list": [
+            "STRIDE - Spoofing, Tampering, Repudiation, Information Disclosure, Denial of Service, Elevation of Privilege",
+            "PASTA - Process for Attack Simulation and Threat Analysis",
+            "OCTAVE - Operationally Critical Threat, Asset, and Vulnerability Evaluation",
+            "Kill Chain Analysis - Mapping attack progression stages"
+          ]
+        },
+        {
+          "heading": "Threat Intelligence",
+          "list": [
+            "Indicators of Compromise (IOCs)",
+            "Tactics, Techniques, and Procedures (TTPs)",
+            "MITRE ATT&CK framework",
+            "Threat feeds and sharing platforms",
+            "Dark web monitoring"
+          ]
+        }
+      ]
+    },
+    "threat-vulnerability-management": {
+      "content": "Threat and Vulnerability Management is a continuous, proactive approach to identifying, assessing, prioritizing, and remediating vulnerabilities in an organization's IT infrastructure.",
+      "sections": [
+        {
+          "heading": "Key Components",
+          "list": [
+            "Vulnerability Scanning - Automated discovery of security weaknesses",
+            "Threat Intelligence - Understanding adversary tactics, techniques, and procedures",
+            "Risk Assessment - Evaluating vulnerability severity and business impact",
+            "Prioritization - Focusing remediation efforts on highest-risk issues",
+            "Remediation - Patching, configuration changes, and compensating controls"
+          ]
+        },
+        {
+          "heading": "Process Lifecycle",
+          "list": [
+            "Asset discovery and inventory",
+            "Vulnerability identification and scanning",
+            "Threat correlation and analysis",
+            "Risk-based prioritization",
+            "Remediation planning and execution",
+            "Verification and reporting",
+            "Continuous monitoring"
+          ]
+        },
+        {
+          "heading": "Tools & Technologies",
+          "list": [
+            "Vulnerability scanners (Nessus, Qualys, Rapid7)",
+            "Threat intelligence platforms",
+            "Patch management systems",
+            "Configuration management databases (CMDB)",
+            "Security ratings services",
+            "Penetration testing tools"
+          ]
+        }
+      ]
+    },
+    "troubleshooting": {
+      "content": "Troubleshooting is the systematic process of diagnosing, identifying, and resolving problems in computer systems, networks, and applications.",
+      "sections": [
+        {
+          "heading": "Troubleshooting Methodology",
+          "list": [
+            "Identify the Problem - Gather information and define symptoms",
+            "Establish a Theory - Consider probable causes",
+            "Test the Theory - Verify or eliminate potential causes",
+            "Establish a Plan - Determine corrective action",
+            "Implement the Solution - Apply the fix",
+            "Verify Functionality - Confirm resolution",
+            "Document Findings - Record the issue and solution"
+          ]
+        },
+        {
+          "heading": "Common Areas",
+          "list": [
+            "Hardware - Component failures, connectivity issues",
+            "Software - Application errors, conflicts, crashes",
+            "Network - Connectivity, performance, DNS issues",
+            "Security - Access problems, malware, authentication failures",
+            "Performance - Slowdowns, resource exhaustion"
+          ]
+        },
+        {
+          "heading": "Diagnostic Tools",
+          "list": [
+            "System logs and event viewers",
+            "Performance monitors",
+            "Network analyzers",
+            "Diagnostic commands (ping, tracert, ipconfig)",
+            "Remote access tools",
+            "Hardware diagnostics"
+          ]
+        },
+        {
+          "heading": "Best Practices",
+          "list": [
+            "Document everything",
+            "Change one variable at a time",
+            "Check the obvious first",
+            "Use a systematic approach",
+            "Escalate when appropriate",
+            "Learn from resolved issues"
+          ]
+        }
+      ]
+    },
+    "vulnerability-assessment": {
+      "content": "Vulnerability Assessment is the process of identifying, quantifying, and prioritizing security vulnerabilities in systems, networks, and applications.",
+      "sections": [
+        {
+          "heading": "Assessment Types",
+          "list": [
+            "Network Vulnerability Scanning - Discovering network-level weaknesses",
+            "Host-Based Assessment - Evaluating individual system security",
+            "Application Scanning - Identifying software vulnerabilities",
+            "Database Assessment - Checking database security configurations",
+            "Cloud Assessment - Evaluating cloud infrastructure security"
+          ]
+        },
+        {
+          "heading": "Assessment Process",
+          "list": [
+            "Asset Discovery - Identifying systems and services",
+            "Vulnerability Identification - Scanning for known weaknesses",
+            "Analysis - Evaluating severity and exploitability",
+            "Prioritization - Ranking vulnerabilities by risk",
+            "Reporting - Documenting findings and recommendations",
+            "Remediation Tracking - Following up on fixes"
+          ]
+        },
+        {
+          "heading": "Vulnerability Scoring",
+          "list": [
+            "CVSS - Common Vulnerability Scoring System",
+            "CVE - Common Vulnerabilities and Exposures",
+            "CWE - Common Weakness Enumeration",
+            "EPSS - Exploit Prediction Scoring System"
+          ]
+        },
+        {
+          "heading": "Tools",
+          "list": [
+            "Nessus, Qualys, Rapid7 Nexpose",
+            "OpenVAS, Nikto",
+            "Burp Suite, OWASP ZAP",
+            "Nmap, Masscan",
+            "Cloud-native scanning tools"
+          ]
+        }
+      ]
+    },
+    "web-application-security": {
+      "content": "Web Application Security focuses on protecting web applications from attacks and vulnerabilities that could compromise data, functionality, or availability.",
+      "sections": [
+        {
+          "heading": "OWASP Top 10",
+          "list": [
+            "Broken Access Control - Unauthorized access to resources",
+            "Cryptographic Failures - Weak or missing encryption",
+            "Injection - SQL, NoSQL, OS command injection",
+            "Insecure Design - Flawed architecture and design patterns",
+            "Security Misconfiguration - Default or weak configurations",
+            "Vulnerable Components - Outdated libraries and frameworks",
+            "Authentication Failures - Weak identity verification",
+            "Data Integrity Failures - Untrusted deserialization, CI/CD issues",
+            "Logging Failures - Insufficient monitoring and logging",
+            "SSRF - Server-Side Request Forgery"
+          ]
+        },
+        {
+          "heading": "Security Controls",
+          "list": [
+            "Input validation and sanitization",
+            "Output encoding",
+            "Parameterized queries",
+            "Authentication and session management",
+            "Access control implementation",
+            "Security headers (CSP, HSTS, X-Frame-Options)",
+            "TLS/SSL implementation"
+          ]
+        },
+        {
+          "heading": "Testing Approaches",
+          "list": [
+            "Static Application Security Testing (SAST)",
+            "Dynamic Application Security Testing (DAST)",
+            "Interactive Application Security Testing (IAST)",
+            "Software Composition Analysis (SCA)",
+            "Manual penetration testing"
+          ]
+        },
+        {
+          "heading": "Tools",
+          "list": [
+            "Burp Suite, OWASP ZAP",
+            "SQLMap, Nikto",
+            "SonarQube, Checkmarx",
+            "Snyk, Dependabot"
+          ]
+        }
+      ]
+    },
+    "wireless": {
+      "content": "Wireless networking encompasses the technologies, protocols, and security measures for radio-based network communications.",
+      "sections": [
+        {
+          "heading": "Wireless Standards",
+          "list": [
+            "802.11a/b/g/n/ac/ax - Wi-Fi generations",
+            "Wi-Fi 6/6E - Latest high-efficiency standards",
+            "Bluetooth - Short-range personal area networks",
+            "Zigbee/Z-Wave - IoT and home automation",
+            "Cellular - 4G LTE, 5G mobile networks"
+          ]
+        },
+        {
+          "heading": "Security Protocols",
+          "list": [
+            "WPA3 - Latest Wi-Fi security standard",
+            "WPA2-Enterprise - 802.1X authentication",
+            "WPA2-Personal - Pre-shared key authentication",
+            "EAP - Extensible Authentication Protocol variants",
+            "RADIUS - Authentication server integration"
+          ]
+        },
+        {
+          "heading": "Wireless Attacks",
+          "list": [
+            "Evil twin and rogue access points",
+            "Deauthentication attacks",
+            "WPA/WPA2 cracking",
+            "KRACK and PMKID attacks",
+            "Bluetooth exploits (BlueBorne, KNOB)",
+            "RF jamming"
+          ]
+        },
+        {
+          "heading": "Security Best Practices",
+          "list": [
+            "Strong encryption (WPA3/WPA2-Enterprise)",
+            "Network segmentation (guest networks)",
+            "MAC filtering and 802.1X",
+            "Wireless IDS/IPS deployment",
+            "Regular security assessments",
+            "Rogue AP detection"
+          ]
+        },
+        {
+          "heading": "Assessment Tools",
+          "list": [
+            "Aircrack-ng suite",
+            "Kismet, Wireshark",
+            "WiFi Pineapple",
+            "Spectrum analyzers",
+            "Heat mapping tools"
+          ]
+        }
+      ]
+    },
+    "zero-trust": {
+      "content": "Zero Trust is a security framework that requires strict identity verification for every person and device attempting to access resources, regardless of their location relative to the network perimeter.",
+      "sections": [
+        {
+          "heading": "Core Principles",
+          "list": [
+            "Verify Explicitly - Always authenticate and authorize based on all available data points",
+            "Least Privilege Access - Limit user access with just-in-time and just-enough-access (JIT/JEA)",
+            "Assume Breach - Minimize blast radius and segment access, verify end-to-end encryption",
+            "Continuous Validation - Never trust implicitly; continuously validate security posture"
+          ]
+        },
+        {
+          "heading": "Key Components",
+          "list": [
+            "Identity - Strong authentication and identity governance",
+            "Devices - Device health and compliance verification",
+            "Networks - Micro-segmentation and encrypted communications",
+            "Applications - In-app permissions and shadow IT discovery",
+            "Data - Classification, labeling, and encryption",
+            "Infrastructure - Telemetry, configuration management, and just-in-time access"
+          ]
+        },
+        {
+          "heading": "Implementation Approaches",
+          "list": [
+            "Software-Defined Perimeter (SDP)",
+            "Micro-segmentation",
+            "Identity-Aware Proxy",
+            "Zero Trust Network Access (ZTNA)",
+            "Continuous Adaptive Risk and Trust Assessment (CARTA)"
+          ]
+        }
+      ]
+    }
+  },
+  "meta": {
+    "version": "1.0.0",
+    "lastModified": "2025-12-27"
+  }
+}

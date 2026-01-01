@@ -1,0 +1,23 @@
+{{ define "main" }}
+<div class="max-w-4xl mx-auto px-4 py-12">
+  {{ partial "list-header.html" . }}
+
+  <!-- Certification Cards -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    {{ range .Pages.ByWeight }}
+    {{ partial "item-card.html" (dict "page" . "showIssuer" true "showDate" true "logoClass" "cert-logo") }}
+    {{ end }}
+  </div>
+
+  <!-- Skills Tag Cloud -->
+  {{ $certPages := .Pages }}
+  {{ partial "tag-cloud.html" (dict "context" . "pages" $certPages "title" (i18n "skills" | default "Skills") "itemType" "certification") }}
+
+  <!-- Navigation -->
+  {{- $credlyLink := slice -}}
+  {{- with .Site.Params.credlyUrl -}}
+    {{- $credlyLink = slice (dict "url" . "text" (i18n "viewAllBadgesOnCredly" | default "View All Badges on Credly") "external" true) -}}
+  {{- end -}}
+  {{ partial "resume-nav.html" (dict "context" . "extraLinks" $credlyLink) }}
+</div>
+{{ end }}

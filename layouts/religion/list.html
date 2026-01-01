@@ -1,0 +1,53 @@
+{{ define "main" }}
+<div class="max-w-6xl mx-auto px-4 py-12">
+  <header class="text-center mb-12">
+    <h1 class="text-3xl md:text-4xl font-hand font-bold text-paper-black mb-4">
+      {{ .Title }}
+    </h1>
+    {{ with .Description }}
+    <p class="text-lg font-hand text-paper-gray max-w-2xl mx-auto">
+      {{ . }}
+    </p>
+    {{ end }}
+  </header>
+
+  <div class="prose max-w-none mb-12">
+    {{ .Content }}
+  </div>
+
+  <!-- Quick Links -->
+  <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <a href="/religion/bibles/" class="block p-6 card-paper hover:shadow-lg transition-shadow text-center">
+      <h3 class="text-xl font-hand font-bold text-paper-black mb-2">
+        {{ i18n "bibles" | default "Bibles" }}
+      </h3>
+      <p class="text-paper-gray font-hand text-sm">
+        Browse historic Bible translations
+      </p>
+    </a>
+    <a href="/religion/christian-canon-compared/" class="block p-6 card-paper hover:shadow-lg transition-shadow text-center">
+      <h3 class="text-xl font-hand font-bold text-paper-black mb-2">
+        {{ i18n "canonComparison" | default "Canon Comparison" }}
+      </h3>
+      <p class="text-paper-gray font-hand text-sm">
+        Compare canonical scriptures across Christian and Jewish traditions
+      </p>
+    </a>
+    <a href="/esoterica/scripture-comparison-study-guide/" class="block p-6 card-paper hover:shadow-lg transition-shadow text-center">
+      <h3 class="text-xl font-hand font-bold text-paper-black mb-2">
+        {{ i18n "studyGuide" | default "Comparative Study Guide" }}
+      </h3>
+      <p class="text-paper-gray font-hand text-sm">
+        Detailed canonical, deuterocanonical, pseudepigraphal, and esoteric scriptures across traditions
+      </p>
+    </a>
+  </section>
+
+  <!-- Back navigation -->
+  <div class="text-center mt-12">
+    <a href="/" class="btn-paper">
+      &larr; {{ i18n "backToHome" | default "Back to Home" }}
+    </a>
+  </div>
+</div>
+{{ end }}

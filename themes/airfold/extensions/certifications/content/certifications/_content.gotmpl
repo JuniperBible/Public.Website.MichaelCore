@@ -1,0 +1,58 @@
+{{/* Generate certification pages from JSON data */}}
+{{- $certData := .Site.Data.certifications -}}
+{{- $auxData := .Site.Data.certifications_auxiliary -}}
+
+{{- range $certData.certifications -}}
+  {{- $id := .id -}}
+  {{- $aux := index $auxData.certifications $id -}}
+
+  {{/* Build markdown content from JSON structure */}}
+  {{- $content := "" -}}
+  {{- with $aux -}}
+    {{- $content = .content -}}
+    {{- range .sections -}}
+      {{- $content = printf "%s\n\n## %s\n\n" $content .heading -}}
+      {{- with .content -}}
+        {{- $content = printf "%s%s\n" $content . -}}
+      {{- end -}}
+      {{- with .list -}}
+        {{- range . -}}
+          {{- $content = printf "%s\n- %s" $content . -}}
+        {{- end -}}
+        {{- $content = printf "%s\n" $content -}}
+      {{- end -}}
+      {{- with .details -}}
+        {{- range $key, $value := . -}}
+          {{- $content = printf "%s\n- **%s:** %s" $content $key $value -}}
+        {{- end -}}
+        {{- $content = printf "%s\n" $content -}}
+      {{- end -}}
+      {{- with .links -}}
+        {{- range . -}}
+          {{- $content = printf "%s\n- [%s](%s)" $content .text .url -}}
+        {{- end -}}
+        {{- $content = printf "%s\n" $content -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+
+  {{- $params := dict
+    "title" .title
+    "description" .description
+    "issuer" .issuer
+    "issued" .issued
+    "expires" .expires
+    "credly_url" .credly_url
+    "logo" .logo
+    "tags" .tags
+    "weight" .weight
+  -}}
+  {{- $page := dict
+    "path" $id
+    "title" .title
+    "kind" "page"
+    "params" $params
+    "content" (dict "mediaType" "text/markdown" "value" $content)
+  -}}
+  {{- $.AddPage $page -}}
+{{- end -}}

@@ -1,0 +1,38 @@
+{{ define "main" }}
+<div class="max-w-4xl mx-auto px-4 py-4">
+  {{ partial "list-header.html" . }}
+
+  <!-- Recent Articles -->
+  {{ $recentArticles := where .Site.RegularPages "Section" "esoterica" | first 5 }}
+  {{ if $recentArticles }}
+  <div class="card-paper mb-4">
+    <h3 class="text-2xl font-hand font-bold text-paper-black mb-4">{{ i18n "recentArticles" | default "Recent Articles" }}</h3>
+    <ul class="space-y-2">
+      {{ range $recentArticles }}
+      <li>
+        <a href="{{ .RelPermalink }}" class="text-paper-black hover:text-accent font-hand text-lg transition-colors">
+          {{- $words := split .Title " " -}}
+          {{- $firstThree := delimit (first 3 $words) " " -}}
+          {{- $rest := delimit (after 3 $words) " " -}}
+          <span class="wavy-underline">{{ $firstThree }}</span>{{ with $rest }} {{ . }}{{ end }}
+        </a>
+        {{ with .Description }}
+        <p class="text-sm text-paper-gray mt-1">{{ . | truncate 100 }}</p>
+        {{ end }}
+      </li>
+      {{ end }}
+    </ul>
+  </div>
+  {{ end }}
+
+  {{ partial "tag-cloud.html" (dict "context" . "itemType" "article") }}
+
+  {{ if not .Site.RegularPages }}
+  <p class="text-center text-paper-gray font-hand text-xl">{{ i18n "noArticlesYet" | default "No articles yet." }}</p>
+  {{ end }}
+
+  {{ if ne .Params.showSocialBanner false }}
+  {{ partial "social-cta.html" . }}
+  {{ end }}
+</div>
+{{ end }}

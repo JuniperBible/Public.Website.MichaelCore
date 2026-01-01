@@ -1,0 +1,11 @@
+{{/* Social Links - Minimal partial for rendering social link icons */}}
+{{- with .Site.Data.social.links -}}
+<div class="flex flex-wrap justify-center gap-3">
+  {{- range . -}}
+  <a href="{{ .url }}" target="_blank" rel="noopener noreferrer"
+     class="social-link-sm" title="{{ .name }}" aria-label="{{ .name }}">
+    {{ partial "social-icon.html" . }}
+  </a>
+  {{- end -}}
+</div>
+{{- end -}}

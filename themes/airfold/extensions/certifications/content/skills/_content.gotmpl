@@ -1,0 +1,38 @@
+{{/* Generate skill pages from JSON data */}}
+{{- $skillData := .Site.Data.skills -}}
+{{- $auxData := .Site.Data.skills_auxiliary -}}
+
+{{- range $skillData.skills -}}
+  {{- $id := .id -}}
+  {{- $aux := index $auxData.skills $id -}}
+
+  {{/* Build markdown content from JSON structure */}}
+  {{- $content := "" -}}
+  {{- with $aux -}}
+    {{- $content = .content -}}
+    {{- range .sections -}}
+      {{- $content = printf "%s\n\n## %s\n\n" $content .heading -}}
+      {{- with .content -}}
+        {{- $content = printf "%s%s\n" $content . -}}
+      {{- end -}}
+      {{- with .list -}}
+        {{- range . -}}
+          {{- $content = printf "%s- %s\n" $content . -}}
+        {{- end -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+
+  {{- $params := dict
+    "title" .title
+    "description" .description
+  -}}
+  {{- $page := dict
+    "path" $id
+    "title" .title
+    "kind" "page"
+    "params" $params
+    "content" (dict "mediaType" "text/markdown" "value" $content)
+  -}}
+  {{- $.AddPage $page -}}
+{{- end -}}

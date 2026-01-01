@@ -1,0 +1,7 @@
+{{/* Skill Badge Shortcode
+     Usage: {{< skill-badge "Python" >}}
+            {{< skill-badge name="Python" url="/resume/skills/python/" >}}
+*/}}
+{{- $name := .Get 0 | default (.Get "name") -}}
+{{- $url := .Get "url" | default (printf "/resume/skills/%s/" ($name | urlize)) -}}
+<a href="{{ $url }}" class="inline-block px-3 py-1 text-xs font-medium bg-paper-light border border-paper-border rounded-full hover:bg-accent hover:text-white hover:border-accent transition-colors">{{ $name }}</a>

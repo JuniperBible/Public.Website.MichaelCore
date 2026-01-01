@@ -1,0 +1,154 @@
+{{ define "main" }}
+<div class="max-w-6xl mx-auto px-4 py-12">
+  {{ partial "list-header.html" . }}
+
+  {{ with .Content }}
+  {{ partial "prose-content.html" . }}
+  {{ end }}
+
+  {{/* Build tag list from projects - sorted by date */}}
+  {{ $projects := .RegularPages.ByDate.Reverse }}
+  {{ $tags := slice }}
+  {{ range $projects }}
+    {{ with .Params.tags }}
+      {{ range . }}
+        {{ $tags = $tags | append . }}
+      {{ end }}
+    {{ end }}
+  {{ end }}
+  {{ $uniqueTags := $tags | uniq | sort }}
+
+  <div class="flex flex-col md:flex-row gap-8">
+    {{/* Left sidebar - Tags */}}
+    <aside class="md:w-64 flex-shrink-0" role="complementary" aria-label="{{ i18n "projectFilters" | default "Project filters" }}">
+      <div class="card-paper sticky top-4">
+        <h3 id="filter-heading" class="text-xl font-hand font-bold text-paper-black mb-4">{{ i18n "filterByTag" | default "Filter by Tag" }}</h3>
+        <div class="flex flex-wrap gap-2" id="tag-filters" role="group" aria-labelledby="filter-heading">
+          <button
+            type="button"
+            data-tag="all"
+            aria-pressed="true"
+            aria-label="{{ i18n "showAllProjects" | default "Show all projects" }}"
+            class="tag-filter active text-sm px-3 py-1 border border-accent rounded bg-accent text-white transition-colors font-hand focus:outline-2 focus:outline-accent focus:outline-offset-2">
+            {{ i18n "all" | default "All" }}
+          </button>
+          {{ range $uniqueTags }}
+          <button
+            type="button"
+            data-tag="{{ . | urlize }}"
+            aria-pressed="false"
+            aria-label="{{ i18n "filterByTagLabel" | default "Filter by tag" }}: {{ . }}"
+            class="tag-filter text-sm px-3 py-1 border border-paper-black rounded hover:bg-accent hover:border-accent hover:text-white transition-colors font-hand focus:outline-2 focus:outline-accent focus:outline-offset-2">
+            {{ . }}
+          </button>
+          {{ end }}
+        </div>
+      </div>
+    </aside>
+
+    {{/* Right content - Projects */}}
+    <div class="flex-1">
+      {{ if $projects }}
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6" id="projects-grid">
+        {{ range $projects }}
+        <article class="card-paper group hover:shadow-lg transition-shadow project-card" data-tags="{{ delimit .Params.tags "," | urlize }}">
+          {{- $project := . -}}
+          {{ with .Params.image }}
+          <div class="aspect-video bg-paper-gray/20 mb-4 overflow-hidden rounded">
+            {{ partial "picture.html" (dict "src" . "alt" (printf "%s %s" (i18n "projectScreenshot" | default "Screenshot of") $project.Title) "class" "w-full h-full object-cover group-hover:scale-105 transition-transform duration-300") }}
+          </div>
+          {{ else }}
+          <div class="aspect-video bg-paper-gray/20 mb-4 rounded flex items-center justify-center">
+            <span class="text-paper-gray font-hand">{{ i18n "noImage" | default "No image" }}</span>
+          </div>
+          {{ end }}
+          <h2 class="text-xl font-hand font-bold text-paper-black mb-2">
+            <a href="{{ .RelPermalink }}" class="hover:underline-hand">{{ .Title }}</a>
+          </h2>
+          {{ with .Params.client }}
+          <p class="text-sm text-paper-gray mb-1">{{ i18n "clientLabel" | default "Client" }}: {{ . }}</p>
+          {{ end }}
+          {{ with .Params.tags }}
+          <div class="flex flex-wrap gap-1 mb-2">
+            {{ range . }}
+            <a href="{{ "/tags/" | relURL }}{{ . | urlize }}" class="text-xs px-2 py-0.5 border border-paper-gray rounded text-paper-gray hover:bg-accent hover:border-accent hover:text-white transition-colors">{{ . }}</a>
+            {{ end }}
+          </div>
+          {{ end }}
+          {{ with .Description }}
+          <p class="text-paper-gray text-sm mb-3">{{ . }}</p>
+          {{ end }}
+          <a href="{{ .RelPermalink }}" class="btn-paper inline-block text-sm">{{ i18n "viewProject" | default "View Project" }}</a>
+        </article>
+        {{ end }}
+      </div>
+      <p id="no-results" class="text-center text-paper-gray font-hand text-xl hidden">{{ i18n "noProjectsMatch" | default "No projects match this filter." }}</p>
+      {{ else }}
+      <p class="text-center text-paper-gray font-hand text-xl">{{ i18n "noProjectsYet" | default "No projects yet." }}</p>
+      {{ end }}
+    </div>
+  </div>
+
+  <div class="flex flex-col md:flex-row gap-8">
+    <div class="md:w-64 flex-shrink-0"></div>
+    <div class="flex-1">
+      {{ if ne .Params.showSocialBanner false }}
+      {{ partial "social-cta.html" . }}
+      {{ end }}
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+  'use strict';
+
+  function filterProjects(tag) {
+    var cards = document.querySelectorAll('.project-card');
+    var buttons = document.querySelectorAll('.tag-filter');
+    var noResults = document.getElementById('no-results');
+    var visibleCount = 0;
+
+    // Update button states and aria-pressed
+    buttons.forEach(function(btn) {
+      var isActive = btn.dataset.tag === tag;
+      btn.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+      if (isActive) {
+        btn.classList.add('bg-accent', 'border-accent', 'text-white', 'active');
+      } else {
+        btn.classList.remove('bg-accent', 'border-accent', 'text-white', 'active');
+      }
+    });
+
+    // Filter cards
+    cards.forEach(function(card) {
+      var cardTags = card.dataset.tags.toLowerCase();
+      if (tag === 'all' || cardTags.includes(tag.toLowerCase())) {
+        card.style.display = '';
+        visibleCount++;
+      } else {
+        card.style.display = 'none';
+      }
+    });
+
+    // Show/hide no results message
+    if (visibleCount === 0) {
+      noResults.classList.remove('hidden');
+    } else {
+      noResults.classList.add('hidden');
+    }
+  }
+
+  // Event delegation for filter buttons
+  var tagFilters = document.getElementById('tag-filters');
+  if (tagFilters) {
+    tagFilters.addEventListener('click', function(e) {
+      var button = e.target.closest('.tag-filter');
+      if (button && button.dataset.tag) {
+        filterProjects(button.dataset.tag);
+      }
+    });
+  }
+})();
+</script>
+{{ end }}

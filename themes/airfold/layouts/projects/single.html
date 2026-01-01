@@ -1,0 +1,23 @@
+{{ define "main" }}
+<article class="max-w-4xl mx-auto px-4 py-12">
+  <header class="text-center mb-8">
+    <h1 class="text-4xl md:text-5xl font-hand font-bold text-paper-black mb-4">
+      {{ .Title }}
+    </h1>
+    {{ with .Description }}
+    <p class="text-xl font-hand text-paper-gray">{{ . }}</p>
+    {{ end }}
+  </header>
+
+  {{ with .Params.image }}
+  <div class="mb-8">
+    <img src="{{ . }}" alt="{{ $.Title }}" loading="lazy" class="w-full rounded-lg border-2 border-paper-black shadow-paper">
+  </div>
+  {{ end }}
+
+  {{ partial "prose-content.html" .Content }}
+
+  {{ $projects := where .Site.RegularPages "Section" "projects" }}
+  {{ partial "tag-cloud.html" (dict "context" . "pages" $projects "title" (i18n "exploreProjects" | default "Explore Other Projects") "itemType" "project") }}
+</article>
+{{ end }}

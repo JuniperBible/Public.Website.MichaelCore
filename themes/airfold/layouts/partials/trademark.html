@@ -1,0 +1,15 @@
+{{/*
+  Trademark Partial
+  Usage: {{ partial "trademark.html" (dict "name" "Side by Side Scripture" "context" "body") }}
+
+  Context options:
+  - "body" (default): Bold purple text with ™ symbol
+  - "heading": Just adds ™ symbol (no color change for headings)
+*/}}
+{{- $name := .name -}}
+{{- $context := .context | default "body" -}}
+{{- if eq $context "heading" -}}
+  {{- $name -}}™
+{{- else -}}
+  <span class="font-bold text-accent">{{ $name }}™</span>
+{{- end -}}

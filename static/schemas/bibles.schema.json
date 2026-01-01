@@ -1,0 +1,80 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://focuswithjustin.com/schemas/bibles.schema.json",
+  "title": "Bibles",
+  "description": "Bible translation metadata for the Focus with Justin website",
+  "type": "object",
+  "required": ["bibles"],
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "description": "JSON Schema reference"
+    },
+    "bibles": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "title", "abbrev", "language"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "URL slug identifier (e.g., kjv, drc, vulgate)",
+            "pattern": "^[a-z0-9-]+$"
+          },
+          "title": {
+            "type": "string",
+            "description": "Full Bible translation name"
+          },
+          "description": {
+            "type": "string",
+            "description": "Brief description for SEO and listings"
+          },
+          "abbrev": {
+            "type": "string",
+            "description": "Short abbreviation (e.g., KJV, DRB, VUL)",
+            "pattern": "^[A-Z0-9]+$"
+          },
+          "language": {
+            "type": "string",
+            "description": "ISO 639-1 language code (e.g., en, la, he, el)",
+            "pattern": "^[a-z]{2}$"
+          },
+          "features": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "Special features (e.g., Strong's Numbers, Red Letter, Morphology)"
+          },
+          "tags": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "Classification tags (e.g., Protestant, Catholic, Historic)"
+          },
+          "weight": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Sort order (lower values appear first)"
+          }
+        }
+      }
+    },
+    "meta": {
+      "type": "object",
+      "properties": {
+        "granularity": {
+          "type": "string",
+          "enum": ["book", "chapter", "verse"],
+          "description": "Content granularity level in auxiliary file"
+        },
+        "generated": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Generation timestamp"
+        },
+        "version": {
+          "type": "string",
+          "description": "Schema version"
+        }
+      }
+    }
+  }
+}

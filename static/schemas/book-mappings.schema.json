@@ -1,0 +1,82 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://focuswithjustin.com/schemas/book-mappings.schema.json",
+  "title": "Book Mappings",
+  "description": "Canonical status of biblical books across religious traditions",
+  "type": "object",
+  "required": ["traditions", "books"],
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "description": "JSON Schema reference"
+    },
+    "description": {
+      "type": "string"
+    },
+    "traditions": {
+      "type": "object",
+      "description": "Map of tradition IDs to their metadata",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["name", "description"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Display name of the tradition"
+          },
+          "description": {
+            "type": "string",
+            "description": "Brief description of this canon"
+          },
+          "book_count": {
+            "type": "integer",
+            "description": "Number of books in this canon"
+          }
+        }
+      }
+    },
+    "books": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "name", "testament", "canonical_in"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "OSIS book identifier"
+          },
+          "name": {
+            "type": "string",
+            "description": "Full book name"
+          },
+          "testament": {
+            "type": "string",
+            "enum": ["OT", "NT", "DC"],
+            "description": "OT=Old Testament, NT=New Testament, DC=Deuterocanonical"
+          },
+          "canonical_in": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "List of tradition IDs where this book is canonical"
+          },
+          "alternate_names": {
+            "type": "object",
+            "description": "Alternate names in specific traditions",
+            "additionalProperties": { "type": "string" }
+          },
+          "notes": {
+            "type": "string",
+            "description": "Additional notes about this book"
+          }
+        }
+      }
+    },
+    "meta": {
+      "type": "object",
+      "properties": {
+        "version": { "type": "string" },
+        "lastModified": { "type": "string", "format": "date" }
+      }
+    }
+  }
+}

@@ -1,0 +1,455 @@
+{{ define "main" }}
+{{- $content := .Content -}}
+{{- $slides := split $content "<hr>" -}}
+{{- $slideOptions := .Params.slides | default slice -}}
+
+{{/* Carousel configuration */}}
+{{- $carouselCfg := .Site.Params.carousel | default dict -}}
+{{- $theatreMode := $carouselCfg.theatreMode | default false -}}
+
+{{/* Theatre mode overrides: tab arrows, outside-side, peek mode, auto-advance */}}
+{{- $arrowStyle := cond $theatreMode "tab" ($carouselCfg.arrowStyle | default "triangle") -}}
+{{- $arrowPosition := cond $theatreMode "outside-side" ($carouselCfg.arrowPosition | default "inside") -}}
+{{- $dotPosition := cond $theatreMode "outside" ($carouselCfg.dotPosition | default "outside") -}}
+{{- $tabRounded := cond $theatreMode true ($carouselCfg.tabRounded | default true) -}}
+{{- $bgOpacity := $carouselCfg.bgOpacity | default 89 -}}
+{{- $autoAdvance := cond $theatreMode true ($carouselCfg.autoAdvance | default true) -}}
+{{- $autoAdvanceDelay := $carouselCfg.autoAdvanceDelay | default 8000 -}}
+{{/* Peek mode: false, "overflow", or "contained" - theatre mode uses "contained" */}}
+{{- $peekModeRaw := $carouselCfg.peekMode | default false -}}
+{{- $peekMode := cond $theatreMode "contained" $peekModeRaw -}}
+{{- $isPeekOverflow := eq $peekMode "overflow" -}}
+{{- $isPeekContained := eq $peekMode "contained" -}}
+{{- $isPeekEnabled := or $isPeekOverflow $isPeekContained -}}
+
+{{/* Build arrow button classes */}}
+{{- $arrowBaseClass := "carousel-arrow p-3 z-10" -}}
+{{- if eq $arrowStyle "tab" -}}
+  {{- if $tabRounded -}}
+    {{- $arrowBaseClass = printf "%s carousel-arrow-tab rounded-lg" $arrowBaseClass -}}
+  {{- else -}}
+    {{- $arrowBaseClass = printf "%s carousel-arrow-tab" $arrowBaseClass -}}
+  {{- end -}}
+{{- else -}}
+  {{- $arrowBaseClass = printf "%s rounded-full" $arrowBaseClass -}}
+{{- end -}}
+
+{{/* Store config for after-content */}}
+{{ .Store.Set "carouselArrowPosition" $arrowPosition }}
+{{ .Store.Set "carouselDotPosition" $dotPosition }}
+{{ .Store.Set "carouselArrowStyle" $arrowStyle }}
+{{ .Store.Set "carouselTabRounded" $tabRounded }}
+{{ .Store.Set "carouselAutoAdvance" $autoAdvance }}
+{{ .Store.Set "carouselAutoAdvanceDelay" $autoAdvanceDelay }}
+{{ .Store.Set "carouselPeekMode" $peekMode }}
+{{ .Store.Set "carouselPeekEnabled" $isPeekEnabled }}
+
+{{/* Outer wrapper for outside-side and outside-wide arrows */}}
+{{- $isOutsideSide := or (eq $arrowPosition "outside-side") (eq $arrowPosition "outside-wide") -}}
+<div class="carousel-outer-wrapper flex items-center justify-center min-h-full {{ if eq $arrowPosition "outside-side" }}gap-2 md:gap-4{{ else if eq $arrowPosition "outside-wide" }}gap-6 md:gap-12 lg:gap-20{{ end }}">
+
+  {{/* Left Arrow (outside-side or outside-wide) */}}
+  {{ if $isOutsideSide }}
+  <button class="{{ $arrowBaseClass }} carousel-prev flex-shrink-0" aria-label="Previous slide">
+    {{ if eq $arrowStyle "tab" }}
+    <svg class="w-6 h-6 text-white" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+      <polygon points="6,12 18,4 18,20"/>
+    </svg>
+    {{ else }}
+    <svg class="w-8 h-8 text-white" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+      <polygon points="4,12 20,2 20,22"/>
+    </svg>
+    {{ end }}
+  </button>
+  {{ end }}
+
+<div class="carousel-container max-w-4xl lg:max-w-5xl xl:max-w-6xl mx-auto px-2 py-2 relative no-lightbox min-h-full flex flex-col justify-center {{ if $isOutsideSide }}flex-1{{ end }}{{ if $isPeekOverflow }} carousel-peek{{ end }}{{ if $isPeekContained }} carousel-peek-contained{{ end }}" data-autoadvance="{{ $autoAdvance }}" data-delay="{{ $autoAdvanceDelay }}" data-peek="{{ $peekMode }}">
+
+  {{/* Arrows inside carousel (absolute positioned) */}}
+  {{ if eq $arrowPosition "inside" }}
+  <!-- Left Arrow (inside) -->
+  <button class="{{ $arrowBaseClass }} carousel-prev absolute left-0 top-1/2 -translate-y-1/2" aria-label="Previous slide">
+    {{ if eq $arrowStyle "tab" }}
+    <svg class="w-6 h-6 text-white" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+      <polygon points="6,12 18,4 18,20"/>
+    </svg>
+    {{ else }}
+    <svg class="w-8 h-8 text-white" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+      <polygon points="4,12 20,2 20,22"/>
+    </svg>
+    {{ end }}
+  </button>
+
+  <!-- Right Arrow (inside) -->
+  <button class="{{ $arrowBaseClass }} carousel-next absolute right-0 top-1/2 -translate-y-1/2" aria-label="Next slide">
+    {{ if eq $arrowStyle "tab" }}
+    <svg class="w-6 h-6 text-white" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+      <polygon points="18,12 6,4 6,20"/>
+    </svg>
+    {{ else }}
+    <svg class="w-8 h-8 text-white" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+      <polygon points="20,12 4,2 4,22"/>
+    </svg>
+    {{ end }}
+  </button>
+  {{ end }}
+
+  {{/* Dots inside carousel */}}
+  {{ if eq $dotPosition "inside" }}
+  <div class="carousel-dots-inside absolute bottom-4 left-1/2 -translate-x-1/2 z-10 flex items-center gap-3">
+    {{ range $i := seq (len $slides) }}
+    <button class="carousel-dot{{ if eq $i 1 }} active{{ end }}" data-slide="{{ sub $i 1 }}" aria-label="Go to slide {{ $i }}"{{ if eq $i 1 }} aria-current="true"{{ end }}>
+      <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="8"/>
+        <circle cx="12" cy="12" r="2.5" fill="currentColor" stroke="none"/>
+      </svg>
+    </button>
+    {{ end }}
+  </div>
+  {{ end }}
+
+  <!-- Carousel Wrapper -->
+  <div class="carousel-wrapper {{ if eq $arrowPosition "inside" }}px-12{{ end }}">
+    <div class="carousel-track flex transition-transform duration-500 ease-out">
+
+      <!-- Slide 1: Hero Section with Header Image + First Content Block -->
+      <section class="carousel-slide flex-shrink-0 w-full text-center">
+        {{ with .Site.Params.heroImage }}
+        <div class="hero-image inline-block overflow-hidden mb-6 max-w-[70%]">
+          {{ partial "picture.html" (dict "src" . "alt" $.Site.Title "class" "max-w-full h-auto" "loading" "eager" "fetchpriority" "high" "responsive" true "width" 680 "height" 428) }}
+        </div>
+        {{ end }}
+
+        <h1 class="text-4xl md:text-5xl font-hand font-bold text-paper-black mb-3">
+          {{ .Site.Title }}
+        </h1>
+
+        {{ with index $slides 0 }}
+        <div class="text-lg md:text-xl font-hand text-paper-gray prose-links">
+          {{ . | safeHTML }}
+        </div>
+        {{ end }}
+      </section>
+
+      <!-- Remaining Slides from Content -->
+      {{ range $i, $slide := $slides }}
+        {{ if gt $i 0 }}
+        {{- $opts := index $slideOptions $i | default dict -}}
+        {{- $imagePos := $opts.imagePosition | default "top" -}}
+        {{- $imageBorder := $opts.imageBorder | default false -}}
+        {{- $hasImage := findRE `<img[^>]+>` $slide -}}
+
+        {{- /* Extract image and remaining content */ -}}
+        {{- $imgMatch := findRE `<img[^>]+>` $slide 1 -}}
+        {{- $imgTag := "" -}}
+        {{- $textContent := $slide -}}
+        {{- if $imgMatch -}}
+          {{- $imgTag = index $imgMatch 0 -}}
+          {{- $textContent = replaceRE `<p><img[^>]+></p>` "" $slide -}}
+        {{- end -}}
+
+        {{- /* Build layout classes based on image position */ -}}
+        {{- $layoutClass := "" -}}
+        {{- if eq $imagePos "left" -}}
+          {{- $layoutClass = "slide-layout-left" -}}
+        {{- else if eq $imagePos "right" -}}
+          {{- $layoutClass = "slide-layout-right" -}}
+        {{- else if eq $imagePos "bottom" -}}
+          {{- $layoutClass = "slide-layout-bottom" -}}
+        {{- end -}}
+
+        {{- /* Image wrapper classes */ -}}
+        {{- $imgWrapClass := "slide-image" -}}
+        {{- if eq $imageBorder "circle" -}}
+          {{- $imgWrapClass = printf "%s slide-image-circle" $imgWrapClass -}}
+        {{- else if $imageBorder -}}
+          {{- $imgWrapClass = printf "%s slide-image-bordered" $imgWrapClass -}}
+        {{- end -}}
+
+        <section class="carousel-slide flex-shrink-0 w-full flex flex-col items-center gap-6 justify-center {{ $layoutClass }}">
+          {{- if in $slide "[social-links]" -}}
+            {{- $parts := split $slide "[social-links]" -}}
+            <div class="text-lg md:text-xl font-hand text-paper-gray mb-6 prose-links text-center">
+              {{ index $parts 0 | safeHTML }}
+            </div>
+            <div class="card-paper-compact inline-block mx-auto">
+              {{ partial "social-links.html" $ }}
+            </div>
+            {{ with index $parts 1 }}
+            <div class="text-lg md:text-xl font-hand text-paper-gray mt-6 prose-links text-center">
+              {{ . | safeHTML }}
+            </div>
+            {{ end }}
+          {{- else if and $imgTag (or (eq $imagePos "left") (eq $imagePos "right")) -}}
+            <div class="{{ $imgWrapClass }}">
+              {{ $imgTag | safeHTML }}
+            </div>
+            <div class="slide-text prose-links">
+              {{ partial "prose-content.html" ($textContent | safeHTML) }}
+            </div>
+          {{- else -}}
+            {{- if and $imgTag $imageBorder -}}
+              {{- $borderedSlide := replaceRE `<img([^>]+)>` (printf `<img$1 class="slide-image-bordered">`) $slide -}}
+              {{ partial "prose-content.html" ($borderedSlide | safeHTML) }}
+            {{- else -}}
+              {{ partial "prose-content.html" ($slide | safeHTML) }}
+            {{- end -}}
+          {{- end -}}
+        </section>
+        {{ end }}
+      {{ end }}
+
+    </div>
+  </div>
+
+</div>
+
+  {{/* Right Arrow (outside-side or outside-wide) */}}
+  {{ if $isOutsideSide }}
+  <button class="{{ $arrowBaseClass }} carousel-next flex-shrink-0" aria-label="Next slide">
+    {{ if eq $arrowStyle "tab" }}
+    <svg class="w-6 h-6 text-white" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+      <polygon points="18,12 6,4 6,20"/>
+    </svg>
+    {{ else }}
+    <svg class="w-8 h-8 text-white" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+      <polygon points="20,12 4,2 4,22"/>
+    </svg>
+    {{ end }}
+  </button>
+  {{ end }}
+
+</div>{{/* End carousel-outer-wrapper */}}
+
+{{/* Store slide count for navigation */}}
+{{ .Store.Set "slideCount" (len $slides) }}
+{{ end }}
+
+{{ define "after-content" }}
+{{- $slideCount := .Store.Get "slideCount" | default 1 -}}
+{{- $arrowPosition := .Store.Get "carouselArrowPosition" | default "inside" -}}
+{{- $dotPosition := .Store.Get "carouselDotPosition" | default "outside" -}}
+{{- $arrowStyle := .Store.Get "carouselArrowStyle" | default "triangle" -}}
+{{- $tabRounded := .Store.Get "carouselTabRounded" | default true -}}
+
+{{/* Build arrow button classes for outside position */}}
+{{- $arrowBaseClass := "carousel-arrow p-3" -}}
+{{- if eq $arrowStyle "tab" -}}
+  {{- if $tabRounded -}}
+    {{- $arrowBaseClass = printf "%s carousel-arrow-tab rounded-lg" $arrowBaseClass -}}
+  {{- else -}}
+    {{- $arrowBaseClass = printf "%s carousel-arrow-tab" $arrowBaseClass -}}
+  {{- end -}}
+{{- else -}}
+  {{- $arrowBaseClass = printf "%s rounded-full" $arrowBaseClass -}}
+{{- end -}}
+
+<!-- Carousel Navigation -->
+<nav class="carousel-nav flex items-center justify-center gap-4 py-6" aria-label="Carousel navigation">
+  {{/* Left Arrow (outside) */}}
+  {{ if eq $arrowPosition "outside" }}
+  <button class="{{ $arrowBaseClass }} carousel-prev" aria-label="Previous slide">
+    {{ if eq $arrowStyle "tab" }}
+    <svg class="w-6 h-6 text-white" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+      <polygon points="6,12 18,4 18,20"/>
+    </svg>
+    {{ else }}
+    <svg class="w-8 h-8 text-white" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+      <polygon points="4,12 20,2 20,22"/>
+    </svg>
+    {{ end }}
+  </button>
+  {{ end }}
+
+  {{/* Dot Selectors (outside) */}}
+  {{ if eq $dotPosition "outside" }}
+  <div class="carousel-dots flex items-center gap-3">
+    {{ range $i := seq $slideCount }}
+    <button class="carousel-dot{{ if eq $i 1 }} active{{ end }}" data-slide="{{ sub $i 1 }}" aria-label="Go to slide {{ $i }}"{{ if eq $i 1 }} aria-current="true"{{ end }}>
+      <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="8"/>
+        <circle cx="12" cy="12" r="2.5" fill="currentColor" stroke="none"/>
+      </svg>
+    </button>
+    {{ end }}
+  </div>
+  {{ end }}
+
+  {{/* Right Arrow (outside) */}}
+  {{ if eq $arrowPosition "outside" }}
+  <button class="{{ $arrowBaseClass }} carousel-next" aria-label="Next slide">
+    {{ if eq $arrowStyle "tab" }}
+    <svg class="w-6 h-6 text-white" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+      <polygon points="18,12 6,4 6,20"/>
+    </svg>
+    {{ else }}
+    <svg class="w-8 h-8 text-white" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+      <polygon points="20,12 4,2 4,22"/>
+    </svg>
+    {{ end }}
+  </button>
+  {{ end }}
+</nav>
+
+<script>
+(function() {
+  'use strict';
+
+  var carouselContainer = document.querySelector('.carousel-container');
+  var track = document.querySelector('.carousel-track');
+  var dots = document.querySelectorAll('.carousel-dot');
+  var slides = document.querySelectorAll('.carousel-slide');
+  var prevBtn = document.querySelector('.carousel-prev');
+  var nextBtn = document.querySelector('.carousel-next');
+  var currentSlide = 0;
+  var autoplayInterval = null;
+
+  // Read config from data attributes
+  var autoAdvanceEnabled = carouselContainer && carouselContainer.dataset.autoadvance === 'true';
+  var autoplayDelay = carouselContainer ? parseInt(carouselContainer.dataset.delay, 10) || 8000 : 8000;
+  var peekMode = carouselContainer ? carouselContainer.dataset.peek : 'false';
+  var isPeekMode = peekMode === 'overflow' || peekMode === 'contained';
+
+  // Calculate slide width percentage for peek mode
+  var slideWidthPercent = isPeekMode ? 85 : 100;
+  var peekOffset = isPeekMode ? 7.5 : 0; // Center the slide
+
+  function goToSlide(index) {
+    if (index < 0) index = slides.length - 1;
+    if (index >= slides.length) index = 0;
+
+    currentSlide = index;
+    if (isPeekMode) {
+      // In peek mode, calculate offset to show partial slides on sides
+      var offset = (index * slideWidthPercent) - peekOffset;
+      track.style.transform = 'translateX(-' + offset + '%)';
+
+      // Update active slide visual state (zoom effect only in peek mode)
+      slides.forEach(function(slide, i) {
+        if (i === index) {
+          slide.style.opacity = '1';
+          slide.style.transform = 'scale(1)';
+        } else {
+          slide.style.opacity = '0.4';
+          slide.style.transform = 'scale(0.9)';
+        }
+      });
+    } else {
+      // Standard mode: simple slide transition, no zoom
+      track.style.transform = 'translateX(-' + (index * 100) + '%)';
+    }
+
+    // Update dot states
+    dots.forEach(function(dot, i) {
+      if (i === index) {
+        dot.classList.add('active');
+        dot.setAttribute('aria-current', 'true');
+      } else {
+        dot.classList.remove('active');
+        dot.removeAttribute('aria-current');
+      }
+    });
+  }
+
+  function nextSlide() {
+    goToSlide(currentSlide + 1);
+  }
+
+  function prevSlide() {
+    goToSlide(currentSlide - 1);
+  }
+
+  function startAutoplay() {
+    stopAutoplay();
+    autoplayInterval = setInterval(nextSlide, autoplayDelay);
+  }
+
+  function stopAutoplay() {
+    if (autoplayInterval) {
+      clearInterval(autoplayInterval);
+      autoplayInterval = null;
+    }
+  }
+
+  function restartAutoplayIfEnabled() {
+    if (autoAdvanceEnabled) {
+      startAutoplay();
+    }
+  }
+
+  // Click handlers for dots
+  dots.forEach(function(dot) {
+    dot.addEventListener('click', function() {
+      var slideIndex = parseInt(this.dataset.slide, 10);
+      goToSlide(slideIndex);
+      restartAutoplayIfEnabled();
+    });
+  });
+
+  // Click handlers for arrow buttons
+  if (prevBtn) {
+    prevBtn.addEventListener('click', function() {
+      prevSlide();
+      restartAutoplayIfEnabled();
+    });
+  }
+
+  if (nextBtn) {
+    nextBtn.addEventListener('click', function() {
+      nextSlide();
+      restartAutoplayIfEnabled();
+    });
+  }
+
+  // Touch/swipe support
+  var touchStartX = 0;
+  var touchEndX = 0;
+  var container = document.querySelector('.carousel-wrapper');
+
+  if (container) {
+    container.addEventListener('touchstart', function(e) {
+      touchStartX = e.changedTouches[0].screenX;
+      stopAutoplay();
+    }, { passive: true });
+
+    container.addEventListener('touchend', function(e) {
+      touchEndX = e.changedTouches[0].screenX;
+      var diff = touchStartX - touchEndX;
+      if (Math.abs(diff) > 50) {
+        if (diff > 0) {
+          nextSlide();
+        } else {
+          prevSlide();
+        }
+      }
+      restartAutoplayIfEnabled();
+    }, { passive: true });
+
+    // Pause autoplay on hover
+    container.addEventListener('mouseenter', stopAutoplay);
+    container.addEventListener('mouseleave', restartAutoplayIfEnabled);
+  }
+
+  // Keyboard navigation
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'ArrowLeft') {
+      prevSlide();
+      restartAutoplayIfEnabled();
+    } else if (e.key === 'ArrowRight') {
+      nextSlide();
+      restartAutoplayIfEnabled();
+    }
+  });
+
+  // Initialize first slide as active
+  // In peek mode, this sets up the zoom/opacity states
+  // In standard mode, this just ensures correct positioning
+  goToSlide(0);
+
+  // Start autoplay only if enabled
+  if (autoAdvanceEnabled) {
+    startAutoplay();
+  }
+})();
+</script>
+{{ end }}

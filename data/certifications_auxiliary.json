@@ -1,0 +1,640 @@
+{
+  "$schema": "https://focuswithjustin.com/schemas/certifications-auxiliary.schema.json",
+  "certifications": {
+    "cissp": {
+      "content": "The Certified Information Systems Security Professional (CISSP) is the most globally recognized certification in the information security market. CISSP validates an information security professional's deep technical and managerial knowledge and experience to effectively design, engineer, and manage the overall security posture of an organization.",
+      "sections": [
+        {
+          "heading": "About the Certification",
+          "content": "CISSP is an independent information security certification granted by the International Information System Security Certification Consortium, also known as ISC2. It is formally approved by the U.S. Department of Defense (DoD) in their Information Assurance Technical (IAT), Managerial (IAM), and System Architect and Engineer (IASAE) categories for their DoDD 8570 certification requirement.\n\nIn May 2020, The UK National Academic Recognition Information Centre assessed the CISSP qualification as a Level 7 award, the same level as a master's degree."
+        },
+        {
+          "heading": "The Eight CISSP Domains",
+          "content": "CISSP covers eight domains of cybersecurity knowledge:",
+          "list": [
+            "Security and Risk Management",
+            "Asset Security",
+            "Security Architecture and Engineering",
+            "Communication and Network Security",
+            "Identity and Access Management (IAM)",
+            "Security Assessment and Testing",
+            "Security Operations",
+            "Software Development Security"
+          ]
+        },
+        {
+          "heading": "Requirements",
+          "list": [
+            "Minimum of five years cumulative, full-time experience in two or more of the eight domains",
+            "A post-secondary degree (bachelor's or master's) may satisfy up to one year of required experience",
+            "Pass a rigorous examination of 125-175 multiple choice and advanced innovative questions",
+            "Endorsement by an existing ISC2 certified professional",
+            "Agree to the ISC2 Code of Ethics"
+          ]
+        },
+        {
+          "heading": "Exam Details",
+          "details": {
+            "Duration": "Up to 4 hours",
+            "Questions": "125-175 multiple choice and advanced innovative questions",
+            "Cost": "$749",
+            "Format": "Computerized Adaptive Testing (CAT)"
+          }
+        },
+        {
+          "heading": "More Information",
+          "links": [
+            { "text": "ISC2 CISSP Official Page", "url": "https://www.isc2.org/certifications/cissp" },
+            { "text": "CISSP Exam Outline", "url": "https://www.isc2.org/certifications/cissp/cissp-certification-exam-outline" }
+          ]
+        }
+      ]
+    },
+    "cism": {
+      "content": "Certified Information Security Manager (CISM) affirms your ability to assess risks, implement effective governance, and proactively respond to incidents. CISM is a globally respected credential by ISACA, designed specifically for professionals managing an enterprise's security posture.\n\nUnlike technical certifications that focus on hands-on tools or frameworks, CISM is all about strategy, governance, and leadership in information security. Since its inception in 2002, more than 107,000 people have obtained ISACA's CISM certification.",
+      "sections": [
+        {
+          "heading": "Four CISM Domains",
+          "content": "The CISM exam covers four domains:",
+          "list": [
+            "Information Security Governance - Addressing the framework for information security within an organization",
+            "Information Risk Management - Identifying and managing information security risks to achieve business objectives",
+            "Information Security Program Development and Management - Planning, establishing and managing the capability to respond to and recover from disruptive and destructive information security incidents",
+            "Information Security Incident Management - Managing and tackling issues that were not already planned or considered"
+          ]
+        },
+        {
+          "heading": "Requirements",
+          "list": [
+            "Five or more years of CISM professional work experience across at least three of the four CISM domains",
+            "Work experience must be gained within the 10-year period preceding the application date",
+            "Pass the CISM examination",
+            "Adhere to ISACA's Code of Professional Ethics",
+            "Maintain certification through continuing professional education"
+          ]
+        },
+        {
+          "heading": "Exam Details",
+          "details": {
+            "Questions": "150 multiple-choice questions",
+            "Duration": "4 hours",
+            "Domains": "Information Security Governance, Information Risk Management, Information Security Program Development and Management, Information Security Incident Management"
+          }
+        },
+        {
+          "heading": "Continuing Education",
+          "list": [
+            "Minimum of 120 Continuing Professional Development (CPE) hours during a three-year reporting period",
+            "Minimum of 20 CPE hours per year"
+          ]
+        },
+        {
+          "heading": "More Information",
+          "links": [
+            { "text": "ISACA CISM Official Page", "url": "https://www.isaca.org/credentialing/cism" },
+            { "text": "CISM Exam Content Outline", "url": "https://www.isaca.org/credentialing/cism/cism-exam-content-outline" }
+          ]
+        }
+      ]
+    },
+    "oscp": {
+      "content": "The Offensive Security Certified Professional (OSCP) is an ethical hacking certification offered by Offensive Security (OffSec) that teaches penetration testing methodologies and the use of tools included with the Kali Linux distribution.\n\nThe OSCP is a hands-on penetration testing certification, requiring holders to successfully attack and penetrate various live machines in a safe lab environment. It is considered more technical than other ethical hacking certifications, and is one of the few certifications that requires evidence of practical penetration testing skills.",
+      "sections": [
+        {
+          "heading": "About the Certification",
+          "content": "The certification validates practical, hands-on skills in ethical hacking and penetration testing. Successful candidates demonstrate proficiency in:",
+          "list": [
+            "Identifying vulnerabilities",
+            "Exploiting systems",
+            "Escalating privileges",
+            "Documenting findings in a real-world environment"
+          ]
+        },
+        {
+          "heading": "Exam Structure",
+          "details": {
+            "Duration": "23 hours and 45 minutes of hands-on hacking",
+            "Report": "24-hour report submission window following the exam",
+            "Format": "Live lab environment with stand-alone machines and Active Directory sets",
+            "Passing Score": "Minimum of 70 points out of 100"
+          },
+          "content": "You are required to write a professional report describing your exploitation process for each target, documenting all steps, commands issued, and console output."
+        },
+        {
+          "heading": "Prerequisites",
+          "content": "There are no formal educational or work experience prerequisites. However, OffSec recommends:",
+          "list": [
+            "Solid understanding of TCP/IP networking",
+            "Reasonable Windows and Linux administration experience",
+            "Familiarity with basic Bash or Python scripting"
+          ]
+        },
+        {
+          "heading": "Industry Recognition",
+          "list": [
+            "In 2015, UK's CREST began recognizing OSCP as equivalent to their intermediate level qualification CREST Registered Tester (CRT)",
+            "Successful completion qualifies for 40 (ISC)2 CPE credits",
+            "The OSCP certification has no expiration date and is valid indefinitely"
+          ]
+        },
+        {
+          "heading": "More Information",
+          "links": [
+            { "text": "OffSec PEN-200 Course", "url": "https://www.offsec.com/courses/pen-200/" },
+            { "text": "OSCP Exam Guide", "url": "https://help.offsec.com/hc/en-us/articles/360040165632-OSCP-Exam-Guide" }
+          ]
+        }
+      ]
+    },
+    "gxpn": {
+      "content": "The GIAC Exploit Researcher and Advanced Penetration Tester (GXPN) certification validates a practitioner's ability to find and mitigate significant security flaws in systems and networks.\n\nGXPN certification holders have the skills to conduct advanced penetration tests and model the behavior of attackers to improve system security, and the knowledge to demonstrate the business risk associated with these behaviors.",
+      "sections": [
+        {
+          "heading": "Target Audience",
+          "content": "The GXPN is ideal for security professionals including:",
+          "list": [
+            "Senior Penetration Testers",
+            "Exploit Developers",
+            "Red Team Leads",
+            "Security Researchers",
+            "Reverse Engineers",
+            "Network and Systems Penetration Testers",
+            "Incident Handlers",
+            "Application Developers",
+            "IDS Engineers"
+          ]
+        },
+        {
+          "heading": "Skills Tested",
+          "content": "The exam covers various technical domains:",
+          "list": [
+            "Understanding how routing and traffic control can be influenced to exploit networks",
+            "Linux memory organization and management fundamentals, low-level Linux binary execution, and how to leverage this information with shell code",
+            "Issues in cryptographic implementations and different ways to exploit those implementations",
+            "Building fuzzing grammars and knowing when and how to use them",
+            "Creating simple return-oriented chains to achieve execution"
+          ]
+        },
+        {
+          "heading": "Exam Format",
+          "details": {
+            "Questions": "60 multiple-choice questions",
+            "Duration": "3 hours",
+            "Passing Score": "67% or higher",
+            "Format": "Open-book, web-based, proctored",
+            "Practical Labs": "Includes 7 CyberLive hands-on practical labs"
+          }
+        },
+        {
+          "heading": "Certification Maintenance",
+          "list": [
+            "GIAC certifications are valid for four years",
+            "Certification holders must submit 36 CPEs for renewal",
+            "Maintenance fee: $499",
+            "Alternative: Retake the current exam"
+          ]
+        },
+        {
+          "heading": "Related Training",
+          "content": "The official SANS course SEC660: Advanced Penetration Testing, Exploit Writing, and Ethical Hacking directly maps to GXPN. The course teaches advanced penetration testing skills to develop custom exploits, perform network attacks, analyze cryptographic implementations, and master advanced exploitation techniques."
+        },
+        {
+          "heading": "More Information",
+          "links": [
+            { "text": "GIAC GXPN Official Page", "url": "https://www.giac.org/certifications/exploit-researcher-advanced-penetration-tester-gxpn/" },
+            { "text": "SANS SEC660 Course", "url": "https://www.sans.org/cyber-security-courses/advanced-penetration-testing-exploits-ethical-hacking" }
+          ]
+        }
+      ]
+    },
+    "gpen": {
+      "content": "The GIAC Penetration Tester (GPEN) certification validates a practitioner's ability to properly conduct a penetration test, using best practice techniques and methodologies.\n\nGPEN certification holders have the knowledge and skills to conduct exploits and engage in detailed reconnaissance, as well as utilize a process-oriented approach to penetration testing projects.",
+      "sections": [
+        {
+          "heading": "Target Audience",
+          "content": "The GPEN certification is designed for:",
+          "list": [
+            "Security personnel who assess networks and systems for vulnerabilities",
+            "Penetration testers",
+            "Ethical hackers",
+            "Red team members",
+            "Offensive security professionals",
+            "Security auditors and consultants"
+          ]
+        },
+        {
+          "heading": "Skills Tested",
+          "content": "The GPEN exam covers:",
+          "list": [
+            "Comprehensive pen test planning, scoping, and recon",
+            "In-depth scanning and exploitation",
+            "Password attacks and web application testing",
+            "Post-exploitation and pivoting techniques",
+            "Detailed penetration test reporting"
+          ]
+        },
+        {
+          "heading": "Exam Format",
+          "details": {
+            "Questions": "82 questions",
+            "Duration": "3 hours",
+            "Passing Score": "75%",
+            "Format": "Open-book, web-based, proctored"
+          }
+        },
+        {
+          "heading": "Certification Maintenance",
+          "list": [
+            "GIAC certifications are valid for four years",
+            "Certification holders must submit 36 CPEs for renewal",
+            "Alternative: Retake the current exam"
+          ]
+        },
+        {
+          "heading": "Related Training",
+          "content": "The official SANS course SEC560: Enterprise Penetration Testing directly maps to GPEN. This course provides comprehensive coverage of penetration testing techniques and methodologies used by professional penetration testers."
+        },
+        {
+          "heading": "More Information",
+          "links": [
+            { "text": "GIAC GPEN Official Page", "url": "https://www.giac.org/certifications/penetration-tester-gpen/" },
+            { "text": "SANS SEC560 Course", "url": "https://www.sans.org/cyber-security-courses/enterprise-penetration-testing/" }
+          ]
+        }
+      ]
+    },
+    "securityx": {
+      "content": "SecurityX (formerly CASP+) is an advanced cybersecurity certification for security architects and senior security engineers. It proves you have the skills to design, build, and implement secure solutions across complex environments. You'll also show you can support a resilient enterprise while addressing governance, risk, and compliance needs.\n\nThe CASP+ certification is approved by the U.S. DoD, meets the directive 8140/8570.01-M requirements, and complies with ISO 17024 standards.",
+      "sections": [
+        {
+          "heading": "Four Knowledge Domains",
+          "content": "The CompTIA SecurityX exam covers four major domains:",
+          "list": [
+            "Security Architecture (29%) - Cloud capabilities, network architecture, security boundaries, zero trust concepts",
+            "Security Operations (30%) - Monitoring, data analysis, vulnerabilities, attack surface management, threat hunting",
+            "Security Engineering and Cryptography (26%) - Cryptographic use cases and techniques, secure protocols",
+            "Governance, Risk, and Compliance (15%) - Risk management, compliance frameworks, security policies"
+          ]
+        },
+        {
+          "heading": "Key Topics",
+          "list": [
+            "Cloud security (CASB, shadow IT detection, shared responsibility model, CI/CD pipeline, container security)",
+            "Network architecture (segmentation, VPN, API integration)",
+            "Deperimeterization (SASE, SD-WAN)",
+            "Zero trust implementation",
+            "Cryptographic techniques (tokenization, code signing, digital signatures, hashing)",
+            "SIEM and behavioral analysis",
+            "Threat hunting methodologies"
+          ]
+        },
+        {
+          "heading": "Exam Details",
+          "details": {
+            "Exam Code": "CAS-004",
+            "Questions": "Maximum of 90 questions (multiple-choice and performance-based)",
+            "Duration": "165 minutes",
+            "Passing Score": "750 points (pass/fail)",
+            "Cost": "$466"
+          }
+        },
+        {
+          "heading": "Recommended Experience",
+          "list": [
+            "Minimum of ten years of general hands-on IT experience",
+            "At least five years of broad hands-on IT security experience",
+            "CASP+ is designed for practitioners, not managers"
+          ]
+        },
+        {
+          "heading": "Certification Renewal",
+          "list": [
+            "Collect at least 75 Continuing Education Units (CEUs) in three years",
+            "Or pass the most current version of the SecurityX exam",
+            "Or earn a higher-level certification"
+          ]
+        },
+        {
+          "heading": "More Information",
+          "links": [
+            { "text": "CompTIA SecurityX Official Page", "url": "https://www.comptia.org/certifications/casp/" },
+            { "text": "SecurityX Exam Objectives", "url": "https://www.comptia.org/certifications/casp/" }
+          ]
+        }
+      ]
+    },
+    "security-plus": {
+      "content": "CompTIA Security+ is a global certification that validates the baseline skills necessary to perform core security functions and pursue an IT security career. It establishes the core knowledge required of any cybersecurity role and provides a springboard to intermediate-level cybersecurity jobs.\n\nSecurity+ is compliant with ISO 17024 standards and approved by the U.S. DoD to meet directive 8140/8570.01-M requirements.",
+      "sections": [
+        {
+          "heading": "Key Areas Covered",
+          "list": [
+            "Threats, Attacks and Vulnerabilities - Identifying and analyzing malicious code, threat actors, and vulnerability types",
+            "Architecture and Design - Implementing secure network architecture concepts and systems design",
+            "Implementation - Installing and configuring identity and access management, PKI, and wireless security",
+            "Operations and Incident Response - Applying appropriate incident response procedures, security assessment tools, and digital forensics",
+            "Governance, Risk, and Compliance - Understanding risk management, compliance frameworks, and security policies"
+          ]
+        },
+        {
+          "heading": "Why Security+",
+          "list": [
+            "Establishes baseline cybersecurity knowledge",
+            "Global recognition across industries",
+            "Vendor-neutral certification",
+            "Gateway to more advanced certifications",
+            "DoD 8570 compliant"
+          ]
+        },
+        {
+          "heading": "More Information",
+          "links": [
+            { "text": "CompTIA Security+ Official Page", "url": "https://www.comptia.org/certifications/security" }
+          ]
+        }
+      ]
+    },
+    "network-plus": {
+      "content": "CompTIA Network+ validates the technical skills needed to securely establish, maintain and troubleshoot the essential networks that businesses rely on. It covers the configuration, management, and troubleshooting of common wired and wireless network devices.",
+      "sections": [
+        {
+          "heading": "Key Areas Covered",
+          "list": [
+            "Networking Fundamentals - OSI model, network topologies, cabling, and IP addressing",
+            "Network Implementations - Routing, switching, wireless technologies, and cloud concepts",
+            "Network Operations - Network monitoring, documentation, and business continuity",
+            "Network Security - Common threats, vulnerabilities, and hardening techniques",
+            "Network Troubleshooting - Methodology and tools for identifying and resolving network issues"
+          ]
+        },
+        {
+          "heading": "Why Network+",
+          "list": [
+            "Vendor-neutral networking credential",
+            "Covers both wired and wireless networks",
+            "Foundation for networking career paths",
+            "Recognized by employers globally",
+            "Complements security certifications"
+          ]
+        },
+        {
+          "heading": "More Information",
+          "links": [
+            { "text": "CompTIA Network+ Official Page", "url": "https://www.comptia.org/certifications/network" }
+          ]
+        }
+      ]
+    },
+    "a-plus": {
+      "content": "CompTIA A+ is the industry standard for establishing a career in IT. It proves competency as a support technician and validates understanding of hardware, software, networking, and troubleshooting.",
+      "sections": [
+        {
+          "heading": "Key Areas Covered",
+          "list": [
+            "Hardware - Mobile devices, networking hardware, printers, storage devices",
+            "Operating Systems - Windows, macOS, Linux, mobile OS installation and configuration",
+            "Software Troubleshooting - Application issues, security software, removal procedures",
+            "Networking - TCP/IP, ports and protocols, network hardware",
+            "Security - Malware removal, physical security, data destruction",
+            "Operational Procedures - Documentation, change management, disaster recovery"
+          ]
+        },
+        {
+          "heading": "Why A+",
+          "list": [
+            "Industry-recognized entry point for IT careers",
+            "Vendor-neutral covering multiple platforms",
+            "Required by many employers and government positions",
+            "Foundation for more advanced certifications",
+            "Validates practical troubleshooting skills"
+          ]
+        },
+        {
+          "heading": "More Information",
+          "links": [
+            { "text": "CompTIA A+ Official Page", "url": "https://www.comptia.org/certifications/a" }
+          ]
+        }
+      ]
+    },
+    "linux-plus": {
+      "content": "CompTIA Linux+ validates the competencies required of an early career Linux system administrator. It covers system configuration, operation, and maintenance, along with troubleshooting and diagnostics.",
+      "sections": [
+        {
+          "heading": "Key Areas Covered",
+          "list": [
+            "System Configuration - Hardware settings, boot process, kernel modules",
+            "System Operation and Maintenance - Software installation, user management, permissions",
+            "Security - File permissions, firewalls, SELinux/AppArmor",
+            "Linux Troubleshooting and Diagnostics - System logs, performance monitoring",
+            "Automation and Scripting - Shell scripting, cron jobs, automation tools"
+          ]
+        },
+        {
+          "heading": "Why Linux+",
+          "list": [
+            "Vendor-neutral Linux credential",
+            "Covers multiple distributions",
+            "Foundation for system administration careers",
+            "Complements security and cloud certifications",
+            "Recognized globally"
+          ]
+        },
+        {
+          "heading": "More Information",
+          "links": [
+            { "text": "CompTIA Linux+ Official Page", "url": "https://www.comptia.org/certifications/linux" }
+          ]
+        }
+      ]
+    },
+    "project-plus": {
+      "content": "CompTIA Project+ validates the knowledge and skills required to manage the project lifecycle, ensure appropriate communication, manage resources, manage stakeholders, and maintain documentation throughout the project.",
+      "sections": [
+        {
+          "heading": "Key Areas Covered",
+          "list": [
+            "Project Basics - Project characteristics, phases, roles, and organizational structures",
+            "Project Constraints - Managing scope, schedule, budget, and quality",
+            "Communication and Change Management - Stakeholder communication, change control processes",
+            "Project Tools and Documentation - Project management tools, documentation best practices",
+            "Project Execution - Resource allocation, team management, risk management"
+          ]
+        },
+        {
+          "heading": "Why Project+",
+          "list": [
+            "Vendor-neutral project management credential",
+            "Covers full project lifecycle",
+            "Does not require extensive project management experience",
+            "Complements technical certifications",
+            "Applicable across industries"
+          ]
+        },
+        {
+          "heading": "More Information",
+          "links": [
+            { "text": "CompTIA Project+ Official Page", "url": "https://www.comptia.org/certifications/project" }
+          ]
+        }
+      ]
+    },
+    "csis": {
+      "content": "The CompTIA Secure Infrastructure Specialist (CSIS) is a stackable certification that validates expertise in securing IT infrastructure. It is earned by holding active CompTIA A+, Network+, and Security+ certifications.",
+      "sections": [
+        {
+          "heading": "Component Certifications",
+          "content": "This stackable certification requires:",
+          "list": [
+            "CompTIA A+ - Hardware and software troubleshooting",
+            "CompTIA Network+ - Network design, configuration, and management",
+            "CompTIA Security+ - Security fundamentals and best practices"
+          ]
+        },
+        {
+          "heading": "Skills Validated",
+          "list": [
+            "Hardware and software support",
+            "Network infrastructure management",
+            "Security implementation and monitoring",
+            "Troubleshooting across the technology stack",
+            "Infrastructure hardening"
+          ]
+        },
+        {
+          "heading": "Why CSIS",
+          "list": [
+            "Demonstrates comprehensive infrastructure skills",
+            "Shows breadth of knowledge across IT domains",
+            "Validates security-focused infrastructure expertise",
+            "Recognized by employers seeking well-rounded IT professionals"
+          ]
+        },
+        {
+          "heading": "More Information",
+          "links": [
+            { "text": "CompTIA Stackable Certifications", "url": "https://www.comptia.org/certifications/which-certification/stackable-certifications" }
+          ]
+        }
+      ]
+    },
+    "clnp": {
+      "content": "The CompTIA Linux Network Professional (CLNP) is a stackable certification that validates expertise in Linux systems and network administration. It is earned by holding active CompTIA Linux+ and Network+ certifications.",
+      "sections": [
+        {
+          "heading": "Component Certifications",
+          "content": "This stackable certification requires:",
+          "list": [
+            "CompTIA Linux+ - Linux system administration and management",
+            "CompTIA Network+ - Network design, configuration, and troubleshooting"
+          ]
+        },
+        {
+          "heading": "Skills Validated",
+          "list": [
+            "Linux system configuration and administration",
+            "Network infrastructure design and implementation",
+            "Cross-platform networking concepts",
+            "Linux-based network services management",
+            "Troubleshooting in mixed environments"
+          ]
+        },
+        {
+          "heading": "Why CLNP",
+          "list": [
+            "Demonstrates Linux and networking expertise",
+            "Valuable for DevOps and infrastructure roles",
+            "Shows proficiency in enterprise Linux environments",
+            "Recognized for hybrid infrastructure management"
+          ]
+        },
+        {
+          "heading": "More Information",
+          "links": [
+            { "text": "CompTIA Stackable Certifications", "url": "https://www.comptia.org/certifications/which-certification/stackable-certifications" }
+          ]
+        }
+      ]
+    },
+    "csss": {
+      "content": "The CompTIA Systems Support Specialist (CSSS) is a stackable certification that validates expertise in supporting diverse computing environments. It is earned by holding active CompTIA A+ and Linux+ certifications.",
+      "sections": [
+        {
+          "heading": "Component Certifications",
+          "content": "This stackable certification requires:",
+          "list": [
+            "CompTIA A+ - Hardware and software support across platforms",
+            "CompTIA Linux+ - Linux system administration"
+          ]
+        },
+        {
+          "heading": "Skills Validated",
+          "list": [
+            "Multi-platform hardware and software support",
+            "Linux and Windows system administration",
+            "Troubleshooting across operating systems",
+            "User support in mixed environments",
+            "System maintenance and configuration"
+          ]
+        },
+        {
+          "heading": "Why CSSS",
+          "list": [
+            "Demonstrates cross-platform support skills",
+            "Valuable for help desk and support roles",
+            "Shows versatility in diverse IT environments",
+            "Recognized for comprehensive technical support expertise"
+          ]
+        },
+        {
+          "heading": "More Information",
+          "links": [
+            { "text": "CompTIA Stackable Certifications", "url": "https://www.comptia.org/certifications/which-certification/stackable-certifications" }
+          ]
+        }
+      ]
+    },
+    "cios": {
+      "content": "The CompTIA IT Operations Specialist (CIOS) is a stackable certification that validates expertise in IT operations and network support. It is earned by holding active CompTIA A+ and Network+ certifications.",
+      "sections": [
+        {
+          "heading": "Component Certifications",
+          "content": "This stackable certification requires:",
+          "list": [
+            "CompTIA A+ - Hardware, software, and troubleshooting fundamentals",
+            "CompTIA Network+ - Network configuration and management"
+          ]
+        },
+        {
+          "heading": "Skills Validated",
+          "list": [
+            "IT infrastructure support and maintenance",
+            "Network design and implementation",
+            "Hardware and software troubleshooting",
+            "End-user support in networked environments",
+            "Operational technology management"
+          ]
+        },
+        {
+          "heading": "Why CIOS",
+          "list": [
+            "Demonstrates comprehensive IT operations skills",
+            "Foundation for IT infrastructure careers",
+            "Shows network and systems proficiency",
+            "Recognized for technical operations expertise"
+          ]
+        },
+        {
+          "heading": "More Information",
+          "links": [
+            { "text": "CompTIA Stackable Certifications", "url": "https://www.comptia.org/certifications/which-certification/stackable-certifications" }
+          ]
+        }
+      ]
+    }
+  },
+  "meta": {
+    "version": "1.0.0",
+    "lastModified": "2025-12-27"
+  }
+}

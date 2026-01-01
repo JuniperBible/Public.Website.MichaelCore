@@ -1,0 +1,27 @@
+# AirFold Theme for Hugo
+# A handwritten paper aesthetic theme with dark mode support
+
+name = "AirFold Theme"
+license = "MIT"
+licenselink = "https://github.com/cyanitol/airfold-theme/blob/main/LICENSE"
+description = "A handwritten paper aesthetic Hugo theme featuring wavy borders, paper shadows, and full dark mode support. Built with Tailwind CSS v4."
+homepage = "https://github.com/cyanitol/airfold-theme"
+tags = ["blog", "portfolio", "resume", "responsive", "dark-mode", "tailwind", "paper-style", "handwritten"]
+features = ["dark-mode", "responsive", "social-icons", "contact-form", "pgp-encryption", "tag-cloud", "resume", "certifications", "projects"]
+
+[author]
+  name = "Justin Weeks"
+  homepage = "https://focuswithjustin.com"
+
+# Theme requirements
+[params]
+  min_hugo_version = "0.128.0"
+
+# The default theme parameters
+[params.defaults]
+  # Color scheme: "light" or "dark" or "system"
+  colorScheme = "system"
+  # Primary accent color (purple by default)
+  accentColor = "#7a00b0"
+  # Enable loading overlay to prevent dark mode flash
+  loadingOverlay = true

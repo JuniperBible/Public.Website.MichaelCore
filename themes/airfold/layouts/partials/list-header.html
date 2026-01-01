@@ -1,0 +1,9 @@
+{{/*
+  List Header Partial (wrapper for page-header.html)
+
+  Usage: {{ partial "list-header.html" . }}
+
+  Displays a centered header with title and optional description.
+  Delegates to page-header.html with mb-12 margin.
+*/}}
+{{ partial "page-header.html" (dict "page" . "marginClass" "mb-12") }}

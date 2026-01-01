@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <circle cx="50" cy="50" r="45" fill="#1a1a1a" stroke="#0a0a0a" stroke-width="3"/>
+  <circle cx="50" cy="50" r="35" fill="none" stroke="#fff" stroke-width="2"/>
+  <text x="50" y="30" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" font-weight="bold" fill="#fff">CompTIA</text>
+  <text x="50" y="55" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#fff">A+</text>
+  <rect x="30" y="60" width="40" height="12" rx="2" fill="#fff"/>
+  <text x="50" y="69" text-anchor="middle" font-family="Arial, sans-serif" font-size="7" font-weight="bold" fill="#1a1a1a">CERTIFIED</text>
+</svg>

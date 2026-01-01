@@ -1,0 +1,18 @@
+{{/* Tool Card Shortcode
+     Usage: {{< tool-card "Docker" >}}
+            {{< tool-card name="Docker" >}}
+     Links to /resume/tools/{slug}/
+*/}}
+{{- $name := .Get 0 | default (.Get "name") -}}
+{{- $slug := $name | urlize -}}
+{{- $tool := site.GetPage (printf "/resume/tools/%s" $slug) -}}
+{{- with $tool -}}
+<a href="{{ .RelPermalink }}" class="inline-block card-paper-sm">
+  <div class="flex items-center gap-2">
+    {{- with .Params.logo -}}<img src="{{ . }}" alt="{{ $.Title }} logo" class="w-8 h-8">{{- end -}}
+    <span class="font-hand font-bold">{{ .Title }}</span>
+  </div>
+</a>
+{{- else -}}
+<span class="inline-block px-3 py-1 text-xs font-medium bg-paper-light border border-paper-border rounded-full">{{ $name }}</span>
+{{- end -}}

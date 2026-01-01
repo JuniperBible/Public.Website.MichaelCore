@@ -1,0 +1,32 @@
+{{ define "main" }}
+<div class="max-w-6xl mx-auto px-4 py-12">
+  <header class="text-center mb-8">
+    <h1 class="text-3xl md:text-4xl font-hand font-bold text-paper-black mb-4">
+      {{ .Title }}
+    </h1>
+    {{ with .Description }}
+    <p class="text-lg font-hand text-paper-gray max-w-2xl mx-auto">
+      {{ . }}
+    </p>
+    {{ end }}
+  </header>
+
+  {{ with .Content }}
+  <div class="prose max-w-none mb-8">
+    {{ . }}
+  </div>
+  {{ end }}
+
+  <!-- Canonical Comparison Table -->
+  <div class="card-paper p-4 md:p-6 mb-8">
+    {{ partial "canonical-comparison.html" . }}
+  </div>
+
+  <!-- Back navigation -->
+  <div class="text-center">
+    <a href="/religion/" class="btn-paper">
+      &larr; {{ i18n "backToReligion" | default "Back to Religion" }}
+    </a>
+  </div>
+</div>
+{{ end }}

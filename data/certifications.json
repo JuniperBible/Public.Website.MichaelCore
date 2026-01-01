@@ -1,0 +1,189 @@
+{
+  "$schema": "https://focuswithjustin.com/schemas/certifications.schema.json",
+  "certifications": [
+    {
+      "id": "cissp",
+      "title": "Certified Information Systems Security Professional (CISSP)",
+      "description": "ISC2's premier cybersecurity certification validating deep technical and managerial security knowledge.",
+      "issuer": "ISC2",
+      "issued": "2002-01-01",
+      "expires": "2028-07-31",
+      "credly_url": "https://www.credly.com/badges/cb4edd2c-f21f-4c9d-9d3a-75ecfb1dd949",
+      "logo": "/images/certifications/cissp.svg",
+      "tags": ["Security Management", "Risk Management", "Security Architecture", "Governance", "Access Control", "Cryptography"],
+      "weight": 1
+    },
+    {
+      "id": "cism",
+      "title": "Certified Information Security Manager (CISM)",
+      "description": "ISACA's certification for information security management professionals.",
+      "issuer": "ISACA",
+      "issued": "2023-01-05",
+      "expires": "",
+      "credly_url": "https://www.credly.com/badges/37ad0cbd-5c91-4816-a916-2d1964dc3079",
+      "logo": "/images/certifications/cism.svg",
+      "tags": ["Security Management", "Risk Management", "Governance", "Incident Response", "Security Program"],
+      "weight": 2
+    },
+    {
+      "id": "oscp",
+      "title": "Offensive Security Certified Professional (OSCP)",
+      "description": "OffSec's hands-on penetration testing certification proving practical ethical hacking skills.",
+      "issuer": "Offensive Security",
+      "issued": "2019-05-20",
+      "expires": "",
+      "credly_url": "https://www.credly.com/badges/531cbf8b-aa9c-4186-9844-1ffa881fac37",
+      "logo": "/images/certifications/oscp.svg",
+      "tags": ["Penetration Testing", "Ethical Hacking", "Exploitation", "Privilege Escalation", "Vulnerability Assessment"],
+      "weight": 3
+    },
+    {
+      "id": "gxpn",
+      "title": "GIAC Exploit Researcher and Advanced Penetration Tester (GXPN)",
+      "description": "SANS GIAC certification for advanced penetration testing and exploit development.",
+      "issuer": "Global Information Assurance Certification (GIAC)",
+      "issued": "2002-01-01",
+      "expires": "2026-11-30",
+      "credly_url": "https://www.credly.com/badges/cb8e450b-3d13-4c3e-8b87-5be41e24f8ee",
+      "logo": "/images/certifications/gxpn.svg",
+      "tags": ["Penetration Testing", "Exploit Development", "Reverse Engineering", "Cryptography", "Red Team"],
+      "weight": 4
+    },
+    {
+      "id": "gpen",
+      "title": "GIAC Penetration Tester (GPEN)",
+      "description": "SANS GIAC certification validating penetration testing methodologies and technical skills.",
+      "issuer": "Global Information Assurance Certification (GIAC)",
+      "issued": "2002-01-01",
+      "expires": "2029-03-31",
+      "credly_url": "https://www.credly.com/badges/c50ca60a-71da-4c59-9318-944f55f142e4",
+      "logo": "/images/certifications/gpen.svg",
+      "tags": ["Penetration Testing", "Vulnerability Assessment", "Ethical Hacking", "Network Security", "Web Application Security"],
+      "weight": 5
+    },
+    {
+      "id": "securityx",
+      "title": "CompTIA SecurityX (formerly CASP+)",
+      "description": "CompTIA's advanced cybersecurity certification for security architects and senior engineers.",
+      "issuer": "CompTIA",
+      "issued": "2002-01-01",
+      "expires": "2027-10-02",
+      "credly_url": "https://www.credly.com/badges/c93bc90f-72e3-4ae6-9789-58ba1515c94a",
+      "logo": "/images/certifications/securityx.svg",
+      "tags": ["Security Architecture", "Risk Management", "Governance", "Cloud Security", "Zero Trust", "Cryptography"],
+      "weight": 6
+    },
+    {
+      "id": "security-plus",
+      "title": "CompTIA Security+ ce",
+      "description": "CompTIA's foundational cybersecurity certification covering essential security concepts.",
+      "issuer": "CompTIA",
+      "issued": "2002-01-01",
+      "expires": "2027-10-02",
+      "credly_url": "https://www.credly.com/badges/32ab62f1-6ae6-46e5-bc10-2b5d89b8c744",
+      "logo": "/images/certifications/security-plus.svg",
+      "tags": ["Network Security", "Threat Analysis", "Incident Response", "Access Control", "Cryptography"],
+      "weight": 7
+    },
+    {
+      "id": "network-plus",
+      "title": "CompTIA Network+ ce",
+      "description": "CompTIA's networking certification validating skills to design, configure, and troubleshoot networks.",
+      "issuer": "CompTIA",
+      "issued": "2002-01-01",
+      "expires": "2027-10-02",
+      "credly_url": "https://www.credly.com/badges/2227ef7a-3797-4c76-8876-d123f6eda3e0",
+      "logo": "/images/certifications/network-plus.svg",
+      "tags": ["Network Security", "Network Administration", "Troubleshooting", "TCP/IP", "Wireless"],
+      "weight": 8
+    },
+    {
+      "id": "a-plus",
+      "title": "CompTIA A+ ce",
+      "description": "CompTIA's foundational IT certification covering hardware, software, and troubleshooting.",
+      "issuer": "CompTIA",
+      "issued": "2002-01-01",
+      "expires": "2027-10-02",
+      "credly_url": "https://www.credly.com/badges/18d8f256-ac6f-4e39-89f1-09221b747622",
+      "logo": "/images/certifications/a-plus.svg",
+      "tags": ["IT Support", "Hardware", "Troubleshooting", "Operating Systems", "Help Desk"],
+      "weight": 9
+    },
+    {
+      "id": "linux-plus",
+      "title": "CompTIA Linux+ (Powered by LPI)",
+      "description": "CompTIA's Linux certification validating essential Linux administration skills.",
+      "issuer": "CompTIA",
+      "issued": "2015-02-23",
+      "expires": "",
+      "credly_url": "https://www.credly.com/badges/e9e951bb-3414-42e4-b539-804a94906b22",
+      "logo": "/images/certifications/linux-plus.svg",
+      "tags": ["Linux", "System Administration", "Shell Scripting", "Security Hardening", "Automation"],
+      "weight": 10
+    },
+    {
+      "id": "project-plus",
+      "title": "CompTIA Project+",
+      "description": "CompTIA's project management certification for IT professionals.",
+      "issuer": "CompTIA",
+      "issued": "2016-09-29",
+      "expires": "",
+      "credly_url": "https://www.credly.com/badges/1b3fb1c5-778b-439a-9794-ae3fdab8f740",
+      "logo": "/images/certifications/project-plus.svg",
+      "tags": ["Project Management", "Risk Management", "Stakeholder Management", "Documentation"],
+      "weight": 11
+    },
+    {
+      "id": "csis",
+      "title": "CompTIA Secure Infrastructure Specialist (CSIS)",
+      "description": "CompTIA stackable certification combining Security+, Network+, and A+ credentials.",
+      "issuer": "CompTIA",
+      "issued": "2002-01-01",
+      "expires": "2027-10-02",
+      "credly_url": "https://www.credly.com/badges/9eff7d6a-bdd5-41c1-87dc-84421af6abcd",
+      "logo": "/images/certifications/csis.svg",
+      "tags": ["Security Architecture", "Network Security", "IT Support", "Infrastructure"],
+      "weight": 12
+    },
+    {
+      "id": "clnp",
+      "title": "CompTIA Linux Network Professional (CLNP)",
+      "description": "CompTIA stackable certification combining Linux+ and Network+ credentials.",
+      "issuer": "CompTIA",
+      "issued": "2002-01-01",
+      "expires": "2027-10-02",
+      "credly_url": "https://www.credly.com/badges/8c81afde-d15d-4044-980f-826f07ec348d",
+      "logo": "/images/certifications/clnp.svg",
+      "tags": ["Linux", "Network Administration", "System Administration", "Infrastructure"],
+      "weight": 13
+    },
+    {
+      "id": "csss",
+      "title": "CompTIA Systems Support Specialist (CSSS)",
+      "description": "CompTIA stackable certification combining A+ and Linux+ credentials.",
+      "issuer": "CompTIA",
+      "issued": "2002-01-01",
+      "expires": "2027-10-02",
+      "credly_url": "https://www.credly.com/badges/5eb0498f-2eb7-4dbb-8e97-12a29a4fd40c",
+      "logo": "/images/certifications/csss.svg",
+      "tags": ["IT Support", "Linux", "System Administration", "Troubleshooting"],
+      "weight": 14
+    },
+    {
+      "id": "cios",
+      "title": "CompTIA IT Operations Specialist (CIOS)",
+      "description": "CompTIA stackable certification combining A+ and Network+ credentials.",
+      "issuer": "CompTIA",
+      "issued": "2002-01-01",
+      "expires": "2027-10-02",
+      "credly_url": "https://www.credly.com/badges/3e19c599-d678-4566-8820-4876d80633a8",
+      "logo": "/images/certifications/cios.svg",
+      "tags": ["IT Support", "Network Administration", "Infrastructure", "Troubleshooting"],
+      "weight": 15
+    }
+  ],
+  "meta": {
+    "version": "1.0.0",
+    "lastModified": "2025-12-27"
+  }
+}

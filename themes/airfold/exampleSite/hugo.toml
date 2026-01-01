@@ -1,0 +1,80 @@
+baseURL = 'https://example.com/'
+languageCode = 'en-us'
+title = 'AirFold Demo Site'
+theme = 'airfold'
+buildDrafts = false
+
+# Enable sitemap generation
+[sitemap]
+  changefreq = 'weekly'
+  priority = 0.5
+  filename = 'sitemap.xml'
+
+[pagination]
+  pagerSize = 6
+
+[params]
+  # Site metadata
+  description = 'Your site description for SEO'
+  author = 'Your Name'
+  keywords = 'keyword1, keyword2, keyword3'
+
+  # Homepage
+  heroImage = '/images/hero.png'
+  tagline = 'Your tagline here'
+
+  # Favicon
+  favicon = '/favicon.ico'
+
+  # Footer (supports HTML)
+  footerText = '&copy; 2024 Your Name. All rights reserved.'
+
+  # Social CTA text
+  socialCtaText = 'Connect with me on social media'
+
+  # Contact form action URL
+  contactFormAction = '/api/contact'
+
+  # Credly profile URL (for certifications page)
+  credlyUrl = 'https://www.credly.com/users/your-profile'
+
+  # Optional: PGP public key for encrypting contact form
+  # pgpPublicKey = '''
+  # -----BEGIN PGP PUBLIC KEY BLOCK-----
+  # ... your public key here ...
+  # -----END PGP PUBLIC KEY BLOCK-----
+  # '''
+
+[taxonomies]
+  tag = 'tags'
+
+# Main navigation menu
+[menus]
+  [[menus.main]]
+    name = 'Home'
+    pageRef = '/'
+    weight = 10
+  [[menus.main]]
+    name = 'About'
+    pageRef = '/about'
+    weight = 20
+  [[menus.main]]
+    name = 'Blog'
+    pageRef = '/blog'
+    weight = 30
+  [[menus.main]]
+    name = 'Projects'
+    pageRef = '/projects'
+    weight = 40
+  [[menus.main]]
+    name = 'Certifications'
+    pageRef = '/certifications'
+    weight = 45
+  [[menus.main]]
+    name = 'Resume'
+    pageRef = '/resume'
+    weight = 50
+  [[menus.main]]
+    name = 'Contact'
+    pageRef = '/contact'
+    weight = 60

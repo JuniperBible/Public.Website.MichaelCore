@@ -1,0 +1,290 @@
+# English UI strings for Focus with Justin
+# These strings are accessed using {{ i18n "key" }} in templates
+# See: https://gohugo.io/functions/i18n/
+
+# Accessibility
+[skipToContent]
+other = "Skip to content"
+
+# General navigation
+[readMore]
+other = "Read more"
+
+[previous]
+other = "Previous"
+
+[next]
+other = "Next"
+
+[pageOf]
+other = "Page %d of %d"
+
+[backToHome]
+other = "Back to Home"
+
+[viewAll]
+other = "View All"
+
+[viewDetails]
+other = "View Details"
+
+[all]
+other = "All"
+
+# Tags
+[allTags]
+other = "All Tags"
+
+[tagsAZ]
+other = "Tags A-Z"
+
+[exploreTopics]
+other = "Explore Other Topics"
+
+[exploreProjects]
+other = "Explore Other Projects"
+
+[articles]
+one = "article"
+other = "articles"
+
+[tags]
+one = "tag"
+other = "tags"
+
+# Reading time
+[minRead]
+other = "min read"
+
+# Resume section
+[backToResume]
+other = "Back to Resume"
+
+[allCertifications]
+other = "All Certifications"
+
+[allTools]
+other = "All Tools"
+
+[allSkills]
+other = "All Skills"
+
+[relatedCertifications]
+other = "Related Certifications"
+
+[viewResume]
+other = "View Resume"
+
+[viewProject]
+other = "View Project"
+
+[verifyOnCredly]
+other = "Verify on Credly"
+
+[viewAllBadgesOnCredly]
+other = "View All Badges on Credly"
+
+[noArticlesWithTag]
+other = "No articles with this tag."
+
+[skills]
+other = "Skills"
+
+[expires]
+other = "Expires"
+
+[issued]
+other = "Issued"
+
+[officialWebsite]
+other = "Official Website"
+
+[filterByTag]
+other = "Filter by Tag"
+
+[noImage]
+other = "No image"
+
+[noProjectsYet]
+other = "No projects yet."
+
+[noProjectsMatch]
+other = "No projects match this filter."
+
+[recentArticles]
+other = "Recent Articles"
+
+[noArticlesYet]
+other = "No articles yet."
+
+# 404 Page
+[notFoundTitle]
+other = "404"
+
+[notFoundHeading]
+other = "Page not found"
+
+[notFoundMessage]
+other = "The page you're looking for doesn't exist or has been moved."
+
+# Contact form
+[encryptedPlaceholder]
+other = "[Encrypted - see encrypted_message field]"
+
+[nameLabel]
+other = "Name"
+
+[emailLabel]
+other = "Email"
+
+[subjectLabel]
+other = "Subject"
+
+[messageLabel]
+other = "Message"
+
+[sendMessage]
+other = "Send Message"
+
+[pgpNotice]
+other = "Your message will be encrypted with PGP"
+
+[orConnectElsewhere]
+other = "Or connect with me elsewhere"
+
+[encryptingStatus]
+other = "Encrypting..."
+
+[sendingStatus]
+other = "Sending..."
+
+[encryptionFailed]
+other = "Failed to encrypt message. Please try again."
+
+[clientLabel]
+other = "Client"
+
+# Religion/Bible navigation
+[bibleNavigation]
+other = "Bible Navigation"
+
+[bibles]
+other = "Bible Translations"
+
+[biblesDescription]
+other = "Browse historic Bible translations"
+
+[backToReligion]
+other = "Back to Religion"
+
+[backToBook]
+other = "Back to Book"
+
+[backToBible]
+other = "Back to Bible"
+
+[allBibles]
+other = "All Bibles"
+
+[allChapters]
+other = "All Chapters"
+
+[selectBible]
+other = "Select Bible"
+
+[selectBook]
+other = "Select Book"
+
+[selectChapter]
+other = "Select Chapter"
+
+[chapter]
+other = "Ch"
+
+[previousChapter]
+other = "Previous Chapter"
+
+[nextChapter]
+other = "Next Chapter"
+
+[unavailable]
+other = "unavailable"
+
+# Compare translations
+[compareTranslations]
+other = "Compare Translations"
+
+[selectTranslations]
+other = "Select Translations"
+
+[selectTranslationsHint]
+other = "Select 2-4 translations to compare side-by-side."
+
+[selectPassage]
+other = "Select Passage"
+
+[compare]
+other = "Compare"
+
+[selectPassagePrompt]
+other = "Select translations and a passage to begin comparing."
+
+[maxTranslationsWarning]
+other = "Maximum 4 translations can be compared at once."
+
+# Bible search
+[searchBible]
+other = "Search Bible"
+
+[searchQuery]
+other = "Search for"
+
+[searchPlaceholder]
+other = "word, \"exact phrase\", or H1234/G5678"
+
+[search]
+other = "Search"
+
+[caseSensitive]
+other = "Case sensitive"
+
+[wholeWord]
+other = "Whole word"
+
+[searching]
+other = "Searching..."
+
+[searchPrompt]
+other = "Enter a search term to find verses across the Bible."
+
+[searchTypesHint]
+other = "Try: word, \"exact phrase\", or Strong's numbers (H430, G2316)"
+
+[searchResults]
+other = "Search Results"
+
+[noResults]
+other = "No results found"
+
+# PGP encryption status messages
+[keyExpired]
+other = "The encryption key has expired. Message cannot be encrypted."
+
+[keyInvalid]
+other = "Invalid encryption key. Message cannot be encrypted."
+
+# Project filters
+[projectFilters]
+other = "Project filters"
+
+[showAllProjects]
+other = "Show all projects"
+
+[filterByTagLabel]
+other = "Filter by tag"
+
+[projectScreenshot]
+other = "Screenshot of"
+
+[certificationBadge]
+other = "certification badge"

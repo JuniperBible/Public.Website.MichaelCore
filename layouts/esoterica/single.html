@@ -1,0 +1,27 @@
+{{ define "main" }}
+<article class="max-w-4xl mx-auto px-4 py-12">
+  <header class="text-center mb-8">
+    <h1 class="text-4xl md:text-5xl font-hand font-bold text-paper-black mb-4">
+      {{ .Title }}
+    </h1>
+    {{ with .Description }}
+    <p class="text-xl font-hand text-paper-gray">{{ . }}</p>
+    {{ end }}
+    <div class="text-sm text-paper-gray">
+      {{ with .Date }}
+      <time datetime="{{ .Format "2006-01-02" }}">
+        {{ .Format "January 2, 2006" }}
+      </time>
+      {{ end }}
+      {{- $wordsPerMinute := .Site.Params.seo.wordsPerMinute | default 200 -}}
+      {{- $readingTime := div .WordCount $wordsPerMinute -}}
+      {{- if lt $readingTime 1 }}{{ $readingTime = 1 }}{{ end -}}
+      {{ if .Date }} · {{ end }}{{ $readingTime }} {{ i18n "minRead" | default "min read" }}
+    </div>
+  </header>
+
+  {{ partial "prose-content.html" .Content }}
+
+  {{ partial "tag-cloud.html" (dict "context" . "title" (i18n "exploreTopics" | default "Explore Other Topics") "itemType" "article") }}
+</article>
+{{ end }}

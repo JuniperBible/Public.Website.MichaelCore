@@ -1,0 +1,81 @@
+{{/*
+  Tag Cloud Partial
+
+  Parameters:
+  - pages: Collection of pages to extract tags from (optional, defaults to current section pages)
+  - title: Optional heading text (e.g., "Explore Other Topics")
+  - itemType: Label for tooltip (e.g., "article" or "project")
+  - sitewide: If true, use all site pages instead of section-specific (default: false)
+
+  Usage:
+  {{ partial "tag-cloud.html" (dict "context" . "title" "Explore Topics" "itemType" "article") }}
+  {{ partial "tag-cloud.html" (dict "context" . "sitewide" true) }}
+*/}}
+
+{{ $sitewide := .sitewide | default false }}
+{{ $defaultPages := .context.Site.RegularPages }}
+{{ if not $sitewide }}
+  {{ $section := .context.Section }}
+  {{ if $section }}
+    {{ $defaultPages = where .context.Site.RegularPages "Section" $section }}
+  {{ end }}
+{{ end }}
+{{ $pages := .pages | default $defaultPages }}
+{{ $title := .title }}
+{{ $itemType := .itemType | default "article" }}
+
+{{/* Build tag counts */}}
+{{ $tagCounts := dict }}
+{{ range $pages }}
+  {{ with .Params.tags }}
+    {{ range . }}
+      {{ $count := index $tagCounts . | default 0 }}
+      {{ $tagCounts = merge $tagCounts (dict . (add $count 1)) }}
+    {{ end }}
+  {{ end }}
+{{ end }}
+
+{{/* Find max count for scaling */}}
+{{ $maxCount := 1 }}
+{{ range $tag, $count := $tagCounts }}
+  {{ if gt $count $maxCount }}
+    {{ $maxCount = $count }}
+  {{ end }}
+{{ end }}
+
+{{ if $tagCounts }}
+{{ with $title }}
+<section class="mt-12">
+  <h3 class="text-2xl font-hand font-bold text-paper-black mb-4 text-center">{{ . }}</h3>
+{{ end }}
+  <div class="flex flex-wrap justify-center items-center gap-4">
+    {{ range $tag, $count := $tagCounts }}
+      {{/* Scale from 1-5 based on count relative to max */}}
+      {{ $scale := div (mul $count 4.0) $maxCount | add 1 }}
+      {{ $sizeClass := "text-sm px-2 py-1" }}
+      {{ $containerClass := "" }}
+      {{ if ge $scale 4.5 }}
+        {{ $sizeClass = "text-3xl px-6 py-4" }}
+        {{ $containerClass = "font-bold" }}
+      {{ else if ge $scale 3.5 }}
+        {{ $sizeClass = "text-2xl px-5 py-3" }}
+        {{ $containerClass = "font-bold" }}
+      {{ else if ge $scale 2.5 }}
+        {{ $sizeClass = "text-xl px-4 py-2" }}
+        {{ $containerClass = "font-semibold" }}
+      {{ else if ge $scale 1.5 }}
+        {{ $sizeClass = "text-lg px-3 py-2" }}
+      {{ else }}
+        {{ $sizeClass = "text-base px-2 py-1" }}
+      {{ end }}
+      <a href="{{ "/tags/" | relURL }}{{ $tag | urlize }}"
+         class="card-paper-tag inline-block {{ $sizeClass }} {{ $containerClass }} font-hand hover:bg-accent hover:border-accent hover:text-white transition-colors"
+         title="{{ $count }} {{ if eq $count 1 }}{{ $itemType }}{{ else }}{{ $itemType }}s{{ end }}">
+        #{{ $tag }}
+      </a>
+    {{ end }}
+  </div>
+{{ with $title }}
+</section>
+{{ end }}
+{{ end }}

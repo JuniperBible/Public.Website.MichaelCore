@@ -1,0 +1,13 @@
+{{/*
+  Trademark Shortcode
+  Usage in markdown:
+    {{< tm "Side by Side Scripture" >}}         - Body style (bold purple + ™)
+    {{< tm "Side by Side Scripture" "heading" >}} - Heading style (™ only)
+*/}}
+{{- $name := .Get 0 -}}
+{{- $context := .Get 1 | default "body" -}}
+{{- if eq $context "heading" -}}
+  {{- $name -}}™
+{{- else -}}
+  <span class="trademark">{{ $name }}™</span>
+{{- end -}}

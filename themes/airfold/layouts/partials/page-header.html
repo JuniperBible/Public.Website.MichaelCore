@@ -1,0 +1,27 @@
+{{/*
+  Page Header Partial
+
+  Displays a centered header with title and optional description.
+
+  Usage:
+  {{ partial "page-header.html" . }}
+  {{ partial "page-header.html" (dict "page" . "marginClass" "mb-12") }}
+
+  Parameters:
+  - page: The page context (default: current context)
+  - marginClass: Bottom margin class (default: "mb-8")
+*/}}
+{{- $page := . -}}
+{{- $marginClass := "mb-8" -}}
+{{- if reflect.IsMap . -}}
+  {{- $page = .page | default . -}}
+  {{- $marginClass = .marginClass | default "mb-8" -}}
+{{- end -}}
+<header class="text-center {{ $marginClass }}">
+  <h1 class="text-4xl md:text-5xl font-hand font-bold text-paper-black mb-4">
+    {{ $page.Title }}
+  </h1>
+  {{- with $page.Description -}}
+  <p class="text-xl font-hand text-paper-gray">{{ . }}</p>
+  {{- end -}}
+</header>

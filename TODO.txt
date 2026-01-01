@@ -1,0 +1,1971 @@
+# Future Improvements
+
+## Juniper Test Coverage (2026-01-01) - IN PROGRESS
+
+Goal: Achieve high test coverage across all juniper packages.
+
+### Current Coverage (as of 2026-01-01)
+| Package | Coverage | Status |
+|---------|----------|--------|
+| pkg/cgo | 100.0% | ✓ Complete |
+| pkg/config | 100.0% | ✓ Complete |
+| pkg/markup | 99.1% | ✓ Complete |
+| pkg/migrate | 92.4% | ✓ Good |
+| pkg/testing | 89.5% | ✓ Good |
+| pkg/esword | 88.6% | ✓ Good |
+| pkg/sword | 79.7% | Needs improvement |
+| pkg/output | 83.9% | ✓ Good |
+| cmd/sectest | 64.3% | Needs improvement |
+| pkg/repository | 62.4% | Needs improvement |
+| cmd/extract | 31.3% | Needs improvement |
+| cmd/juniper | 8.3% | Needs improvement (CLI code) |
+
+### Test Requirements
+- All verse comparisons must be done verse-by-verse
+- Each verse must be compared individually against reference output
+- Use Go's table-driven tests for comprehensive verse testing
+- Mock diatheke output for deterministic testing
+
+### Remaining Work
+- [ ] Add more tests for pkg/sword to reach 90%+
+- [ ] Add more tests for pkg/output to reach 90%+
+- [ ] Add more tests for pkg/repository (FTP functions require mocking)
+- [ ] Add end-to-end verse comparison tests
+
+---
+
+## Book Filtering Fix (2026-01-01) - COMPLETE
+
+Fixed issue where book selectors showed books with no content (e.g., NT books for Hebrew-only OSMHB).
+
+### Changes Made
+- [x] `pkg/output/json.go`: Skip books with no verse content during conversion
+- [x] `pkg/output/json.go`: Added `ExcludedBooks` field to track intentionally excluded books
+- [x] `themes/airfold/layouts/partials/bible-nav.html`: Filter books with no verses at display time
+- [x] `pkg/output/json_test.go`: Added tests for ExcludedBook struct and filtering
+- [x] Regenerated all Bible data (OSMHB, KJV, DRC, Vulgate, LXX, SBLGNT, Geneva1599, Tyndale)
+
+### Results
+- OSMHB: 39 OT books (was 66), 27 excluded NT books
+- SBLGNT: 27 NT books, 39 excluded OT books
+- KJV: 66 books (full Bible), 0 excluded
+- pkg/output coverage: 70.1% → 83.9%
+
+---
+
+## Tool Migration to Go (2026-01-01) - COMPLETE
+
+All tools and helper scripts consolidated into the `juniper` toolkit (Go-only).
+
+### Completed
+- [x] Renamed sword-converter to `juniper` - comprehensive Bible module toolkit
+- [x] Restructured CLI: diatheke-compatible mode as default, `juniper convert` for conversion
+- [x] Moved Python extractors to `attic/tools/python-extractors/` (Go version is primary)
+- [x] Converted `security-test.sh` to `juniper/cmd/sectest` (Go test tool)
+- [x] Added all 27 SCRIPTURE modules from Python to Go extract tool
+- [x] Added comprehensive tests for extract and sectest commands
+- [x] Updated package.json scripts to use Go tools
+
+### Juniper Command Structure
+```
+juniper [flags] <reference>     # Default: diatheke-compatible verse lookup
+juniper convert                 # Convert SWORD modules to Hugo JSON
+juniper repo list-sources       # List available repositories
+juniper repo install <mod>      # Install module from repository
+juniper migrate                 # Copy modules from ~/.sword
+juniper version                 # Version information
+```
+
+---
+
+## InstallMgr Replacement (2025-12-31) - IN PROGRESS
+
+**Charter:** `docs/installmgr-replacement-charter.md`
+**Baseline:** `attic/baseline/installmgr/` (comparison scripts and sample output)
+
+Replace the SWORD `installmgr` tool with a native Go implementation in juniper.
+
+### Phase 1: Core Infrastructure (Tests First) - COMPLETE
+- [x] Write tests for source parsing (source_test.go) - 15 tests
+- [x] Write tests for default sources
+- [x] Implement `Source` struct and parser
+- [x] Implement default source list
+- [x] Write tests for HTTP client (client_test.go) - 12 tests
+- [x] Write tests for directory listing
+- [x] Write tests for file download
+- [x] Implement HTTP client with timeout/retry
+- [x] Write tests for tar.gz extraction (index_test.go) - 25 tests
+- [x] Write tests for .conf file parsing
+- [x] Write tests for module metadata extraction
+- [x] Implement index parser
+- [x] Write tests for local config (config_test.go) - 18 tests
+- [x] Write tests for installer (installer_test.go) - 14 tests
+- [x] Archive baseline tool for 1:1 testing (attic/baseline/installmgr/)
+
+Total: 84 tests passing in pkg/repository/
+
+### Phase 2: CLI Commands - IN PROGRESS
+- [x] Create `cmd/juniper/repo.go` with repo subcommand
+- [ ] Add `juniper repo list-sources` command
+  - [ ] Write test for list-sources output format
+  - [ ] Implement command to match installmgr -s format
+  - [ ] Compare 1:1 with `installmgr -s` output
+- [ ] Add `juniper repo refresh <source>` command
+  - [ ] Write test for refresh downloading mods.d.tar.gz
+  - [ ] Implement FTP client for CrossWire FTP sources
+  - [ ] Compare 1:1 with `installmgr -r` behavior
+- [ ] Add `juniper repo list <source>` command
+  - [ ] Write test for module listing output format
+  - [ ] Implement command to match installmgr -rl format
+  - [ ] Compare 1:1 with `installmgr -rl` output
+- [ ] Add `juniper repo install <source> <module>` command
+  - [ ] Write test for module download and extraction
+  - [ ] Write test for conf file installation
+  - [ ] Compare installed files 1:1 with `installmgr -ri`
+- [ ] Add `juniper repo installed` command
+  - [ ] Write test for listing installed modules
+  - [ ] Implement command to match installmgr -l format
+  - [ ] Compare 1:1 with `installmgr -l` output
+- [ ] Add `juniper repo uninstall <module>` command
+  - [ ] Write test for module removal
+  - [ ] Compare cleanup 1:1 with `installmgr -u`
+
+### Phase 3: FTP Client Implementation
+- [ ] Add FTP client using github.com/jlaffaye/ftp
+- [ ] Write tests for FTP connection (mock)
+- [ ] Write tests for FTP directory listing
+- [ ] Write tests for FTP file download
+- [ ] Implement timeout and retry logic
+- [ ] Test against real CrossWire FTP server (integration test)
+
+### Phase 4: Justfile Integration
+- [ ] Update `just bible-list` to use new Go tool
+- [ ] Update `just bible-download` to use new Go tool
+- [ ] Update `just bible-add` to use new Go tool
+- [ ] Remove dependency on external installmgr binary
+- [ ] Verify all just commands work without nix-shell -p sword
+
+### Phase 5: Enhanced Features
+- [ ] Add checksum verification for downloaded modules
+- [ ] Add module integrity check (verify data files exist)
+- [ ] Add version comparison for updates
+- [ ] Cache module index locally (~/.sword/cache/)
+- [ ] Support offline listing from cache
+- [ ] Incremental index updates (delta downloads)
+
+### Phase 6: 1:1 Validation
+- [ ] Run compare_sources.sh and verify identical output
+- [ ] Run compare_modules.sh and verify identical output
+- [ ] Run test_install.sh and verify identical file installation
+- [ ] Document any intentional differences
+- [ ] Update attic/baseline/installmgr/README.md with results
+
+---
+
+## Documentation Consolidation (2025-12-30) - COMPLETE
+
+All documentation has been consolidated into `docs/`:
+
+### Documentation Structure
+```
+docs/
+├── README.md              - Documentation index
+├── architecture.md        - System architecture, data patterns
+├── development.md         - Setup, workflows, commands
+├── configuration.md       - hugo.toml reference, env vars
+├── deployment.md          - Cloudflare Pages, workers
+├── religion-section.md    - Bible features, SWORD converter
+├── contact-form.md        - CAPTCHA, email, security
+├── testing.md             - Test strategy, coverage
+├── data_structures.md     - SWORD binary format
+├── current-project-charter.md - Project status
+└── stepbible-interface-charter.md - Bible UI roadmap
+```
+
+### Completed
+- [x] Created all 8 new documentation files
+- [x] Simplified README.md to 73 lines (was 641)
+- [x] Simplified CLAUDE.md to 41 lines (was 456)
+
+---
+
+## Prioritized Backlog (2025-12-30)
+
+### Priority 1: Near-Term Enhancements
+1. [x] Strong's number search (H#### or G####) - STEPBible Phase 2 (2025-12-30)
+2. [x] Phrase search with quotation marks - STEPBible Phase 2 (2025-12-30)
+3. [ ] Create Open Graph image for shared verses - STEPBible Phase 3
+      - Deferred: Requires Cloudflare Worker with image generation (satori/@resvg)
+      - Current share.js already includes verse text in Twitter shares
+      - Facebook uses og:description from page (generic for now)
+
+### Priority 2: Content Expansion
+4. [ ] Sefaria API integration for Jewish texts (Talmud, Mishnah)
+5. [x] Quran extraction (requires RawGenBook parser or public API) - 2025-12-30
+      - RawGenBook parser tested with KORAN module (115 surahs, 1.3 MB Russian translation)
+      - Added TestRawGenBookParser_Quran
+6. [x] Ethiopian unique texts (1 Enoch, Jubilees - require RawGenBook parser) - 2025-12-30
+      - RawGenBook parser tested with Enoch (112 entries, 484 KB) and Jubilees (52 entries)
+      - Added TestRawGenBookParser_Enoch, TestRawGenBookParser_Jubilees, TestRawGenBookParser_AllEntries_Enoch
+
+### Priority 3: Advanced Features (STEPBible)
+7. [ ] Interlinear View - Phase 4 (Hebrew/Greek word-level data, RTL support)
+8. [ ] Cross-References - Phase 5 (Treasury of Scripture Knowledge)
+9. [ ] Bookmarks & Notes - Phase 6 (localStorage, highlights, export)
+
+### Priority 4: Technical Debt
+10. [x] Consolidate extension templates with main layouts (DRY) - 2025-12-30
+      - Removed 11 duplicate layout files from extensions
+      - Extensions now only contain _content.gotmpl generators
+11. [x] RawGenBook parser for SWORD modules (enables Quran, Ethiopian texts) - 2025-12-30
+      - Created pkg/sword/rawgenbook.go with TreeKey support
+      - Created pkg/sword/rawgenbook_test.go (12 tests)
+      - Tested with real Russian creed module (5 entries)
+12. [x] Integration tests with real SWORD modules (binary parser testing) - 2025-12-30
+      - 22 integration tests with real SWORD modules
+      - zText: KJV, DRC, Vulgate, Geneva1599, Tyndale (5 Bibles)
+      - zCom: Barnes NT Commentary (24 entries Matthew 1)
+      - zLD: StrongsGreek (5742 entries), AbbottSmith (5886 entries)
+      - Fixed zLD parser for binary .idx format (8-byte entries: offset+size into .dat)
+      - Fixed zCom parser for NT-only modules (uses CalculateNTVerseIndex)
+13. [ ] Print Current View lightbox feature (html2canvas CSS v4 issue)
+
+---
+
+## Current Sprint: Bible Section Production Ready (2025-12-29)
+
+### Completed Tasks
+- [x] Improve test coverage for non-binary packages (Phase 6b continuation)
+      - Added tests for: pkg/esword, pkg/testing, pkg/migrate, pkg/output
+      - Coverage improved: pkg/testing 75.7% → 90.1%, pkg/esword 85.2% → 86.2%
+- [x] Commit test improvements (commit 57289f7)
+- [x] Verify juniper builds and tests pass
+- [x] Create test data for 4 historic Bibles (KJV 1611, Douay-Rheims, Geneva, Vulgate)
+- [x] Add religion extension mount to hugo.toml
+- [x] Fix _content.gotmpl float-to-int conversion for chapter/verse numbers
+- [x] Verify Hugo builds with Bible section
+- [x] Commit Bible extension and test data (commit 17d0de3)
+
+### Ready for Production
+- [x] Add Tyndale Bible (1526) to test data (commit bb35ecf)
+      - First English translation from Greek/Hebrew
+      - Genesis 1:1-5, John 1:1-5, John 3:16-17
+- [x] Add Coverdale Bible (1535) to test data (commit bb35ecf)
+      - First complete printed English Bible
+      - Genesis 1:1-5, John 1:1-5, John 3:16-17
+- [x] All 6 Bibles rendering correctly:
+      - KJV 1611, Douay-Rheims, Geneva, Vulgate, Tyndale, Coverdale
+- [x] Push to production (2025-12-29)
+
+### Completed - Production Bible Integration (2025-12-29)
+- [x] Create diatheke extraction script (extract_bibles.py)
+- [x] Install SWORD modules from CrossWire repository (KJV, DRC, Geneva1599, Vulgate, Tyndale)
+- [x] Extract full Bible text using diatheke CLI tool
+      - 5 Bibles, 146,902 total verses
+      - KJV (1769), Douay-Rheims, Geneva (1599), Vulgate, Tyndale (1525/1530)
+      - Note: Coverdale not available in SWORD repository
+- [x] Fix verse parser to handle multi-line diatheke output
+- [x] Generate bibles.json and bibles_auxiliary/ (individual files ~5MB each)
+- [x] Verify Hugo renders 6,538 Bible pages correctly
+- [x] Update integration tests for actual SWORD module IDs
+- [x] All tests passing
+
+### Pending Tasks
+- [x] Add Bible section to site navigation
+      - Added "Religion" menu item to header/footer (weight 52, between Esoterica and Résumé)
+      - Added UI strings for Bible navigation (bibles, biblesDescription, backToReligion, etc.)
+- [x] Test mobile responsiveness of Bible layouts
+      - Fixed chapter navigation: replaced pipe-separated links with responsive CSS grid
+      - Added .chapter-grid and .chapter-link CSS classes (5→8→10→12 columns at breakpoints)
+      - Added .bible-text styling with verse number accent colors
+      - Enabled unsafe HTML rendering in Hugo for chapter grid markup
+
+### Multi-Canon Scripture Support (2025-12-30)
+- [x] Design versification system architecture
+- [x] Create versification YAML files (protestant, catholic, ethiopian, tanakh, quran)
+- [x] Create extract_scriptures.py with versification support
+- [x] Add Bible navigation hierarchy (/religion/bibles/, book index, chapter index)
+- [x] Update README.md and ARCHITECTURE.md with roadmap
+- [x] Run full extraction with Catholic versification (deuterocanonical books)
+      - Created Go-based extractor (cmd/extract/main.go)
+      - Replaced Python script with faster Go implementation
+      - Extracted 5 Bibles: KJV, Tyndale, Geneva, DRC, Vulgate
+      - DRC and Vulgate include deuterocanonical books (Tobit, Judith, etc.)
+      - Total: 311 books, 147,190 verses
+- [x] Compress and update production data files
+      - Cloudflare Pages handles gzip automatically (32MB → 6.1MB)
+      - No action needed for source JSON files
+- [x] Add book mappings for cross-tradition comparison
+      - Created data/book_mappings.json with 80+ books across 5 traditions
+- [x] Create comparison UI showing canonical status across traditions
+      - Created layouts/religion/list.html with comparison table
+      - Created partials/canonical-comparison.html
+      - Added content/religion/_index.md section index
+- [x] Expand traditions in canonical comparison (2025-12-30)
+      - Added 10 new traditions: Protestant, Evangelical, LDS, Anglican, JW,
+        Coptic Orthodox, Armenian Apostolic, Syriac Orthodox, Assyrian, Samaritan
+      - Added 25 new scriptures: 23 LDS (Book of Mormon, D&C, Pearl of Great Price),
+        2 Armenian (3 Corinthians, Corinthians' Letter to Paul)
+      - Added Canon Summary table showing book counts per tradition
+      - Total: 198 texts across 14 traditions
+
+### Architecture Improvements (2025-12-30)
+- [x] Split bibles_auxiliary.json into per-Bible files
+      - Changed from single 32MB file to data/bibles_auxiliary/ directory
+      - Each Bible is ~5MB individual file (kjv.json, drc.json, etc.)
+      - Hugo automatically merges directory into .Site.Data.bibles_auxiliary
+      - Updated templates to use .Site.Data.bibles_auxiliary.$id instead of .bibles_auxiliary.bibles.$id
+      - Updated Go extractor (cmd/extract/main.go) to output individual files
+      - Updated Python extractor (extract_scriptures.py) to output individual files
+      - Benefits: smaller git diffs, easier editing, better version control
+
+### Future Enhancements (Backlog)
+- [x] Strong's number tooltips with Greek/Hebrew definitions
+      - Created assets/js/strongs.js for detecting and linking Strong's numbers
+      - Links to Blue Letter Bible for full definitions
+      - Keyboard accessible with proper ARIA labels
+- [x] Book/chapter navigation component
+      - Created partials/bible-nav.html with dropdown selectors
+      - Added prev/next chapter buttons
+      - Added UI strings for navigation (selectBible, selectBook, selectChapter, etc.)
+- [x] Fix Bible navigation chapter boundary bug (2025-12-30)
+      - Copied bible-nav.html partial to main layouts/partials/ (Hugo lookup priority)
+      - Next button now disabled on last chapter (was generating 404 links)
+- [ ] Sefaria API integration for Jewish texts (Talmud, Mishnah)
+      - Sefaria provides free API for Jewish texts
+      - Would require new data fetcher and Hugo templates
+- [ ] Quran extraction from SWORD modules
+      - Available module: KORAN (Russian translation, RawGenBook format)
+      - Requires implementing RawGenBook parser (deferred in Phase 4)
+      - Alternative: Find English Quran source or use public API
+- [ ] Ethiopian unique texts (1 Enoch, Jubilees)
+      - Available modules: Enoch, Jubilees (both RawGenBook format)
+      - Requires implementing RawGenBook parser (deferred in Phase 4)
+      - Both are R.H. Charles translations (Public Domain)
+
+---
+
+## STEPBible-Inspired Interface (In Progress)
+
+**Charter:** `docs/stepbible-interface-charter.md`
+**Reference:** `tmp/step/` (cloned from https://github.com/STEPBible/step)
+**License:** BSD 3-Clause (Copyright © 2012, STEPBible) - requires attribution
+
+### Phase 1: Parallel Translation View (Complete)
+- [x] Create `/religion/bibles/compare/` route and layout
+      - URL format: `/religion/bibles/compare/?bibles=kjv,drc,gnv&ref=Gen.1`
+      - Created content/religion/bibles/compare.md
+- [x] Create `layouts/religion/compare.html` layout
+      - Fixed JSON encoding (2025-12-30): use Hugo dict/slice + single jsonify
+      - Fixed data path: bibles_auxiliary.bibles.id not bibles_auxiliary.id
+      - Book/chapter dropdown selectors
+- [x] Create `partials/parallel-verse.html` partial (merged into parallel.js)
+      - Verse-by-verse stacked display (STEPBible pattern)
+      - Reference header row
+      - Translation rows grouped per verse
+- [x] Create `partials/translation-selector.html` partial
+      - Multi-select checkboxes for translations
+      - Persist selections in localStorage
+- [x] Create `assets/js/parallel.js` JavaScript
+      - Dynamic translation switching
+      - URL parameter handling (?bibles=kjv,drc&ref=Gen.1)
+      - Verse synchronization across translations
+      - Max 4 translations at once
+      - Fixed (2025-12-30): use array-based book lookup + on-demand chapter fetching
+- [x] Add responsive mobile view
+      - Added CSS for verse-group responsive padding
+      - Translation rows with dashed borders on mobile
+- [x] Add "Compare" button to single Bible pages
+      - Added to chapter and Bible overview navigation
+- [x] Add UI strings to hugo.toml
+      - compareTranslations, selectTranslations, selectPassage, compare, etc.
+- [x] Add third-party license attribution
+      - Created THIRD-PARTY-LICENSES.md with STEPBible BSD 3-Clause notice
+
+### Phase 2: Search Functionality (Complete - 2025-12-30)
+- [x] Create `layouts/religion/search.html` layout
+      - Bible selection dropdown
+      - Case-sensitive and whole-word options
+      - Incremental results display
+- [x] Create `assets/js/bible-search.js` JavaScript
+      - On-demand chapter fetching (avoids loading 32MB upfront)
+      - Search caching for performance
+      - URL parameter persistence (?q=word&bible=kjv)
+      - Highlighted matches in results
+- [x] Add search link to Bibles list page
+- [x] Add i18n strings for search UI
+- [x] Strong's number search (H#### or G####)
+      - Detects Strong's number patterns (H1234, G5678)
+      - Searches verse text for matching Strong's numbers
+      - Shows helpful message if no results (requires Strong's-enabled translations)
+- [x] Phrase search with quotation marks
+      - Use "exact phrase" syntax for multi-word exact matches
+      - Respects case sensitivity setting
+
+### Phase 3: Share Verse Feature (Complete)
+- [x] Create share button component (share.js)
+- [x] Generate shareable URLs
+      - Format: `/religion/bibles/kjv/gen/1/?v=1`
+- [x] Copy to clipboard functionality
+- [x] Add CSS for share buttons and menu
+- [x] Scroll to verse when URL has ?v= parameter
+- [x] Social media share links (Twitter/X, Facebook)
+      - Added share menu items with proper icons
+      - Opens share dialogs in popup windows
+      - Shares verse text and URL to Twitter
+      - Shares URL to Facebook
+- [ ] Create Open Graph image for shared verses (deferred)
+      - Requires Cloudflare Worker with satori/@resvg for image generation
+      - Would generate verse-specific images with book, chapter, verse, and text
+      - Alternative: Use og:description with verse text (current approach via share.js)
+
+### Phase 4: Interlinear View (Future)
+- [ ] Extract word-level data from SWORD modules with Strong's
+      - Modify extract_scriptures.py or create new extractor
+- [ ] Create `layouts/religion/interlinear.html` layout
+- [ ] Create `partials/interlinear-word.html` partial
+      - Original text (Hebrew/Greek)
+      - Transliteration
+      - English gloss
+      - Strong's number
+- [ ] Add RTL text support for Hebrew
+- [ ] Add Greek/Hebrew font support
+
+### Phase 5: Cross-References (Future)
+- [ ] Extract Treasury of Scripture Knowledge data
+- [ ] Create cross-reference popup/sidebar
+- [ ] Link related verses inline
+
+### Phase 6: Bookmarks & Notes (Future)
+- [ ] Local storage for bookmarks
+- [ ] Highlight verses with color coding
+- [ ] Personal notes per verse
+- [ ] Export/import bookmark data
+
+---
+
+## i18n Migration (Complete - 2025-12-30)
+
+**Status:** Complete
+**Created:** i18n/en.toml with 80+ UI strings
+
+### Summary
+- Migrated all 28 template files to use `{{ i18n "key" }}` instead of `{{ .Site.Params.ui.key }}`
+- Removed `[params.ui]` section from hugo.toml
+- Copied partials from extensions to main partials directory for proper lookup
+- Hugo build verified: 6544 pages generated successfully
+
+### Benefits
+- **Internationalization Ready:** Easy to add new languages (e.g., i18n/es.toml)
+- **Single Source of Truth:** All UI strings in one file
+- **Hugo Standard:** Uses Hugo's built-in i18n system
+- **Self-Documenting:** i18n/en.toml shows all available UI strings
+
+### Developer Notes
+- Use `{{ i18n "key" | default "Fallback" }}` in templates
+- Add new strings to i18n/en.toml with `[keyName]` sections
+- See https://gohugo.io/functions/i18n/ for documentation
+
+---
+
+## Code Quality & DRY Observations (2025-12-30)
+
+### Template Duplication Issues (COMPLETE - 2025-12-30)
+- [x] Consolidate extension templates with main layouts
+      - Removed all duplicate layouts from `themes/airfold/extensions/*/layouts/`
+      - Main layouts at `themes/airfold/layouts/` are the active versions
+      - Removed 11 files: portfolio/projects, certifications, skills, tools, resume, religion/bibles
+      - Extensions now only contain content generation (_content.gotmpl) and README
+- Duplicate partials removed from extensions (now only in main partials/):
+      - [x] translation-selector.html
+      - [x] canonical-comparison.html
+      - [x] resume-item-link.html
+      - [x] bible-nav.html (2025-12-30)
+- Unused partials removed:
+      - [x] resume-tag.html (never used, 2025-12-30)
+
+### Code Quality Improvements (2025-12-30)
+- [x] DRY refactor bible-nav.html - book lookup extracted to single location
+- [x] Accessibility: Added aria-disabled and aria-label to disabled nav buttons
+- [x] Added "unavailable" i18n string for screen readers
+- [x] Fix Bible title/description using wrong translation name in _content.gotmpl
+- [x] Fix dropdown colors for dark mode (use CSS variables directly)
+- [x] Fix SEO description for generated pages (.Params.description fallback)
+- [x] Add btn-paper-disabled class for theme-consistent disabled buttons
+- [x] Fix prose-paper class (doesn't exist) to prose in religion templates
+- [x] Add placeholder verse detection (Python and Go) to skip missing content
+- [x] Fix Bible navigation buttons (btn-paper-dark → btn-paper for better contrast)
+- [x] Fix Share button feedback (added visual feedback when URL copied to clipboard)
+
+### i18n Migration (Complete - 2025-12-30)
+- [x] All templates now use `{{ i18n "key" }}` instead of `{{ .Site.Params.ui.key }}`
+- [x] Removed all `$ui := .Site.Params.ui` variable declarations
+- [x] Extension templates updated (resume, certifications, tools, portfolio)
+- [x] Partials updated (item-card.html, bible-nav.html)
+
+### Self-Hosting Verification
+- [x] Fonts: Self-hosted (static/fonts/)
+- [x] CSS: Tailwind v4 compiled locally
+- [x] JavaScript: All self-hosted (static/js/)
+- [x] Mermaid: Self-hosted (static/js/mermaid.min.js)
+- [x] OpenPGP: Self-hosted (static/js/openpgp.min.js)
+- [x] Hammer.js: Self-hosted (static/js/hammer.min.js)
+- [x] No CDN dependencies in templates (all JS self-hosted)
+
+### Hugo-First Architecture
+- [x] All pages generated at build time
+- [x] No runtime server dependencies (static site)
+- [x] Data-driven content via JSON + _content.gotmpl
+- [x] Client-side JS only for progressive enhancement
+- [x] Document Hugo module mount dependencies in CLAUDE.md
+
+### Developer Onboarding Improvements
+- [x] CLAUDE.md has comprehensive setup instructions
+- [x] shell.nix provides reproducible environment
+      - Updated to include Python 3 with PyYAML
+      - Added SWORD tools (diatheke) for Bible extraction
+- [x] i18n/en.toml documents all UI strings
+- [x] Add CONTRIBUTING.md with PR guidelines
+- [ ] Add examples for common tasks in docs/ (deferred)
+
+---
+
+## Control Panel / Lightbox
+
+- [ ] Print Current View: Add option to print just the zoomed-in section of the page
+      - Need to resolve SVG foreignObject styling issues with modern CSS color() functions
+      - html2canvas doesn't support Tailwind CSS v4's color syntax
+      - Consider alternative screenshot approaches or waiting for library updates
+
+## Versification System Implementation (2026-01-01) - PHASE 1-3, 5 COMPLETE
+
+**Goal:** Proper versification mapping for all Bible translations (KJV, Vulgate, LXX, etc.)
+**Status:** Core implementation complete. Phases 1, 2, 3, and 5 done. Phase 4 (Output) and Phase 6 (Docs) pending.
+
+### Background
+SWORD modules use different versification systems that affect verse indexing:
+- **KJV** - Protestant 66-book canon (default)
+- **KJVA** - KJV with Apocrypha
+- **Vulg** - Latin Vulgate (Catholic, different Psalm numbering, deuterocanon)
+- **LXX** - Septuagint (Greek OT, additional books, different chapter/verse counts)
+- **Catholic/Catholic2** - Varying Esther chapter counts (10 or 16)
+- **Leningrad/MT** - Masoretic Text Hebrew
+- **NRSV/NRSVA** - New Revised Standard Version with/without Apocrypha
+- **Synodal/SynodalProt** - Russian Orthodox
+
+### Key Differences to Handle
+1. **Psalm numbering**: LXX/Vulgate Psalm N = Hebrew/KJV Psalm N+1 (for Psalms 10-146)
+2. **Deuterocanonical books**: Tobit, Judith, Wisdom, Sirach, Baruch, 1-2 Maccabees
+3. **Additional LXX books**: 1 Esdras, Prayer of Manasseh, Psalm 151, 3-4 Maccabees
+4. **Split/merged verses**: Some verses combined or split across versifications
+5. **Book order**: Different canonical ordering across traditions
+
+### Implementation Plan
+
+#### Phase 1: Data Structures ✅ COMPLETED (2026-01-01)
+- [x] Create `pkg/sword/versification_systems.go`
+      - VersificationSystem struct (name, books, verseCounts)
+      - VersificationMapping struct (from, to, mappings)
+      - MappingRule struct (sourceRef, targetRef, type: split/merge/renumber)
+      - Registry pattern with RegisterVersification/GetVersification
+      - NormalizeVersificationName for alias handling
+      - CalculateVerseIndexForSystem for versification-aware index calculation
+- [x] Define KJV verse counts (versification_kjv.go) - 66 books
+- [x] Define KJVA verse counts (versification_kjva.go) - 81 books (KJV + 15 Apocrypha)
+- [x] Define Vulg verse counts and book order (versification_vulg.go) - 76 books
+      - Book order matches SWORD's canon_vulg.h exactly
+      - Deuterocanonical books interspersed with OT (not at end)
+      - Tobit/Judith after Nehemiah, Wisdom/Sirach after Song, Bar after Lam
+- [x] Define LXX verse counts and book order (versification_lxx.go) - includes 3-4 Macc, Odes
+- [x] Add versification_systems_test.go with comprehensive tests
+
+**Remaining Phase 1 tasks (future):**
+- [ ] Define Catholic/Catholic2 verse counts (Esther chapter variations)
+- [ ] Define NRSV/NRSVA verse counts
+- [ ] Define Synodal/SynodalProt verse counts (Russian Orthodox)
+- [ ] Define Leningrad/MT verse counts (Masoretic Hebrew)
+
+#### Phase 2: Verse Mapping Functions ✅ COMPLETED (2026-01-01)
+- [x] Create `pkg/sword/verse_mapper.go`
+      - VerseMapper struct with mapping registry
+      - MapReference(ref, fromSystem, toSystem) - map between any two systems
+      - MapToKJV(ref, fromSystem) - normalize to KJV
+      - mapPsalm() - Psalm renumbering for LXX/Vulgate ↔ KJV
+- [x] Create `pkg/sword/verse_mapper_test.go` with comprehensive tests
+      - Test Psalm renumbering (Vulg Ps 22:1 = KJV Ps 23:1)
+      - Test identity mapping (same system)
+      - Test verse count retrieval
+- [x] Implement Vulg ↔ KJV mappings
+      - Psalm renumbering: Vulg Ps 9:22 → 9:21 (Ps 9 split), Ps 10-146 offset by 1
+- [x] Implement LXX ↔ KJV mappings
+      - Same Psalm renumbering logic as Vulgate
+
+#### Phase 3: Parser Integration ✅ COMPLETED (2026-01-01)
+- [x] Update `pkg/sword/ztext.go` GetVerse()
+      - Auto-detect versification from module config
+      - Apply versification system when calculating index
+      - Handle missing verses gracefully with legacy fallback
+- [x] Update `pkg/sword/ztext.go` GetChapter()
+      - Use correct verse count for versification
+- [x] Update `pkg/sword/ztext.go` GetBook()
+      - Use correct chapter count for versification
+- [x] Update `pkg/sword/ztext.go` GetAllBooks()
+      - Include/exclude books based on versification
+      - Use correct canonical order
+- [x] Add NewZTextParserWithVersification() for explicit versification
+- [x] Add Versification() accessor method
+
+#### Phase 4: Output Normalization
+- [ ] Update `pkg/output/json.go`
+      - Option to normalize all output to KJV versification
+      - Include original versification references in JSON
+      - Handle deuterocanonical books with proper DC flag
+- [ ] Add versification info to bibles.json metadata
+      - Include versification system name
+      - Include book list with DC markers
+- [ ] Create verse mapping data for frontend cross-reference
+      - JSON file mapping equivalent verses across systems
+
+#### Phase 5: Testing & Validation ✅ COMPLETED (2026-01-01)
+- [x] Extend `pkg/sword/versification_systems_test.go`
+      - Test Psalm mapping (Vulg Ps 22 = KJV Ps 23)
+      - Test KJVA Apocrypha book handling
+      - Test deuterocanonical book handling
+- [x] Integration tests with real modules (pkg/sword/integration_test.go)
+      - TestIntegration_DRC_Psalm22_ShepherdPsalm - PASSING
+        - DRC Psalm 22:1: "The Lord ruleth me: and I shall want nothing"
+      - TestIntegration_Vulgate_Psalm22_Latin - PASSING
+        - Vulgate Psalm 22:1: "Dominus regit me et nihil mihi deerit"
+      - TestIntegration_LXX_Psalm22_Greek - PASSING
+        - LXX Psalm 22:1: Greek text with lemmas and morphology
+- [x] Verify all 8 current Bibles parse correctly:
+      - KJV, DRC, Geneva1599, Vulgate, Tyndale (English)
+      - SBLGNT, LXX, OSMHB (Greek/Hebrew)
+- [x] Update existing tests to use versification-aware parsing
+
+#### Phase 6: Documentation ✅ PARTIALLY COMPLETED
+- [x] Update `tools/juniper/README.md`
+      - Document versification system support (KJV, Vulg, LXX)
+      - Auto-detection from module config
+      - Updated roadmap with completed phases
+- [ ] Add versification section to `docs/religion-section.md`
+- [ ] Create `docs/versification-mapping.md` with detailed mappings
+      - Table of Psalm number differences
+      - List of DC books by tradition
+      - Verse split/merge examples
+
+### Reference Materials
+- [CrossWire Alternate Versification](https://wiki.crosswire.org/Alternate_Versification)
+- SWORD source: `include/canon_vulg.h`, `include/canon_lxx.h`
+- [JSword versification classes](https://github.com/crosswire/jsword)
+- [pysword books.py](https://gitlab.com/tgc-dk/pysword/-/blob/master/pysword/books.py) - verse index formula
+
+### Current Files
+```
+tools/juniper/pkg/sword/
+├── versification_systems.go      # Core types, registry, CalculateVerseIndexForSystem
+├── versification_systems_test.go # Tests for registry and systems
+├── versification_kjv.go          # KJV 66-book system
+├── versification_kjva.go         # KJVA 81-book system (KJV + 15 Apocrypha)
+├── versification_vulg.go         # Vulgate 76-book system (matches canon_vulg.h)
+├── versification_lxx.go          # Septuagint system
+├── verse_mapper.go               # Cross-versification mapping (Psalm renumbering, etc.)
+├── verse_mapper_test.go          # Tests for verse mapping
+├── versification.go              # Legacy KJV-only (for backward compat)
+├── versification_test.go         # Legacy tests
+└── integration_test.go           # Real SWORD module integration tests
+```
+
+---
+
+## SWORD/e-Sword Bible Converter
+
+**Project Charter:** `docs/current-project-charter.md`
+**Tool Location:** `tools/juniper/`
+**Status:** Phase 6b Complete (7/7 test phases done, Phase 4 deferred) (2025-12-29)
+
+### Phase 1: Foundation (Complete)
+- [x] Create `tools/juniper/` Go project structure
+      - Created: go.mod, config.yaml, pkg/ directories
+- [x] Implement SWORD .conf INI parser
+      - File: `pkg/sword/conf.go`
+      - Parses module metadata, features, filters
+- [x] Implement versification mappings (KJV)
+      - File: `pkg/sword/versification.go`
+      - 66 books with chapter counts, aliases
+- [x] Create migration package
+      - File: `pkg/migrate/migrator.go`
+      - Copies modules from ~/.sword to sword_data/incoming/
+- [x] Implement CLI with cobra
+      - File: `cmd/juniper/main.go`
+      - Commands: migrate, convert, list, watch, test
+      - Full help text and examples for each command
+
+### Phase 2: SWORD Parsing (Complete)
+- [x] Implement zText parser (ZIP-compressed Bible text)
+      - File: `pkg/sword/ztext.go`
+      - Parse .bzs (book index), .bzv (verse index), .bzz (compressed data)
+      - Uses zlib decompression
+      - Implements Parser interface (GetVerse, GetChapter, GetBook, GetAllBooks)
+- [x] Implement OSIS → Markdown converter
+      - File: `pkg/markup/osis.go`
+      - Converts OSIS XML to Markdown
+      - Preserves Strong's numbers as superscript (e.g., God^H430^)
+      - Extracts notes, morphology, red-letter text
+      - Converts divine names to spans, poetry to indented lines
+      - Unit tests: `pkg/markup/osis_test.go` (6 test cases, all passing)
+- [x] Test with KJV module
+      - All tests passing: `go test ./...`
+
+### Phase 3: Hugo Integration (Complete)
+- [x] Create `themes/airfold/extensions/religion/` extension
+      - Directory structure: content/bibles/, layouts/bibles/
+      - README.md with setup instructions
+- [x] Implement JSON generators (metadata + auxiliary)
+      - File: `pkg/output/json.go`
+      - Generates bibles.json (metadata) and bibles_auxiliary.json (content)
+      - Supports granularity: book, chapter, verse
+- [x] Create `_content.gotmpl` templates for bibles
+      - File: `extensions/religion/content/bibles/_content.gotmpl`
+      - Generates Bible overview, book, and chapter pages
+- [x] Create layouts (list.html, single.html)
+      - Files: `extensions/religion/layouts/bibles/list.html`, `single.html`
+      - Bible list, navigation, verse display
+- [x] Implement convert command in CLI
+      - Updated `cmd/juniper/main.go`
+      - Generates JSON from SWORD modules
+
+### Phase 4: Additional Parsers (Complete)
+- [x] Commentary parser (zCom)
+      - File: `pkg/sword/zcom.go`
+      - Similar structure to zText, keyed to verses
+      - CommentaryEntry, CommentaryChapter, CommentaryBook types
+- [x] Dictionary/Lexicon parser (zLD)
+      - File: `pkg/sword/zld.go`
+      - Supports compressed (.zdx/.zdt) and uncompressed (.idx/.dat) formats
+      - Key search, Strong's number extraction
+- [x] ThML markup converter
+      - File: `pkg/markup/thml.go`
+      - Scripture references, notes, headings, emphasis
+      - Unit tests: `pkg/markup/thml_test.go`
+- [x] GBF markup converter
+      - File: `pkg/markup/gbf.go`
+      - Red letter, Strong's, footnotes, cross-references
+      - Unit tests: `pkg/markup/gbf_test.go`
+- [x] TEI markup converter
+      - File: `pkg/markup/tei.go`
+      - Dictionary entries, etymology, grammar, senses
+- [x] General book parser (rawGenBook) - implemented 2025-12-30
+      - File: pkg/sword/rawgenbook.go
+      - TreeKey format with 8-byte markers and null-terminated UTF-8 keys
+      - Tests: pkg/sword/rawgenbook_test.go (12 tests, all passing)
+
+### Phase 5: e-Sword Support (Complete)
+- [x] SQLite Bible parser (.bblx)
+      - File: `pkg/esword/bible.go`
+      - BibleParser with GetVerse, GetChapter, GetBook, GetAllVerses
+      - Metadata loading from Details table
+      - RTF text cleaning
+- [x] Commentary parser (.cmtx)
+      - File: `pkg/esword/commentary.go`
+      - CommentaryParser with verse range support
+      - FormatReference for human-readable refs
+- [x] Dictionary parser (.dctx)
+      - File: `pkg/esword/dictionary.go`
+      - DictionaryParser with topic search
+      - Letter index, Strong's number lookup
+      - Added github.com/mattn/go-sqlite3 dependency
+
+### Phase 6: CGo Test Suite (Complete)
+
+**Design Philosophy:**
+The test suite validates that pure Go parsers produce output identical to the reference
+libsword C++ library. Tests run on every Hugo build to catch regressions early.
+
+**Architecture:**
+```
+pkg/testing/           - Test framework and utilities
+├── framework.go       - TestResult, TestSuite, TestReport types
+├── compare.go         - Text comparison with similarity scoring
+└── testdata/          - Golden files and fixtures
+
+pkg/cgo/               - CGo bindings (conditional compilation)
+├── libsword.go        - Real bindings (build tag: cgo && libsword)
+└── stub.go            - Stub when CGo unavailable (graceful skip)
+```
+
+**Test Layers:**
+1. **Unit Tests** - Individual parser/converter functions
+2. **Integration Tests** - Full pipeline (parse → convert → output)
+3. **CGo Comparison Tests** - Pure Go vs libsword reference
+4. **Golden File Tests** - Regression detection with known-good output
+5. **Hugo Build Tests** - npm script validates data files
+
+**Comparison Strategy:**
+- Default: 99% similarity threshold (allow minor whitespace/formatting variance)
+- Strict mode: 100% byte-for-byte match
+- Options: ignore whitespace, ignore case, ignore punctuation, normalize Unicode
+- Detailed diff output with line numbers and context
+
+**Implementation Status:**
+- [x] Test framework infrastructure
+      - File: `pkg/testing/framework.go`
+      - TestResult, TestSuite, TestReport structures
+      - Golden file loading/saving with UPDATE_GOLDEN support
+      - JSON report generation for CI integration
+      - Human-readable summary printing
+- [x] Text comparison utilities
+      - File: `pkg/testing/compare.go`
+      - Configurable CompareOptions (whitespace, case, punctuation, Unicode)
+      - Levenshtein distance-based similarity (word and character level)
+      - Unified diff generation with truncation
+      - DiffDetail for specific difference identification
+- [x] CGo bindings to libsword
+      - File: `pkg/cgo/libsword.go`
+      - Build tags: `// +build cgo,libsword`
+      - SwordManager, SwordModule wrappers
+      - GetVerse, GetVerseRaw, Description, Type, Language methods
+      - Build: `go build -tags libsword` (requires libsword-dev)
+- [x] Stub implementation for non-CGo builds
+      - File: `pkg/cgo/stub.go`
+      - Build tags: `// +build !cgo !libsword`
+      - Returns ErrCGoNotAvailable for graceful test skipping
+      - IsCGoAvailable() function for runtime detection
+- [x] Test fixtures and golden files
+      - File: `pkg/testing/testdata/fixtures.go`
+      - Comprehensive fixtures for OSIS, ThML, GBF, TEI converters
+      - Edge case fixtures (Unicode, empty, malformed)
+      - Verse and book reference fixtures
+      - Module configuration fixtures
+- [x] Test runner infrastructure
+      - File: `pkg/testing/runner.go`
+      - TestRunner with configurable options
+      - RunParserTest, RunConverterTest, RunGoldenTest, RunCGoComparisonTest
+      - Benchmark support with throughput measurement
+- [x] Pure Go unit tests for all parsers
+      - `pkg/testing/compare_test.go` - 15 tests for text comparison
+      - `pkg/testing/framework_test.go` - 16 tests for framework
+      - `pkg/testing/runner_test.go` - 20 tests for runner
+      - `pkg/cgo/cgo_test.go` - 6 tests for CGo interface
+- [x] Integration tests for full pipeline
+      - File: `pkg/testing/integration_test.go`
+      - Fixture tests for all converter types
+      - Edge case tests (empty, Unicode passthrough)
+      - Runner integration tests
+      - Golden file workflow tests
+      - Benchmarks for converter performance
+- [x] npm script for Hugo build-time testing
+      - Added `npm run test:sword` - run juniper tests
+      - Added `npm run sword:build` - build the converter
+      - Added `npm run sword:migrate` - migrate SWORD modules
+      - Added `npm run sword:convert` - convert to Hugo JSON
+
+### Phase 6b: Comprehensive Test Suite (Complete)
+
+**Goal:** Achieve 90%+ coverage with ~250 new tests across 13 new test files.
+**Status:** COMPLETE (Phase 4 binary parsers deferred)
+**Test Count:** 280+ tests across 20 test files
+**Current Coverage (2025-12-30):**
+  - pkg/cgo: 100%
+  - pkg/config: 100%
+  - pkg/markup: 99.1%
+  - pkg/testing: 90.1%
+  - pkg/sword: 89.8% (up from 20.8% - binary parsers now tested)
+  - pkg/esword: 88.6% (up from 86.2%)
+  - pkg/migrate: 80.3%
+  - pkg/output: 55.2% (parseBibleContent requires real SWORD binary data)
+
+**Tool Comparison Suite:** Added comprehensive Python vs Go extractor validation
+  - `pkg/testing/tool_comparison_test.go` (12 tests)
+  - Tests: diatheke availability, extractor builds, versification, JSON schema,
+    auxiliary files, verse counts, book order, placeholder detection, Unicode,
+    chapter/verse numbering
+
+#### Test Phase 1: Core Infrastructure Tests (Priority: Critical) ✓ COMPLETE
+- [x] `pkg/config/config_test.go` (12 tests)
+      - TestLoad_ValidConfig - YAML parsing
+      - TestLoad_NonExistentFile_ReturnsDefaults
+      - TestLoad_MalformedYAML_ReturnsError
+      - TestLoad_PartialConfig_MergesWithDefaults
+      - TestDefaultConfig_* (3 tests) - default values
+      - TestExpandPath_* (4 tests) - tilde/relative/absolute paths
+      - TestLoad_RealConfigFile - integration with temp file
+- [x] `pkg/sword/conf_test.go` (25 tests)
+      - TestParseConf_Valid* (3 tests) - KJV/Dictionary/Commentary configs
+      - TestParseConf_* (5 tests) - missing file, empty, no header, multi-value
+      - TestParseAboutText_* (6 tests) - RTF escapes (\par, \qc, \pard)
+      - TestTruncateDescription_* (4 tests) - word boundary, first paragraph
+      - TestDriverToModuleType_* (4 tests) - zText/zCom/zLD/Unknown
+      - TestModule_Has* (3 tests) - HasFeature, HasStrongsNumbers, HasMorphology
+- [x] `pkg/sword/versification_test.go` (18 tests)
+      - TestGetBookInfo_* (6 tests) - OSIS ID, aliases, case variations
+      - TestGetBookIndex_* (3 tests) - Genesis (1), Revelation (66), invalid
+      - TestIsOldTestament_* / TestIsNewTestament_* (4 tests)
+      - TestNormalizeBookID_* (3 tests) - normalized, alias, unknown
+      - TestKJVBooks_AllBooksHaveValidData - comprehensive validation
+      - TestBookAliases_AllResolveToValidBooks
+
+#### Test Phase 2: Markup Converter Completion (Priority: High) ✓ COMPLETE
+- [x] `pkg/markup/tei_test.go` (22 tests)
+      - TestTEIConverter_Extract* (5 tests) - headword, POS, etymology, senses, refs
+      - TestTEIConverter_Convert_* (4 tests) - basic, complex, Hebrew, Greek
+      - TestTEIConverter_ConvertToMarkdown_* (8 tests) - all output elements
+      - TestTEIConverter_*_EdgeCases (4 tests) - empty, plain text, nested, unclosed
+      - TestTEIConverter_Fixtures - table-driven from existing fixtures
+
+#### Test Phase 3: e-Sword SQLite Parsers (Priority: High) ✓ COMPLETE
+- [x] `pkg/esword/bible_test.go` (20 tests)
+      - TestNewBibleParser_* (4 tests) - valid, invalid, non-SQLite, close
+      - TestBibleParser_LoadMetadata_* (3 tests) - with/without Details table
+      - TestBibleParser_GetVerse_* (3 tests) - valid, not found, NULL scripture
+      - TestBibleParser_Get* (6 tests) - chapter, book, all verses, counts
+      - TestToSwordBook_* (2 tests) - valid/invalid book mapping
+      - TestCleanESwordText_* (6 tests) - RTF markers removal
+- [x] `pkg/esword/commentary_test.go` (15 tests)
+      - Constructor/metadata tests (3 tests)
+      - TestCommentaryParser_GetEntry_* (3 tests) - exact, range, not found
+      - TestCommentaryParser_Get*Entries (3 tests) - chapter, book, all
+      - TestCommentaryEntry_FormatReference_* (4 tests) - single, range, chapter
+      - Text cleaning tests (2 tests)
+- [x] `pkg/esword/dictionary_test.go` (18 tests)
+      - Constructor/metadata tests (3 tests)
+      - TestDictionaryParser_GetEntry_* (3 tests) - exact, case-insensitive, not found
+      - Collection tests (5 tests) - all topics, search, letter index
+      - Strong's tests (6 tests) - IsStrongsLexicon, GetStrongsEntry variants
+- [x] `pkg/esword/testhelpers_test.go` (helper functions)
+      - CreateTestBibleDB(t, verses) - generate test SQLite database
+      - CreateTestCommentaryDB(t, entries) - generate test commentary
+      - CreateTestDictionaryDB(t, entries) - generate test dictionary
+
+#### Test Phase 5: Output Generation (Priority: Medium) ✓ COMPLETE
+- [x] `pkg/output/json_test.go` (20 tests)
+      - Constructor tests (1 test)
+      - Tag generation tests (4 tests) - language, strongs, morphology, combined
+      - Content parsing tests (3 tests) - empty, single book, multiple
+      - JSON output tests (3 tests) - valid data, creates directory, formatting
+      - Full generation tests (3 tests) - bibles only, skips non-bibles, errors
+      - Granularity tests (3 tests) - book, chapter, verse
+      - Structure validation tests (4 tests) - JSON schema compliance
+
+#### Test Phase 6: Migration (Priority: Low) ✓ COMPLETE
+- [x] `pkg/migrate/migrator_test.go` (18 tests)
+      - Constructor test (1 test)
+      - Migration tests (8 tests) - single, multiple, filter, empty, directories
+      - File operation tests (5 tests) - copyFile, copyDir
+      - ListModules tests (2 tests)
+
+#### Test Phase 7: Robustness Testing (Priority: Low) ✓ COMPLETE
+- [x] `pkg/markup/fuzz_test.go` (4 fuzz tests)
+      - FuzzOSISConverter - random OSIS-like markup
+      - FuzzThMLConverter - random ThML markup
+      - FuzzGBFConverter - random GBF markup
+      - FuzzTEIConverter - random TEI markup
+- [x] `pkg/sword/fuzz_test.go` (3 fuzz tests)
+      - FuzzParseAboutText - random RTF escapes
+      - FuzzNormalizeBookID - random book references
+      - FuzzTruncateDescription - random string truncation
+- [ ] Integration tests with real SWORD modules (3 tests) - Deferred
+      - Real SWORD module end-to-end (if SWORD_PATH set)
+      - CGo comparison (if libsword available)
+      - Golden file generation for real modules
+
+#### Edge Cases to Cover
+- **Unicode:** Hebrew RTL (בְּרֵאשִׁית), Greek polytonic (Ἐν ἀρχῇ), NFC normalization
+- **Strong's Numbers:** H/G prefixes, leading zeros (H0430), malformed, duplicates
+- **Binary Formats:** Empty verses (Size=0), OT→NT boundaries, corrupted zlib
+- **SQLite:** NULL values, missing tables, schema variations, Latin-1 vs UTF-8
+- **Markup:** Unclosed tags, nested elements, empty tags, very long content (10K+)
+
+### Phase 7: Features & Polish
+- [x] npm script integration (sword:build, sword:migrate, sword:convert)
+      - Added to package.json in Phase 6
+
+*Deferred to future implementation:*
+- [x] Strong's number tooltips in UI (2025-12-30)
+      - Created assets/js/strongs.js with tooltip and link support
+- [x] Parallel translation view (2025-12-30)
+      - See STEPBible Phase 1 above - implemented with compare.html layout
+- [x] Book/chapter navigation component (2025-12-30)
+      - Created partials/bible-nav.html with dropdown selectors and prev/next buttons
+- [ ] Watch mode for development
+      - File watcher for auto-rebuild
+
+### Phase 8: Documentation
+- [x] README for juniper tool
+      - File: `tools/juniper/README.md`
+- [x] Create project charter
+      - File: `docs/current-project-charter.md`
+- [x] Create TODO.txt with full project tracking
+- [x] Update CLAUDE.md with religion section
+      - Added religion extension to theme extensions list
+      - Added bibles.json to data files table
+      - Added /religion/bibles/ to module mounts list
+      - Added Bible/Religion Section with data structure, SWORD converter, and versification docs
+
+*Deferred to future implementation:*
+- [x] JSON schema files for bibles.json, etc.
+      - Created static/schemas/bibles.schema.json and bibles-auxiliary.schema.json
+- [x] Update site README.md with juniper in project structure
+      - Already present at lines 81-82 in project structure section
+
+## Observed Patterns & Anti-Patterns (Codebase Audit)
+
+### Patterns (Good - Continue Using)
+- [x] Data-driven content with `_content.gotmpl` + JSON (metadata + auxiliary split)
+- [x] Module mounts in hugo.toml for clean URL mapping
+- [x] Extension directory structure (`themes/airfold/extensions/*/`)
+- [x] Centralized UI strings in `[params.ui]` for i18n-readiness
+- [x] JSON schema references (`$schema` field) for validation
+- [x] Reusable partials (`item-card.html`, `tag-cloud.html`, `resume-nav.html`)
+- [x] Consistent meta blocks in JSON files (`meta.version`, `meta.lastModified`)
+
+### Anti-Patterns (Fix Later)
+- [x] **Missing `issued` dates**: Some certifications have empty `issued` fields (e.g., cissp, gxpn, gpen)
+      - Fixed: Added placeholder date 2002-01-01 for all missing dates (2025-12-29)
+- [x] **Inconsistent expiration handling**: Some certs have `expires`, some have empty strings
+      - Reviewed: Empty strings work correctly with Hugo's `with` (falsey), no change needed
+- [x] **No Go tooling in project**: Currently pure JS/Hugo, adding Go requires nix-shell update
+      - Fixed: Added go and sqlite to shell.nix (2025-12-29)
+- [x] **Extensions not fully self-contained**: Extensions rely on data/ files in site root
+      - Reviewed: This is the correct Hugo pattern. Data files in site root are expected.
+      - Each extension README already documents required data files.
+- [x] **No JSON schema files committed**: `$schema` URLs reference non-existent schemas
+      - Fixed: Created static/schemas/ with all 6 schema files (2025-12-29)
+- [x] **`tools/` directory doesn't exist yet**: Scripts are in `scripts/`, workers in `workers/`
+      - Fixed: tools/juniper now exists (created during Bible project)
+
+### Technical Debt
+- [x] Update shell.nix to include Go toolchain (2025-12-29)
+      - Added go and sqlite packages for juniper
+      - Added shell hook with SWORD converter commands
+- [x] Create archetypes for religion content types - N/A (2025-12-29)
+      - Religion section uses data-driven content (bibles.json)
+      - Archetypes only needed for markdown-based content
+- [x] Add religion section to site navigation when ready (see Pending Tasks above)
+
+## Deferred Tasks
+
+### Test Phase 4: Binary Format Parsers (COMPLETE - 2025-12-30)
+Note: Created synthetic binary test data with proper zlib compression, index structures,
+and SWORD file format compliance. All 60+ tests passing.
+
+- [x] `pkg/sword/ztext_test.go` (22 tests)
+      - Constructor tests, index loading, GetVerse/GetChapter/GetBook
+      - Decompression tests, interface compliance
+      - Created createTestZTextModule helper for synthetic binary data
+- [x] `pkg/sword/zcom_test.go` (15 tests)
+      - Entry retrieval, chapter/book entries, decompression
+      - Created createTestZComModule helper for synthetic binary data
+- [x] `pkg/sword/zld_test.go` (25 tests)
+      - Index loading (compressed/uncompressed), key parsing
+      - Entry retrieval, Strong's handling, collection tests
+      - Created createTestZLDModule helper for synthetic binary data
+- [x] `pkg/sword/conf_test.go` (extended with LoadAllModules tests)
+      - TestLoadAllModules, TestLoadAllModules_WithInvalidConf
+      - TestLoadAllModules_MissingDir, TestLoadAllModules_EmptyDir
+
+### Coverage Summary (2025-12-30 - Session 2)
+  - pkg/sword: 89.8% (up from 20.8%)
+  - pkg/esword: 88.6% (up from 86.2%)
+  - pkg/cgo: 100%
+  - pkg/config: 100%
+  - pkg/markup: 99.1%
+  - pkg/testing: 90.1%
+  - pkg/migrate: 92.4% (up from 80.3%)
+  - pkg/output: 86.2% (up from 55.2%)
+
+### Remaining Uncovered Code (all error handling paths)
+pkg/sword (~10%):
+  - loadIndices OT/NT error paths (rarely triggered)
+  - readVerseText file seek/read errors
+  - readEntryText file errors
+  - loadCompressedIndices missing key file fallback
+
+pkg/esword (~11%):
+  - rows.Err() error paths (requires database corruption mid-query)
+  - sql.Open error path (SQLite always succeeds on local files)
+
+pkg/migrate (~8%):
+  - os.MkdirAll error paths in Migrate (lines 43-47)
+  - os.Create error path in copyFile (line 125)
+  - os.MkdirAll error path in copyDir (line 141)
+
+pkg/output (~14%):
+  - parseBibleContent error path (line 171)
+  - remaining GenerateFromModules paths with real SWORD data
+
+### Baseline Tools Archive (2025-12-30)
+Original Python extraction scripts preserved at:
+  - attic/baseline/tools/extract_scriptures.py
+  - attic/baseline/tools/extract_bibles.py
+  - attic/baseline/tools/README.md
+
+### Real SWORD Module Tests (COMPLETE - 2025-12-30)
+
+**Status (2025-12-30):** COMPLETE - Go parser now correctly reads real SWORD modules
+
+**Solution:** Analyzed pysword source code and discovered the verse index formula:
+- 2 entries for testament heading (placeholder + header)
+- 1 entry per book (book intro)
+- 1 entry per chapter (chapter intro)
+- Then verses
+
+**Formula (from pysword/books.py):**
+```python
+def chapter_offset(self, chapter_index):
+    return sum(self.chapter_lengths[:chapter_index]) + (chapter_index + 1) + 1
+
+def book_size(self):
+    return sum(self.chapter_lengths) + len(self.chapter_lengths) + 1
+
+def _update_book_offsets(self):
+    idx = 2  # start after the testament heading
+```
+
+**Implementation (Go):**
+- Rewrote `pkg/sword/versification.go` with pysword-derived formula
+- Genesis 1:1 = index 4 (2 testament + 1 book intro + 1 chapter intro)
+- All integration tests passing (647 modules detected)
+
+**Tests Passing:**
+- [x] TestIntegration_LoadKJV
+- [x] TestIntegration_KJV_Genesis1
+- [x] TestIntegration_KJV_Genesis1_Chapter (31 verses)
+- [x] TestIntegration_KJV_John316 (all expected words found)
+- [x] TestIntegration_KJV_Psalm23 ("shepherd" found)
+- [x] TestIntegration_KJV_AllBooks (66 books)
+- [x] TestIntegration_MultipleModules (647 modules)
+
+---
+
+## Test Infrastructure Plan: Tiered Testing with Speed Benchmarking
+
+**Goal:** Create a comprehensive test infrastructure with three levels of testing depth,
+plus speed benchmarking to compare official diatheke tool vs Go extractor.
+
+### Overview
+
+```
+just test-quick          # Fast validation for deployment (< 30 seconds)
+just test-comprehensive  # Full validation for releases (< 5 minutes)
+just test-extensive      # Complete test coverage (< 30 minutes)
+just benchmark           # Speed comparison: diatheke vs Go extractor
+```
+
+### Bible Sets by Tier
+
+**Quick (5 Bibles):** Current website production bibles
+  - KJV, Tyndale, Geneva1599, DRC, Vulgate
+  - These are the bibles currently deployed to production
+  - Used for: Pre-deploy validation, CI fast path
+
+**Comprehensive (100 Bibles):** Top texts by popularity/importance
+  - All Quick tier bibles (5)
+  - Major English translations (20): NIV, ESV, NASB, NKJV, RSV, ASV, WEB, etc.
+  - Major non-English (25): Luther (German), Reina-Valera (Spanish), Louis Segond (French), etc.
+  - Original languages (10): Hebrew (BHS), Greek (SBLGNT, TR, Byzantine)
+  - Study Bibles with Strong's (15): KJVS, StrongsGreek, StrongsHebrew, etc.
+  - Commentaries (15): TSK, Matthew Henry, Barnes, etc.
+  - Dictionaries (10): Strong's Concordance, BDB, Thayer, ISBE, etc.
+  - Used for: Release validation, weekly CI run
+
+**Extensive (All):** 100% of available modules
+  - All 647+ SWORD modules in ~/.sword
+  - All test fixtures and synthetic data
+  - All fuzz tests with extended duration
+  - Used for: Major releases, monthly validation
+
+### Test Depth by Tier
+
+**Quick:**
+  - Integration tests only (no unit tests)
+  - Hugo build validation (pages render without error)
+  - JSON schema validation
+  - Verse count spot checks (Genesis 1 = 31 verses)
+  - No coverage requirements
+
+**Comprehensive:**
+  - Full unit test suite
+  - Integration tests with all 100 bibles
+  - CGo comparison tests (if libsword available)
+  - Golden file regression tests
+  - Coverage: 80% minimum per package
+
+**Extensive:**
+  - All unit tests including fuzz tests
+  - Integration tests with all modules
+  - CGo comparison for every module
+  - Golden file generation/validation
+  - Coverage: 90% minimum per package
+  - Performance benchmarks
+
+### Speed Benchmarking: diatheke vs Go Extractor
+
+**Purpose:** Validate that Go extractor is faster than official diatheke tool
+
+**Benchmark Categories:**
+1. Single verse extraction
+2. Single chapter extraction
+3. Single book extraction
+4. Full Bible extraction
+5. All modules extraction
+
+**Metrics:**
+  - Wall clock time
+  - CPU time
+  - Memory usage (peak RSS)
+  - Output file sizes
+  - Verses per second
+
+### Implementation Subtasks
+
+#### Phase 1: Just Command Infrastructure ✓ COMPLETE (2025-12-30)
+- [x] Create justfile in project root
+      - All commands wrapped in `nix-shell --run` for Go tooling
+- [x] Add test-quick target (integration tests only, < 30s)
+- [x] Add test-comprehensive target (full unit + integration, < 5m)
+- [x] Add test-extensive target (all tests + fuzz, < 30m)
+- [x] Add benchmark target (performance benchmarks)
+- [x] Add helper targets (coverage, coverage-html, fmt, vet, lint, deps)
+- [x] Add development targets (dev, build, clean)
+- [x] Add SWORD converter targets (sword-build, extract-build, extract, sword-list)
+- [x] Add Hugo targets (hugo-build, hugo-prod, hugo-drafts)
+
+#### Phase 2: Bible Set Configuration ✓ COMPLETE (2025-12-30)
+- [x] Create tools/juniper/testdata/bible_sets.yaml
+      - Defined quick (5 bibles), comprehensive (100 modules), extensive (all) lists
+      - Categorized by: English major/historic, non-English, original languages, Strong's, commentaries, dictionaries
+      - Added validation rules (min verses, expected books, required references)
+- [x] Create pkg/testing/tiers.go with Go API
+      - TestTier enum (Quick, Comprehensive, Extensive) with timeouts
+      - GetBiblesForTier(), GetCommentariesForTier(), GetDictionariesForTier()
+      - LoadBibleSets() YAML loader
+      - GetValidationRules() for test assertions
+- [x] Create pkg/testing/tiers_test.go (14 tests)
+- [x] Module availability checks via IsQuickBible() helper
+
+#### Phase 3: Tiered Test Implementation ✓ MERGED INTO PHASE 2
+(Functionality implemented in Phase 2 with tiers.go)
+
+#### Phase 4: Speed Benchmarking ✓ COMPLETE (2025-12-30)
+- [x] Benchmarks integrated into test packages (no separate cmd/benchmark needed)
+      - `just benchmark` runs all performance benchmarks via nix-shell
+- [x] Go extractor benchmarks in pkg/sword/sword_test.go:
+      - BenchmarkIntegration_KJV_GetVerse: ~614ns/op (1.9M verses/sec)
+      - BenchmarkIntegration_KJV_GetChapter: ~27μs/op (44K chapters/sec)
+      - BenchmarkIntegration_KJV_GetAllBooks: ~53ms (full Bible extraction)
+- [x] Markup converter benchmarks in pkg/testing/integration_test.go:
+      - BenchmarkOSISConversion, BenchmarkThMLConversion, etc.
+- [x] Results output via `go test -bench` standard format
+- [N/A] Diatheke comparison: Python script already validates output parity
+- [N/A] Historical tracking: Deferred - can use git history of benchmark runs
+
+#### Phase 5: CI Integration (Deferred)
+- [N/A] npm scripts: Use `just` commands instead (`just test-quick`, etc.)
+- [ ] Create .github/workflows/test.yml (future - when GitHub Actions needed)
+
+#### Phase 6: Coverage Enforcement (Deferred)
+- [x] Coverage reports via `just coverage` and `just coverage-html`
+- [ ] Add coverage thresholds to test tiers (future)
+- [ ] Create coverage badge generation (future)
+
+### Just Command Reference (Planned)
+
+```justfile
+# Default: run quick tests
+default: test-quick
+
+# Quick tests - pre-deploy validation (< 30 seconds)
+test-quick:
+    @echo "Running quick tests (5 bibles, integration only)..."
+    cd tools/juniper && go test -short -run 'TestQuick' ./...
+    npm run build
+
+# Comprehensive tests - release validation (< 5 minutes)
+test-comprehensive:
+    @echo "Running comprehensive tests (100 bibles, full suite)..."
+    cd tools/juniper && go test -run 'TestComprehensive|TestUnit' ./...
+
+# Extensive tests - full validation (< 30 minutes)
+test-extensive:
+    @echo "Running extensive tests (all modules, full coverage)..."
+    cd tools/juniper && go test -v -coverprofile=coverage.out ./...
+    cd tools/juniper && go test -fuzz=Fuzz -fuzztime=30s ./pkg/markup/
+    cd tools/juniper && go test -fuzz=Fuzz -fuzztime=30s ./pkg/sword/
+
+# Speed benchmark
+benchmark:
+    @echo "Running speed benchmark (diatheke vs Go extractor)..."
+    cd tools/juniper && go test -bench=. -benchmem ./cmd/benchmark/
+
+# Coverage report
+coverage:
+    cd tools/juniper && go test -coverprofile=coverage.out ./...
+    cd tools/juniper && go tool cover -html=coverage.out -o coverage.html
+    @echo "Coverage report: tools/juniper/coverage.html"
+```
+
+### Success Criteria
+
+| Tier | Time | Coverage | Bibles | Tests |
+|------|------|----------|--------|-------|
+| Quick | < 30s | n/a | 5 | Integration |
+| Comprehensive | < 5m | 80% | 100 | Unit + Integration |
+| Extensive | < 30m | 90% | All | Unit + Integration + Fuzz |
+
+| Benchmark | Go Extractor Target |
+|-----------|---------------------|
+| Single verse | < 1ms |
+| Single chapter | < 10ms |
+| Single book | < 100ms |
+| Full Bible (31K verses) | < 3 seconds |
+| 5 Bibles | < 15 seconds |
+
+---
+
+## Critical Comparison Highlighter (2026-01-01) - NEXT UP
+
+**Goal:** Build a scholarly text comparison system for the Bible comparison page that highlights
+differences at multiple levels (typography, punctuation, word substitution, transposition).
+
+**Use Case:** When comparing translations (e.g., KJV vs DRC vs Vulgate), users see color-coded
+highlights showing exactly what differs between translations - not just that they differ.
+
+**Reference:** Collation pipeline pattern (normalize → align → classify → render)
+
+### Architecture Overview
+
+```
+Input: Two or more verse texts (strings)
+       ↓
+[1] Preprocess & Tokenize
+    - Unicode normalize (NFC)
+    - Standardize quotes/dashes
+    - Split into tokens (WORD, PUNCT, SPACE)
+       ↓
+[2] Align Tokens (Myers diff or weighted DP)
+    - Find optimal alignment between token sequences
+    - Handle insertions, deletions, substitutions
+       ↓
+[3] Classify Differences
+    - TYPO: case changes, diacritics
+    - PUNCT: comma/semicolon/period changes
+    - SPELLING: colour/color, -ise/-ize
+    - SUBSTANTIVE: word replacement
+    - ADD/OMIT: inserted/deleted spans
+    - MOVE: transposed phrases
+       ↓
+[4] Render with Highlights
+    - Wrap changed spans in <span class="diff-*">
+    - Different colors per category
+    - Preserve original text exactly
+```
+
+### Phase 1: Core Data Structures (Priority: Critical)
+**Status:** SCHEDULED NEXT
+
+- [ ] Create `assets/js/text-compare.js` module
+      - Token type enum: WORD, PUNCT, SPACE, MARKUP
+      - Token struct: { type, original, normalized, offset }
+      - DiffOp enum: EQUAL, INSERT, DELETE, REPLACE
+      - DiffResult: { op, tokens, category }
+- [ ] Create tokenizer function
+      - Split on word boundaries (preserve apostrophes in contractions)
+      - Preserve exact whitespace as SPACE tokens
+      - Track character offsets for reconstruction
+      - Handle Strong's numbers as atomic tokens (e.g., H430)
+- [ ] Create normalizer functions
+      - unicodeNormalize(text) - NFC normalization
+      - normalizeQuotes(text) - "curly" → "straight"
+      - normalizeDashes(text) - em/en-dash → hyphen
+      - normalizeWhitespace(text) - collapse runs, trim
+- [ ] Add unit tests for tokenizer
+      - Test: "In the beginning" → 5 tokens (3 WORD, 2 SPACE)
+      - Test: "don't" → 1 WORD token
+      - Test: "God^H430^" → 1 WORD token (Strong's preserved)
+      - Test: punctuation at word boundaries
+
+### Phase 2: Sequence Alignment Algorithm (Priority: Critical)
+**Status:** PENDING
+
+- [ ] Implement Myers diff algorithm for token sequences
+      - Based on "An O(ND) Difference Algorithm" (Myers 1986)
+      - Returns edit script (sequence of operations)
+      - Optimized for similar sequences (common case)
+- [ ] Add weighted edit distance option
+      - Configurable costs per operation type
+      - cost(WORD insert/delete) = 1.0
+      - cost(PUNCT insert/delete) = 0.2
+      - cost(case change only) = 0.05
+      - cost(WORD → same normalized) = 0.0
+- [ ] Create alignment visualization (debug mode)
+      - Console output showing alignment grid
+      - Useful for debugging edge cases
+- [ ] Handle verse structure anchors
+      - When comparing multiple Bibles at same verse
+      - Use verse reference as anchor point
+      - Prevents drift on repeated phrases
+
+### Phase 3: Difference Classification (Priority: High)
+**Status:** PENDING
+
+- [ ] Create difference classifier
+      - Input: DiffResult from alignment
+      - Output: Classified diff with category label
+- [ ] Implement classification rules
+      - TYPO: same after case-fold and diacritic removal
+      - PUNCT: only punctuation tokens changed
+      - SPELLING: in spelling variant dictionary (colour/color)
+      - SUBSTANTIVE: word replacement not matching other rules
+      - ADD/OMIT: pure insertion/deletion
+      - MOVE: detect transposition patterns
+- [ ] Build spelling variant dictionary
+      - British/American spellings (-ise/-ize, -our/-or)
+      - Archaic English variants (saith/says, thee/you)
+      - Common Bible translation variants
+- [ ] Add move detection heuristic
+      - Find deleted spans appearing in inserted spans nearby
+      - If >80% token overlap, classify as MOVE
+      - Link source and destination with matching IDs
+
+### Phase 4: Rendering System (Priority: High)
+**Status:** PENDING
+
+- [ ] Create highlight CSS classes
+      - .diff-typo { background: var(--diff-typo); }
+      - .diff-punct { background: var(--diff-punct); }
+      - .diff-spelling { background: var(--diff-spelling); }
+      - .diff-substantive { background: var(--diff-subst); }
+      - .diff-add { background: var(--diff-add); }
+      - .diff-omit { background: var(--diff-omit); text-decoration: line-through; }
+      - .diff-move { background: var(--diff-move); }
+- [ ] Define color palette (light and dark mode)
+      - Typo: subtle gray (barely visible)
+      - Punct: light yellow
+      - Spelling: light blue
+      - Substantive: orange/amber
+      - Add: light green
+      - Omit: light red with strikethrough
+      - Move: purple with underline
+- [ ] Create render function
+      - Input: original text + classified diffs
+      - Output: HTML with <span> wrappers
+      - Preserves exact original text (offsets from tokenizer)
+- [ ] Add tooltip support
+      - Hover over highlighted text shows category
+      - For MOVE: shows source/destination location
+      - For SPELLING: shows both variants
+
+### Phase 5: Integration with Compare Page (Priority: High)
+**Status:** PENDING
+
+- [ ] Update `assets/js/parallel.js`
+      - Import text-compare.js module
+      - Call comparison on each verse group
+      - Use first translation as base for comparison
+- [ ] Add comparison toggle control
+      - "Show differences" checkbox
+      - Remember preference in localStorage
+      - Default: off (for cleaner reading)
+- [ ] Add legend/key for highlight colors
+      - Collapsible panel explaining each color
+      - Example text for each category
+- [ ] Handle multi-translation comparison
+      - Compare each translation against base (first selected)
+      - Or compare all pairwise (more complex UI)
+- [ ] Performance optimization
+      - Debounce comparison on rapid changes
+      - Web Worker for large texts
+      - Cache comparison results per verse
+
+### Phase 6: Advanced Features (Priority: Low)
+**Status:** FUTURE
+
+- [ ] Character-level diff within words
+      - For SPELLING/TYPO, show exact character changes
+      - e.g., "colour" → "color" shows "u" deleted
+- [ ] Linguistic normalization layer
+      - Stemming/lemmatization option
+      - Synonym detection (optional, off by default)
+- [ ] Structural boundary awareness
+      - Paragraph detection
+      - Poetry/prose distinction
+      - Chapter/verse boundary handling
+- [ ] Export comparison report
+      - Generate Markdown/PDF with highlighted diffs
+      - Summary statistics (N typos, M substitutions)
+- [ ] Cross-reference alignment
+      - When comparing across versification systems
+      - Use verse mapper to align equivalent verses
+
+### Phase 7: Testing (Priority: High)
+**Status:** PENDING
+
+- [ ] Unit tests for tokenizer (`text-compare.test.js`)
+      - TestTokenize_SimpleWords - "In the beginning" → 5 tokens
+      - TestTokenize_Contractions - "don't" → 1 WORD token
+      - TestTokenize_StrongsNumbers - "God^H430^" → atomic token
+      - TestTokenize_Punctuation - proper boundary handling
+      - TestTokenize_MixedContent - words + punct + spaces
+      - TestTokenize_UnicodeNormalization - NFC handling
+      - TestTokenize_QuoteNormalization - curly → straight
+      - TestTokenize_DashNormalization - em/en → hyphen
+      - TestTokenize_WhitespacePreservation - exact whitespace kept
+      - TestTokenize_OffsetTracking - offsets enable reconstruction
+- [ ] Unit tests for alignment algorithm
+      - TestMyersDiff_IdenticalStrings - no changes
+      - TestMyersDiff_SingleInsertion - one word added
+      - TestMyersDiff_SingleDeletion - one word removed
+      - TestMyersDiff_SingleReplacement - one word changed
+      - TestMyersDiff_MultipleChanges - complex edit script
+      - TestMyersDiff_EmptyInputs - edge case handling
+      - TestMyersDiff_LongTexts - performance on 1000+ tokens
+      - TestWeightedDiff_PunctCheaper - punct changes low cost
+      - TestWeightedDiff_CaseCheaper - case changes low cost
+- [ ] Unit tests for classifier
+      - TestClassify_Typo_CaseChange - "God" vs "god"
+      - TestClassify_Typo_Diacritics - "résumé" vs "resume"
+      - TestClassify_Punct_CommaChange - ", and" vs " and"
+      - TestClassify_Punct_PeriodChange - "." vs ";"
+      - TestClassify_Spelling_BritishAmerican - "colour" vs "color"
+      - TestClassify_Spelling_ArchaicEnglish - "saith" vs "says"
+      - TestClassify_Substantive_WordChange - different word
+      - TestClassify_AddOmit_Insertion - word added
+      - TestClassify_AddOmit_Deletion - word removed
+      - TestClassify_Move_Transposition - word order changed
+- [ ] Unit tests for renderer
+      - TestRender_NoChanges - original text unchanged
+      - TestRender_SingleHighlight - one span wrapped
+      - TestRender_MultipleHighlights - multiple spans
+      - TestRender_NestedCategories - proper nesting
+      - TestRender_OffsetReconstruction - exact original preserved
+      - TestRender_HTMLEscaping - XSS prevention
+- [ ] Integration tests with real Bible verses
+      - TestCompare_KJV_vs_DRC_John316 - English translations
+      - TestCompare_KJV_vs_Geneva_John316 - Historic English
+      - TestCompare_Tyndale_vs_KJV_Gen1 - Spelling evolution
+      - TestCompare_Vulgate_vs_DRC_Ps23 - Latin to English
+      - TestCompare_LXX_vs_OSMHB_Gen1 - Greek to Hebrew
+      - TestCompare_MultiTranslation_3way - 3+ translations
+      - TestCompare_WholeChapter_Gen1 - Full chapter performance
+- [ ] Performance benchmarks
+      - BenchmarkTokenize_ShortVerse - < 0.5ms
+      - BenchmarkTokenize_LongVerse - < 2ms
+      - BenchmarkAlign_SimilarVerses - < 5ms
+      - BenchmarkAlign_DifferentVerses - < 10ms
+      - BenchmarkClassify_AllCategories - < 1ms
+      - BenchmarkRender_ComplexDiff - < 1ms
+      - BenchmarkFullPipeline_SingleVerse - < 10ms
+      - BenchmarkFullPipeline_Chapter - < 100ms
+
+### Phase 8: Documentation (Priority: Medium)
+**Status:** PENDING
+
+- [ ] Update `docs/religion-section.md`
+      - Add "Text Comparison" section
+      - Document comparison architecture
+      - Explain difference categories with examples
+- [ ] Create `docs/text-comparison.md`
+      - Full API documentation for text-compare.js
+      - Tokenizer configuration options
+      - Alignment algorithm details
+      - Classification rules reference
+      - Rendering options and CSS classes
+- [ ] Update `README.md`
+      - Add comparison feature to Bible section description
+      - Note performance characteristics
+- [ ] Add inline JSDoc comments
+      - Document all public functions
+      - Include usage examples
+      - Type annotations for IDE support
+- [ ] Add comparison UI strings to `i18n/en.toml`
+      - showDifferences, hideDifferences
+      - diffLegend, diffTypo, diffPunct, etc.
+      - comparisonHelp tooltip text
+
+### Implementation Notes
+
+**Token Preservation:**
+Keep both original and normalized forms. Display original, compare normalized.
+```javascript
+{ type: 'WORD', original: 'colour', normalized: 'color', offset: 42 }
+```
+
+**Offset Tracking:**
+Critical for reconstruction. Each token knows its position in original text.
+```javascript
+function reconstruct(text, diffs) {
+  let result = '';
+  let pos = 0;
+  for (const diff of diffs) {
+    result += text.slice(pos, diff.offset);
+    result += `<span class="diff-${diff.category}">${diff.original}</span>`;
+    pos = diff.offset + diff.length;
+  }
+  result += text.slice(pos);
+  return result;
+}
+```
+
+**Myers Algorithm Choice:**
+Myers is O(ND) where D = edit distance. For similar texts (common in Bible comparison),
+D is small, making it near-linear. Falls back to O(NM) worst case for very different texts.
+
+**Strong's Number Handling:**
+Strong's numbers (H430, G2316) are atomic tokens. Don't split or compare internally.
+They represent the same Hebrew/Greek word across translations.
+
+### CSS Color Variables (Proposed)
+
+```css
+:root {
+  --diff-typo: #f0f0f0;
+  --diff-punct: #fff3cd;
+  --diff-spelling: #cce5ff;
+  --diff-subst: #ffeeba;
+  --diff-add: #d4edda;
+  --diff-omit: #f8d7da;
+  --diff-move: #e2d5f1;
+}
+
+.dark {
+  --diff-typo: #3a3a3a;
+  --diff-punct: #5c4a1d;
+  --diff-spelling: #1c3d5a;
+  --diff-subst: #5c4a1d;
+  --diff-add: #1e4620;
+  --diff-omit: #4a1c1c;
+  --diff-move: #3d2d5c;
+}
+```
+
+### Files to Create/Modify
+
+```
+assets/js/
+├── text-compare.js     # NEW: Core comparison engine
+├── parallel.js         # MODIFY: Integrate comparison
+└── text-compare.test.js # NEW: Unit tests (optional, for dev)
+
+assets/css/
+└── main.css           # MODIFY: Add .diff-* classes
+
+layouts/religion/
+└── compare.html       # MODIFY: Add toggle + legend
+
+i18n/
+└── en.toml            # MODIFY: Add comparison UI strings
+```
+
+### Success Criteria
+
+| Metric | Target |
+|--------|--------|
+| Single verse comparison | < 10ms |
+| Chapter comparison (30 verses) | < 100ms |
+| Classification accuracy | > 95% on test corpus |
+| Rendering preserves text | 100% (byte-exact original) |
+| Mobile performance | < 200ms for verse |
+
+---
+
+## Diatheke Clone Mode (2026-01-01) - SCHEDULED
+
+**Goal:** Add a `diatheke` compatibility mode to juniper that replicates the official
+SWORD diatheke CLI tool's functionality using our pure Go implementation.
+
+**Use Case:** Replace the system diatheke binary with our Go tool for faster extraction,
+better cross-platform support, and integration with the juniper pipeline.
+
+**Reference:** Official diatheke at https://crosswire.org/sword/
+
+### Current Diatheke Usage in Project
+
+The project currently uses diatheke for Bible extraction:
+```bash
+diatheke -b KJV -k "Genesis 1:1" -f plain
+# Output: Genesis 1:1: In the beginning God created the heaven and the earth.
+
+diatheke -b KJV -k "Genesis 1" -f plain
+# Output: Full chapter with verse numbers
+
+diatheke -b KJV -k "Genesis" -f plain
+# Output: Full book
+```
+
+### Phase 1: Core CLI Implementation (Priority: High)
+**Status:** SCHEDULED NEXT
+
+- [ ] Add `juniper diatheke` subcommand
+      - Mirror official diatheke CLI flags
+      - Use existing zText/zCom/zLD parsers
+- [ ] Implement key flags
+      - `-b <module>` - Bible/module name (required)
+      - `-k <key>` - Verse reference or search key (required)
+      - `-f <format>` - Output format (plain, RTF, HTML, OSIS, ThML, GBF)
+      - `-o <option>` - Additional options (n=verse numbers, f=footnotes, s=Strong's)
+      - `-l <locale>` - Locale for book names
+      - `-m <maxverses>` - Maximum verses to return
+- [ ] Implement reference parser
+      - Parse "Genesis 1:1", "Gen 1:1", "Gen.1.1" formats
+      - Support ranges: "Genesis 1:1-5", "Genesis 1-2"
+      - Support book-only: "Genesis" (full book)
+      - Support chapter-only: "Genesis 1" (full chapter)
+- [ ] Implement module auto-detection
+      - Read module type from .conf file
+      - Route to appropriate parser (zText, zCom, zLD)
+
+### Phase 2: Output Format Compatibility (Priority: High)
+**Status:** PENDING
+
+- [ ] Implement plain text output (-f plain)
+      - Match diatheke output format exactly
+      - Include verse references as prefix
+      - Handle multi-line verses
+- [ ] Implement OSIS output (-f OSIS)
+      - Wrap in proper OSIS XML structure
+      - Include verse markers
+- [ ] Implement HTML output (-f HTML)
+      - Clean HTML with verse spans
+      - Proper escaping
+- [ ] Implement RTF output (-f RTF)
+      - Basic RTF structure
+      - For legacy compatibility
+- [ ] Add formatting options (-o flags)
+      - n: Show verse numbers
+      - f: Include footnotes
+      - s: Include Strong's numbers
+      - m: Include morphology
+      - h: Include headings
+
+### Phase 3: Search Functionality (Priority: Medium)
+**Status:** PENDING
+
+- [ ] Implement text search (-s <type>)
+      - regex: Regular expression search
+      - phrase: Exact phrase search
+      - multiword: Multiple words (AND)
+      - lucene: Lucene-style queries (future)
+- [ ] Implement search key format
+      - `-s regex -k "love.*neighbor"` - regex search
+      - `-s phrase -k "in the beginning"` - phrase search
+- [ ] Add search range limiting
+      - `-r "Genesis-Malachi"` - Search OT only
+      - `-r "Matthew-Revelation"` - Search NT only
+
+### Phase 4: Additional Module Support (Priority: Medium)
+**Status:** PENDING
+
+- [ ] Dictionary/Lexicon support
+      - `-b StrongsGreek -k "G2316"` - Lookup Strong's
+      - `-b ISBE -k "Abraham"` - Encyclopedia lookup
+- [ ] Commentary support
+      - `-b Barnes -k "John 3:16"` - Get commentary
+- [ ] GenBook support
+      - `-b Josephus -k "Wars/Book 1"` - General book lookup
+
+### Phase 5: 1:1 Validation (Priority: High)
+**Status:** PENDING
+
+- [ ] Create comparison test script
+      - Run both diatheke binaries on same inputs
+      - Compare output byte-by-byte
+      - Report any differences
+- [ ] Test with all 8 website Bibles
+      - KJV, DRC, Geneva1599, Vulgate, Tyndale
+      - LXX, OSMHB, SBLGNT
+- [ ] Test edge cases
+      - Verses with Strong's numbers
+      - Verses with footnotes
+      - Deuterocanonical books (DRC, Vulgate)
+      - Hebrew/Greek text (OSMHB, LXX, SBLGNT)
+- [ ] Document intentional differences
+      - Any improvements over official diatheke
+      - Unicode handling differences
+
+### Phase 6: Integration (Priority: Medium)
+**Status:** PENDING
+
+- [ ] Update justfile commands
+      - Replace `diatheke` calls with `juniper diatheke`
+      - Maintain backward compatibility
+- [ ] Update extract scripts
+      - Use Go diatheke for extraction
+      - Benchmark speed improvement
+- [ ] Add shell alias helper
+      - `juniper diatheke-install` creates `diatheke` alias
+      - For drop-in replacement
+
+### Phase 7: Testing (Priority: High)
+**Status:** PENDING
+
+- [ ] Unit tests for reference parser (`pkg/diatheke/reference_test.go`)
+      - TestParseReference_FullRef - "Genesis 1:1" → Book+Chapter+Verse
+      - TestParseReference_Abbreviated - "Gen 1:1" → same result
+      - TestParseReference_DottedFormat - "Gen.1.1" → same result
+      - TestParseReference_ChapterOnly - "Genesis 1" → full chapter
+      - TestParseReference_BookOnly - "Genesis" → full book
+      - TestParseReference_VerseRange - "Genesis 1:1-5" → range
+      - TestParseReference_ChapterRange - "Genesis 1-2" → chapter range
+      - TestParseReference_CrossChapter - "Genesis 1:28-2:3" → cross-chapter
+      - TestParseReference_AllBookAliases - all 66 books with aliases
+      - TestParseReference_InvalidRef - error handling
+      - TestParseReference_Unicode - Hebrew/Greek book names
+- [ ] Unit tests for formatters (`pkg/diatheke/formatter_test.go`)
+      - TestPlainFormatter_SingleVerse - basic output
+      - TestPlainFormatter_ChapterWithNumbers - -o n flag
+      - TestPlainFormatter_WithStrongs - -o s flag
+      - TestPlainFormatter_WithFootnotes - -o f flag
+      - TestOSISFormatter_SingleVerse - XML output
+      - TestOSISFormatter_Attributes - osisID, verse markers
+      - TestHTMLFormatter_SingleVerse - HTML output
+      - TestHTMLFormatter_Escaping - XSS prevention
+      - TestRTFFormatter_BasicStructure - RTF header/footer
+- [ ] Unit tests for module detection
+      - TestDetectModuleType_zText - Bible modules
+      - TestDetectModuleType_zCom - Commentary modules
+      - TestDetectModuleType_zLD - Dictionary modules
+      - TestDetectModuleType_RawGenBook - General books
+      - TestDetectModuleType_MissingConf - error handling
+- [ ] Integration tests with real modules (`pkg/diatheke/integration_test.go`)
+      - TestDiatheke_KJV_Genesis1_1 - single verse
+      - TestDiatheke_KJV_Genesis1 - full chapter
+      - TestDiatheke_KJV_Genesis - full book (spot check)
+      - TestDiatheke_DRC_Tobit1_1 - deuterocanonical
+      - TestDiatheke_Vulgate_Latin - Latin text output
+      - TestDiatheke_LXX_Greek - Greek text output
+      - TestDiatheke_OSMHB_Hebrew - Hebrew text output
+      - TestDiatheke_StrongsGreek_G2316 - dictionary lookup
+      - TestDiatheke_Barnes_John3_16 - commentary lookup
+- [ ] 1:1 comparison tests with official diatheke
+      - TestCompare_KJV_AllFormats - plain, OSIS, HTML
+      - TestCompare_KJV_AllOptions - -o n, -o s, -o f
+      - TestCompare_DRC_Deuterocanon - Tobit, Judith, etc.
+      - TestCompare_OutputParity - byte-level comparison
+      - TestCompare_Performance - Go faster than C++
+- [ ] Performance benchmarks
+      - BenchmarkDiatheke_SingleVerse - < 5ms target
+      - BenchmarkDiatheke_FullChapter - < 50ms target
+      - BenchmarkDiatheke_FullBook - < 500ms target
+      - BenchmarkDiatheke_Search_Simple - phrase search
+      - BenchmarkDiatheke_Search_Regex - regex search
+      - BenchmarkDiatheke_vs_Official - comparison
+
+### Phase 8: Documentation (Priority: Medium)
+**Status:** PENDING
+
+- [ ] Update `tools/juniper/README.md`
+      - Add diatheke subcommand documentation
+      - Usage examples for all flags
+      - Comparison with official diatheke
+      - Performance benchmarks
+- [ ] Update `docs/religion-section.md`
+      - Add "Diatheke Mode" section
+      - Document CLI interface
+      - Explain module detection
+- [ ] Create `docs/diatheke-compatibility.md`
+      - Full CLI reference
+      - Flag compatibility matrix
+      - Known differences from official
+      - Migration guide from official diatheke
+- [ ] Add man page generation
+      - `juniper diatheke --help` → comprehensive help
+      - Generate man page from help text
+- [ ] Update project README.md
+      - Add diatheke to feature list
+      - Note pure Go implementation
+
+### Implementation Notes
+
+**Reference Parsing Strategy:**
+```go
+type Reference struct {
+    Book     string  // "Genesis", "Gen", "Gn"
+    Chapter  int     // 1-150 (Psalms)
+    Verse    int     // 1-176 (Psalm 119)
+    EndVerse int     // For ranges (0 if single verse)
+}
+
+func ParseReference(key string) (*Reference, error)
+// "Genesis 1:1" → {Book: "Genesis", Chapter: 1, Verse: 1}
+// "Gen 1:1-5" → {Book: "Gen", Chapter: 1, Verse: 1, EndVerse: 5}
+// "Genesis 1" → {Book: "Genesis", Chapter: 1, Verse: 0} // Full chapter
+// "Genesis" → {Book: "Genesis", Chapter: 0, Verse: 0} // Full book
+```
+
+**Output Format Interface:**
+```go
+type OutputFormatter interface {
+    FormatVerse(ref Reference, text string, opts FormatOptions) string
+    Header() string
+    Footer() string
+}
+
+type PlainFormatter struct{}
+type OSISFormatter struct{}
+type HTMLFormatter struct{}
+```
+
+**Module Auto-Detection:**
+```go
+func DetectModuleType(confPath string) (string, error) {
+    conf := ParseConf(confPath)
+    return conf.ModDrv, nil // "zText", "zCom", "zLD", "RawGenBook"
+}
+```
+
+### CLI Examples (Target Behavior)
+
+```bash
+# Basic verse lookup
+juniper diatheke -b KJV -k "John 3:16"
+# John 3:16: For God so loved the world...
+
+# Chapter with verse numbers
+juniper diatheke -b KJV -k "Genesis 1" -o n
+# Genesis 1:1: In the beginning...
+# Genesis 1:2: And the earth was...
+
+# Search
+juniper diatheke -b KJV -s phrase -k "in the beginning"
+# Genesis 1:1: In the beginning...
+# John 1:1: In the beginning...
+
+# Strong's lookup
+juniper diatheke -b StrongsGreek -k "G2316"
+# G2316: θεός (theos) - God, a deity...
+
+# OSIS output
+juniper diatheke -b KJV -k "John 1:1" -f OSIS
+# <verse osisID="John.1.1">In the beginning was the Word...</verse>
+```
+
+### Files to Create/Modify
+
+```
+tools/juniper/
+├── cmd/juniper/
+│   ├── main.go           # MODIFY: Add diatheke subcommand
+│   └── diatheke.go       # NEW: Diatheke command implementation
+├── pkg/diatheke/
+│   ├── reference.go      # NEW: Reference parser
+│   ├── reference_test.go # NEW: Reference parser tests
+│   ├── formatter.go      # NEW: Output formatters
+│   ├── formatter_test.go # NEW: Formatter tests
+│   └── search.go         # NEW: Search implementation
+└── testdata/
+    └── diatheke/
+        ├── expected/     # NEW: Expected output for comparison
+        └── compare.sh    # NEW: Comparison test script
+```
+
+### Success Criteria
+
+| Metric | Target |
+|--------|--------|
+| Single verse lookup | < 5ms |
+| Full chapter lookup | < 50ms |
+| Full book lookup | < 500ms |
+| Output parity with diatheke | 99%+ |
+| Reference parsing accuracy | 100% |
+| All 8 website Bibles work | 100% |

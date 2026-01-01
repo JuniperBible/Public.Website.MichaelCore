@@ -1,0 +1,14 @@
+{{ define "main" }}
+<div class="max-w-2xl mx-auto px-4 py-24 text-center">
+  <div class="card-paper">
+    <h1 class="text-6xl md:text-8xl font-hand font-bold text-paper-black mb-4">{{ i18n "notFoundTitle" | default "404" }}</h1>
+    <p class="text-2xl font-hand text-paper-gray mb-8">{{ i18n "notFoundHeading" | default "Page not found" }}</p>
+    <p class="text-lg font-hand text-paper-gray mb-8">
+      {{ i18n "notFoundMessage" | default "The page you're looking for doesn't exist or has been moved." }}
+    </p>
+    <a href="/" class="btn-paper-dark">
+      &larr; {{ i18n "backToHome" | default "Back to Home" }}
+    </a>
+  </div>
+</div>
+{{ end }}

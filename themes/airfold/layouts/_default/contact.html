@@ -1,0 +1,208 @@
+{{ define "main" }}
+<div class="max-w-2xl mx-auto px-4 py-4 md:py-4 mobile-fit-viewport">
+  <header class="text-center mb-2 md:mb-4">
+    <h1 class="text-3xl md:text-4xl font-hand font-bold text-paper-black mb-1 md:mb-2">
+      {{ .Title }}
+    </h1>
+    <p class="text-base md:text-lg font-hand text-paper-gray">
+      {{ .Content }}
+    </p>
+  </header>
+
+  <!-- Contact Form -->
+  <div class="card-paper-compact mb-4 md:mb-6">
+    {{ $pgpKey := .Site.Params.pgpPublicKey }}
+    <form id="contact-form" action="{{ .Site.Params.contactFormAction | default "/api/contact" }}" method="POST" class="space-y-2">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+        <div>
+          <label for="name" class="block font-hand text-paper-black text-sm mb-0.5">{{ i18n "nameLabel" | default "Name" }}</label>
+          <input type="text" id="name" name="name" required maxlength="200" aria-required="true" class="input-paper">
+        </div>
+        <div>
+          <label for="email" class="block font-hand text-paper-black text-sm mb-0.5">{{ i18n "emailLabel" | default "Email" }}</label>
+          <input type="email" id="email" name="email" required maxlength="254" aria-required="true" class="input-paper">
+        </div>
+      </div>
+
+      <div>
+        <label for="subject" class="block font-hand text-paper-black text-sm mb-0.5">{{ i18n "subjectLabel" | default "Subject" }}</label>
+        <input type="text" id="subject" name="subject" required maxlength="500" aria-required="true" class="input-paper">
+      </div>
+
+      <div>
+        <label for="message" class="block font-hand text-paper-black text-sm mb-0.5">{{ i18n "messageLabel" | default "Message" }}</label>
+        <textarea id="message" name="message" rows="3" required maxlength="5000" aria-required="true" class="input-paper resize-none"{{ if .Site.Params.pgpPublicKey }} aria-describedby="pgp-notice"{{ end }}></textarea>
+      </div>
+
+      <!-- Hidden field for encrypted message -->
+      <input type="hidden" id="encrypted-message" name="encrypted_message">
+
+      <!-- CAPTCHA Widget -->
+      {{- $captcha := .Site.Params.captcha -}}
+      {{- $provider := $captcha.provider | default "disabled" -}}
+      {{- $siteKey := $captcha.siteKey -}}
+      {{- with getenv "HUGO_TURNSTILE_SITE_KEY" }}{{ if eq $provider "turnstile" }}{{ $siteKey = . }}{{ end }}{{ end -}}
+      {{- with getenv "HUGO_RECAPTCHA_SITE_KEY" }}{{ if or (eq $provider "recaptcha-v2") (eq $provider "recaptcha-v3") }}{{ $siteKey = . }}{{ end }}{{ end -}}
+      {{- with getenv "HUGO_HCAPTCHA_SITE_KEY" }}{{ if eq $provider "hcaptcha" }}{{ $siteKey = . }}{{ end }}{{ end -}}
+      {{- with getenv "HUGO_FRIENDLY_CAPTCHA_SITE_KEY" }}{{ if eq $provider "friendly-captcha" }}{{ $siteKey = . }}{{ end }}{{ end -}}
+      {{- $captchaEnabled := and $captcha (ne $provider "disabled") $siteKey -}}
+      {{ partial "captcha.html" . }}
+
+      <div class="text-center pt-1">
+        <button type="submit" id="submit-btn" class="social-link-sm !w-auto !h-auto px-5 py-1.5 text-sm font-hand"{{ if $captchaEnabled }} disabled{{ end }}>{{ i18n "sendMessage" | default "Send Message" }}</button>
+      </div>
+
+      {{ if $pgpKey }}
+      <p id="pgp-notice" class="text-xs text-paper-gray text-center mt-2">{{ i18n "pgpNotice" | default "Your message will be encrypted with PGP" }}</p>
+      {{ end }}
+    </form>
+  </div>
+
+  <!-- CAPTCHA Scripts -->
+  {{ partial "captcha-scripts.html" . }}
+
+  {{ $pgpKey := .Site.Params.pgpPublicKey }}
+  {{ if $pgpKey }}
+  <!-- OpenPGP.js for client-side encryption (self-hosted, deferred for performance) -->
+  <script src="/js/openpgp.min.js" defer></script>
+  <script>
+    const PGP_PUBLIC_KEY = `{{ $pgpKey }}`;
+    const ENCRYPTED_PLACEHOLDER = '{{ i18n "encryptedPlaceholder" | default "[Encrypted - see encrypted_message field]" }}';
+    const ENCRYPTING_STATUS = '{{ i18n "encryptingStatus" | default "Encrypting..." }}';
+    const SENDING_STATUS = '{{ i18n "sendingStatus" | default "Sending..." }}';
+    const ENCRYPTION_FAILED = '{{ i18n "encryptionFailed" | default "Failed to encrypt message. Please try again." }}';
+    const KEY_EXPIRED = '{{ i18n "keyExpired" | default "The encryption key has expired. Message cannot be encrypted." }}';
+    const KEY_INVALID = '{{ i18n "keyInvalid" | default "Invalid encryption key. Message cannot be encrypted." }}';
+
+    // Validate PGP key on page load
+    let pgpKeyValid = false;
+    let cachedPublicKey = null;
+
+    // Cache DOM elements (queried once, used multiple times)
+    let pgpNotice = null;
+    let contactForm = null;
+    let submitBtn = null;
+    let nameField = null;
+    let emailField = null;
+    let subjectField = null;
+    let messageField = null;
+    let encryptedField = null;
+
+    function cacheFormElements() {
+      pgpNotice = document.getElementById('pgp-notice');
+      contactForm = document.getElementById('contact-form');
+      submitBtn = document.getElementById('submit-btn');
+      nameField = document.getElementById('name');
+      emailField = document.getElementById('email');
+      subjectField = document.getElementById('subject');
+      messageField = document.getElementById('message');
+      encryptedField = document.getElementById('encrypted-message');
+    }
+
+    async function validatePGPKey() {
+      try {
+        cachedPublicKey = await openpgp.readKey({ armoredKey: PGP_PUBLIC_KEY });
+
+        // Check if key is expired
+        const now = new Date();
+        const keyInfo = cachedPublicKey.toPacketList().findPacket(openpgp.enums.packet.publicKey);
+        if (keyInfo && keyInfo.expirationTime && keyInfo.expirationTime < now) {
+          console.warn('PGP key has expired');
+          if (pgpNotice) {
+            pgpNotice.textContent = KEY_EXPIRED;
+            pgpNotice.classList.add('text-red-600');
+          }
+          return false;
+        }
+
+        // Check subkeys for encryption capability
+        const encryptionKey = await cachedPublicKey.getEncryptionKey().catch(() => null);
+        if (!encryptionKey) {
+          console.warn('PGP key has no valid encryption subkey');
+          if (pgpNotice) {
+            pgpNotice.textContent = KEY_INVALID;
+            pgpNotice.classList.add('text-red-600');
+          }
+          return false;
+        }
+
+        pgpKeyValid = true;
+        return true;
+      } catch (error) {
+        console.error('PGP key validation failed:', error);
+        if (pgpNotice) {
+          pgpNotice.textContent = KEY_INVALID;
+          pgpNotice.classList.add('text-red-600');
+        }
+        return false;
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+      // Cache all form elements once
+      cacheFormElements();
+
+      // Validate key after OpenPGP library loads
+      if (typeof openpgp !== 'undefined') {
+        validatePGPKey();
+      } else {
+        // Wait for deferred script to load
+        const checkOpenpgp = setInterval(() => {
+          if (typeof openpgp !== 'undefined') {
+            clearInterval(checkOpenpgp);
+            validatePGPKey();
+          }
+        }, 100);
+        // Stop checking after 10 seconds
+        setTimeout(() => clearInterval(checkOpenpgp), 10000);
+      }
+
+      if (contactForm) {
+        contactForm.addEventListener('submit', async function(e) {
+          e.preventDefault();
+
+          const originalText = submitBtn.textContent;
+
+          // Check if PGP key is valid before attempting encryption
+          if (!pgpKeyValid) {
+            alert(KEY_INVALID);
+            return;
+          }
+
+          try {
+            submitBtn.textContent = ENCRYPTING_STATUS;
+            submitBtn.disabled = true;
+
+            const plaintext = `Name: ${nameField.value}\nEmail: ${emailField.value}\nSubject: ${subjectField.value}\n\nMessage:\n${messageField.value}`;
+
+            const encrypted = await openpgp.encrypt({
+              message: await openpgp.createMessage({ text: plaintext }),
+              encryptionKeys: cachedPublicKey
+            });
+
+            encryptedField.value = encrypted;
+            messageField.value = ENCRYPTED_PLACEHOLDER;
+
+            submitBtn.textContent = SENDING_STATUS;
+            contactForm.submit();
+          } catch (error) {
+            console.error('Encryption failed:', error);
+            alert(ENCRYPTION_FAILED);
+            submitBtn.textContent = originalText;
+            submitBtn.disabled = false;
+          }
+        });
+      }
+    });
+  </script>
+  {{ end }}
+
+  <!-- Social Links -->
+  {{ if .Site.Data.social.links }}
+  <div class="text-center">
+    <p class="font-hand text-paper-gray mb-2 md:mb-4 text-sm md:text-base">{{ i18n "orConnectElsewhere" | default "Or connect with me elsewhere" }}</p>
+    {{ partial "social-links.html" . }}
+  </div>
+  {{ end }}
+</div>
+{{ end }}

@@ -1,0 +1,269 @@
+{
+  "$schema": "https://focuswithjustin.com/schemas/skills.schema.json",
+  "skills": [
+    {
+      "id": "access-control",
+      "title": "Access Control",
+      "description": "Managing and restricting access to systems and data"
+    },
+    {
+      "id": "automation",
+      "title": "Automation",
+      "description": "Automating security tasks and workflows"
+    },
+    {
+      "id": "aws-security",
+      "title": "AWS Security",
+      "description": "Amazon Web Services security architecture and services"
+    },
+    {
+      "id": "azure-security",
+      "title": "Azure Security",
+      "description": "Microsoft Azure security architecture and services"
+    },
+    {
+      "id": "cloud-security",
+      "title": "Cloud Security",
+      "description": "Securing cloud computing environments and services"
+    },
+    {
+      "id": "cmmc",
+      "title": "CMMC",
+      "description": "Cybersecurity Maturity Model Certification for defense contractors"
+    },
+    {
+      "id": "container-security",
+      "title": "Container Security",
+      "description": "Securing containerized applications and orchestration platforms"
+    },
+    {
+      "id": "cryptography",
+      "title": "Cryptography",
+      "description": "Protecting information through encryption and related techniques"
+    },
+    {
+      "id": "devsecops",
+      "title": "DevSecOps",
+      "description": "Integrating security into DevOps practices and CI/CD pipelines"
+    },
+    {
+      "id": "dfars",
+      "title": "DFARS",
+      "description": "Defense Federal Acquisition Regulation Supplement compliance"
+    },
+    {
+      "id": "documentation",
+      "title": "Documentation",
+      "description": "Creating and maintaining security documentation"
+    },
+    {
+      "id": "ethical-hacking",
+      "title": "Ethical Hacking",
+      "description": "Authorized security testing to identify vulnerabilities"
+    },
+    {
+      "id": "exploit-development",
+      "title": "Exploit Development",
+      "description": "Creating exploits for security research and testing"
+    },
+    {
+      "id": "exploitation",
+      "title": "Exploitation",
+      "description": "Leveraging vulnerabilities to compromise systems"
+    },
+    {
+      "id": "gcp-security",
+      "title": "GCP Security",
+      "description": "Google Cloud Platform security architecture and services"
+    },
+    {
+      "id": "governance",
+      "title": "Governance",
+      "description": "Security governance and organizational oversight"
+    },
+    {
+      "id": "hardware",
+      "title": "Hardware",
+      "description": "Computer hardware knowledge and security"
+    },
+    {
+      "id": "help-desk",
+      "title": "Help Desk",
+      "description": "IT support and end-user assistance"
+    },
+    {
+      "id": "hipaa",
+      "title": "HIPAA",
+      "description": "Health Insurance Portability and Accountability Act compliance"
+    },
+    {
+      "id": "hitrust",
+      "title": "HITRUST",
+      "description": "Health Information Trust Alliance certification framework"
+    },
+    {
+      "id": "identity-access-management",
+      "title": "Identity & Access Management",
+      "description": "Enterprise identity governance and access control systems"
+    },
+    {
+      "id": "incident-response",
+      "title": "Incident Response",
+      "description": "Responding to and managing security incidents"
+    },
+    {
+      "id": "infrastructure",
+      "title": "Infrastructure",
+      "description": "IT infrastructure design, implementation, and security"
+    },
+    {
+      "id": "iso-27001",
+      "title": "ISO 27001",
+      "description": "International standard for information security management systems"
+    },
+    {
+      "id": "it-support",
+      "title": "IT Support",
+      "description": "Technical support and troubleshooting"
+    },
+    {
+      "id": "linux",
+      "title": "Linux",
+      "description": "Linux operating system administration and security"
+    },
+    {
+      "id": "network-administration",
+      "title": "Network Administration",
+      "description": "Managing and maintaining network infrastructure"
+    },
+    {
+      "id": "network-security",
+      "title": "Network Security",
+      "description": "Protecting network infrastructure and communications"
+    },
+    {
+      "id": "nist-800-171",
+      "title": "NIST 800-171",
+      "description": "Protecting Controlled Unclassified Information in non-federal systems"
+    },
+    {
+      "id": "nist-800-53",
+      "title": "NIST 800-53",
+      "description": "Security and Privacy Controls for Information Systems"
+    },
+    {
+      "id": "operating-systems",
+      "title": "Operating Systems",
+      "description": "Knowledge of various operating system platforms"
+    },
+    {
+      "id": "penetration-testing",
+      "title": "Penetration Testing",
+      "description": "Authorized security testing of systems and applications"
+    },
+    {
+      "id": "privilege-escalation",
+      "title": "Privilege Escalation",
+      "description": "Techniques for elevating access rights"
+    },
+    {
+      "id": "project-management",
+      "title": "Project Management",
+      "description": "Planning and executing security projects"
+    },
+    {
+      "id": "red-team",
+      "title": "Red Team",
+      "description": "Adversary simulation and offensive security operations"
+    },
+    {
+      "id": "reverse-engineering",
+      "title": "Reverse Engineering",
+      "description": "Analyzing software and systems to understand their function"
+    },
+    {
+      "id": "risk-management",
+      "title": "Risk Management",
+      "description": "Identifying, assessing, and mitigating security risks"
+    },
+    {
+      "id": "security-architecture",
+      "title": "Security Architecture",
+      "description": "Designing secure systems and infrastructure"
+    },
+    {
+      "id": "security-hardening",
+      "title": "Security Hardening",
+      "description": "Strengthening systems against attacks"
+    },
+    {
+      "id": "security-management",
+      "title": "Security Management",
+      "description": "Managing organizational security programs"
+    },
+    {
+      "id": "security-program",
+      "title": "Security Program",
+      "description": "Building and maintaining comprehensive security programs"
+    },
+    {
+      "id": "shell-scripting",
+      "title": "Shell Scripting",
+      "description": "Automating tasks through command-line scripts"
+    },
+    {
+      "id": "stakeholder-management",
+      "title": "Stakeholder Management",
+      "description": "Managing relationships with security stakeholders"
+    },
+    {
+      "id": "system-administration",
+      "title": "System Administration",
+      "description": "Managing and maintaining computer systems and servers"
+    },
+    {
+      "id": "tcp-ip",
+      "title": "TCP/IP",
+      "description": "Transmission Control Protocol/Internet Protocol networking fundamentals"
+    },
+    {
+      "id": "threat-analysis",
+      "title": "Threat Analysis",
+      "description": "Identifying, analyzing, and understanding cybersecurity threats"
+    },
+    {
+      "id": "threat-vulnerability-management",
+      "title": "Threat & Vulnerability Management",
+      "description": "Identifying, prioritizing, and remediating security vulnerabilities"
+    },
+    {
+      "id": "troubleshooting",
+      "title": "Troubleshooting",
+      "description": "Systematic problem identification and resolution"
+    },
+    {
+      "id": "vulnerability-assessment",
+      "title": "Vulnerability Assessment",
+      "description": "Identifying and evaluating security weaknesses in systems"
+    },
+    {
+      "id": "web-application-security",
+      "title": "Web Application Security",
+      "description": "Securing web applications against common vulnerabilities"
+    },
+    {
+      "id": "wireless",
+      "title": "Wireless",
+      "description": "Wireless networking technologies and security"
+    },
+    {
+      "id": "zero-trust",
+      "title": "Zero Trust",
+      "description": "Never trust, always verify security architecture"
+    }
+  ],
+  "meta": {
+    "version": "1.0.0",
+    "lastModified": "2025-12-27"
+  }
+}

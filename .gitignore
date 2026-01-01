@@ -1,0 +1,47 @@
+# Hugo build output
+/public/
+/resources/
+
+# Node modules
+/node_modules/
+
+# Generated CSS (built from source)
+/static/css/main.css
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor directories and backup files
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+*.orig
+*.bak
+
+# Hugo lock file
+.hugo_build.lock
+
+# Wrangler
+.wrangler/
+.dev.vars
+workers/**/node_modules/
+data/bibles_auxiliary.json
+data/bibles_auxiliary/
+sword_data/
+tools/juniper/data/
+tmp/
+# Python caches
+__pycache__/
+*.pyc
+*.pyo
+
+# Go build artifacts
+tools/juniper/extract
+tools/juniper/juniper
+tools/juniper/coverage.out
+tools/juniper/coverage.html
+tools/juniper/*.test
+tools/juniper/sword-converter

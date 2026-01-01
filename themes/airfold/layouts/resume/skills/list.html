@@ -1,0 +1,17 @@
+{{ define "main" }}
+<div class="max-w-4xl mx-auto px-4 py-12">
+  {{ partial "list-header.html" . }}
+
+  <!-- Skills Grid -->
+  <div class="card-paper">
+    <div class="flex flex-wrap gap-2">
+      {{ range .Pages.ByTitle }}
+      <a href="{{ .RelPermalink }}" class="inline-block px-3 py-1 text-xs font-medium bg-paper-light border border-paper-border rounded-full hover:bg-accent hover:text-white hover:border-accent transition-colors">{{ .Title }}</a>
+      {{ end }}
+    </div>
+  </div>
+
+  <!-- Navigation -->
+  {{ partial "resume-nav.html" . }}
+</div>
+{{ end }}

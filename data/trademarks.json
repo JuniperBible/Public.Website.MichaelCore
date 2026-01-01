@@ -1,0 +1,23 @@
+{
+  "trademarks": [
+    {
+      "name": "Focus with Justin",
+      "abbrev": null
+    },
+    {
+      "name": "Side by Side Scripture",
+      "abbrev": "SSS"
+    },
+    {
+      "name": "Christian Canon Compared",
+      "abbrev": "CCC"
+    }
+  ],
+  "symbols": [
+    {
+      "name": "the symbol of a point inscribed within a circle, itself inscribed within an equilateral triangle",
+      "svg": "<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\"><polygon points=\"12,2 22,20 2,20\" stroke-width=\"2\" stroke-linejoin=\"round\"/><circle cx=\"12\" cy=\"14\" r=\"5\" stroke-width=\"2\"/><circle cx=\"12\" cy=\"14\" r=\"1.5\" fill=\"currentColor\" stroke=\"none\"/></svg>"
+    }
+  ],
+  "owner": "Justin Weeks"
+}

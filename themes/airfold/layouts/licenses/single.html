@@ -1,0 +1,183 @@
+{{ define "main" }}
+{{/* Look up license from data file using the page's license param or filename */}}
+{{ $licenseId := .Params.license | default .File.ContentBaseName }}
+{{ $licenses := .Site.Data.spdx_licenses.licenses }}
+{{ $license := index $licenses $licenseId }}
+{{ $labels := .Site.Data.spdx_licenses }}
+
+<article class="max-w-4xl mx-auto px-4 py-12">
+  <header class="text-center mb-8">
+    <h1 class="text-3xl md:text-4xl font-hand font-bold text-paper-black mb-2">
+      {{ with $license }}{{ .name }}{{ else }}{{ .Title }}{{ end }}
+    </h1>
+    <p class="text-lg font-mono text-paper-gray mb-4">{{ $licenseId }}</p>
+
+    <!-- Badges -->
+    <div class="flex justify-center flex-wrap gap-2 mb-4">
+      {{ with $license }}
+        {{ if .osiApproved }}
+        <span class="text-sm bg-green-100 text-green-700 px-3 py-1 rounded-full">OSI Approved</span>
+        {{ end }}
+        {{ if .fsfLibre }}
+        <span class="text-sm bg-blue-100 text-blue-700 px-3 py-1 rounded-full">FSF Free/Libre</span>
+        {{ end }}
+        {{ if and (not .osiApproved) (not .fsfLibre) }}
+        <span class="text-sm bg-amber-100 text-amber-700 px-3 py-1 rounded-full">Proprietary</span>
+        {{ end }}
+      {{ end }}
+    </div>
+
+    {{ with $license }}
+      {{ with .url }}
+      <a href="{{ . }}" class="text-accent hover:underline text-sm" target="_blank" rel="noopener">
+        {{ i18n "viewOfficialLicense" | default "View official SPDX license text" }} &rarr;
+      </a>
+      {{ end }}
+    {{ end }}
+  </header>
+
+  {{ with $license }}
+  <!-- Description -->
+  <div class="card-paper p-6 mb-6">
+    <p class="text-paper-gray font-hand text-lg">{{ .description }}</p>
+  </div>
+
+  <!-- Permissions, Conditions, Limitations -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+    <!-- Permissions -->
+    <div class="card-paper p-6">
+      <h2 class="text-lg font-hand font-bold text-green-700 mb-4 flex items-center gap-2">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+        </svg>
+        {{ i18n "permissions" | default "Permissions" }}
+      </h2>
+      {{ if .permissions }}
+      <ul class="space-y-2">
+        {{ range .permissions }}
+        <li class="text-sm text-paper-gray font-hand flex items-center gap-2">
+          <span class="w-2 h-2 bg-green-500 rounded-full shrink-0"></span>
+          {{ index $labels.permissionLabels . | default . }}
+        </li>
+        {{ end }}
+      </ul>
+      {{ else }}
+      <p class="text-sm text-paper-gray font-hand italic">{{ i18n "none" | default "None" }}</p>
+      {{ end }}
+    </div>
+
+    <!-- Conditions -->
+    <div class="card-paper p-6">
+      <h2 class="text-lg font-hand font-bold text-blue-700 mb-4 flex items-center gap-2">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        </svg>
+        {{ i18n "conditions" | default "Conditions" }}
+      </h2>
+      {{ if .conditions }}
+      <ul class="space-y-2">
+        {{ range .conditions }}
+        <li class="text-sm text-paper-gray font-hand flex items-center gap-2">
+          <span class="w-2 h-2 bg-blue-500 rounded-full shrink-0"></span>
+          {{ index $labels.conditionLabels . | default . }}
+        </li>
+        {{ end }}
+      </ul>
+      {{ else }}
+      <p class="text-sm text-paper-gray font-hand italic">{{ i18n "none" | default "None" }}</p>
+      {{ end }}
+    </div>
+
+    <!-- Limitations -->
+    <div class="card-paper p-6">
+      <h2 class="text-lg font-hand font-bold text-red-700 mb-4 flex items-center gap-2">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+        {{ i18n "limitations" | default "Limitations" }}
+      </h2>
+      {{ if .limitations }}
+      <ul class="space-y-2">
+        {{ range .limitations }}
+        <li class="text-sm text-paper-gray font-hand flex items-center gap-2">
+          <span class="w-2 h-2 bg-red-500 rounded-full shrink-0"></span>
+          {{ index $labels.limitationLabels . | default . }}
+        </li>
+        {{ end }}
+      </ul>
+      {{ else }}
+      <p class="text-sm text-paper-gray font-hand italic">{{ i18n "none" | default "None" }}</p>
+      {{ end }}
+    </div>
+  </div>
+
+  <!-- Full License Text -->
+  {{ with .text }}
+  <div class="card-paper p-6 mb-8">
+    <h2 class="text-xl font-hand font-bold text-paper-black mb-2">
+      {{ i18n "fullLicenseText" | default "Full License Text" }}
+    </h2>
+    <p class="text-sm text-paper-gray mb-4">{{ i18n "officialSPDXText" | default "Official SPDX standard license text" }}</p>
+    <div class="prose max-w-none">
+      <pre class="whitespace-pre-wrap text-sm font-mono bg-paper-light dark:bg-paper-brown dark:text-paper-cream p-4 rounded overflow-x-auto">{{ . }}</pre>
+    </div>
+  </div>
+  {{ end }}
+  {{ else }}
+  <!-- Fallback for unknown licenses -->
+  <div class="card-paper p-6 mb-6">
+    <p class="text-paper-gray font-hand">
+      {{ i18n "unknownLicense" | default "This license identifier is not in our database. Please refer to the SPDX license list for more information." }}
+    </p>
+    <a href="https://spdx.org/licenses/" class="text-accent hover:underline mt-4 inline-block" target="_blank" rel="noopener">
+      {{ i18n "viewSPDXList" | default "View SPDX License List" }} &rarr;
+    </a>
+  </div>
+  {{ end }}
+
+  <!-- Bible-specific license texts using this license (from bibles.json) -->
+  {{ $biblesWithLicense := slice }}
+  {{ range $.Site.Data.bibles.bibles }}
+    {{ if eq .license $licenseId }}
+      {{ $biblesWithLicense = $biblesWithLicense | append . }}
+    {{ end }}
+  {{ end }}
+  {{ if $biblesWithLicense }}
+  <div class="card-paper p-6 mb-8">
+    <h2 class="text-xl font-hand font-bold text-paper-black mb-4">
+      {{ i18n "biblePackageLicenses" | default "Bible Package License Information" }}
+    </h2>
+    {{ range $biblesWithLicense }}
+    <div class="mb-6 last:mb-0">
+      <h3 class="text-lg font-hand font-bold text-paper-black mb-2 flex items-center gap-2">
+        <a href="/religion/bibles/{{ .id }}/" class="hover:text-accent">{{ .title }}</a>
+        <span class="text-sm font-normal text-paper-gray">({{ .abbrev }})</span>
+      </h3>
+      {{ with .licenseText }}
+      <div class="prose max-w-none">
+        <pre class="whitespace-pre-wrap text-sm font-mono bg-paper-light dark:bg-paper-brown dark:text-paper-cream p-4 rounded overflow-x-auto">{{ . }}</pre>
+      </div>
+      {{ end }}
+    </div>
+    {{ end }}
+  </div>
+  {{ end }}
+
+  <!-- Page content if any -->
+  {{ with .Content }}
+  <div class="prose max-w-none">
+    {{ . }}
+  </div>
+  {{ end }}
+
+  <!-- Navigation -->
+  <div class="flex flex-wrap justify-center items-center gap-4 mt-8">
+    <a href="/licenses/" class="btn-paper">
+      &larr; {{ i18n "allLicenses" | default "All Licenses" }}
+    </a>
+    <a href="/religion/bibles/" class="btn-paper">
+      {{ i18n "bibles" | default "Bibles" }}
+    </a>
+  </div>
+</article>
+{{ end }}

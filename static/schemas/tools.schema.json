@@ -1,0 +1,64 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://focuswithjustin.com/schemas/tools.schema.json",
+  "title": "Tools",
+  "description": "Professional tools and technologies metadata for the Focus with Justin website",
+  "type": "object",
+  "required": ["tools"],
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "description": "JSON Schema reference"
+    },
+    "tools": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "title", "category"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "URL slug identifier",
+            "pattern": "^[a-z0-9-]+$"
+          },
+          "title": {
+            "type": "string",
+            "description": "Tool display name"
+          },
+          "description": {
+            "type": "string",
+            "description": "Brief description for SEO and listings"
+          },
+          "category": {
+            "type": "string",
+            "description": "Tool category (must match toolCategories in hugo.toml)"
+          },
+          "website": {
+            "type": "string",
+            "format": "uri",
+            "description": "Official tool website URL"
+          },
+          "weight": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Sort order within category (lower values appear first)"
+          }
+        }
+      }
+    },
+    "meta": {
+      "type": "object",
+      "properties": {
+        "version": {
+          "type": "string",
+          "description": "Schema version"
+        },
+        "lastModified": {
+          "type": "string",
+          "format": "date",
+          "description": "Last modification date"
+        }
+      }
+    }
+  }
+}

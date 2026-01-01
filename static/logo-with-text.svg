@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 24" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Logo mark -->
+  <g stroke="#f5f1e8" stroke-width="2">
+    <polygon points="12,2 22,20 2,20"/>
+    <circle cx="12" cy="14" r="5"/>
+    <circle cx="12" cy="14" r="1.5" fill="#f5f1e8" stroke="none"/>
+  </g>
+  <!-- Text -->
+  <text x="30" y="17" font-family="'Patrick Hand', cursive" font-size="16" fill="#f5f1e8">Focus with Justin</text>
+</svg>

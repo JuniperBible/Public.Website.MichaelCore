@@ -1,0 +1,14 @@
+{{/* Social Call-to-Action Section */}}
+<section class="mt-6 text-center">
+  {{ if ne .Params.showSocialCtaText false }}
+  <p class="text-lg md:text-xl font-hand text-paper-gray mb-6">
+    {{ with .Site.Params.socialCtaText }}{{ . }}{{ else }}Explore my work and connect with me through social media.{{ end }}
+  </p>
+  {{ end }}
+
+  {{ if .Site.Data.social.links }}
+  <div class="card-paper-compact inline-block">
+    {{ partial "social-links.html" . }}
+  </div>
+  {{ end }}
+</section>

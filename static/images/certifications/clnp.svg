@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <circle cx="50" cy="50" r="45" fill="#1a1a1a" stroke="#0a0a0a" stroke-width="3"/>
+  <circle cx="50" cy="50" r="35" fill="none" stroke="#fff" stroke-width="2"/>
+  <text x="50" y="28" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" font-weight="bold" fill="#fff">CompTIA</text>
+  <text x="50" y="50" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#fff">CLNP</text>
+  <text x="50" y="62" text-anchor="middle" font-family="Arial, sans-serif" font-size="5" fill="#fff">Linux Network</text>
+  <text x="50" y="72" text-anchor="middle" font-family="Arial, sans-serif" font-size="5" fill="#fff">PROFESSIONAL</text>
+</svg>

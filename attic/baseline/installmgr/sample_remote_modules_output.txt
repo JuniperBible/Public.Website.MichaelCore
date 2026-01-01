@@ -1,0 +1,60 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                -=+* WARNING *+=- -=+* WARNING *+=-
+
+
+Although Install Manager provides a convenient way for installing
+and upgrading SWORD components, it also uses a systematic method
+for accessing sites which gives packet sniffers a target to lock
+into for singling out users. 
+
+
+IF YOU LIVE IN A PERSECUTED COUNTRY AND DO NOT WISH TO RISK DETECTION,
+YOU SHOULD *NOT* USE INSTALL MANAGER'S REMOTE SOURCE FEATURES.
+
+
+Also, Remote Sources other than CrossWire may contain less than
+quality modules, modules with unorthodox content, or even modules
+which are not legitimately distributable.  Many repositories
+contain wonderfully useful content.  These repositories simply
+are not reviewed or maintained by CrossWire and CrossWire
+cannot be held responsible for their content. CAVEAT EMPTOR.
+
+
+If you understand this and are willing to enable remote source features
+then type yes at the prompt
+
+enable? [no] 
+
+Error Refreshing Remote Source
+
+Available Modules:
+(be sure to refresh remote source (-r) first for most current list)
+
+ [ACV]  	(2.0)  	- A Conservative Version
+ [Afr1953]  	(1.3.3)  	- 1933/1953 Afrikaans Bybel
+ [AKJV]  	(2.1)  	- American King James Version
+ [Alb]  	(2.0)  	- Albanian Bible

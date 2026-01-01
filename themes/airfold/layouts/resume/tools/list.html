@@ -1,0 +1,24 @@
+{{ define "main" }}
+<div class="max-w-4xl mx-auto px-4 py-12">
+  {{ partial "list-header.html" . }}
+
+  <!-- Group tools by category -->
+  {{ $categories := .Site.Params.toolCategories | default (slice "SIEM & Observability" "Container" "Development" "RMM" "Threat Informed Defense" "Virtualization") }}
+  {{ range $cat := $categories }}
+  {{ $tools := where $.Pages "Params.category" $cat }}
+  {{ if $tools }}
+  <div class="mb-8">
+    <h2 class="text-2xl font-hand font-bold text-paper-black mb-4">{{ $cat }}</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {{ range $tools.ByWeight }}
+      {{ partial "item-card.html" (dict "page" . "showDescription" true "cardClass" "card-paper !py-3 !px-4") }}
+      {{ end }}
+    </div>
+  </div>
+  {{ end }}
+  {{ end }}
+
+  <!-- Navigation -->
+  {{ partial "resume-nav.html" . }}
+</div>
+{{ end }}

@@ -1,0 +1,132 @@
+{{- $captcha := .Site.Params.captcha -}}
+
+{{- /* Validate: captcha config section must exist */ -}}
+{{- if not $captcha -}}
+  {{- errorf "CAPTCHA configuration required. Add [params.captcha] section to hugo.toml with provider = 'disabled' to disable, or configure a provider (turnstile, recaptcha-v2, recaptcha-v3, hcaptcha, friendly-captcha)." -}}
+{{- end -}}
+
+{{- $provider := $captcha.provider | default "" -}}
+
+{{- /* Validate: provider must be explicitly set */ -}}
+{{- if not $provider -}}
+  {{- errorf "CAPTCHA provider must be explicitly set. Add provider = 'disabled' to [params.captcha] to disable, or choose: turnstile, recaptcha-v2, recaptcha-v3, hcaptcha, friendly-captcha." -}}
+{{- end -}}
+
+{{- /* Use shared config partial to resolve site key from env vars */ -}}
+{{- partial "_captcha-config.html" . -}}
+{{- $siteKey := .Scratch.Get "captchaSiteKey" -}}
+{{- $secretKey := .Scratch.Get "captchaSecretKey" -}}
+{{- $enabled := .Scratch.Get "captchaEnabled" -}}
+
+{{- /* Validate: if provider is set (not disabled), site key must be provided */ -}}
+{{- if and (ne $provider "disabled") (not $siteKey) -}}
+  {{- errorf "CAPTCHA provider '%s' is configured but no site key provided. Either set siteKey in hugo.toml or set the HUGO_%s_SITE_KEY environment variable. To disable CAPTCHA, set provider = 'disabled'." $provider ($provider | upper | replaceRE "-" "_") -}}
+{{- end -}}
+
+{{- if $enabled -}}
+<!-- Pass provider and optional secret to API -->
+<input type="hidden" name="captcha_provider" value="{{ $provider }}">
+{{- with $secretKey -}}
+<input type="hidden" name="captcha_secret" value="{{ . }}">
+{{- end -}}
+
+{{- if eq $provider "turnstile" -}}
+<!-- Cloudflare Turnstile CAPTCHA -->
+<div class="flex justify-center pt-2">
+  <div id="turnstile-container"></div>
+</div>
+<script>
+  // Turnstile widget management with theme switching support
+  (function() {
+    var siteKey = '{{ $siteKey }}';
+    var widgetId = null;
+
+    function getTheme() {
+      return document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+    }
+
+    function renderTurnstile() {
+      var container = document.getElementById('turnstile-container');
+      if (!container || typeof turnstile === 'undefined') return;
+
+      // Remove existing widget if present
+      if (widgetId !== null) {
+        turnstile.remove(widgetId);
+        widgetId = null;
+      }
+
+      // Render new widget with current theme
+      widgetId = turnstile.render(container, {
+        sitekey: siteKey,
+        theme: getTheme(),
+        callback: function(token) {
+          if (typeof onCaptchaSuccess === 'function') {
+            onCaptchaSuccess(token);
+          }
+        }
+      });
+    }
+
+    // Initial render when Turnstile API is ready
+    if (typeof turnstile !== 'undefined') {
+      renderTurnstile();
+    } else {
+      // Wait for Turnstile script to load
+      window.onloadTurnstileCallback = renderTurnstile;
+    }
+
+    // Re-render on theme change
+    var themeToggle = document.getElementById('theme-toggle');
+    if (themeToggle) {
+      themeToggle.addEventListener('click', function() {
+        // Small delay to let the theme class update
+        setTimeout(renderTurnstile, 50);
+      });
+    }
+  })();
+</script>
+
+{{- else if eq $provider "recaptcha-v2" -}}
+<!-- Google reCAPTCHA v2 -->
+<div class="flex justify-center pt-2">
+  <div id="recaptcha-container" class="g-recaptcha" data-sitekey="{{ $siteKey }}" data-callback="onCaptchaSuccess"></div>
+</div>
+<script>
+  // Set reCAPTCHA theme based on current dark mode state
+  (function() {
+    var container = document.getElementById('recaptcha-container');
+    if (container) {
+      var isDark = document.documentElement.classList.contains('dark');
+      container.setAttribute('data-theme', isDark ? 'dark' : 'light');
+    }
+  })();
+</script>
+
+{{- else if eq $provider "recaptcha-v3" -}}
+<!-- Google reCAPTCHA v3 (invisible) -->
+<input type="hidden" id="recaptcha-token" name="g-recaptcha-response">
+
+{{- else if eq $provider "hcaptcha" -}}
+<!-- hCaptcha -->
+<div class="flex justify-center pt-2">
+  <div id="hcaptcha-container" class="h-captcha" data-sitekey="{{ $siteKey }}" data-callback="onCaptchaSuccess"></div>
+</div>
+<script>
+  // Set hCaptcha theme based on current dark mode state
+  (function() {
+    var container = document.getElementById('hcaptcha-container');
+    if (container) {
+      var isDark = document.documentElement.classList.contains('dark');
+      container.setAttribute('data-theme', isDark ? 'dark' : 'light');
+    }
+  })();
+</script>
+
+{{- else if eq $provider "friendly-captcha" -}}
+<!-- Friendly Captcha -->
+<div class="flex justify-center pt-2">
+  <div class="frc-captcha" data-sitekey="{{ $siteKey }}" data-callback="onCaptchaSuccess"></div>
+</div>
+
+{{- end -}}
+{{- end -}}

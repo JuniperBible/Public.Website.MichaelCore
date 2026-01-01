@@ -1,0 +1,101 @@
+{{ define "scripts" }}
+{{ if .Params.chapter }}
+<!-- Strong's number tooltips for Bible text -->
+{{ $strongs := resources.Get "js/strongs.js" }}
+{{ if $strongs }}
+<script src="{{ $strongs.RelPermalink }}" defer></script>
+{{ end }}
+<!-- Verse sharing functionality -->
+{{ $share := resources.Get "js/share.js" }}
+{{ if $share }}
+<script src="{{ $share.RelPermalink }}" defer></script>
+{{ end }}
+{{ end }}
+{{ end }}
+
+{{ define "main" }}
+<article class="py-8">
+  <header class="text-center mb-8">
+    <h1 class="text-3xl md:text-4xl font-hand font-bold text-paper-black mb-2">
+      {{ .Title }}
+    </h1>
+    {{ with .Params.description }}
+    <p class="text-lg font-hand text-paper-gray mb-4">{{ . }}</p>
+    {{ end }}
+
+    <!-- Features/tags -->
+    <div class="flex justify-center flex-wrap gap-2 mb-4">
+      {{/* Look up language and license from bibles.json */}}
+      {{ $bibleId := .Params.bible | default .Params.abbrev | default .File.ContentBaseName }}
+      {{ range .Site.Data.bibles.bibles }}
+        {{ if eq .id $bibleId }}
+          {{ with .language }}
+          <span class="text-sm bg-paper-black text-paper-cream px-3 py-1 rounded-full">{{ . }}</span>
+          {{ end }}
+          {{ with .license }}
+          <a href="/licenses/{{ . | urlize }}/" class="text-sm bg-gradient-to-r from-paper-brown to-paper-gray text-paper-cream px-3 py-1 rounded-full hover:from-accent hover:to-accent transition-all" title="SPDX License: {{ . }}">{{ . }}</a>
+          {{ end }}
+        {{ end }}
+      {{ end }}
+      {{/* Fallback to params if not in bibles.json */}}
+      {{ if not .Site.Data.bibles.bibles }}
+        {{ with .Params.language }}
+        <span class="text-sm bg-paper-black text-paper-cream px-3 py-1 rounded-full">{{ . }}</span>
+        {{ end }}
+      {{ end }}
+      {{ range .Params.features }}
+      <span class="text-sm bg-accent/10 text-accent px-3 py-1 rounded-full">{{ . }}</span>
+      {{ end }}
+    </div>
+  </header>
+
+  <!-- Bible chapter content or book navigation -->
+  {{ if .Params.chapter }}
+    <!-- Chapter view: show verses -->
+    <div class="prose max-w-none">
+      <!-- Navigation with dropdowns -->
+      {{ partial "bible-nav.html" (dict "page" . "bible" .Params.bible "book" .Params.book "chapter" .Params.chapter) }}
+
+      <div class="bible-text leading-relaxed">
+        {{ .Content }}
+      </div>
+
+      <!-- Bottom navigation for convenience -->
+      {{ partial "bible-nav.html" (dict "page" . "bible" .Params.bible "book" .Params.book "chapter" .Params.chapter) }}
+    </div>
+
+  {{ else if .Params.book }}
+    <!-- Book view: show chapter list -->
+    {{ partial "bible-nav.html" (dict "page" . "bible" .Params.bible "book" .Params.book "chapter" 0) }}
+    {{ partial "prose-content.html" .Content }}
+
+  {{ else }}
+    <!-- Bible overview: show book list -->
+    {{ partial "bible-nav.html" (dict "page" . "bible" .Params.bible "book" "" "chapter" 0) }}
+    {{ partial "prose-content.html" .Content }}
+  {{ end }}
+
+  <!-- Navigation -->
+  <div class="flex flex-wrap justify-center items-center gap-4 mt-8">
+    {{ if .Params.chapter }}
+      <a href="/religion/bibles/{{ .Params.bible }}/{{ .Params.book }}/" class="btn-paper">
+        &larr; {{ i18n "backToBook" | default "Back to Book" }}
+      </a>
+      <a href="/religion/bibles/compare/?bibles={{ .Params.bible }}&ref={{ .Params.book }}.{{ .Params.chapter }}" class="btn-paper">
+        {{ i18n "compareTranslations" | default "Compare Translations" }}
+      </a>
+    {{ else if .Params.book }}
+      <a href="/religion/bibles/{{ .Params.bible }}/" class="btn-paper">
+        &larr; {{ i18n "backToBible" | default "Back to Bible" }}
+      </a>
+    {{ else }}
+      <a href="/religion/bibles/" class="btn-paper">
+        &larr; {{ i18n "allBibles" | default "All Bibles" }}
+      </a>
+      <a href="/religion/bibles/compare/?bibles={{ .Params.bible }}" class="btn-paper">
+        {{ i18n "compareTranslations" | default "Compare Translations" }}
+      </a>
+    {{ end }}
+  </div>
+</article>
+{{ end }}

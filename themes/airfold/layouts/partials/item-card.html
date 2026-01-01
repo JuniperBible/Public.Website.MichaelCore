@@ -1,0 +1,47 @@
+{{/*
+  Item Card Partial - Reusable card for certifications, tools, etc.
+
+  Usage: {{ partial "item-card.html" (dict "page" . "showIssuer" true "showDate" true) }}
+
+  Parameters:
+  - page: The page object (required)
+  - cardClass: Card CSS class (default: "card-paper-sm")
+  - showIssuer: Show issuer field (default: false)
+  - showDescription: Show description (default: false)
+  - showDate: Show date field (default: false)
+  - logoClass: Additional logo classes (default: "")
+*/}}
+{{- $page := .page -}}
+{{- $cardClass := .cardClass | default "card-paper-sm" -}}
+{{- $showIssuer := .showIssuer | default false -}}
+{{- $showDescription := .showDescription | default false -}}
+{{- $showDate := .showDate | default false -}}
+{{- $logoClass := .logoClass | default "" -}}
+
+<a href="{{ $page.RelPermalink }}" class="block {{ $cardClass }} group h-full">
+  <div class="flex items-center gap-3">
+    {{- with $page.Params.logo -}}
+    <img src="{{ . }}" alt="{{ $page.Title }} logo" class="w-12 h-12 flex-shrink-0 {{ $logoClass }}">
+    {{- end -}}
+    <div class="flex-grow min-w-0">
+      <h2 class="text-base font-hand font-bold text-paper-black leading-tight">{{ $page.Title }}</h2>
+      {{- if $showIssuer -}}
+      <p class="text-xs text-paper-gray">{{ $page.Params.issuer }}</p>
+      {{- end -}}
+      {{- if $showDescription -}}
+      <p class="text-xs text-paper-gray">{{ $page.Description }}</p>
+      {{- end -}}
+      {{- if $showDate -}}
+      <div class="text-xs text-paper-gray">
+        {{- with $page.Params.expires -}}
+        <span>{{ i18n "expires" | default "Expires" }}: {{ . }}</span>
+        {{- else -}}
+        {{- with $page.Params.issued -}}
+        <span>{{ i18n "issued" | default "Issued" }}: {{ . }}</span>
+        {{- end -}}
+        {{- end -}}
+      </div>
+      {{- end -}}
+    </div>
+  </div>
+</a>

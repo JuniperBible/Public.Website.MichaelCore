@@ -1,0 +1,25 @@
+{{/*
+  Resume Navigation Partial
+
+  Usage: {{ partial "resume-nav.html" . }}
+         {{ partial "resume-nav.html" (dict "context" . "extraLinks" (slice (dict "url" "/other/" "text" "Other Link"))) }}
+
+  Displays navigation buttons to return to resume page.
+  Optionally accepts extra links to display alongside.
+*/}}
+{{- $ctx := . -}}
+{{- $extraLinks := slice -}}
+{{- if reflect.IsMap . -}}
+  {{- $ctx = .context -}}
+  {{- $extraLinks = .extraLinks | default slice -}}
+{{- end -}}
+<div class="flex justify-center gap-4 mt-12">
+  <a href="/resume/" class="btn-paper">
+    &larr; {{ i18n "backToResume" | default "Back to Resume" }}
+  </a>
+  {{- range $extraLinks }}
+  <a href="{{ .url }}" {{ with .external }}target="_blank" rel="noopener noreferrer"{{ end }} class="btn-paper">
+    {{ .text }}
+  </a>
+  {{- end }}
+</div>

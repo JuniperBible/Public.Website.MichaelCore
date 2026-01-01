@@ -1,0 +1,111 @@
+{{ define "main" }}
+{{- $resume := .Site.Data.resume -}}
+{{- $resumeLabels := .Site.Params.resume -}}
+<div class="max-w-4xl mx-auto px-4 py-12">
+  <header class="text-center mb-8">
+    <h1 class="text-4xl md:text-5xl font-hand font-bold text-paper-black mb-2">
+      {{ $resume.basics.name }}'s Résumé
+    </h1>
+    <p class="text-lg font-hand text-paper-gray mb-4">
+      {{ $resume.basics.label }}
+    </p>
+    <p class="text-sm text-paper-gray">
+      {{ $resume.basics.summary }}
+    </p>
+  </header>
+
+  <!-- Skills Overview - First 3 skill categories -->
+  <section class="card-paper mb-8" aria-labelledby="skills-heading">
+    <h2 id="skills-heading" class="sr-only">{{ $resumeLabels.skillsOverview | default "Skills Overview" }}</h2>
+    <div class="grid grid-cols-3 gap-6">
+      {{ range $resume.skills | first 3 }}
+      <div>
+        <h3 class="text-xl font-hand font-bold text-paper-black mb-3">{{ .name }}</h3>
+        <div class="flex flex-wrap gap-1">
+          {{ range .keywords }}
+          {{ partial "resume-item-link.html" (dict "name" . "section" "skills") }}
+          {{ end }}
+        </div>
+      </div>
+      {{ end }}
+    </div>
+  </section>
+
+  <!-- Tools, Technologies & Skills - Remaining skill categories plus cert tags -->
+  <section class="card-paper mb-8" aria-labelledby="tools-heading">
+    <div class="flex justify-between items-center mb-3">
+      <h2 id="tools-heading" class="text-xl font-hand font-bold text-paper-black">{{ $resumeLabels.toolsSkills | default "Tools, Technologies & Skills" }}</h2>
+      <a href="/resume/tools/" class="text-sm text-paper-gray hover:text-accent font-hand">{{ i18n "viewAll" | default "View All" }} &rarr;</a>
+    </div>
+    <div class="flex flex-wrap gap-1">
+      {{- /* Tools from skills categories 4+ */ -}}
+      {{ range $resume.skills | after 3 }}
+        {{ range .keywords }}
+        {{ partial "resume-item-link.html" (dict "name" . "section" "tools") }}
+        {{ end }}
+      {{ end }}
+      {{- /* Tags from certification pages */ -}}
+      {{ $allTags := slice }}
+      {{ range $.Site.RegularPages }}
+        {{ if hasPrefix .RelPermalink "/resume/certifications/" }}
+          {{ range .Params.tags }}
+            {{ $allTags = $allTags | append . }}
+          {{ end }}
+        {{ end }}
+      {{ end }}
+      {{ $uniqueTags := uniq $allTags | sort }}
+      {{ range $uniqueTags }}
+      {{ partial "resume-item-link.html" (dict "name" . "section" "skills") }}
+      {{ end }}
+    </div>
+  </section>
+
+  <!-- Certifications -->
+  <section class="card-paper mb-8" aria-labelledby="certs-heading">
+    <div class="flex justify-between items-center mb-3">
+      <h2 id="certs-heading" class="text-xl font-hand font-bold text-paper-black">{{ $resumeLabels.certifications | default "Certifications" }}</h2>
+      <a href="/resume/certifications/" class="text-sm text-paper-gray hover:text-accent font-hand">{{ i18n "viewDetails" | default "View Details" }} &rarr;</a>
+    </div>
+    <div class="grid grid-cols-4 gap-4">
+      {{ range $resume.certificates }}
+      <a href="{{ .url }}" class="flex flex-col items-center group" title="{{ .issuer }} {{ .name }}">
+        <img src="{{ .image }}" alt="{{ .issuer }} {{ .name }} {{ i18n "certificationBadge" | default "certification badge" }}" class="w-14 h-14 cert-logo">
+        <span class="text-xs text-paper-gray mt-1 text-center leading-tight">{{ .issuer }} {{ .name }}</span>
+      </a>
+      {{ end }}
+    </div>
+  </section>
+
+  <!-- Experience -->
+  <section class="card-paper mb-8" aria-labelledby="exp-heading">
+    <h2 id="exp-heading" class="text-2xl font-hand font-bold text-paper-black mb-6">{{ $resumeLabels.experience | default "Experience" }}</h2>
+    {{ $expLen := len $resume.work }}
+    {{ range $i, $job := $resume.work }}
+    <div class="{{ if ne (add $i 1) $expLen }}mb-8 pb-8 border-b border-paper-border{{ else }}mb-4{{ end }}">
+      <div class="mb-2">
+        <h3 class="text-xl font-hand font-bold text-paper-black">{{ $job.position }}</h3>
+      </div>
+      <p class="text-sm text-paper-gray mb-3 italic">{{ $job.name }}</p>
+      <p class="text-sm mb-3">{{ $job.summary }}</p>
+      {{ if $job.highlights }}
+      <ul class="text-sm list-disc list-inside space-y-1">
+        {{ range $job.highlights }}
+        <li>{{ . }}</li>
+        {{ end }}
+      </ul>
+      {{ end }}
+    </div>
+    {{ end }}
+  </section>
+
+  <!-- Education -->
+  <section class="card-paper mb-8" aria-labelledby="edu-heading">
+    <h2 id="edu-heading" class="text-xl font-hand font-bold text-paper-black mb-3">{{ $resumeLabels.education | default "Education" }}</h2>
+    <ul class="space-y-2 text-sm">
+      {{ range $resume.education }}
+      <li><strong>{{ .studyType }}{{ with .area }}, {{ . }}{{ end }}</strong> — {{ .institution }}{{ with .endDate }} ({{ if gt (int .) (now.Year) }}Expected {{ end }}{{ . }}){{ end }}</li>
+      {{ end }}
+    </ul>
+  </section>
+</div>
+{{ end }}

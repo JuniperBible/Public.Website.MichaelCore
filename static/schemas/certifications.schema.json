@@ -1,0 +1,83 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://focuswithjustin.com/schemas/certifications.schema.json",
+  "title": "Certifications",
+  "description": "Professional certifications metadata for the Focus with Justin website",
+  "type": "object",
+  "required": ["certifications"],
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "description": "JSON Schema reference"
+    },
+    "certifications": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "title", "description", "issuer"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "URL slug identifier",
+            "pattern": "^[a-z0-9-]+$"
+          },
+          "title": {
+            "type": "string",
+            "description": "Full certification name"
+          },
+          "description": {
+            "type": "string",
+            "description": "Brief description for SEO and listings"
+          },
+          "issuer": {
+            "type": "string",
+            "description": "Certifying organization"
+          },
+          "issued": {
+            "type": "string",
+            "description": "Issue date in YYYY-MM-DD format",
+            "pattern": "^(\\d{4}-\\d{2}-\\d{2})?$"
+          },
+          "expires": {
+            "type": "string",
+            "description": "Expiration date in YYYY-MM-DD format (empty if no expiration)",
+            "pattern": "^(\\d{4}-\\d{2}-\\d{2})?$"
+          },
+          "credly_url": {
+            "type": "string",
+            "format": "uri",
+            "description": "Credly verification URL"
+          },
+          "logo": {
+            "type": "string",
+            "description": "Path to certification badge image"
+          },
+          "tags": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "Skills and domains associated with this certification"
+          },
+          "weight": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Sort order (lower values appear first)"
+          }
+        }
+      }
+    },
+    "meta": {
+      "type": "object",
+      "properties": {
+        "version": {
+          "type": "string",
+          "description": "Schema version"
+        },
+        "lastModified": {
+          "type": "string",
+          "format": "date",
+          "description": "Last modification date"
+        }
+      }
+    }
+  }
+}

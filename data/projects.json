@@ -1,0 +1,127 @@
+{
+  "projects": [
+    {
+      "id": "cmmc-compliance-tool",
+      "title": "CMMC Compliance Assessment Tool",
+      "date": "2024-11-15",
+      "description": "Automated compliance checker for CMMC 2.0 requirements with reporting dashboard.",
+      "tags": ["CMMC", "Security", "Python"],
+      "client": "Defense Contractor",
+      "draft": false
+    },
+    {
+      "id": "nitrousos",
+      "title": "nitrousOS",
+      "date": "2024-01-01",
+      "description": "A modular, secure, and versatile Linux distribution built on NixOS for desktop, server, and network infrastructure.",
+      "tags": ["Linux", "NixOS", "Infrastructure", "Open Source"],
+      "draft": false
+    },
+    {
+      "id": "crypto-pool-party",
+      "title": "Crypto Pool Party",
+      "date": "2021-03-01",
+      "description": "A distributed network of servers operating as nodes within the Cardano cryptocurrency ecosystem.",
+      "tags": ["Cardano", "Blockchain", "Infrastructure"],
+      "image": "/images/projects/CryptoPoolParty.com.png",
+      "draft": false
+    },
+    {
+      "id": "pentalpha194-website",
+      "title": "Pentalpha Lodge Website",
+      "date": "2021-01-01",
+      "description": "A static informational website for Pentalpha Lodge #194 built with Hugo.",
+      "tags": ["Hugo", "JAMStack", "Web Development"],
+      "draft": false
+    },
+    {
+      "id": "jmweeks-website",
+      "title": "Personal Website",
+      "date": "2021-01-01",
+      "description": "A personal portfolio and information hub for showcasing projects and sharing useful resources.",
+      "tags": ["Hugo", "Web Development", "Portfolio"],
+      "draft": true
+    },
+    {
+      "id": "portfolio-website",
+      "title": "Photography Portfolio Website",
+      "date": "2024-10-20",
+      "description": "Custom Hugo-based portfolio site with Tailwind CSS and dynamic galleries.",
+      "tags": ["HTML", "CSS", "Hugo", "Web Development"],
+      "client": "Personal Project",
+      "draft": true
+    },
+    {
+      "id": "security-audit",
+      "title": "Network Security Audit Framework",
+      "date": "2024-06-15",
+      "description": "Automated security scanning and vulnerability assessment toolkit.",
+      "tags": ["Security", "Python", "CMMC"],
+      "client": "Healthcare Organization",
+      "draft": true
+    },
+    {
+      "id": "documentation-site",
+      "title": "Technical Documentation Portal",
+      "date": "2024-07-28",
+      "description": "Searchable documentation site with versioning and API reference.",
+      "tags": ["HTML", "CSS", "JavaScript", "Web Development"],
+      "client": "SaaS Company",
+      "draft": true
+    },
+    {
+      "id": "embedded-controller",
+      "title": "IoT Sensor Controller",
+      "date": "2024-08-12",
+      "description": "Embedded C firmware for environmental monitoring sensors.",
+      "tags": ["C", "Embedded", "Programming"],
+      "client": "Smart Building Startup",
+      "draft": true
+    },
+    {
+      "id": "inventory-system",
+      "title": "Warehouse Inventory System",
+      "date": "2024-09-05",
+      "description": "Real-time inventory tracking system with barcode scanning and reporting.",
+      "tags": ["Python", "Programming", "Database"],
+      "client": "Logistics Company",
+      "draft": true
+    },
+    {
+      "id": "data-pipeline",
+      "title": "ETL Data Pipeline",
+      "date": "2024-05-22",
+      "description": "Scalable data extraction and transformation pipeline for analytics.",
+      "tags": ["Python", "Database", "Programming"],
+      "client": "Financial Services",
+      "draft": true
+    },
+    {
+      "id": "mobile-app-landing",
+      "title": "Mobile App Landing Page",
+      "date": "2024-04-10",
+      "description": "Conversion-optimized landing page for iOS/Android app launch.",
+      "tags": ["HTML", "CSS", "JavaScript", "Web Development"],
+      "client": "Fitness Startup",
+      "draft": true
+    },
+    {
+      "id": "automation-scripts",
+      "title": "DevOps Automation Suite",
+      "date": "2024-03-18",
+      "description": "Collection of deployment and infrastructure automation scripts.",
+      "tags": ["Python", "Programming", "Linux"],
+      "client": "Tech Startup",
+      "draft": true
+    },
+    {
+      "id": "legacy-migration",
+      "title": "Legacy System Migration",
+      "date": "2024-02-05",
+      "description": "Migration of legacy COBOL system to modern Python microservices.",
+      "tags": ["Python", "Programming", "Database", "C"],
+      "client": "Insurance Company",
+      "draft": true
+    }
+  ]
+}

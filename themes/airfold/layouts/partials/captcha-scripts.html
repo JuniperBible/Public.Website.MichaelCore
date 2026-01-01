@@ -1,0 +1,70 @@
+{{- /* Use shared config partial to resolve CAPTCHA settings */ -}}
+{{- partial "_captcha-config.html" . -}}
+{{- $provider := .Scratch.Get "captchaProvider" -}}
+{{- $siteKey := .Scratch.Get "captchaSiteKey" -}}
+{{- $enabled := .Scratch.Get "captchaEnabled" -}}
+
+{{- if $enabled -}}
+
+{{- if eq $provider "turnstile" -}}
+<!-- Cloudflare Turnstile Script (explicit render mode for theme switching) -->
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit&onload=onloadTurnstileCallback" async defer></script>
+<script>
+  function onCaptchaSuccess(token) {
+    document.getElementById('submit-btn').disabled = false;
+  }
+</script>
+
+{{- else if eq $provider "recaptcha-v2" -}}
+<!-- Google reCAPTCHA v2 Script -->
+<script src="https://www.google.com/recaptcha/api.js" async defer></script>
+<script>
+  function onCaptchaSuccess(token) {
+    document.getElementById('submit-btn').disabled = false;
+  }
+</script>
+
+{{- else if eq $provider "recaptcha-v3" -}}
+<!-- Google reCAPTCHA v3 Script -->
+<script src="https://www.google.com/recaptcha/api.js?render={{ $siteKey }}"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // reCAPTCHA v3 is invisible, so enable button immediately
+    document.getElementById('submit-btn').disabled = false;
+
+    // Get token on form submit
+    document.getElementById('contact-form').addEventListener('submit', function(e) {
+      const tokenField = document.getElementById('recaptcha-token');
+      if (!tokenField.value) {
+        e.preventDefault();
+        grecaptcha.ready(function() {
+          grecaptcha.execute('{{ $siteKey }}', {action: 'contact'}).then(function(token) {
+            tokenField.value = token;
+            document.getElementById('contact-form').submit();
+          });
+        });
+      }
+    }, true);
+  });
+</script>
+
+{{- else if eq $provider "hcaptcha" -}}
+<!-- hCaptcha Script -->
+<script src="https://js.hcaptcha.com/1/api.js" async defer></script>
+<script>
+  function onCaptchaSuccess(token) {
+    document.getElementById('submit-btn').disabled = false;
+  }
+</script>
+
+{{- else if eq $provider "friendly-captcha" -}}
+<!-- Friendly Captcha Script (self-hosted) -->
+<script src="/js/friendly-captcha.min.js" async defer></script>
+<script>
+  function onCaptchaSuccess(token) {
+    document.getElementById('submit-btn').disabled = false;
+  }
+</script>
+
+{{- end -}}
+{{- end -}}

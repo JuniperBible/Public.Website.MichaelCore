@@ -1,0 +1,50 @@
+Installed User Modules:
+
+ [Rieger]  	(1.0)  	- Carl Heinrich Riegers Kommentar
+ [Lopukhin]  	(1.1)  	- Толковая Библия Лопухина
+ [ACDC]  	(1.0)  	- The American Church Dictionary and Cyclopedia
+ [ABADICT]  	(1.0)  	- АпигӀамбар Инус йгӀвыра, Рут йгьи Эстер ргІвыраква, Матай йахьыла а-Инджьыль, Лука йахьыла а-Инджьыль, Апостолчва руысква.
+ [ADGDICT]  	(1.6)  	- УблапІэ – Мосэ иапэрэ тхылъ • МысырикӀыжь • Хэбзэ тхыжьыгъэр • Ехъошуа • Гъуазэхэр • ТхьэлӀыкӀоу Юныс, Рут, Эстэр • Самуел, Саул, Даут: Израилым ицӀыф пэрытых • Израилым ипачъыхьэхэр: Сэлмэн – Цыдкъый • Гугъэ Орэдхэр • Ушъый гъэсэпэтхыдэхэр • ДжакӀо • Пегъымбарэу Даниел • КъэбарышӀур
+ [Personal]  	(1.0)  	- Personal Commentary
+ [AbbottSmithStrongs]  	(4.1)  	- G. Abbott-Smith's A Manual Greek Lexicon (with Strongs) of the New Testament
+ [2BabDict]  	(1.0)  	- Definitions and Symbols from The Two Babylons
+ [BARC]  	(1.0)  	- Комментарии Баркли к НЗ
+ [DTN]  	(1.0)  	- Darby Translation Notes
+ [MAK]  	(1.0)  	- Matthias Ansorgs Kommentar
+ [AGLDICT]  	(1.1)  	- Лукайин Китаб Месигь Іисайихъас Идже Хабар
+ [AbbottSmith]  	(4.1)  	- G. Abbott-Smith's A Manual Greek Lexicon of the New Testament
+ [AB]  	(1.3.1)  	- The Apostles' Bible
+ [ACV]  	(2.0)  	- A Conservative Version
+ [ABZ]  	(1.0)  	- Аҧааимбар Иона ишәҟәы аҧсышәала аурыси англызи атекстқәа еиҵаргыланы
+ [ABPGRK]  	(1.2)  	- Apostolic Bible Polyglot Greek Text
+ [ADG]  	(1.6)  	- УблапІэ – Мосэ иапэрэ тхылъ • МысырикӀыжь • Хэбзэ тхыжьыгъэр • Ехъошуа • Гъуазэхэр • ТхьэлӀыкӀоу Юныс, Рут, Эстэр • Самуел, Саул, Даут: Израилым ицӀыф пэрытых • Израилым ипачъыхьэхэр: Сэлмэн – Цыдкъый • Гугъэ Орэдхэр • Ушъый гъэсэпэтхыдэхэр • ДжакӀо • Пегъымбарэу Даниел • КъэбарышӀур
+ [ABA]  	(1.0)  	- АпигӀамбар Инус йгӀвыра, Рут йгьи Эстер ргІвыраква, Матай йахьыла а-Инджьыль, Лука йахьыла а-Инджьыль, Апостолчва руысква.
+ [ABP]  	(1.2)  	- Apostolic Bible Polyglot English Text
+ [ABS_Essay_GoodSam_SWB]  	(1.0)  	- Essays on The Good Samaritan: Violence on the Road, Social World of Bandits
+ [AKJV]  	(2.1)  	- American King James Version
+ [ALT]  	(1.2)  	- Јаҥы Кереес, Алтай тили
+ [AFV2020]  	(1.0)  	- A Faithful Version
+ [AGL]  	(1.1)  	- Лукайин Китаб Месигь Іисайихъас Идже Хабар
+ [AUGUSTINE]  	(1.0)  	- AUGUSTINE
+ [ALTDICT]  	(1.2)  	- Јаҥы Кереес, Алтай тили
+ [ASV]  	(2.0)  	- American Standard Version (1901)
+ [AVR]  	(1.5)  	- Таврат (2025), Рут, Эстер, Юнус (2017), Пачазабазул тӀехь(2021), ГӀакъилал рагӀаби (2005), Даниял (2023), Инжил (2008)
+ [AVRDICT]  	(1.5)  	- Таврат (2025), Рут, Эстер, Юнус (2017), Пачазабазул тӀехь(2021), ГӀакъилал рагӀаби (2005), Даниял (2023), Инжил (2008)
+ [BERSJE]  	(1.0)  	- Избранные проповеди (Берсье)
+ [Abbott]  	(1.1)  	- Illustrated New Testament
+ [AmTract]  	(1.1)  	- American Tract Society Bible Dictionary
+ [Afr1953]  	(1.3.3)  	- 1933/1953 Afrikaans Bybel
+ [Alb]  	(2.0)  	- Albanian Bible
+ [Aleppo]  	(2.0.1)  	- Aleppo Codex
+ [Anderson]  	(1.0.1)  	- Henry Tompkins Anderson’s 1864 New Testament
+ [Antoniades]  	(1.4.1)  	- Antoniades Patriarchal Edition (1904/1912)
+ [AquinasSummaTheologica]  	(1.0)  	- Summa Theologica by St. Thomas Aquinas
+ [AraNAV]  	(2.0.1)  	- New Arabic Version (Ketab El Hayat)
+ [BEZDICT]  	(1.1)  	- Сулайбан авараглис аᴴкълова, Лука ме̄йо Рохеллис Хабар
+ [AraSVD]  	(2.3)  	- Smith and van Dyck's al-Kitab al-Muqaddas (Arabic Bible)
+ [ArmEastern]  	(1.1)  	- Eastern Armenian Bible
+ [ArmWestern]  	(1.1)  	- 1853 Western Armenian NT
+ [Azeri]  	(2.5.1)  	- مقدَس کتاب آذربايجان ديلی
+ [BBE]  	(1.3)  	- 1949/1964 Bible in Basic English
+ [BDBGlosses_Strongs]  	(1.1)  	- BDB Glosses (Strong's)
+ [BEZ]  	(1.1)  	- Сулайбан авараглис аᴴкълова, Лука ме̄йо Рохеллис Хабар

@@ -1,0 +1,73 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://focuswithjustin.com/schemas/certifications-auxiliary.schema.json",
+  "title": "Certifications Auxiliary",
+  "description": "Full content for certification pages on the Focus with Justin website",
+  "type": "object",
+  "required": ["certifications"],
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "description": "JSON Schema reference"
+    },
+    "certifications": {
+      "type": "object",
+      "description": "Map of certification IDs to their full content",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "content": {
+            "type": "string",
+            "description": "Introductory paragraph content"
+          },
+          "sections": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["heading"],
+              "properties": {
+                "heading": {
+                  "type": "string",
+                  "description": "Section heading"
+                },
+                "content": {
+                  "type": "string",
+                  "description": "Section paragraph content"
+                },
+                "list": {
+                  "type": "array",
+                  "items": { "type": "string" },
+                  "description": "Bulleted list items"
+                },
+                "details": {
+                  "type": "object",
+                  "description": "Key-value details (rendered as bold key: value)",
+                  "additionalProperties": { "type": "string" }
+                },
+                "links": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "required": ["text", "url"],
+                    "properties": {
+                      "text": { "type": "string" },
+                      "url": { "type": "string", "format": "uri" }
+                    }
+                  },
+                  "description": "External links"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "meta": {
+      "type": "object",
+      "properties": {
+        "version": { "type": "string" },
+        "lastModified": { "type": "string", "format": "date" }
+      }
+    }
+  }
+}

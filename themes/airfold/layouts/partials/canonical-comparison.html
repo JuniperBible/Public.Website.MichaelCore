@@ -1,0 +1,141 @@
+{{/* Canonical comparison table partial */}}
+{{/* Shows which books are in which traditions with category indicators */}}
+
+{{ $mappings := .Site.Data.book_mappings }}
+{{ $traditions := $mappings.traditions }}
+{{ $categories := $mappings.categories }}
+{{ $sections := $mappings.sections }}
+{{ $books := $mappings.books }}
+
+{{/* Legend */}}
+<div class="mb-6 text-sm font-hand">
+  <h3 class="font-bold text-paper-black mb-2">Legend</h3>
+  <div class="flex flex-wrap gap-4">
+    {{ range $id, $cat := $categories }}
+    <span title="{{ $cat.description }}">{{ $cat.symbol }} {{ $cat.name }}</span>
+    {{ end }}
+  </div>
+  <div class="mt-2 text-paper-gray">
+    <span class="text-green-600">✓</span> = Present or historically received |
+    <span class="text-paper-gray/40">—</span> = Not included
+  </div>
+</div>
+
+<div class="overflow-x-auto bg-paper-bright rounded-lg">
+  <table class="w-full text-sm font-hand">
+    <thead>
+      <tr class="border-b-2 border-paper-border">
+        <th class="text-left py-2 px-3 sticky left-0 bg-paper-bright">#</th>
+        <th class="text-left py-2 px-3 sticky left-[2rem] bg-paper-bright">Book</th>
+        <th class="text-center py-2 px-2">Cat</th>
+        {{ range $traditions }}
+        <th class="text-center py-2 px-2 whitespace-nowrap" title="{{ .fullName }}: {{ .description }}">
+          {{ .name }}
+        </th>
+        {{ end }}
+        <th class="text-left py-2 px-3">Notes</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{ $currentSection := "" }}
+      {{ range $books }}
+      {{/* Section header */}}
+      {{ if ne .section $currentSection }}
+        {{ $currentSection = .section }}
+        {{ $sectionData := dict }}
+        {{ range $sections }}
+          {{ if eq .id $currentSection }}
+            {{ $sectionData = . }}
+          {{ end }}
+        {{ end }}
+        <tr class="bg-paper-light/50">
+          <td colspan="{{ add (len $traditions) 4 }}" class="py-2 px-3 font-bold text-paper-gray">
+            {{ $sectionData.name }}
+          </td>
+        </tr>
+      {{ end }}
+      {{/* Book row */}}
+      <tr class="border-b border-paper-light hover-accent">
+        <td class="py-1.5 px-3 sticky left-0 bg-paper-bright text-paper-gray text-xs">{{ .seq }}</td>
+        <td class="py-1.5 px-3 sticky left-[2rem] bg-paper-bright">
+          {{ if .drc_id }}
+          <a href="/religion/bibles/drc/{{ .drc_id }}/" class="font-medium text-accent hover:underline">{{ .name }}</a>
+          {{ else }}
+          <span class="font-medium">{{ .name }}</span>
+          {{ end }}
+        </td>
+        <td class="text-center py-1.5 px-2">
+          {{/* Handle both single category and categories array */}}
+          {{ if .categories }}
+            {{ range $i, $catId := .categories }}{{ if $i }} {{ end }}{{ $cat := index $categories $catId }}<span title="{{ $cat.name }}: {{ $cat.description }}">{{ $cat.symbol }}</span>{{ end }}
+          {{ else if .category }}
+            {{ $cat := index $categories .category }}
+            <span title="{{ $cat.name }}: {{ $cat.description }}">{{ $cat.symbol }}</span>
+          {{ end }}
+        </td>
+        {{ $canonical := .canonical_in }}
+        {{ range $traditions }}
+        <td class="text-center py-1.5 px-2">
+          {{ if in $canonical .id }}
+          <span class="text-green-600" title="Present in {{ .fullName }}">✓</span>
+          {{ else }}
+          <span class="text-paper-gray/40">—</span>
+          {{ end }}
+        </td>
+        {{ end }}
+        <td class="py-1.5 px-3 text-xs text-paper-gray">
+          {{ .notes }}
+        </td>
+      </tr>
+      {{ end }}
+    </tbody>
+  </table>
+</div>
+
+{{/* Book count summary table */}}
+<div class="mt-8 mb-6">
+  <h3 class="font-bold text-paper-black mb-3 font-hand">Canon Summary by Tradition</h3>
+  <div class="overflow-x-auto">
+    <table class="text-sm font-hand">
+      <thead>
+        <tr class="border-b-2 border-paper-border">
+          <th class="text-left py-2 px-3">Tradition</th>
+          <th class="text-center py-2 px-3">Books</th>
+          <th class="text-left py-2 px-3">Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{ range $traditions }}
+        {{/* Count books for this tradition */}}
+        {{ $tradId := .id }}
+        {{ $count := 0 }}
+        {{ range $books }}
+          {{ if in .canonical_in $tradId }}
+            {{ $count = add $count 1 }}
+          {{ end }}
+        {{ end }}
+        <tr class="border-b border-paper-light hover-accent">
+          <td class="py-1.5 px-3">
+            <span class="font-bold">{{ .name }}</span>
+            <span class="text-paper-gray ml-1">({{ .fullName }})</span>
+          </td>
+          <td class="text-center py-1.5 px-3 font-bold">{{ $count }}</td>
+          <td class="py-1.5 px-3 text-paper-gray text-xs">{{ .description }}</td>
+        </tr>
+        {{ end }}
+        <tr class="border-t-2 border-paper-border bg-paper-light/30">
+          <td class="py-2 px-3 font-bold">Total Unique Texts</td>
+          <td class="text-center py-2 px-3 font-bold">{{ len $books }}</td>
+          <td class="py-2 px-3 text-paper-gray text-xs">All texts across all traditions</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="mt-4 text-xs text-paper-gray font-hand">
+  <p class="mb-1"><strong>Traditions:</strong>
+    {{ range $i, $trad := $traditions }}{{ if $i }}, {{ end }}{{ $trad.name }} = {{ $trad.fullName }}{{ end }}
+  </p>
+  <p>For detailed reading plans and appendices, see the <a href="/esoterica/scripture-comparison-study-guide/" class="text-accent hover:underline">full Comparative Study Guide</a>.</p>
+</div>

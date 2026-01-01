@@ -1,0 +1,25 @@
+{{/* Translation Selector - Multi-select checkboxes for parallel view */}}
+<div class="card-paper p-4 mb-6">
+  <div class="flex flex-wrap items-start gap-4">
+    <span class="font-hand font-bold pt-1">
+      {{ i18n "selectTranslations" | default "Select Translations" }}:
+    </span>
+    <div class="flex flex-wrap gap-3" id="translation-checkboxes">
+      {{ range .Site.Data.bibles.bibles }}
+      <label class="flex items-center gap-2 cursor-pointer group">
+        <input type="checkbox"
+               class="translation-checkbox w-5 h-5 accent-accent cursor-pointer"
+               value="{{ .id }}"
+               data-abbrev="{{ .abbrev }}"
+               data-title="{{ .title }}">
+        <span class="font-hand group-hover:text-accent transition-colors">
+          {{ .abbrev }}
+        </span>
+      </label>
+      {{ end }}
+    </div>
+  </div>
+  <p class="text-sm text-paper-gray font-hand mt-2">
+    {{ i18n "selectTranslationsHint" | default "Select 2-4 translations to compare side-by-side." }}
+  </p>
+</div>

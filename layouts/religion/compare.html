@@ -1,0 +1,222 @@
+{{ define "scripts" }}
+{{ $textCompare := resources.Get "js/text-compare.js" }}
+{{ if $textCompare }}
+<script src="{{ $textCompare.RelPermalink }}" defer></script>
+{{ end }}
+{{ $parallel := resources.Get "js/parallel.js" }}
+{{ if $parallel }}
+<script src="{{ $parallel.RelPermalink }}" defer></script>
+{{ end }}
+{{ end }}
+
+{{ define "main" }}
+<div class="py-4">
+  <header class="text-center mb-4">
+    <h1 class="text-3xl md:text-4xl font-hand font-bold mb-2">
+      {{ .Title }}
+    </h1>
+    <p class="text-base font-hand text-paper-gray">
+      {{ .Description }}
+    </p>
+  </header>
+
+  <!-- Unified Selector Panel (Normal Mode) -->
+  <div id="normal-mode" class="card-paper p-3 mb-4">
+    <!-- All controls in one row -->
+    <div class="flex flex-wrap items-center gap-2">
+      <!-- Translations -->
+      <div class="flex flex-wrap items-center gap-3" id="translation-checkboxes">
+        {{ range .Site.Data.bibles.bibles }}
+        <label class="flex items-center gap-1 cursor-pointer group">
+          <input type="checkbox"
+                 class="translation-checkbox w-4 h-4 accent-accent cursor-pointer"
+                 value="{{ .id }}"
+                 data-abbrev="{{ .abbrev }}"
+                 data-title="{{ .title }}">
+          <span class="font-hand text-sm group-hover:text-accent transition-colors">{{ .title }} ({{ .abbrev }})</span>
+        </label>
+        {{ end }}
+      </div>
+      <span class="text-paper-light">|</span>
+      <!-- Passage selectors -->
+      <select id="book-select" class="input-paper text-sm py-1 px-2 rounded appearance-none cursor-pointer">
+        <option value="">Book...</option>
+        {{ $firstBible := index .Site.Data.bibles.bibles 0 }}
+        {{ $aux := index .Site.Data.bibles_auxiliary $firstBible.id }}
+        {{ range $aux.books }}
+        <option value="{{ .id }}">{{ .name }}</option>
+        {{ end }}
+      </select>
+      <select id="chapter-select" class="input-paper text-sm py-1 px-2 rounded appearance-none cursor-pointer" disabled>
+        <option value="">Ch...</option>
+      </select>
+      <!-- Compare Differences with toggle and color picker -->
+      <div class="flex items-center gap-2 ml-auto relative">
+        <label class="flex items-center gap-1 cursor-pointer">
+          <input type="checkbox" id="highlight-toggle" class="w-4 h-4 accent-accent cursor-pointer">
+          <span class="font-hand text-sm">Compare Differences</span>
+        </label>
+        <button id="highlight-color-btn" class="w-5 h-5 rounded border border-paper-gray cursor-pointer" style="background-color: #6b4c6b;" title="Choose highlight color"></button>
+        <div id="highlight-color-picker" class="hidden absolute z-50 card-paper p-2 top-8 right-0">
+          <div class="grid grid-cols-5 gap-1">
+            <!-- Default & Website colors -->
+            <button class="color-option w-6 h-6 rounded border border-paper-light" data-color="#6b4c6b" title="Default Purple"></button>
+            <button class="color-option w-6 h-6 rounded border border-paper-light" data-color="#8b5a8b" title="Website Purple"></button>
+            <!-- Pastels -->
+            <button class="color-option w-6 h-6 rounded border border-paper-light" data-color="#f4a4ba" title="Pastel Pink"></button>
+            <button class="color-option w-6 h-6 rounded border border-paper-light" data-color="#a4d4f4" title="Pastel Blue"></button>
+            <button class="color-option w-6 h-6 rounded border border-paper-light" data-color="#b4f4a4" title="Pastel Green"></button>
+            <button class="color-option w-6 h-6 rounded border border-paper-light" data-color="#f4e4a4" title="Pastel Yellow"></button>
+            <button class="color-option w-6 h-6 rounded border border-paper-light" data-color="#e4a4f4" title="Pastel Violet"></button>
+            <!-- Neons -->
+            <button class="color-option w-6 h-6 rounded border border-paper-light" data-color="#ff6b9d" title="Neon Pink"></button>
+            <button class="color-option w-6 h-6 rounded border border-paper-light" data-color="#6bfff4" title="Neon Cyan"></button>
+            <button class="color-option w-6 h-6 rounded border border-paper-light" data-color="#9dff6b" title="Neon Green"></button>
+            <button class="color-option w-6 h-6 rounded border border-paper-light" data-color="#ffeb6b" title="Neon Yellow"></button>
+            <button class="color-option w-6 h-6 rounded border border-paper-light" data-color="#ff6b6b" title="Neon Red"></button>
+            <button class="color-option w-6 h-6 rounded border border-paper-light" data-color="#6b9dff" title="Neon Blue"></button>
+            <button class="color-option w-6 h-6 rounded border border-paper-light" data-color="#ff9d6b" title="Neon Orange"></button>
+            <button class="color-option w-6 h-6 rounded border border-paper-light" data-color="#d46bff" title="Neon Purple"></button>
+          </div>
+        </div>
+      </div>
+      <!-- SSS Mode toggle -->
+      <button id="sss-mode-btn" class="flex items-center gap-1 text-paper-gray hover:text-accent transition-colors cursor-pointer">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <polygon points="12,2 22,20 2,20" stroke-width="2" stroke-linejoin="round"/>
+          <circle cx="12" cy="14" r="5" stroke-width="2"/>
+          <circle cx="12" cy="14" r="1.5" fill="currentColor" stroke="none"/>
+        </svg>
+        <span class="font-hand text-sm"><span class="font-bold">SSS</span> <span id="sss-mode-status">OFF</span></span>
+      </button>
+    </div>
+    <!-- Verse grid (shown when chapter is selected) -->
+    <div id="verse-grid" class="hidden mt-2 pt-2">
+      <div class="flex flex-wrap items-center gap-1">
+        <span class="font-hand text-sm text-paper-gray">v:</span>
+        <button id="all-verses-btn" class="font-hand text-sm text-accent hover:underline">All</button>
+        <div class="flex flex-wrap gap-1" id="verse-buttons"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SSS Mode (Side by Side Scripture) - Hidden by default -->
+  <div id="sss-mode" class="hidden mb-4">
+    <!-- SSS Controls -->
+    <div class="card-paper p-3 mb-4">
+      <div class="flex flex-wrap items-center gap-2">
+        <button id="sss-back-btn" class="text-sm text-paper-gray hover:text-accent cursor-pointer" title="Back to Compare">&larr;</button>
+        <select id="sss-bible-left" class="input-paper text-sm py-1 px-2 rounded appearance-none cursor-pointer">
+          <option value="">Left Bible...</option>
+          {{ range .Site.Data.bibles.bibles }}
+          <option value="{{ .id }}">{{ .title }} ({{ .abbrev }})</option>
+          {{ end }}
+        </select>
+        <select id="sss-bible-right" class="input-paper text-sm py-1 px-2 rounded appearance-none cursor-pointer">
+          <option value="">Right Bible...</option>
+          {{ range .Site.Data.bibles.bibles }}
+          <option value="{{ .id }}">{{ .title }} ({{ .abbrev }})</option>
+          {{ end }}
+        </select>
+        <span class="text-paper-light">|</span>
+        <select id="sss-book-select" class="input-paper text-sm py-1 px-2 rounded appearance-none cursor-pointer">
+          <option value="">Book...</option>
+          {{ $firstBible := index .Site.Data.bibles.bibles 0 }}
+          {{ $aux := index .Site.Data.bibles_auxiliary $firstBible.id }}
+          {{ range $aux.books }}
+          <option value="{{ .id }}">{{ .name }}</option>
+          {{ end }}
+        </select>
+        <select id="sss-chapter-select" class="input-paper text-sm py-1 px-2 rounded appearance-none cursor-pointer" disabled>
+          <option value="">Ch...</option>
+        </select>
+        <!-- Compare Differences with toggle and color picker (SSS mode) -->
+        <div class="flex items-center gap-2 ml-auto relative">
+          <label class="flex items-center gap-1 cursor-pointer">
+            <input type="checkbox" id="sss-highlight-toggle" class="w-4 h-4 accent-accent cursor-pointer" checked>
+            <span class="font-hand text-sm">Compare Differences</span>
+          </label>
+          <button id="sss-highlight-color-btn" class="w-5 h-5 rounded border border-paper-gray cursor-pointer" style="background-color: #6b4c6b;" title="Choose highlight color"></button>
+          <div id="sss-highlight-color-picker" class="hidden absolute z-50 card-paper p-2 top-8 right-0">
+            <div class="grid grid-cols-5 gap-1">
+              <!-- Default & Website colors -->
+              <button class="sss-color-option w-6 h-6 rounded border border-paper-light" data-color="#6b4c6b" title="Default Purple"></button>
+              <button class="sss-color-option w-6 h-6 rounded border border-paper-light" data-color="#8b5a8b" title="Website Purple"></button>
+              <!-- Pastels -->
+              <button class="sss-color-option w-6 h-6 rounded border border-paper-light" data-color="#f4a4ba" title="Pastel Pink"></button>
+              <button class="sss-color-option w-6 h-6 rounded border border-paper-light" data-color="#a4d4f4" title="Pastel Blue"></button>
+              <button class="sss-color-option w-6 h-6 rounded border border-paper-light" data-color="#b4f4a4" title="Pastel Green"></button>
+              <button class="sss-color-option w-6 h-6 rounded border border-paper-light" data-color="#f4e4a4" title="Pastel Yellow"></button>
+              <button class="sss-color-option w-6 h-6 rounded border border-paper-light" data-color="#e4a4f4" title="Pastel Violet"></button>
+              <!-- Neons -->
+              <button class="sss-color-option w-6 h-6 rounded border border-paper-light" data-color="#ff6b9d" title="Neon Pink"></button>
+              <button class="sss-color-option w-6 h-6 rounded border border-paper-light" data-color="#6bfff4" title="Neon Cyan"></button>
+              <button class="sss-color-option w-6 h-6 rounded border border-paper-light" data-color="#9dff6b" title="Neon Green"></button>
+              <button class="sss-color-option w-6 h-6 rounded border border-paper-light" data-color="#ffeb6b" title="Neon Yellow"></button>
+              <button class="sss-color-option w-6 h-6 rounded border border-paper-light" data-color="#ff6b6b" title="Neon Red"></button>
+              <button class="sss-color-option w-6 h-6 rounded border border-paper-light" data-color="#6b9dff" title="Neon Blue"></button>
+              <button class="sss-color-option w-6 h-6 rounded border border-paper-light" data-color="#ff9d6b" title="Neon Orange"></button>
+              <button class="sss-color-option w-6 h-6 rounded border border-paper-light" data-color="#d46bff" title="Neon Purple"></button>
+            </div>
+          </div>
+        </div>
+        <button id="sss-toggle-btn" class="flex items-center gap-1 text-paper-gray hover:text-accent transition-colors cursor-pointer">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <polygon points="12,2 22,20 2,20" stroke-width="2" stroke-linejoin="round"/>
+            <circle cx="12" cy="14" r="5" stroke-width="2"/>
+            <circle cx="12" cy="14" r="1.5" fill="currentColor" stroke="none"/>
+          </svg>
+          <span class="font-hand text-sm"><span class="font-bold">SSS</span> <span id="sss-status">ON</span></span>
+        </button>
+      </div>
+      <!-- SSS Verse grid (shown when chapter is selected) -->
+      <div id="sss-verse-grid" class="hidden mt-2 pt-2">
+        <div class="flex flex-wrap items-center gap-1">
+          <span class="font-hand text-sm text-paper-gray">v:</span>
+          <button id="sss-all-verses-btn" class="font-hand text-sm text-accent hover:underline cursor-pointer">All</button>
+          <div class="flex flex-wrap gap-1" id="sss-verse-buttons"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Side by Side Panes -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="sss-panes">
+      <div class="card-paper p-4 !bg-transparent backdrop-blur-sm" id="sss-left-pane">
+        <div class="text-center text-paper-gray font-hand py-8">Select a Bible</div>
+      </div>
+      <div class="card-paper p-4 !bg-transparent backdrop-blur-sm" id="sss-right-pane">
+        <div class="text-center text-paper-gray font-hand py-8">Select a Bible</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Parallel Verse Display (Normal Mode) -->
+  <div id="parallel-content" class="space-y-3">
+    <div class="text-center text-paper-gray font-hand py-8">
+      {{ i18n "selectPassagePrompt" | default "Select 2+ translations and a passage to compare." }}
+    </div>
+  </div>
+
+  <!-- Back Navigation -->
+  <div class="text-center mt-4">
+    <a href="/religion/bibles/" class="btn-paper">
+      &larr; {{ i18n "allBibles" | default "All Bibles" }}
+    </a>
+  </div>
+</div>
+
+<!-- Bible Data for JavaScript - book structure only, verses loaded on-demand -->
+<script id="bible-data" type="application/json">
+{{ $biblesMeta := slice }}
+{{ range .Site.Data.bibles.bibles }}
+  {{ $biblesMeta = $biblesMeta | append (dict "id" .id "title" .title "abbrev" .abbrev "description" .description "language" .language) }}
+{{ end }}
+{{ $firstBible := index .Site.Data.bibles.bibles 0 }}
+{{ $aux := index .Site.Data.bibles_auxiliary $firstBible.id }}
+{{ $booksList := slice }}
+{{ range $aux.books }}
+  {{ $booksList = $booksList | append (dict "id" .id "name" .name "chapters" (len .chapters)) }}
+{{ end }}
+{{ dict "bibles" $biblesMeta "books" $booksList | jsonify | safeJS }}
+</script>
+{{ end }}

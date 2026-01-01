@@ -1,0 +1,19 @@
+{{/*
+  Resume Item Link Partial
+
+  Renders a small tag-style link for resume items (skills, tools).
+
+  Parameters:
+  - name: Display text for the link
+  - section: URL section (skills, tools) - will be prefixed with /resume/
+  - urlPrefix: Optional URL prefix override (default: /resume from site config)
+
+  Usage:
+  {{ partial "resume-item-link.html" (dict "name" "Python" "section" "skills") }}
+  {{ partial "resume-item-link.html" (dict "name" "Docker" "section" "tools") }}
+*/}}
+{{- $name := .name -}}
+{{- $section := .section -}}
+{{- $urlPrefix := .urlPrefix | default (site.Params.resumeUrlPrefix | default "/resume") -}}
+{{- $slug := $name | urlize -}}
+<a href="{{ $urlPrefix }}/{{ $section }}/{{ $slug }}/" class="inline-block text-[10px] px-1.5 py-0.5 bg-paper-light border border-paper-border hover:bg-accent hover:text-white hover:border-accent transition-colors">{{ $name }}</a>

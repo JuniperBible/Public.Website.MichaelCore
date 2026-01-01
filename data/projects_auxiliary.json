@@ -1,0 +1,247 @@
+{
+  "projects": {
+    "cmmc-compliance-tool": {
+      "content": "A comprehensive tool for assessing and tracking CMMC 2.0 compliance across organizational systems. Features automated scanning, gap analysis, and executive reporting.",
+      "sections": [
+        {
+          "heading": "Features",
+          "list": [
+            "Automated control assessment",
+            "Gap analysis reporting",
+            "Evidence collection workflow",
+            "Executive dashboard",
+            "POA&M tracking"
+          ]
+        }
+      ]
+    },
+    "nitrousos": {
+      "content": "nitrousOS is a specialized Linux distribution built on NixOS, designed to be modular, secure, and versatile. It targets three distinct use cases: desktop computing, server deployment, and network infrastructure management.",
+      "sections": [
+        {
+          "heading": "System Variants",
+          "list": [
+            "**Dinitrogen** - Desktop environment featuring COSMIC",
+            "**Oxide** - Minimal server base for production deployments",
+            "**Trixie** - Self-hosted Tailscale coordination server"
+          ]
+        },
+        {
+          "heading": "Key Features",
+          "list": [
+            "**Security by Default** - LUKS2 full-disk encryption for root, home, and swap partitions",
+            "**Modular Architecture** - Plugin system allowing users to enable only what they need",
+            "**GPU Management** - Dynamic switching between integrated and discrete graphics",
+            "**Reproducible Builds** - Leverages Nix Flakes for consistent, reproducible system configurations"
+          ]
+        },
+        {
+          "heading": "Desktop Environments",
+          "content": "Four desktop environment options are available:",
+          "list": [
+            "COSMIC",
+            "GNOME",
+            "KDE Plasma 6",
+            "Pantheon"
+          ]
+        },
+        {
+          "heading": "Platform Support",
+          "content": "Builds available for multiple deployment targets:",
+          "list": [
+            "Physical hardware",
+            "QEMU",
+            "VMware",
+            "VirtualBox",
+            "Hyper-V",
+            "Azure",
+            "AWS"
+          ]
+        },
+        {
+          "heading": "Technology Stack",
+          "list": [
+            "**Base:** NixOS",
+            "**Build System:** Nix Flakes",
+            "**Encryption:** LUKS2",
+            "**Installer:** just command-line tool",
+            "**License:** Apache 2.0"
+          ]
+        }
+      ],
+      "links": [
+        {"text": "nitrousos.com", "url": "https://nitrousos.com/"}
+      ]
+    },
+    "crypto-pool-party": {
+      "content": "A network infrastructure participating in the Cardano blockchain as nodes within the PARTY pool. The system employs cloud technologies to maintain failover capabilities and redundancy across US East and West Coast locations.",
+      "sections": [
+        {
+          "heading": "About Cardano",
+          "content": "Cardano is a decentralized blockchain and cryptocurrency project that is fully open source. Its governance involves three organizations: the Cardano Foundation (independent standards body), IOHK (development company), and EMURGO (commercial ventures)."
+        },
+        {
+          "heading": "Infrastructure",
+          "list": [
+            "Multiple relay nodes across geographic regions",
+            "Cloud-based redundancy and failover",
+            "Automated monitoring and alerting",
+            "Secure key management"
+          ]
+        }
+      ]
+    },
+    "pentalpha194-website": {
+      "content": "An informational site for Pentalpha Lodge #194, built as a static website. The project demonstrates a modern automated publishing workflow where code changes trigger automatic generation and deployment.",
+      "sections": [
+        {
+          "heading": "Features",
+          "list": [
+            "Static site generation for fast performance",
+            "Automated deployment on code commits",
+            "Minimal maintenance required"
+          ]
+        }
+      ]
+    },
+    "jmweeks-website": {
+      "content": "This website serves as an online portfolio and information hub. Its purpose is to highlight projects, provide background information, and serve as a repository of things that are useful or may be useful to others.",
+      "sections": [
+        {
+          "heading": "Purpose",
+          "list": [
+            "Showcase current and past projects",
+            "Provide biographical information",
+            "Share useful resources and tools"
+          ]
+        }
+      ]
+    },
+    "portfolio-website": {
+      "content": "A responsive photography portfolio built with Hugo static site generator and Tailwind CSS. Features lazy loading, lightbox galleries, and optimized image delivery.",
+      "sections": [
+        {
+          "heading": "Technologies",
+          "list": [
+            "Hugo Static Site Generator",
+            "Tailwind CSS",
+            "JavaScript",
+            "Netlify Deployment"
+          ]
+        }
+      ]
+    },
+    "security-audit": {
+      "content": "A comprehensive security audit framework for assessing network vulnerabilities, compliance gaps, and security posture.",
+      "sections": [
+        {
+          "heading": "Capabilities",
+          "list": [
+            "Vulnerability scanning",
+            "Configuration assessment",
+            "Compliance checking",
+            "Report generation"
+          ]
+        }
+      ]
+    },
+    "documentation-site": {
+      "content": "A comprehensive documentation portal featuring full-text search, version switching, and interactive API examples.",
+      "sections": [
+        {
+          "heading": "Features",
+          "list": [
+            "Full-text search",
+            "Version management",
+            "Interactive API examples",
+            "Responsive design"
+          ]
+        }
+      ]
+    },
+    "embedded-controller": {
+      "content": "Custom firmware for an ESP32-based environmental monitoring system. Collects temperature, humidity, and air quality data with MQTT transmission.",
+      "sections": [
+        {
+          "heading": "Specifications",
+          "list": [
+            "ESP32 microcontroller",
+            "Multiple sensor support",
+            "MQTT protocol",
+            "Low power mode"
+          ]
+        }
+      ]
+    },
+    "inventory-system": {
+      "content": "A full-stack inventory management system featuring barcode scanning, real-time stock levels, and automated reorder notifications.",
+      "sections": [
+        {
+          "heading": "Features",
+          "list": [
+            "Barcode/QR code scanning",
+            "Real-time stock tracking",
+            "Automated reorder alerts",
+            "Reporting dashboard"
+          ]
+        }
+      ]
+    },
+    "data-pipeline": {
+      "content": "A robust ETL pipeline processing millions of records daily with data validation, transformation, and warehouse loading.",
+      "sections": [
+        {
+          "heading": "Architecture",
+          "list": [
+            "Apache Airflow orchestration",
+            "PostgreSQL and Snowflake",
+            "Data validation layers",
+            "Error handling and recovery"
+          ]
+        }
+      ]
+    },
+    "mobile-app-landing": {
+      "content": "A high-converting landing page for a fitness tracking mobile app, featuring animated sections, testimonials, and app store integration.",
+      "sections": [
+        {
+          "heading": "Highlights",
+          "list": [
+            "Animated hero section",
+            "Feature showcase",
+            "Testimonials",
+            "App store badges"
+          ]
+        }
+      ]
+    },
+    "automation-scripts": {
+      "content": "A suite of automation scripts for CI/CD pipelines, infrastructure provisioning, and system administration tasks.",
+      "sections": [
+        {
+          "heading": "Includes",
+          "list": [
+            "Deployment scripts",
+            "Backup automation",
+            "Infrastructure provisioning",
+            "Monitoring setup"
+          ]
+        }
+      ]
+    },
+    "legacy-migration": {
+      "content": "A phased migration project converting a 30-year-old COBOL mainframe system to a modern microservices architecture.",
+      "sections": [
+        {
+          "heading": "Approach",
+          "list": [
+            "Business logic extraction",
+            "Data migration strategy",
+            "Parallel running period",
+            "Gradual cutover"
+          ]
+        }
+      ]
+    }
+  }
+}

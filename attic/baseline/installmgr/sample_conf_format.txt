@@ -1,0 +1,58 @@
+# Sample SWORD .conf file format from ~/.sword/mods.d/
+
+# Bible module example (kjv.conf):
+[KJV]
+DataPath=./modules/texts/ztext/kjv/
+ModDrv=zText
+BlockType=BOOK
+CompressType=ZIP
+SourceType=OSIS
+Encoding=UTF-8
+Lang=en
+Description=King James Version (1769) with Strongs Numbers and Morphology
+About=The King James Version of the Holy Bible\par\par This is the 1769 Authorized Version (commonly known as the King James Version, or KJV) with Strong's Numbers added for study and research.
+LCSH=Bible. English.
+DistributionLicense=Public Domain
+TextSource=CCEL
+Version=3.1
+Feature=StrongsNumbers
+Feature=Morphology
+GlobalOptionFilter=OSISStrongs
+GlobalOptionFilter=OSISMorph
+GlobalOptionFilter=OSISLemma
+GlobalOptionFilter=OSISRedLetterWords
+
+# Dictionary module example (strongsgreek.conf):
+[StrongsGreek]
+DataPath=./modules/lexdict/zld/strongsgreek/
+ModDrv=zLD
+CompressType=ZIP
+SourceType=TEI
+Encoding=UTF-8
+Lang=grc
+Feature=StrongsNumbers
+Description=Strong's Greek Dictionary
+About=Strong's Greek Dictionary of the New Testament
+Version=1.3
+DistributionLicense=Public Domain
+
+# Commentary module example (mhc.conf):
+[MHC]
+DataPath=./modules/comments/zcom/mhc/
+ModDrv=zCom
+BlockType=BOOK
+CompressType=ZIP
+SourceType=ThML
+Encoding=UTF-8
+Lang=en
+Description=Matthew Henry's Commentary on the Whole Bible
+About=Matthew Henry's Commentary on the Whole Bible (1706)
+Version=1.0
+DistributionLicense=Public Domain
+
+# Key-Value pairs used:
+# - Required: DataPath, ModDrv
+# - Common: Lang, Description, Version, SourceType, Encoding
+# - Optional: About, LCSH, DistributionLicense, TextSource
+# - Features: Feature (can have multiple), GlobalOptionFilter
+# - Compression: CompressType, BlockType

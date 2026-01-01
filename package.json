@@ -1,0 +1,40 @@
+{
+  "name": "website.public.focuswithjustin.com",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "npm-run-all decompress:data --parallel dev:*",
+    "dev:hugo": "hugo server --disableFastRender",
+    "dev:css": "npx @tailwindcss/cli -i ./themes/airfold/assets/css/main.css -o ./static/css/main.css --watch",
+    "build": "npm-run-all decompress:data build:css build:hugo",
+    "build:css": "npx @tailwindcss/cli -i ./themes/airfold/assets/css/main.css -o ./static/css/main.css --minify",
+    "build:hugo": "hugo --minify",
+    "decompress:data": "mkdir -p data/bibles_auxiliary && tar -xJf assets/data/bibles_auxiliary.tar.xz -C . 2>/dev/null || true",
+    "test": "npm-run-all test:*",
+    "test:security": "cd tools/juniper && go run ./cmd/sectest",
+    "test:security:local": "cd tools/juniper && go run ./cmd/sectest -local",
+    "test:sword": "cd tools/juniper && nix-shell -p go --run 'go test ./...'",
+    "sword:build": "cd tools/juniper && nix-shell -p go --run 'go build -o juniper ./cmd/juniper'",
+    "sword:migrate": "cd tools/juniper && ./juniper migrate",
+    "sword:convert": "cd tools/juniper && ./juniper convert"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cyanitol/Website.Public.FocuswithJustin.com.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/cyanitol/Website.Public.FocuswithJustin.com/issues"
+  },
+  "homepage": "https://github.com/cyanitol/Website.Public.FocuswithJustin.com#readme",
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.1.17",
+    "autoprefixer": "^10.4.22",
+    "npm-run-all": "^4.1.5",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^4.1.17"
+  }
+}

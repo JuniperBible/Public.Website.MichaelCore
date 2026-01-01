@@ -1,0 +1,201 @@
+{
+  "$schema": "https://focuswithjustin.com/schemas/tools.schema.json",
+  "tools": [
+    {
+      "id": "splunk",
+      "title": "Splunk",
+      "description": "Enterprise security information and event management (SIEM) platform",
+      "category": "SIEM & Observability",
+      "website": "https://www.splunk.com/",
+      "weight": 1
+    },
+    {
+      "id": "alienvault",
+      "title": "AlienVault",
+      "description": "Unified security management and threat detection platform",
+      "category": "SIEM & Observability",
+      "website": "https://cybersecurity.att.com/products/usm-anywhere",
+      "weight": 2
+    },
+    {
+      "id": "elastic",
+      "title": "Elastic Stack",
+      "description": "Open-source search, observability, and security platform",
+      "category": "SIEM & Observability",
+      "website": "https://www.elastic.co/",
+      "weight": 3
+    },
+    {
+      "id": "qradar",
+      "title": "IBM QRadar",
+      "description": "Enterprise SIEM with advanced threat detection and response",
+      "category": "SIEM & Observability",
+      "website": "https://www.ibm.com/qradar",
+      "weight": 4
+    },
+    {
+      "id": "opensearch",
+      "title": "OpenSearch",
+      "description": "Open-source search and analytics suite",
+      "category": "SIEM & Observability",
+      "website": "https://opensearch.org/",
+      "weight": 5
+    },
+    {
+      "id": "kubernetes",
+      "title": "Kubernetes",
+      "description": "Open-source container orchestration platform",
+      "category": "Container & Automation",
+      "website": "https://kubernetes.io/",
+      "weight": 1
+    },
+    {
+      "id": "docker",
+      "title": "Docker",
+      "description": "Container platform for building, sharing, and running applications",
+      "category": "Container & Automation",
+      "website": "https://www.docker.com/",
+      "weight": 2
+    },
+    {
+      "id": "ansible",
+      "title": "Ansible",
+      "description": "Agentless automation and configuration management platform",
+      "category": "Container & Automation",
+      "website": "https://www.ansible.com/",
+      "weight": 3
+    },
+    {
+      "id": "go",
+      "title": "Go",
+      "description": "Fast, statically typed programming language for modern systems",
+      "category": "Development",
+      "website": "https://go.dev/",
+      "weight": 1
+    },
+    {
+      "id": "python",
+      "title": "Python",
+      "description": "Versatile programming language for automation and security",
+      "category": "Development",
+      "website": "https://www.python.org/",
+      "weight": 2
+    },
+    {
+      "id": "git",
+      "title": "Git",
+      "description": "Distributed version control system",
+      "category": "Development",
+      "website": "https://git-scm.com/",
+      "weight": 3
+    },
+    {
+      "id": "vagrant",
+      "title": "Vagrant",
+      "description": "Development environment automation and management",
+      "category": "Development",
+      "website": "https://www.vagrantup.com/",
+      "weight": 4
+    },
+    {
+      "id": "connectwise",
+      "title": "ConnectWise",
+      "description": "IT management and remote monitoring platform",
+      "category": "RMM",
+      "website": "https://www.connectwise.com/",
+      "weight": 1
+    },
+    {
+      "id": "kaseya",
+      "title": "Kaseya",
+      "description": "IT infrastructure management and security platform",
+      "category": "RMM",
+      "website": "https://www.kaseya.com/",
+      "weight": 2
+    },
+    {
+      "id": "mitre-attack",
+      "title": "MITRE ATT&CK",
+      "description": "Adversary tactics and techniques knowledge base",
+      "category": "Threat Informed Defense",
+      "website": "https://attack.mitre.org/",
+      "weight": 1
+    },
+    {
+      "id": "stix",
+      "title": "STIX",
+      "description": "Structured Threat Information eXpression standard",
+      "category": "Threat Informed Defense",
+      "website": "https://oasis-open.github.io/cti-documentation/stix/intro.html",
+      "weight": 2
+    },
+    {
+      "id": "taxii",
+      "title": "TAXII",
+      "description": "Trusted Automated eXchange of Intelligence Information protocol",
+      "category": "Threat Informed Defense",
+      "website": "https://oasis-open.github.io/cti-documentation/taxii/intro.html",
+      "weight": 3
+    },
+    {
+      "id": "veris",
+      "title": "VERIS",
+      "description": "Vocabulary for Event Recording and Incident Sharing",
+      "category": "Threat Informed Defense",
+      "website": "http://veriscommunity.net/",
+      "weight": 4
+    },
+    {
+      "id": "hyper-v",
+      "title": "Hyper-V",
+      "description": "Microsoft's native hypervisor for Windows virtualization",
+      "category": "Virtualization",
+      "website": "https://learn.microsoft.com/en-us/virtualization/hyper-v-on-windows/",
+      "weight": 1
+    },
+    {
+      "id": "esxi",
+      "title": "VMware ESXi",
+      "description": "Enterprise bare-metal hypervisor",
+      "category": "Virtualization",
+      "website": "https://www.vmware.com/products/cloud-infrastructure/esxi-and-esx",
+      "weight": 2
+    },
+    {
+      "id": "kvm",
+      "title": "KVM",
+      "description": "Linux kernel-based virtual machine hypervisor",
+      "category": "Virtualization",
+      "website": "https://www.linux-kvm.org/",
+      "weight": 3
+    },
+    {
+      "id": "xen",
+      "title": "Xen",
+      "description": "Open-source Type 1 hypervisor",
+      "category": "Virtualization",
+      "website": "https://xenproject.org/",
+      "weight": 4
+    },
+    {
+      "id": "qemu",
+      "title": "QEMU",
+      "description": "Open-source machine emulator and virtualizer",
+      "category": "Virtualization",
+      "website": "https://www.qemu.org/",
+      "weight": 5
+    },
+    {
+      "id": "smartos",
+      "title": "SmartOS",
+      "description": "Illumos-based hypervisor with ZFS and Zones",
+      "category": "Virtualization",
+      "website": "https://www.tritondatacenter.com/smartos",
+      "weight": 6
+    }
+  ],
+  "meta": {
+    "version": "1.0.0",
+    "lastModified": "2025-12-27"
+  }
+}

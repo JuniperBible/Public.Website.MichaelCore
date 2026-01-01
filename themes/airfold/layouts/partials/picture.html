@@ -1,0 +1,59 @@
+{{/* Picture Partial - Responsive images with WebP support
+     Usage: {{ partial "picture.html" (dict "src" "/images/hero.png" "alt" "Description" "class" "my-class") }}
+
+     Parameters:
+     - src: Image source path (required)
+     - alt: Alt text (default: "")
+     - class: CSS classes (default: "")
+     - loading: lazy or eager (default: "lazy")
+     - fetchpriority: high, low, or auto (default: "auto", use "high" for LCP images)
+     - responsive: Enable srcset for responsive sizes (default: false)
+     - width: Explicit width for CLS prevention (optional)
+     - height: Explicit height for CLS prevention (optional)
+*/}}
+{{- $src := .src -}}
+{{- $alt := .alt | default "" -}}
+{{- $class := .class | default "" -}}
+{{- $loading := .loading | default "lazy" -}}
+{{- $fetchpriority := .fetchpriority | default "auto" -}}
+{{- $responsive := .responsive | default false -}}
+{{- $width := .width -}}
+{{- $height := .height -}}
+
+{{- /* Extract base path and extension */ -}}
+{{- $ext := path.Ext $src -}}
+{{- $base := strings.TrimSuffix $ext $src -}}
+{{- $webp := printf "%s.webp" $base -}}
+
+{{- if $responsive -}}
+{{- /* Responsive image with srcset
+       Mobile (<600px): 480w, Tablet/Desktop: 800w
+       Max display is ~788px (max-w-4xl at 88%) */ -}}
+<picture>
+  <source
+    type="image/webp"
+    srcset="{{ $base }}-480w.webp 480w, {{ $base }}-800w.webp 800w"
+    sizes="(max-width: 600px) 480px, 800px">
+  <source
+    type="image/{{ strings.TrimPrefix "." $ext }}"
+    srcset="{{ $base }}-480w{{ $ext }} 480w, {{ $base }}-800w{{ $ext }} 800w"
+    sizes="(max-width: 600px) 480px, 800px">
+  <img
+    src="{{ $base }}-800w.webp"
+    alt="{{ $alt }}"
+    class="{{ $class }}"
+    loading="{{ $loading }}"
+    {{- if ne $fetchpriority "auto" }} fetchpriority="{{ $fetchpriority }}"{{ end }}
+    {{- with $width }} width="{{ . }}"{{ end }}
+    {{- with $height }} height="{{ . }}"{{ end }}>
+</picture>
+{{- else -}}
+{{- /* Simple WebP with fallback */ -}}
+<picture>
+  <source srcset="{{ $webp }}" type="image/webp">
+  <img src="{{ $src }}" alt="{{ $alt }}" class="{{ $class }}" loading="{{ $loading }}"
+    {{- if ne $fetchpriority "auto" }} fetchpriority="{{ $fetchpriority }}"{{ end }}
+    {{- with $width }} width="{{ . }}"{{ end }}
+    {{- with $height }} height="{{ . }}"{{ end }}>
+</picture>
+{{- end -}}

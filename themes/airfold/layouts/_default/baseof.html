@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="{{ .Site.LanguageCode }}">
+<head>
+  <!-- CRITICAL: Loading screen and transition control to prevent dark mode flash -->
+  <style>
+    /* Disable all transitions during initial page load */
+    html.no-transitions,
+    html.no-transitions *,
+    html.no-transitions *::before,
+    html.no-transitions *::after {
+      transition: none !important;
+    }
+    #page-loader {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: #f5f1e8;
+      z-index: 99999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.4s ease-out;
+    }
+    html.dark #page-loader { background-color: #1a1a1a; }
+    #page-loader.fade-out { opacity: 0; pointer-events: none; }
+    #page-loader svg { width: 48px; height: 48px; animation: spin 1s linear infinite; }
+    html:not(.dark) #page-loader svg { color: #1a1a1a; }
+    html.dark #page-loader svg { color: #f0f0f0; }
+    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    /* Triangle pulse animation - beats of 3 */
+    @keyframes pulse-beat {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      10% { transform: scale(1.15); opacity: 0.9; }
+      20% { transform: scale(1); opacity: 1; }
+      30% { transform: scale(1.15); opacity: 0.9; }
+      40% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.15); opacity: 0.9; }
+      60% { transform: scale(1); opacity: 1; }
+    }
+    #logo-triangle.pulsing { animation: pulse-beat 2s ease-in-out infinite; }
+  </style>
+  <script>
+    (function() {
+      var d = document.documentElement;
+      // Disable transitions during initial load to prevent flash
+      d.classList.add('no-transitions');
+      var theme = localStorage.getItem('theme');
+      // Default to light mode (only go dark if explicitly set)
+      if (theme === 'dark') {
+        d.classList.add('dark');
+      }
+    })();
+  </script>
+  <meta charset="UTF-8">
+
+  <!-- Preload critical fonts -->
+  <link rel="preload" href="/fonts/neucha.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/fonts/patrickhand.woff2" as="font" type="font/woff2" crossorigin>
+  <!-- Preload LCP image on homepage (responsive) -->
+  {{- if .IsHome }}{{ with .Site.Params.heroImage }}
+  {{- $base := strings.TrimSuffix (path.Ext .) . }}
+  <link rel="preload" href="{{ $base }}-480w.webp" as="image" type="image/webp" media="(max-width: 600px)">
+  <link rel="preload" href="{{ $base }}-800w.webp" as="image" type="image/webp" media="(min-width: 601px)">
+  {{- end }}{{ end }}
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- SEO Meta Tags, Open Graph, Twitter Cards, and Structured Data -->
+  {{ partial "seo.html" . }}
+
+  <!-- Critical font definitions (inlined to avoid render-blocking request) -->
+  <style>
+    @font-face {
+      font-family: 'Neucha';
+      font-style: normal;
+      font-weight: 400;
+      font-display: swap;
+      src: url('/fonts/neucha.woff2') format('woff2');
+    }
+    @font-face {
+      font-family: 'Patrick Hand';
+      font-style: normal;
+      font-weight: 400;
+      font-display: swap;
+      src: url('/fonts/patrickhand.woff2') format('woff2');
+    }
+  </style>
+
+  <!-- Main CSS -->
+  <link rel="stylesheet" href="/css/main.css">
+
+  {{ block "head" . }}{{ end }}
+</head>
+<body class="min-h-screen flex flex-col">
+  <!-- Loading screen -->
+  <div id="page-loader" aria-hidden="true">
+    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+    </svg>
+  </div>
+
+  <!-- Skip to content link for accessibility -->
+  <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50 focus:px-4 focus:py-2 focus:bg-paper-black focus:text-paper-white focus:font-hand focus:outline focus:outline-2 focus:outline-offset-2 focus:outline-accent focus:rounded">
+    {{ i18n "skipToContent" | default "Skip to content" }}
+  </a>
+
+  <!-- Navigation -->
+  <header class="border-b-2 border-paper-black bg-paper-brown text-paper-cream">
+    <nav class="max-w-5xl mx-auto px-4 py-4">
+      <div class="flex items-center justify-between">
+        <!-- Logo + Site Title + Control Panel -->
+        <div class="flex items-center gap-3">
+          <!-- Site logo with theme indicator (toggles control panel) -->
+          <div class="flex flex-col items-center">
+            <button id="control-panel-btn" class="p-2 min-w-[56px] min-h-[56px] flex items-center justify-center text-paper-cream hover:text-accent active:text-accent transition-colors cursor-pointer" aria-label="Toggle control panel" title="Toggle control panel" aria-expanded="false" aria-controls="control-panel">
+              <svg id="logo-triangle" class="w-12 h-12 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <!-- Equilateral triangle pointing up -->
+                <polygon points="12,2 22,20 2,20" stroke-width="2" stroke-linejoin="round"/>
+                <!-- Circle inscribed in triangle -->
+                <circle cx="12" cy="14" r="5" stroke-width="2"/>
+                <!-- Dot in center of circle -->
+                <circle cx="12" cy="14" r="1.5" fill="currentColor" stroke="none"/>
+              </svg>
+            </button>
+            <!-- Theme indicator (sun/moon toggle with active light) - hidden on mobile -->
+            <button id="header-theme-btn" class="hidden md:flex items-center gap-2 -mt-1 text-paper-cream hover:text-accent transition-colors cursor-pointer" aria-label="Toggle dark mode" title="Toggle dark mode">
+              <div class="flex items-center gap-1">
+                <svg class="w-5 h-5 pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                  <circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2m10-10h-2M4 12H2m15.364-6.364l-1.414 1.414M8.05 15.95l-1.414 1.414m12.728 0l-1.414-1.414M8.05 8.05L6.636 6.636"/>
+                </svg>
+                <span class="w-2.5 h-2.5 rounded-full bg-accent dark:bg-paper-gray transition-colors"></span>
+              </div>
+              <div class="flex items-center gap-1">
+                <span class="w-2.5 h-2.5 rounded-full bg-paper-gray dark:bg-accent transition-colors"></span>
+                <svg class="w-5 h-5 pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                  <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                </svg>
+              </div>
+            </button>
+          </div>
+
+          <!-- Control panel icons (hidden by default) -->
+          <div id="control-panel" class="hidden items-center gap-1" role="toolbar" aria-label="Site controls">
+            <!-- Theme toggle (duplicate for control panel) -->
+            <button id="panel-theme-btn" class="p-2 min-w-[44px] min-h-[44px] flex items-center justify-center text-paper-cream hover:text-accent active:text-accent transition-colors cursor-pointer" aria-label="Toggle dark mode" title="Toggle dark mode">
+              <svg class="w-6 h-6 block dark:hidden pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+              </svg>
+              <svg class="w-6 h-6 hidden dark:block pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2m10-10h-2M4 12H2m15.364-6.364l-1.414 1.414M8.05 15.95l-1.414 1.414m12.728 0l-1.414-1.414M8.05 8.05L6.636 6.636"/>
+              </svg>
+            </button>
+            <!-- Print button -->
+            <button id="header-print-btn" class="p-2 min-w-[44px] min-h-[44px] flex items-center justify-center text-paper-cream hover:text-accent active:text-accent transition-colors cursor-pointer" aria-label="Print page" title="Print page">
+              <svg class="w-6 h-6 pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/>
+              </svg>
+            </button>
+          </div>
+
+          <a href="/" class="text-3xl font-hand font-bold text-paper-cream hover:underline-hand">
+            {{ .Site.Title }}
+          </a>
+        </div>
+
+        <!-- Mobile menu -->
+        <div class="flex items-center gap-2">
+          <!-- Mobile menu button -->
+        <button id="mobile-menu-btn" type="button" class="md:hidden p-2 border-2 border-paper-cream hover:bg-accent hover:border-accent transition-colors" aria-label="Toggle menu" aria-expanded="false" aria-controls="mobile-menu" style="border-radius: 255px 15px 225px 15px/15px 225px 15px 255px;">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+          </svg>
+        </button>
+
+        {{/* Desktop Navigation
+             Menu display values: 1=header only, 2=footer only, 3=header and footer (default), 4=disabled */}}
+        <ul class="hidden md:flex items-center space-x-2">
+          {{ partial "nav-menu-items.html" (dict "context" . "location" "header") }}
+        </ul>
+        </div>
+      </div>
+
+      <!-- Mobile Navigation -->
+      <ul id="mobile-menu" class="hidden md:hidden mt-4 space-y-2 border-t-2 border-paper-cream pt-4">
+        {{ partial "nav-menu-items.html" (dict "context" . "location" "mobile") }}
+      </ul>
+    </nav>
+  </header>
+
+  <!-- Main Content -->
+  <main id="main-content" class="flex-grow py-2 md:py-4 flex flex-col">
+    <div class="max-w-5xl mx-auto px-4 flex-grow flex flex-col">
+      <div class="bg-paper-bright p-3 md:p-6 border border-paper-light shadow-[-1px_7px_45px_-9px_rgba(0,0,0,0.26)] dark:shadow-[-1px_7px_45px_-9px_rgba(255,255,255,0.13)] paper-lined rounded-xl flex-grow flex flex-col">
+        {{ block "main" . }}{{ end }}
+      </div>
+      {{ block "after-content" . }}{{ end }}
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="border-t-2 border-paper-black bg-paper-brown text-paper-cream py-3 mt-auto">
+    <div class="max-w-5xl mx-auto px-4 text-center">
+      <nav class="text-xl" aria-label="Footer navigation">
+        {{ partial "nav-menu-items.html" (dict "context" . "location" "footer") }} |
+        <a href="/privacy/" class="nav-link-inline{{ if eq .RelPermalink "/privacy/" }} underline-hand{{ end }}">Privacy</a> |
+        <a href="/terms/" class="nav-link-inline{{ if eq .RelPermalink "/terms/" }} underline-hand{{ end }}">Terms</a> |
+        <a href="/tags/" class="nav-link-inline{{ if hasPrefix .RelPermalink "/tags" }} underline-hand{{ end }}">Tags</a> |
+        <a href="/sitemap.xml" class="nav-link-inline">Sitemap</a> |
+        <a href="/feed.xml" class="nav-link-inline">RSS</a>
+      </nav>
+      <nav class="text-sm mt-2" aria-label="Social media links">
+        {{- range $i, $link := .Site.Data.social.links -}}
+          {{- if $i }} | {{ end -}}
+          <a href="{{ $link.url }}" class="nav-link-inline" rel="noopener" target="_blank">{{ $link.name }}</a>
+        {{- end -}}
+      </nav>
+      <p class="text-sm mt-2">
+        {{- $currentYear := now.Year -}}
+        {{- $startYear := .Site.Params.copyrightStartYear | default $currentYear -}}
+        {{- $yearRange := cond (eq $startYear $currentYear) (printf "%d" $currentYear) (printf "%d-%d" $startYear $currentYear) -}}
+        &copy; {{ $yearRange }} {{ partial "trademark-footer.html" . }}
+      </p>
+    </div>
+  </footer>
+
+  <!-- Page loader fade-out and enable transitions (must be inline for immediate execution) -->
+  <script>
+    var loader = document.getElementById('page-loader');
+    if (loader) {
+      loader.classList.add('fade-out');
+      // Use requestIdleCallback to remove element without blocking interactions
+      // Falls back to setTimeout for Safari
+      (window.requestIdleCallback || function(cb) { setTimeout(cb, 400); })(function() {
+        loader.remove();
+        // Re-enable transitions after page has loaded and loader is removed
+        document.documentElement.classList.remove('no-transitions');
+        // Start triangle pulse animation for 15 seconds on first page load
+        var triangle = document.getElementById('logo-triangle');
+        if (triangle && !sessionStorage.getItem('logoPulsed')) {
+          triangle.classList.add('pulsing');
+          sessionStorage.setItem('logoPulsed', 'true');
+          setTimeout(function() {
+            triangle.classList.remove('pulsing');
+          }, 15000);
+        }
+      });
+    }
+  </script>
+
+  <!-- Site scripts (mobile menu, theme toggle) -->
+  <script src="/js/site.js" defer></script>
+
+  <!-- Trademark auto-styling -->
+  <script>
+    window.TRADEMARKS = [
+      {{- range $i, $tm := .Site.Data.trademarks.trademarks -}}
+        {{- if $i }},{{ end }}"{{ $tm.name }}"
+        {{- with $tm.abbrev }},"{{ . }}"{{ end -}}
+      {{- end -}}
+    ];
+  </script>
+  {{ $tmScript := resources.Get "js/trademarks.js" }}
+  {{ if $tmScript }}
+  <script src="{{ $tmScript.RelPermalink }}" defer></script>
+  {{ end }}
+
+  <!-- Lightbox for tables/charts and page preview -->
+  {{ if or (findRE "<table" .Content) (.Store.Get "hasMermaid") }}
+  <script src="/js/hammer.min.js" defer></script>
+  {{ end }}
+  <script src="/js/lightbox.js" defer></script>
+
+  {{ block "scripts" . }}{{ end }}
+
+  <!-- Mermaid diagrams (only loaded when page contains mermaid blocks) -->
+  {{ if .Store.Get "hasMermaid" }}
+  <script src="/js/mermaid.min.js" defer></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      if (typeof mermaid !== 'undefined') {
+        mermaid.initialize({
+          startOnLoad: true,
+          theme: document.documentElement.classList.contains('dark') ? 'dark' : 'default'
+        });
+      }
+    });
+  </script>
+  {{ end }}
+</body>
+</html>

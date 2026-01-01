@@ -1,0 +1,32 @@
+{{ define "main" }}
+<article class="max-w-4xl mx-auto px-4 py-12">
+  <header class="text-center mb-8">
+    {{ with .Params.logo }}
+    <div class="flex justify-center mb-4">
+      <img src="{{ . }}" alt="{{ $.Title }}" class="w-24 h-24">
+    </div>
+    {{ end }}
+    <h1 class="text-3xl md:text-4xl font-hand font-bold text-paper-black mb-2">
+      {{ .Title }}
+    </h1>
+    <p class="text-lg font-hand text-paper-gray mb-4">{{ .Params.category }}</p>
+    {{ with .Params.website }}
+    <a href="{{ . }}" target="_blank" rel="noopener noreferrer" class="text-sm text-accent hover:underline">
+      {{ i18n "officialWebsite" | default "Official Website" }} &rarr;
+    </a>
+    {{ end }}
+  </header>
+
+  {{ partial "prose-content.html" .Content }}
+
+  <!-- Navigation -->
+  <div class="flex justify-center items-center gap-6 mt-8">
+    <a href="/resume/tools/" class="btn-paper-dark">
+      &larr; {{ i18n "allTools" | default "All Tools" }}
+    </a>
+    <a href="/resume/" class="btn-paper">
+      {{ i18n "viewResume" | default "View Resume" }}
+    </a>
+  </div>
+</article>
+{{ end }}

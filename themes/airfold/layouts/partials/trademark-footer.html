@@ -1,0 +1,23 @@
+{{/*
+  Trademark Footer Partial
+  Generates the trademark notice from data/trademarks.json
+*/}}
+{{- $tm := .Site.Data.trademarks -}}
+{{- $trademarkList := slice -}}
+
+{{/* Build list of trademark names with abbreviations */}}
+{{- range $tm.trademarks -}}
+  {{- $trademarkList = $trademarkList | append (printf "\"%s\"" .name) -}}
+  {{- with .abbrev -}}
+    {{- $trademarkList = $trademarkList | append (printf "\"%s\"" .) -}}
+  {{- end -}}
+{{- end -}}
+
+{{/* Add symbol names */}}
+{{- range $tm.symbols -}}
+  {{- $trademarkList = $trademarkList | append .name -}}
+{{- end -}}
+
+{{/* Join with commas and output */}}
+{{- $first := index $tm.trademarks 0 -}}
+{{ $first.name }}™. {{ delimit $trademarkList ", " }} are trademarks of {{ $tm.owner }}. All rights reserved. Unauthorized duplication or distribution is strictly prohibited. Use of this site constitutes acceptance of our <a href="/privacy/" class="text-white hover:text-accent hover:underline">Privacy Policy</a> and <a href="/terms/" class="text-white hover:text-accent hover:underline">Terms of Use</a>. All other trademarks are the property of their respective owners.

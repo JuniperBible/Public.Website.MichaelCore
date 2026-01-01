@@ -1,0 +1,11 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: {{ .Site.BaseURL }}sitemap.xml
+
+# Crawl-delay (optional, for polite bots)
+# Crawl-delay: 10
+
+# Disallow admin and internal paths
+Disallow: /admin/

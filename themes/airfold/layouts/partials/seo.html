@@ -1,0 +1,334 @@
+{{- /* SEO Partial - Centralized SEO meta tags and structured data */ -}}
+{{- $seo := .Site.Params.seo -}}
+{{- $author := .Site.Params.author -}}
+{{- $org := .Site.Params.organization -}}
+
+{{- /* Determine page-specific values */ -}}
+{{- $title := .Title -}}
+{{- $description := .Description | default .Params.description | default .Site.Params.description -}}
+{{- /* Page image: check frontmatter image, then logo (for certifications), then defaults */ -}}
+{{- $pageImage := .Params.image -}}
+{{- if not $pageImage }}{{ with .Params.logo }}{{ $pageImage = . }}{{ end }}{{ end -}}
+{{- if not $pageImage }}{{ $pageImage = $seo.defaultImage | default .Site.Params.heroImage }}{{ end -}}
+{{- $fullImageURL := printf "%s%s" .Site.BaseURL ($pageImage | strings.TrimPrefix "/") -}}
+
+{{- /* Determine page type for Open Graph */ -}}
+{{- $ogType := "website" -}}
+{{- if .IsPage -}}
+  {{- if in (slice "esoterica" "projects") .Section -}}
+    {{- $ogType = "article" -}}
+  {{- end -}}
+{{- end -}}
+
+{{- /* Calculate reading time */ -}}
+{{- $wordCount := .WordCount -}}
+{{- $readingTime := div $wordCount ($seo.wordsPerMinute | default 200) -}}
+{{- if lt $readingTime 1 }}{{ $readingTime = 1 }}{{ end -}}
+
+<!-- Primary Meta Tags -->
+<title>{{ if .IsHome }}{{ .Site.Title }} - {{ .Site.Params.description }}{{ else }}{{ $title }} | {{ .Site.Title }}{{ end }}</title>
+<meta name="title" content="{{ if .IsHome }}{{ .Site.Title }} - {{ .Site.Params.description }}{{ else }}{{ $title }} | {{ .Site.Title }}{{ end }}">
+<meta name="description" content="{{ $description }}">
+<meta name="author" content="{{ $author.name }}">
+{{- with .Site.Params.keywords }}
+<meta name="keywords" content="{{ . }}">
+{{- end }}
+{{- $robotsIndex := cond .Params.noindex "noindex" "index" -}}
+{{- $robotsFollow := cond .Params.nofollow "nofollow" "follow" -}}
+<meta name="robots" content="{{ $robotsIndex }}, {{ $robotsFollow }}">
+<link rel="canonical" href="{{ .Permalink }}">
+<link rel="alternate" hreflang="{{ .Site.LanguageCode | default "en" }}" href="{{ .Permalink }}">
+<link rel="alternate" hreflang="x-default" href="{{ .Permalink }}">
+
+<!-- Theme Color -->
+{{- with $seo.themeColor }}
+<meta name="theme-color" content="{{ . }}" media="(prefers-color-scheme: light)">
+{{- end }}
+{{- with $seo.themeColorDark }}
+<meta name="theme-color" content="{{ . }}" media="(prefers-color-scheme: dark)">
+{{- end }}
+
+<!-- Site Verification -->
+{{- with $seo.googleSiteVerification }}
+<meta name="google-site-verification" content="{{ . }}">
+{{- end }}
+{{- with $seo.bingSiteVerification }}
+<meta name="msvalidate.01" content="{{ . }}">
+{{- end }}
+
+<!-- Open Graph / Facebook -->
+<meta property="og:type" content="{{ $ogType }}">
+<meta property="og:url" content="{{ .Permalink }}">
+<meta property="og:title" content="{{ if .IsHome }}{{ .Site.Title }}{{ else }}{{ $title }}{{ end }}">
+<meta property="og:description" content="{{ $description }}">
+<meta property="og:site_name" content="{{ .Site.Title }}">
+<meta property="og:locale" content="{{ .Site.LanguageCode | default "en_US" | replaceRE "-" "_" }}">
+<meta property="og:image" content="{{ $fullImageURL }}">
+<meta property="og:image:alt" content="{{ $title }}">
+{{- if eq $ogType "article" }}
+{{- with .Date }}
+<meta property="article:published_time" content="{{ .Format "2006-01-02T15:04:05Z07:00" }}">
+{{- end }}
+{{- with .Lastmod }}
+<meta property="article:modified_time" content="{{ .Format "2006-01-02T15:04:05Z07:00" }}">
+{{- end }}
+<meta property="article:author" content="{{ $author.url | default .Site.BaseURL }}">
+<meta property="article:section" content="{{ .Section | title }}">
+<meta property="article:reading_time" content="{{ $readingTime }} min">
+{{- range .Params.tags }}
+<meta property="article:tag" content="{{ . }}">
+{{- end }}
+{{- end }}
+
+<!-- Twitter -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:url" content="{{ .Permalink }}">
+<meta name="twitter:title" content="{{ if .IsHome }}{{ .Site.Title }}{{ else }}{{ $title }}{{ end }}">
+<meta name="twitter:description" content="{{ $description }}">
+<meta name="twitter:image" content="{{ $fullImageURL }}">
+{{- with $seo.twitterSite }}
+<meta name="twitter:site" content="@{{ . }}">
+{{- end }}
+{{- with $seo.twitterCreator }}
+<meta name="twitter:creator" content="@{{ . }}">
+{{- end }}
+
+<!-- RSS Feed -->
+{{- with .OutputFormats.Get "RSS" }}
+<link rel="alternate" type="application/rss+xml" title="{{ $.Site.Title }}" href="{{ .Permalink }}">
+{{- end }}
+
+<!-- Favicon and Icons -->
+<link rel="icon" type="image/svg+xml" href="/logo.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+
+{{- /* DNS Prefetch removed - external resources (Turnstile) only loaded on contact page */ -}}
+
+{{- /* JSON-LD Structured Data */ -}}
+{{- if $seo.enableStructuredData | default true }}
+
+{{- if .IsHome }}
+<!-- JSON-LD: WebSite + Organization -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": "{{ .Site.BaseURL }}#website",
+      "name": "{{ .Site.Title }}",
+      "url": "{{ .Site.BaseURL }}",
+      "description": "{{ .Site.Params.description }}",
+      "publisher": {
+        "@id": "{{ .Site.BaseURL }}#organization"
+      }
+    },
+    {
+      "@type": "Organization",
+      "@id": "{{ .Site.BaseURL }}#organization",
+      "name": "{{ $org.name | default .Site.Title }}",
+      "url": "{{ $org.url | default .Site.BaseURL }}",
+      {{- with $org.logo }}
+      "logo": {
+        "@type": "ImageObject",
+        "url": "{{ $.Site.BaseURL }}{{ . | strings.TrimPrefix "/" }}"
+      },
+      {{- end }}
+      "sameAs": [
+        {{- range $i, $link := .Site.Data.social.links }}
+        {{- if $i }},{{ end }}
+        "{{ $link.url }}"
+        {{- end }}
+      ]
+    },
+    {
+      "@type": "Person",
+      "@id": "{{ .Site.BaseURL }}#author",
+      "name": "{{ $author.name }}",
+      {{- with $author.jobTitle }}
+      "jobTitle": "{{ . }}",
+      {{- end }}
+      {{- with $author.email }}
+      "email": "{{ . }}",
+      {{- end }}
+      "url": "{{ $author.url | default .Site.BaseURL }}"
+      {{- with $author.sameAs }},
+      "sameAs": {{ . | jsonify }}
+      {{- end }}
+    }
+  ]
+}
+</script>
+
+{{- else if eq .Section "esoterica" }}
+{{- if .IsPage }}
+<!-- JSON-LD: Article -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "{{ .Title }}",
+  "description": "{{ $description }}",
+  "url": "{{ .Permalink }}",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "{{ .Permalink }}"
+  },
+  {{- with .Date }}
+  "datePublished": "{{ .Format "2006-01-02T15:04:05Z07:00" }}",
+  {{- end }}
+  {{- with .Lastmod }}
+  "dateModified": "{{ .Format "2006-01-02T15:04:05Z07:00" }}",
+  {{- end }}
+  "author": {
+    "@type": "Person",
+    "@id": "{{ $.Site.BaseURL }}#author",
+    "name": "{{ $author.name }}"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "@id": "{{ $.Site.BaseURL }}#organization",
+    "name": "{{ $org.name | default $.Site.Title }}",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "{{ $.Site.BaseURL }}{{ $org.logo | default $.Site.Params.heroImage | strings.TrimPrefix "/" }}"
+    }
+  },
+  "image": "{{ $fullImageURL }}",
+  "wordCount": {{ .WordCount }},
+  "timeRequired": "PT{{ $readingTime }}M"
+  {{- with .Params.tags }},
+  "keywords": "{{ delimit . ", " }}"
+  {{- end }}
+}
+</script>
+{{- end }}
+
+{{- else if eq .Section "certifications" }}
+{{- if .IsPage }}
+<!-- JSON-LD: EducationalOccupationalCredential -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "EducationalOccupationalCredential",
+  "name": "{{ .Title }}",
+  "description": "{{ $description }}",
+  "url": "{{ .Permalink }}",
+  "credentialCategory": "Professional Certification",
+  "competencyRequired": "{{ .Title }}",
+  {{- with .Params.logo }}
+  "image": "{{ $.Site.BaseURL }}{{ . | strings.TrimPrefix "/" }}",
+  {{- end }}
+  "credentialSubject": {
+    "@type": "Person",
+    "@id": "{{ $.Site.BaseURL }}#author",
+    "name": "{{ $author.name }}"
+  }
+  {{- with .Params.issuer }},
+  "recognizedBy": {
+    "@type": "Organization",
+    "name": "{{ . }}",
+    "url": "{{ $.Params.issuer_url | default "" }}"
+  }
+  {{- end }}
+  {{- with .Params.credly_url }},
+  "sameAs": "{{ . }}"
+  {{- end }}
+  {{- with .Params.issued }},
+  "dateCreated": "{{ . }}"
+  {{- end }}
+  {{- with .Params.expires }},
+  "validUntil": "{{ . }}"
+  {{- end }}
+  {{- with .Params.tags }},
+  "keywords": "{{ delimit . ", " }}"
+  {{- end }}
+}
+</script>
+{{- end }}
+
+{{- else if eq .Section "projects" }}
+{{- if .IsPage }}
+<!-- JSON-LD: CreativeWork (Project) -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "CreativeWork",
+  "name": "{{ .Title }}",
+  "description": "{{ $description }}",
+  "url": "{{ .Permalink }}",
+  "author": {
+    "@type": "Person",
+    "@id": "{{ $.Site.BaseURL }}#author",
+    "name": "{{ $author.name }}"
+  }
+  {{- with .Date }},
+  "dateCreated": "{{ .Format "2006-01-02" }}"
+  {{- end }}
+  {{- with .Params.tags }},
+  "keywords": "{{ delimit . ", " }}"
+  {{- end }}
+}
+</script>
+{{- end }}
+
+{{- else }}
+<!-- JSON-LD: WebPage -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "name": "{{ .Title }}",
+  "url": "{{ .Permalink }}",
+  "description": "{{ $description }}",
+  "isPartOf": {
+    "@type": "WebSite",
+    "@id": "{{ .Site.BaseURL }}#website"
+  }
+  {{- with .Date }},
+  "datePublished": "{{ .Format "2006-01-02T15:04:05Z07:00" }}"
+  {{- end }}
+  {{- with .Lastmod }},
+  "dateModified": "{{ .Format "2006-01-02T15:04:05Z07:00" }}"
+  {{- end }}
+}
+</script>
+{{- end }}
+
+<!-- JSON-LD: BreadcrumbList -->
+{{- if not .IsHome }}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "{{ .Site.BaseURL }}"
+    }
+    {{- if .Section }},
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "{{ .Section | title }}",
+      "item": "{{ .Site.BaseURL }}{{ .Section }}/"
+    }
+    {{- end }}
+    {{- if and .Section .IsPage }},
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "{{ .Title }}",
+      "item": "{{ .Permalink }}"
+    }
+    {{- end }}
+  ]
+}
+</script>
+{{- end }}
+
+{{- end }}

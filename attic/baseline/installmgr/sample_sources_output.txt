@@ -1,0 +1,30 @@
+Remote Sources:
+
+[Bible.org]
+	Type     : FTP
+	Source   : ftp.crosswire.org
+	Directory: /pub/bible.org/sword
+[CrossWire]
+	Type     : FTP
+	Source   : ftp.crosswire.org
+	Directory: /pub/sword/raw
+[CrossWire Attic]
+	Type     : FTP
+	Source   : ftp.crosswire.org
+	Directory: /pub/sword/atticraw
+[CrossWire Beta]
+	Type     : FTP
+	Source   : ftp.crosswire.org
+	Directory: /pub/sword/betaraw
+[CrossWire Wycliffe]
+	Type     : FTP
+	Source   : ftp.crosswire.org
+	Directory: /pub/sword/wyclifferaw
+[Deutsche Bibelgesellschaft]
+	Type     : FTP
+	Source   : ftp.crosswire.org
+	Directory: /pub/sword/dbgraw
+[IBT]
+	Type     : FTP
+	Source   : ftp.ibt.org.ru
+	Directory: /pub/modsword/raw

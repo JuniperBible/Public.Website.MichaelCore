@@ -1,0 +1,58 @@
+{{ define "main" }}
+<div class="max-w-4xl mx-auto px-4 py-12">
+  <header class="text-center mb-12">
+    <h1 class="text-4xl md:text-5xl font-hand font-bold text-paper-black mb-4">
+      #{{ .Title }}
+    </h1>
+    <p class="text-xl font-hand text-paper-gray">{{ len .Pages }} {{ if eq (len .Pages) 1 }}article{{ else }}articles{{ end }}</p>
+  </header>
+
+  {{ $paginator := .Paginate .Pages }}
+
+  {{ if $paginator.Pages }}
+  <div class="space-y-6">
+    {{ range $paginator.Pages }}
+    <article class="card-paper">
+      <h2 class="text-2xl font-hand font-bold text-paper-black mb-2">
+        <a href="{{ .RelPermalink }}" class="hover:underline-hand">{{ .Title }}</a>
+      </h2>
+      <p class="text-sm text-paper-gray mb-2">{{ .Section | title }}</p>
+      {{ with .Description }}
+      <p class="text-paper-gray mb-2">{{ . }}</p>
+      {{ end }}
+      {{ with .Params.tags }}
+      <div class="flex flex-wrap gap-2 mb-3">
+        {{ range . }}
+        <a href="{{ "/tags/" | relURL }}{{ . | urlize }}" class="text-sm px-2 py-1 border border-paper-black rounded hover:bg-accent hover:border-accent hover:text-white transition-colors">#{{ . }}</a>
+        {{ end }}
+      </div>
+      {{ end }}
+      <a href="{{ .RelPermalink }}" class="btn-paper inline-block mt-2">{{ i18n "readMore" | default "Read more" }}</a>
+    </article>
+    {{ end }}
+  </div>
+
+  {{/* Pagination Navigation */}}
+  {{ if gt $paginator.TotalPages 1 }}
+  <nav class="mt-12 flex justify-center items-center gap-4">
+    {{ if $paginator.HasPrev }}
+    <a href="{{ $paginator.Prev.URL }}" class="btn-paper">&larr; {{ i18n "previous" | default "Previous" }}</a>
+    {{ end }}
+
+    <span class="font-hand text-paper-gray">
+      Page {{ $paginator.PageNumber }} of {{ $paginator.TotalPages }}
+    </span>
+
+    {{ if $paginator.HasNext }}
+    <a href="{{ $paginator.Next.URL }}" class="btn-paper">{{ i18n "next" | default "Next" }} &rarr;</a>
+    {{ end }}
+  </nav>
+  {{ end }}
+
+  {{ else }}
+  <p class="text-center text-paper-gray font-hand text-xl">{{ i18n "noArticlesWithTag" | default "No articles with this tag." }}</p>
+  {{ end }}
+
+  {{ partial "tag-cloud.html" (dict "context" . "title" (i18n "exploreTopics" | default "Explore Other Topics") "itemType" "article") }}
+</div>
+{{ end }}

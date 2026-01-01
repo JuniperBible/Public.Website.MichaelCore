@@ -1,0 +1,2008 @@
+@import "tailwindcss";
+
+/* =============================================================================
+   AirFold CSS - A Paper-Style CSS Framework
+   Built with Tailwind CSS v4
+
+   This CSS framework provides a handwritten, paper-craft aesthetic with:
+   - Wavy organic borders
+   - Paper-style offset shadows
+   - Handwritten typography
+   - Full dark mode support
+   ============================================================================= */
+
+/* =============================================================================
+   Theme Configuration
+   ============================================================================= */
+@theme {
+  /* Typography */
+  --font-family-mono: "Neucha", "Patrick Hand", cursive, monospace;
+  --font-family-hand: "Neucha", "Patrick Hand", cursive;
+
+  /* Light Mode Colors - Moleskine/Cream palette */
+  --color-paper-white: #b5a48e;  /* Warm brown cream background */
+  --color-paper-bright: #e6ddc0;  /* Slightly lighter paper for content area */
+  --color-paper-brown: #4a4a4a;   /* Gray/black for header/footer */
+  --color-paper-cream: #f5f1e8;   /* Light text for brown backgrounds */
+  --color-paper-black: #2c2416;
+  --color-paper-gray: #5c5347;
+  --color-paper-light: #ebe5d9;
+  --color-paper-border: #3d3428;
+  --color-accent: #7a00b0;
+
+  /* Shadow System */
+  --shadow-paper: 4px 4px 0 0 #2c2416;
+  --shadow-paper-sm: 2px 2px 0 0 #2c2416;
+  --shadow-accent: 4px 4px 0 0 var(--color-accent);
+  --shadow-accent-sm: 2px 2px 0 0 var(--color-accent);
+}
+
+/* =============================================================================
+   Dark Mode Colors
+   ============================================================================= */
+html.dark {
+  --color-paper-white: #1a1a1a;
+  --color-paper-bright: #252525;  /* Slightly lighter dark paper for content */
+  --color-paper-brown: #2a2a2a;   /* Darker brown for header/footer in dark mode */
+  --color-paper-cream: #e0e0e0;   /* Light text for brown backgrounds in dark mode */
+  --color-paper-black: #f0f0f0;
+  --color-paper-gray: #a0a0a0;
+  --color-paper-light: #2a2a2a;
+  --color-paper-border: #d0d0d0;
+  --color-accent: #7a00b0;
+
+  --shadow-paper: 4px 4px 0 0 #f0f0f0;
+  --shadow-paper-sm: 2px 2px 0 0 #f0f0f0;
+}
+
+/* =============================================================================
+   Base Styles
+   ============================================================================= */
+@layer base {
+  html {
+    font-family: var(--font-family-mono);
+    scroll-behavior: smooth;
+  }
+
+  /* Smooth theme transitions - applied to all elements */
+  body,
+  body * {
+    transition: background-color 200ms ease-out,
+                color 200ms ease-out,
+                border-color 200ms ease-out,
+                box-shadow 200ms ease-out;
+  }
+
+  /* Smooth link transitions */
+  a {
+    transition: color 150ms ease-out, text-decoration-color 150ms ease-out, opacity 150ms ease-out;
+  }
+
+  /* Smooth image loading */
+  img {
+    transition: opacity 300ms ease-out, transform 300ms ease-out;
+  }
+
+  /* Smooth focus transitions for all interactive elements */
+  button,
+  input,
+  textarea,
+  select,
+  a {
+    transition: outline-offset 150ms ease-out, box-shadow 150ms ease-out;
+  }
+
+  /* Use accent color for form element highlights */
+  input,
+  textarea,
+  select {
+    accent-color: var(--color-accent);
+  }
+
+  /* Style select option highlights */
+  select option:checked,
+  select option:hover {
+    background-color: var(--color-accent) !important;
+    color: white !important;
+  }
+
+  /* Firefox-specific: use system colors that respect accent-color */
+  @supports (-moz-appearance: none) {
+    select {
+      background-color: var(--color-paper-bright);
+    }
+    select:focus {
+      outline: 2px solid var(--color-accent);
+      outline-offset: 1px;
+    }
+  }
+
+  body {
+    background-color: var(--color-paper-white);
+    color: var(--color-paper-black);
+  }
+
+  /* Improve INP by isolating layout recalculations */
+  main {
+    contain: layout style;
+  }
+
+  header, footer {
+    contain: layout style;
+  }
+}
+
+/* =============================================================================
+   Component Classes
+   ============================================================================= */
+@layer components {
+  /* ---------------------------------------------------------------------------
+     Lined Paper Pattern
+     Subtle horizontal lines for paper containers
+     --------------------------------------------------------------------------- */
+  .paper-lined {
+    background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0h100v100H0z' fill='none'/%3E%3Cpath d='M0 25h100M0 50h100M0 75h100' stroke='%23d8d0c0' stroke-width='0.3'/%3E%3C/svg%3E");
+  }
+
+  html.dark .paper-lined {
+    background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0h100v100H0z' fill='none'/%3E%3Cpath d='M0 25h100M0 50h100M0 75h100' stroke='%23333333' stroke-width='0.5'/%3E%3C/svg%3E");
+  }
+
+  /* ---------------------------------------------------------------------------
+     Paper-Style Borders
+     Wavy, organic border-radius for that hand-drawn look
+
+     The asymmetric border-radius values create a hand-drawn appearance:
+     - Format: top-left top-right bottom-right bottom-left / horizontal-radii
+     - Large values (225-255px) create flat edges, small (15px) create curves
+     - Alternating pattern makes borders look imperfect/organic
+     --------------------------------------------------------------------------- */
+  .paper-border {
+    border-width: 2px;
+    border-color: var(--color-paper-border);
+    border-radius: 255px 15px 225px 15px/15px 225px 15px 255px;
+  }
+
+  .paper-border-sm {
+    border-width: 1px;
+    border-color: var(--color-paper-border);
+    border-radius: 15px 255px 15px 225px/225px 15px 255px 15px; /* Inverted pattern */
+  }
+
+  /* ---------------------------------------------------------------------------
+     Buttons
+     Paper-style buttons with offset shadows
+     Note: Explicit transition properties for better INP (avoid 'all')
+     --------------------------------------------------------------------------- */
+  .btn-paper {
+    padding: 0.5rem 1.5rem;
+    background: linear-gradient(to bottom, #f5f5f0 0%, transparent 100%);
+    color: var(--color-paper-black);
+    font-family: var(--font-family-hand);
+    font-size: 1.125rem;
+    border: 2px solid var(--color-paper-black);
+    box-shadow: var(--shadow-paper);
+    text-decoration: underline;
+    text-decoration-color: var(--color-accent);
+    text-decoration-style: wavy;
+    text-underline-offset: 4px;
+    transition: background 150ms ease-out, border-color 150ms ease-out, color 150ms ease-out, transform 100ms ease-out, box-shadow 100ms ease-out, text-decoration-color 150ms ease-out;
+    border-radius: 255px 15px 225px 15px/15px 225px 15px 255px;
+  }
+
+  html.dark .btn-paper {
+    background: linear-gradient(to bottom, var(--color-paper-bright) 0%, transparent 100%);
+  }
+
+  .btn-paper:hover {
+    background: var(--color-accent);
+    border-color: var(--color-accent);
+    color: var(--color-paper-white);
+    text-decoration-color: var(--color-paper-white);
+    transform: translateY(-1px);
+    box-shadow: 5px 5px 0 0 var(--color-paper-black);
+  }
+
+  .btn-paper:active {
+    transform: translateY(2px);
+    box-shadow: 2px 2px 0 0 var(--color-paper-black);
+  }
+
+  .btn-paper:focus {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+
+  .btn-paper-dark {
+    padding: 0.5rem 1.5rem;
+    background-color: var(--color-paper-black);
+    color: var(--color-paper-white);
+    font-family: var(--font-family-hand);
+    font-size: 1.125rem;
+    border: 2px solid var(--color-paper-black);
+    box-shadow: var(--shadow-paper);
+    text-decoration: underline;
+    text-decoration-color: var(--color-accent);
+    text-decoration-style: wavy;
+    text-underline-offset: 4px;
+    transition: background-color 150ms ease-out, border-color 150ms ease-out, color 150ms ease-out, transform 100ms ease-out, box-shadow 100ms ease-out, text-decoration-color 150ms ease-out;
+    border-radius: 255px 15px 225px 15px/15px 225px 15px 255px;
+  }
+
+  .btn-paper-dark:hover {
+    background-color: var(--color-accent);
+    border-color: var(--color-accent);
+    color: var(--color-paper-white);
+    text-decoration-color: var(--color-paper-white);
+    transform: translateY(-1px);
+    box-shadow: 5px 5px 0 0 var(--color-paper-white);
+  }
+
+  .btn-paper-dark:active {
+    transform: translateY(2px);
+    box-shadow: 2px 2px 0 0 var(--color-paper-white);
+  }
+
+  .btn-paper-dark:focus {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+
+  .btn-paper-disabled {
+    padding: 0.5rem 1.5rem;
+    background: linear-gradient(to bottom, #f5f5f0 0%, transparent 100%);
+    color: var(--color-paper-gray);
+    font-family: var(--font-family-hand);
+    font-size: 1.125rem;
+    border: 2px solid var(--color-paper-border);
+    border-radius: 255px 15px 225px 15px/15px 225px 15px 255px;
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  html.dark .btn-paper-disabled {
+    background: linear-gradient(to bottom, var(--color-paper-bright) 0%, transparent 100%);
+  }
+
+  /* ---------------------------------------------------------------------------
+     Cards
+     Paper-style card containers with hover lift effect
+     --------------------------------------------------------------------------- */
+  .card-paper {
+    padding: 1.5rem;
+    background-color: var(--color-paper-white);
+    border: 2px solid var(--color-paper-black);
+    box-shadow: var(--shadow-paper);
+    border-radius: 15px 255px 15px 225px/225px 15px 255px 15px;
+    transition: transform 200ms ease-out, box-shadow 200ms ease-out;
+  }
+
+  .card-paper:hover {
+    transform: translateY(-2px);
+    box-shadow: 6px 6px 0 0 var(--color-paper-black);
+  }
+
+  /* Card-paper variant with wavy underline for tags */
+  .card-paper-tag {
+    padding: 1.5rem;
+    padding-bottom: 1.75rem;
+    background: linear-gradient(to bottom, #f5f5f0 0%, transparent 100%);
+    border: 2px solid var(--color-paper-black);
+    box-shadow: var(--shadow-paper);
+    border-radius: 15px 255px 15px 225px/225px 15px 255px 15px;
+    transition: transform 200ms ease-out, box-shadow 200ms ease-out, background 150ms ease-out;
+    position: relative;
+  }
+
+  html.dark .card-paper-tag {
+    background: linear-gradient(to bottom, var(--color-paper-bright) 0%, transparent 100%);
+  }
+
+  .card-paper-tag::after {
+    content: '';
+    position: absolute;
+    bottom: 0.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80%;
+    height: 4px;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 4'%3E%3Cpath d='M0 2 Q5 0 10 2 T20 2' fill='none' stroke='%237a00b0' stroke-width='2'/%3E%3C/svg%3E") repeat-x;
+    background-size: 10px 4px;
+  }
+
+  .card-paper-tag:hover::after {
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 4'%3E%3Cpath d='M0 2 Q5 0 10 2 T20 2' fill='none' stroke='white' stroke-width='2'/%3E%3C/svg%3E") repeat-x;
+    background-size: 10px 4px;
+  }
+
+  .card-paper-tag:hover {
+    transform: translateY(-2px);
+    box-shadow: 6px 6px 0 0 var(--color-paper-black);
+  }
+
+  .card-paper-compact {
+    padding: 1rem;
+    background-color: var(--color-paper-white);
+    border: 2px solid var(--color-paper-black);
+    box-shadow: var(--shadow-paper-sm);
+    border-radius: 15px 255px 15px 225px/225px 15px 255px 15px;
+  }
+
+  .card-paper-sm {
+    padding: 0.75rem 1rem;
+    background-color: var(--color-paper-white);
+    border: 2px solid var(--color-paper-black);
+    box-shadow: var(--shadow-paper-sm);
+    border-radius: 15px 255px 15px 225px/225px 15px 255px 15px;
+  }
+
+  /* ---------------------------------------------------------------------------
+     Social Links
+     Styled social media link buttons with hover effects
+     --------------------------------------------------------------------------- */
+  .social-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 3.45rem;
+    height: 3.45rem;
+    border: 2px solid var(--color-paper-black);
+    background: linear-gradient(to bottom, #f5f5f0 0%, transparent 100%);
+    color: var(--color-paper-black);
+    transition: background 200ms ease-out, border-color 200ms ease-out, color 200ms ease-out, transform 150ms ease-out;
+    border-radius: 255px 15px 225px 15px/15px 225px 15px 255px;
+    position: relative;
+  }
+
+  html.dark .social-link {
+    background: linear-gradient(to bottom, var(--color-paper-bright) 0%, transparent 100%);
+  }
+
+  .social-link::after {
+    content: '';
+    position: absolute;
+    bottom: 0.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60%;
+    height: 2px;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 4'%3E%3Cpath d='M0 2 Q5 0 10 2 T20 2' fill='none' stroke='%237a00b0' stroke-width='2'/%3E%3C/svg%3E") repeat-x;
+    background-size: 10px 4px;
+  }
+
+  .social-link:hover::after {
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 4'%3E%3Cpath d='M0 2 Q5 0 10 2 T20 2' fill='none' stroke='white' stroke-width='2'/%3E%3C/svg%3E") repeat-x;
+    background-size: 10px 4px;
+  }
+
+  .social-link:hover {
+    background: var(--color-accent);
+    border-color: var(--color-accent);
+    color: var(--color-paper-white);
+    transform: scale(1.1);
+  }
+
+  .social-link:active {
+    transform: scale(0.95);
+  }
+
+  .social-link:focus {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+
+  .social-link-sm {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 3.125rem;
+    height: 3.125rem;
+    border: 2px solid var(--color-paper-black);
+    background: linear-gradient(to bottom, #f5f5f0 0%, transparent 100%);
+    color: var(--color-paper-black);
+    text-decoration: underline;
+    text-decoration-color: var(--color-accent);
+    text-decoration-style: wavy;
+    text-underline-offset: 4px;
+    transition: background 200ms ease-out, border-color 200ms ease-out, color 200ms ease-out, transform 150ms ease-out, text-decoration-color 150ms ease-out;
+    border-radius: 255px 15px 225px 15px/15px 225px 15px 255px;
+    position: relative;
+  }
+
+  html.dark .social-link-sm {
+    background: linear-gradient(to bottom, var(--color-paper-bright) 0%, transparent 100%);
+  }
+
+  .social-link-sm::after {
+    content: '';
+    position: absolute;
+    bottom: 0.4rem;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60%;
+    height: 2px;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 4'%3E%3Cpath d='M0 2 Q5 0 10 2 T20 2' fill='none' stroke='%237a00b0' stroke-width='2'/%3E%3C/svg%3E") repeat-x;
+    background-size: 10px 4px;
+  }
+
+  .social-link-sm:hover::after {
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 4'%3E%3Cpath d='M0 2 Q5 0 10 2 T20 2' fill='none' stroke='white' stroke-width='2'/%3E%3C/svg%3E") repeat-x;
+    background-size: 10px 4px;
+  }
+
+  .social-link-sm:hover {
+    transform: scale(1.1);
+    background: var(--color-accent);
+    border-color: var(--color-accent);
+    color: var(--color-paper-white);
+    text-decoration-color: var(--color-paper-white);
+  }
+
+  .social-link-sm:active {
+    transform: scale(0.95);
+  }
+
+  .social-link-sm:focus {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+
+  /* ---------------------------------------------------------------------------
+     Form Inputs
+     Paper-style form input fields
+     --------------------------------------------------------------------------- */
+  .input-paper {
+    width: 100%;
+    padding: 0.375rem 0.5rem; /* py-1.5 px-2 */
+    border: 2px solid var(--color-paper-black);
+    background: linear-gradient(to bottom, #f5f5f0 0%, transparent 100%);
+    font-family: var(--font-family-hand);
+    font-size: 0.875rem; /* text-sm */
+    color: var(--color-paper-black);
+  }
+
+  html.dark .input-paper {
+    background: linear-gradient(to bottom, var(--color-paper-bright) 0%, transparent 100%);
+  }
+
+  .input-paper:focus {
+    outline: none;
+    border-color: var(--color-accent);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-accent) 20%, transparent);
+  }
+
+  /* ---------------------------------------------------------------------------
+     Navigation
+     Styled navigation links
+     --------------------------------------------------------------------------- */
+  .nav-link {
+    padding: 0.5rem 1rem;
+    color: inherit;
+    font-family: var(--font-family-hand);
+    font-size: 1.35rem;
+    transition: color 150ms;
+    text-decoration: underline;
+    text-decoration-color: transparent;
+    text-decoration-style: wavy;
+    text-underline-offset: 4px;
+  }
+
+  .nav-link:hover {
+    color: #ffffff;
+    text-decoration-color: var(--color-accent);
+  }
+
+  .nav-link:focus {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  /* Inline nav link for footer (no padding) */
+  .nav-link-inline {
+    color: inherit;
+    transition: color 150ms;
+    text-decoration: underline;
+    text-decoration-color: transparent;
+    text-decoration-style: wavy;
+    text-underline-offset: 4px;
+  }
+
+  .nav-link-inline:hover {
+    color: #ffffff;
+    text-decoration-color: var(--color-accent);
+  }
+}
+
+/* =============================================================================
+   Utility Classes
+   ============================================================================= */
+
+/* Background color utilities */
+.bg-paper-bright {
+  background-color: var(--color-paper-bright);
+}
+
+.rounded-lg {
+  border-radius: 0.5rem;
+}
+
+/* Table row hover with accent color */
+.hover-accent:hover {
+  background-color: rgba(122, 0, 176, 0.1);
+}
+
+.hover-accent:hover td {
+  background-color: rgba(122, 0, 176, 0.1);
+}
+
+/* Handwritten underline effect */
+.underline-hand {
+  text-decoration: none;
+  background-image: linear-gradient(90deg, var(--color-accent) 0%, var(--color-accent) 100%);
+  background-repeat: no-repeat;
+  background-position: 0 90%;
+  background-size: 100% 2px;
+}
+
+/* Wavy underline for inline text */
+.wavy-underline {
+  text-decoration: underline;
+  text-decoration-color: var(--color-accent);
+  text-decoration-style: wavy;
+  text-underline-offset: 4px;
+}
+
+/* Mobile nav active state - border instead of underline */
+.nav-link-active {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Hero image container */
+.hero-image {
+  border: 3px solid var(--color-paper-black);
+  box-shadow: 6px 6px 0 0 var(--color-paper-black);
+  border-radius: 15px 255px 15px 225px/225px 15px 255px 15px;
+  background: white;
+}
+
+/* =============================================================================
+   Prose Styles (Article Content)
+   ============================================================================= */
+.prose {
+  font-size: 1.35rem;
+  line-height: 1.8;
+  color: var(--color-paper-black);
+}
+
+.prose p {
+  margin-bottom: 1.25em;
+}
+
+.prose h2 {
+  font-family: var(--font-family-hand);
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-top: 2em;
+  margin-bottom: 0.75em;
+  color: var(--color-paper-black);
+}
+
+.prose h3 {
+  font-family: var(--font-family-hand);
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-top: 1.5em;
+  margin-bottom: 0.5em;
+  color: var(--color-paper-black);
+}
+
+.prose a {
+  color: var(--color-paper-black);
+  text-decoration: underline;
+  text-decoration-color: var(--color-accent);
+  text-decoration-style: wavy;
+  text-underline-offset: 4px;
+  transition: color 150ms, text-decoration-color 150ms;
+}
+
+.prose a:hover {
+  color: var(--color-accent);
+}
+
+/* Exclude special link types from prose styling */
+.prose .book-link,
+.prose .chapter-link,
+.prose .bible-nav-btn {
+  text-decoration: none;
+}
+
+.prose .book-link:hover,
+.prose .chapter-link:hover,
+.prose .bible-nav-btn:hover,
+.prose .book-link:active,
+.prose .chapter-link:active,
+.prose .bible-nav-btn:active,
+.prose .book-link:focus,
+.prose .chapter-link:focus,
+.prose .bible-nav-btn:focus {
+  color: white;
+}
+
+/* Reusable link styling for non-prose areas */
+.prose-links a {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-color: var(--color-accent);
+  text-decoration-style: wavy;
+  text-underline-offset: 4px;
+  transition: color 150ms;
+}
+
+.prose-links a:hover {
+  color: var(--color-accent);
+}
+
+.prose ul, .prose ol {
+  margin-top: 1em;
+  margin-bottom: 1em;
+  padding-left: 1.5em;
+}
+
+.prose li {
+  margin-bottom: 0.5em;
+}
+
+.prose ul li {
+  list-style-type: disc;
+}
+
+.prose ol li {
+  list-style-type: decimal;
+}
+
+.prose blockquote {
+  border-left: 3px solid var(--color-paper-black);
+  padding-left: 1em;
+  margin: 1.5em 0;
+  font-style: italic;
+  color: var(--color-paper-gray);
+}
+
+/* Code blocks with Monokai theme */
+.prose code {
+  background-color: #272822;
+  color: #f8f8f2;
+  padding: 0.125em 0.25em;
+  border-radius: 3px;
+  font-size: 0.875em;
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+}
+
+.prose pre {
+  background-color: #272822;
+  color: #f8f8f2;
+  padding: 1em;
+  border-radius: 8px;
+  overflow-x: auto;
+  margin: 1.5em 0;
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+}
+
+.prose pre code {
+  background-color: transparent;
+  padding: 0;
+}
+
+/* Monokai syntax highlighting */
+.prose pre .comment { color: #75715e; }
+.prose pre .string { color: #e6db74; }
+.prose pre .number { color: #ae81ff; }
+.prose pre .keyword { color: #f92672; }
+.prose pre .function { color: #a6e22e; }
+.prose pre .class { color: #66d9ef; font-style: italic; }
+.prose pre .variable { color: #f8f8f2; }
+.prose pre .operator { color: #f92672; }
+.prose pre .punctuation { color: #f8f8f2; }
+
+/* Tables with better spacing and separation */
+.prose table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 2em 0;
+  font-size: 1.15rem;
+  background-color: transparent;
+  border: 2px solid var(--color-paper-black);
+}
+
+.prose thead {
+  background-color: transparent;
+}
+
+.prose th {
+  font-family: var(--font-family-hand);
+  font-weight: 700;
+  text-align: left;
+  padding: 0.75em 1em;
+  border-bottom: 2px solid var(--color-paper-black);
+  border-right: 1px solid var(--color-paper-border);
+}
+
+.prose th:last-child {
+  border-right: none;
+}
+
+.prose td {
+  padding: 0.75em 1em;
+  border-bottom: 1px solid var(--color-paper-border);
+  border-right: 1px solid var(--color-paper-border);
+  vertical-align: top;
+}
+
+.prose td:last-child {
+  border-right: none;
+}
+
+.prose tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.prose tbody tr:nth-child(even) {
+  background-color: transparent;
+}
+
+.prose tbody tr:hover {
+  background-color: transparent;
+}
+
+/* Horizontal rule styling for table separation */
+.prose hr {
+  border: none;
+  border-top: 2px solid var(--color-paper-black);
+  margin: 3em 0;
+}
+
+/* =============================================================================
+   Lightbox Component
+   Responsive lightbox for tables, charts, and graphs
+   ============================================================================= */
+
+/* Enlargeable content wrapper */
+.enlargeable {
+  position: relative;
+}
+
+.enlargeable.no-lightbox {
+  cursor: default;
+}
+
+.enlargeable.no-lightbox .enlargeable-hint {
+  display: none;
+}
+
+/* Expand hint indicator - base styles */
+.enlargeable-hint {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-paper-bright);
+  border: 2px solid var(--color-paper-border);
+  color: var(--color-paper-black);
+  opacity: 0;
+  transition: opacity 200ms ease-out;
+  pointer-events: none;
+  z-index: 10;
+  cursor: pointer;
+}
+
+.enlargeable:hover .enlargeable-hint,
+.enlargeable:focus-within .enlargeable-hint {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.enlargeable-hint-logo {
+  width: 2.5rem;
+  height: 2.5rem;
+  padding: 0.25rem;
+}
+
+/* Top hint */
+.enlargeable-hint-top {
+  top: -2.75rem;
+  left: 50%;
+  transform: translateX(-50%);
+  border-bottom: none;
+  border-radius: 8px 8px 0 0;
+  padding: 0.25rem 0.35rem 0;
+}
+
+.enlargeable-hint-top .enlargeable-hint-logo {
+  animation: bounce-up 1s ease-in-out infinite;
+}
+
+/* Bottom hint */
+.enlargeable-hint-bottom {
+  bottom: -2.75rem;
+  left: 50%;
+  transform: translateX(-50%);
+  border-top: none;
+  border-radius: 0 0 8px 8px;
+  padding: 0 0.35rem 0.25rem;
+}
+
+.enlargeable-hint-bottom .enlargeable-hint-logo {
+  transform: rotate(180deg);
+  animation: bounce-down 1s ease-in-out infinite;
+}
+
+/* Left hint */
+.enlargeable-hint-left {
+  left: -2.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  border-right: none;
+  border-radius: 8px 0 0 8px;
+  padding: 0.35rem 0 0.35rem 0.25rem;
+}
+
+.enlargeable-hint-left .enlargeable-hint-logo {
+  transform: rotate(-90deg);
+  animation: bounce-left 1s ease-in-out infinite;
+}
+
+/* Right hint */
+.enlargeable-hint-right {
+  right: -2.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  border-left: none;
+  border-radius: 0 8px 8px 0;
+  padding: 0.35rem 0.25rem 0.35rem 0;
+}
+
+.enlargeable-hint-right .enlargeable-hint-logo {
+  transform: rotate(90deg);
+  animation: bounce-right 1s ease-in-out infinite;
+}
+
+@keyframes bounce-up {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
+}
+
+@keyframes bounce-down {
+  0%, 100% { transform: rotate(180deg) translateY(0); }
+  50% { transform: rotate(180deg) translateY(-3px); }
+}
+
+@keyframes bounce-left {
+  0%, 100% { transform: rotate(-90deg) translateY(0); }
+  50% { transform: rotate(-90deg) translateY(-3px); }
+}
+
+@keyframes bounce-right {
+  0%, 100% { transform: rotate(90deg) translateY(0); }
+  50% { transform: rotate(90deg) translateY(-3px); }
+}
+
+/* Hide extra hints - no longer needed */
+.enlargeable-hint-extra {
+  display: none;
+}
+
+/* Mobile: always show hint for overflowing content */
+@media (max-width: 47.9375rem) {
+  .enlargeable-overflow .enlargeable-hint {
+    opacity: 0.85;
+  }
+}
+
+/* Lightbox overlay */
+.lightbox-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 9999;
+  background-color: var(--color-paper-white);
+  display: flex;
+  flex-direction: column;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 300ms ease-out, visibility 300ms ease-out;
+}
+
+.lightbox-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Lightbox toolbar */
+.lightbox-toolbar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem;
+  background: linear-gradient(to bottom, var(--color-paper-white) 60%, transparent);
+  z-index: 10001;
+}
+
+.lightbox-toolbar-hint {
+  margin-right: auto;
+  font-family: var(--font-family-hand);
+  font-size: 0.875rem;
+  color: var(--color-paper-gray);
+  opacity: 0;
+  transition: opacity 300ms ease-out;
+}
+
+.lightbox-toolbar-hint.visible {
+  opacity: 1;
+}
+
+.lightbox-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  background-color: var(--color-paper-bright);
+  border: 2px solid var(--color-paper-border);
+  border-radius: 255px 15px 225px 15px/15px 225px 15px 255px;
+  color: var(--color-paper-black);
+  cursor: pointer;
+  transition: background-color 150ms ease-out, border-color 150ms ease-out, color 150ms ease-out, transform 100ms ease-out;
+}
+
+.lightbox-btn:hover {
+  background-color: var(--color-accent);
+  border-color: var(--color-accent);
+  color: white;
+  transform: scale(1.05);
+}
+
+.lightbox-btn:focus {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+.lightbox-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.lightbox-btn:disabled:hover {
+  background-color: var(--color-paper-bright);
+  border-color: var(--color-paper-border);
+  color: var(--color-paper-black);
+  transform: none;
+}
+
+.lightbox-btn svg {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+/* Lightbox content container */
+.lightbox-content {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 1rem 1rem;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.lightbox-inner {
+  background-color: var(--color-paper-bright);
+  border: 2px solid var(--color-paper-border);
+  border-radius: 15px 255px 15px 225px/225px 15px 255px 15px;
+  padding: 1rem;
+  max-width: 95vw;
+  max-height: 85vh;
+  overflow: auto;
+  transform: rotate(var(--lb-rotate, 0deg)) scale(var(--lb-scale, 1));
+  transform-origin: center center;
+  transition: transform 200ms ease-out;
+}
+
+/* Ensure table content looks good in lightbox */
+.lightbox-inner table {
+  margin: 0;
+}
+
+/* Page preview mode */
+.lightbox-page-preview {
+  width: 100vw;
+  min-height: 100vh;
+  background-color: var(--color-paper-white);
+}
+
+.lightbox-page-clone {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.lightbox-page-clone header,
+.lightbox-page-clone footer {
+  flex-shrink: 0;
+}
+
+.lightbox-page-clone main {
+  flex-grow: 1;
+}
+
+/* Print dialog */
+.lightbox-print-dialog {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+
+.lightbox-print-dialog-content {
+  background-color: var(--color-paper-bright);
+  border: 2px solid var(--color-paper-border);
+  border-radius: 15px 255px 15px 225px/225px 15px 255px 15px;
+  padding: 1.5rem;
+  min-width: 280px;
+  max-width: 90vw;
+}
+
+.lightbox-print-dialog-content h3 {
+  font-family: var(--font-family-hand);
+  font-size: 1.25rem;
+  margin: 0 0 1rem 0;
+  text-align: center;
+  color: var(--color-paper-black);
+}
+
+.lightbox-print-option {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  margin-bottom: 0.5rem;
+  font-family: var(--font-family-hand);
+  font-size: 1rem;
+  color: var(--color-paper-black);
+  background-color: var(--color-paper-white);
+  border: 2px solid var(--color-paper-border);
+  border-radius: 255px 15px 225px 15px/15px 225px 15px 255px;
+  cursor: pointer;
+  transition: background-color 150ms, border-color 150ms;
+}
+
+.lightbox-print-option:hover,
+.lightbox-print-option:focus {
+  background-color: var(--color-accent);
+  border-color: var(--color-accent);
+  outline: none;
+}
+
+.lightbox-print-option:last-child {
+  margin-bottom: 0;
+}
+
+.lightbox-print-option-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+  flex-shrink: 0;
+}
+
+.lightbox-print-option-icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.lightbox-print-cancel {
+  margin-top: 0.5rem;
+  background-color: transparent;
+}
+
+/* Prevent body scroll when lightbox is open */
+body.lightbox-open {
+  overflow: hidden;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .lightbox-overlay,
+  .lightbox-inner,
+  .enlargeable-hint,
+  .lightbox-btn,
+  .lightbox-toolbar-hint {
+    transition: none;
+  }
+
+  .enlargeable-hint-arrow {
+    animation: none;
+  }
+}
+
+/* =============================================================================
+   CAPTCHA Styling
+   Match Cloudflare Turnstile and other captchas to paper theme
+   Note: Turnstile only supports light/dark/auto themes, no custom colors
+   Using sepia filter to give a subtle paper tint in light mode
+   ============================================================================= */
+
+/* Turnstile container styling */
+#turnstile-container {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+/* Apply subtle sepia tint to match paper in light mode */
+html:not(.dark) #turnstile-container iframe {
+  border-radius: 8px;
+  filter: sepia(15%) saturate(90%);
+}
+
+html.dark #turnstile-container iframe {
+  border-radius: 8px;
+}
+
+/* reCAPTCHA container */
+#recaptcha-container {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+html:not(.dark) #recaptcha-container iframe {
+  filter: sepia(15%) saturate(90%);
+}
+
+/* hCaptcha container */
+#hcaptcha-container {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+html:not(.dark) #hcaptcha-container iframe {
+  filter: sepia(15%) saturate(90%);
+}
+
+/* Friendly Captcha container */
+.frc-captcha {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+html:not(.dark) .frc-captcha {
+  filter: sepia(15%) saturate(90%);
+}
+
+/* =============================================================================
+   Tag Cloud
+   ============================================================================= */
+.tag-cloud-item {
+  display: inline-block;
+  padding: 0.25rem 0.75rem 0.5rem;
+  font-family: var(--font-family-hand);
+  color: var(--color-paper-black);
+  background-color: #f5f5f0; /* Off-white eggshell */
+  border: 2px solid var(--color-paper-black);
+  border-radius: 255px 15px 225px 15px/15px 225px 15px 255px;
+  text-decoration: none;
+  transition: background-color 150ms, border-color 150ms, color 150ms;
+  white-space: nowrap;
+  position: relative;
+}
+
+.tag-cloud-item::after {
+  content: '';
+  position: absolute;
+  bottom: 0.25rem;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80%;
+  height: 4px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 4'%3E%3Cpath d='M0 2 Q5 0 10 2 T20 2' fill='none' stroke='%237a00b0' stroke-width='2'/%3E%3C/svg%3E") repeat-x;
+  background-size: 10px 4px;
+}
+
+.tag-cloud-item:hover::after {
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 4'%3E%3Cpath d='M0 2 Q5 0 10 2 T20 2' fill='none' stroke='white' stroke-width='2'/%3E%3C/svg%3E") repeat-x;
+  background-size: 10px 4px;
+}
+
+.tag-cloud-item:hover {
+  background-color: var(--color-accent);
+  border-color: var(--color-accent);
+  color: var(--color-paper-white);
+}
+
+.tag-cloud-item:focus {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+/* =============================================================================
+   Certification Logo
+   ============================================================================= */
+.cert-logo {
+  transition: filter 200ms, transform 200ms;
+}
+
+.cert-logo:hover,
+.group:hover .cert-logo {
+  filter: drop-shadow(0 0 8px var(--color-accent));
+  transform: scale(1.05);
+}
+
+/* =============================================================================
+   Header Control Panel (iOS Touch Support)
+   ============================================================================= */
+#control-panel-btn,
+#header-theme-btn,
+#header-print-btn {
+  -webkit-tap-highlight-color: rgba(122, 0, 176, 0.3);
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* =============================================================================
+   Mobile Menu Transitions
+   ============================================================================= */
+#mobile-menu {
+  transition: opacity 200ms ease-out, transform 200ms ease-out;
+  transform-origin: top;
+}
+
+#mobile-menu.hidden {
+  opacity: 0;
+  transform: scaleY(0);
+  pointer-events: none;
+}
+
+#mobile-menu:not(.hidden) {
+  opacity: 1;
+  transform: scaleY(1);
+}
+
+/* =============================================================================
+   Page Load Animation
+   Smooth fade-in on page load
+   ============================================================================= */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+main {
+  animation: fadeIn 300ms ease-out;
+}
+
+/* =============================================================================
+   Reduced Motion
+   Respect user preference for reduced motion
+   ============================================================================= */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  #page-loader svg {
+    animation: none;
+  }
+
+  main {
+    animation: none;
+  }
+
+  #mobile-menu,
+  #mobile-menu.hidden {
+    transition: none;
+  }
+}
+
+/* =============================================================================
+   Bible / Religion Section Styles
+   ============================================================================= */
+
+/* Chapter grid - responsive layout for chapter navigation */
+.chapter-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0.5rem;
+  margin: 1rem 0;
+}
+
+@media (min-width: 640px) {
+  .chapter-grid {
+    grid-template-columns: repeat(8, 1fr);
+  }
+}
+
+@media (min-width: 768px) {
+  .chapter-grid {
+    grid-template-columns: repeat(10, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .chapter-grid {
+    grid-template-columns: repeat(12, 1fr);
+  }
+}
+
+.chapter-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem;
+  background-color: var(--color-paper-light);
+  border: 1px solid var(--color-paper-border);
+  border-radius: 0.25rem;
+  font-family: var(--font-family-hand);
+  font-weight: 500;
+  color: var(--color-paper-black);
+  text-decoration: none;
+  transition: background-color 150ms ease-out, color 150ms ease-out, transform 150ms ease-out;
+}
+
+.chapter-link:hover,
+.chapter-link:active,
+.chapter-link:focus {
+  background-color: var(--color-accent);
+  color: white;
+  transform: translateY(-1px);
+}
+
+/* Book grid - 3 column layout for book navigation */
+.book-grid {
+  display: grid;
+  grid-template-columns: repeat(1, 1fr);
+  gap: 0.5rem;
+  margin: 1rem 0;
+}
+
+@media (min-width: 640px) {
+  .book-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 768px) {
+  .book-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.book-link {
+  display: block;
+  padding: 0.75rem 1rem;
+  background-color: var(--color-paper-light);
+  border: 1px solid var(--color-paper-border);
+  border-radius: 0.25rem;
+  font-family: var(--font-family-hand);
+  font-weight: 500;
+  color: var(--color-paper-black);
+  text-decoration: none;
+  transition: background-color 150ms ease-out, color 150ms ease-out, transform 150ms ease-out;
+}
+
+.book-link:hover,
+.book-link:active,
+.book-link:focus {
+  background-color: var(--color-accent);
+  color: white;
+  transform: translateY(-1px);
+}
+
+/* Bible navigation bar */
+.bible-nav {
+  background-color: var(--color-paper-white);
+  border-radius: 0.5rem;
+}
+
+.bible-nav-select {
+  background: linear-gradient(to bottom, #f5f5f0 0%, transparent 100%);
+  color: var(--color-paper-black);
+  accent-color: var(--color-accent);
+}
+
+.bible-nav-select:focus {
+  border-color: var(--color-accent);
+  outline: 2px solid var(--color-accent);
+  outline-offset: 1px;
+}
+
+.bible-nav-select option {
+  background-color: var(--color-paper-bright);
+  color: var(--color-paper-black);
+  padding: 0.5rem;
+}
+
+.bible-nav-select option:checked,
+.bible-nav-select option:hover {
+  background-color: var(--color-accent);
+  color: white;
+}
+
+html.dark .bible-nav-select {
+  background: linear-gradient(to bottom, var(--color-paper-bright) 0%, transparent 100%);
+}
+
+html.dark .bible-nav-select option {
+  background-color: var(--color-paper-bright);
+}
+
+/* Compact navigation buttons for prev/next chapter */
+.bible-nav-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  font-family: var(--font-family-hand);
+  font-size: 0.875rem;
+  color: var(--color-paper-black);
+  background: linear-gradient(to bottom, #f5f5f0 0%, transparent 100%);
+  border: 1px solid var(--color-paper-border);
+  border-radius: 0.25rem;
+  text-decoration: none;
+  transition: background-color 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.bible-nav-btn:hover,
+.bible-nav-btn:active,
+.bible-nav-btn:focus {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+  color: white;
+}
+
+.bible-nav-btn-disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+html.dark .bible-nav-btn {
+  background: linear-gradient(to bottom, var(--color-paper-bright) 0%, transparent 100%);
+}
+
+@media (min-width: 768px) {
+  .bible-nav-btn {
+    width: 2rem;
+    height: 2rem;
+    font-size: 1rem;
+  }
+}
+
+/* Bible text styling */
+.bible-text {
+  font-family: var(--font-family-hand);
+  line-height: 1.8;
+}
+
+.bible-text strong {
+  color: var(--color-accent);
+  font-weight: 600;
+  margin-right: 0.25rem;
+}
+
+/* Verse share button - appears on hover */
+.verse-share-btn {
+  opacity: 0;
+  padding: 0.125rem;
+  margin-left: 0.25rem;
+  color: var(--color-paper-gray);
+  transition: opacity 0.2s, color 0.2s;
+  vertical-align: middle;
+  border-radius: 0.25rem;
+}
+
+.bible-text:hover .verse-share-btn,
+.verse-share-btn:focus {
+  opacity: 0.6;
+}
+
+.verse-share-btn:hover,
+.verse-share-btn:focus {
+  opacity: 1;
+  color: var(--color-accent);
+}
+
+.verse-share-btn.copied {
+  color: var(--color-accent);
+  opacity: 1;
+}
+
+/* Copied state for buttons */
+.btn-paper.copied,
+.btn-paper-dark.copied {
+  background-color: var(--color-accent);
+  border-color: var(--color-accent);
+  color: white;
+}
+
+/* Share dropdown menu */
+.share-menu {
+  background: var(--color-paper-bright);
+  border: 2px solid var(--color-paper-border);
+  border-radius: 0.5rem;
+  box-shadow: var(--shadow-paper-sm);
+  min-width: 8rem;
+}
+
+.share-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  text-align: left;
+  font-family: var(--font-family-hand);
+  font-size: 0.875rem;
+  color: var(--color-paper-black);
+  transition: background-color 0.15s;
+}
+
+.share-menu-item:hover {
+  background: var(--color-paper-light);
+}
+
+.share-menu-divider {
+  border: none;
+  border-top: 1px solid var(--color-paper-border);
+  margin: 0.25rem 0;
+}
+
+/* Highlight verse when navigated to via URL */
+.highlight-verse {
+  background: var(--color-accent);
+  color: var(--color-paper-bright);
+  padding: 0.125rem 0.375rem;
+  border-radius: 0.25rem;
+  animation: highlight-pulse 2s ease-in-out;
+}
+
+@keyframes highlight-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+/* Parallel translation comparison view */
+.verse-group {
+  margin-bottom: 1rem;
+}
+
+.verse-group .translation-row {
+  padding: 0.75rem 0;
+}
+
+.verse-group .translation-row:not(:last-child) {
+  border-bottom: 1px dashed var(--color-paper-border);
+}
+
+/* Mobile: collapsible translation sections */
+@media (max-width: 639px) {
+  .verse-group {
+    padding: 0.75rem !important;
+  }
+
+  .verse-group .translation-row {
+    padding: 0.5rem 0;
+  }
+
+  .translation-checkbox-label {
+    font-size: 0.875rem;
+  }
+}
+
+/* Tablet and up: slightly larger spacing */
+@media (min-width: 640px) {
+  .verse-group {
+    padding: 1rem;
+  }
+}
+
+/* Desktop: even more comfortable spacing */
+@media (min-width: 1024px) {
+  .verse-group {
+    padding: 1.25rem;
+  }
+}
+
+/* =============================================================================
+   Home Page Carousel
+   ============================================================================= */
+.carousel-container {
+  position: relative;
+  /* Fill available space, constrained to viewport */
+  height: min(500px, calc(100vh - 250px));
+  overflow: hidden;
+}
+
+.carousel-wrapper {
+  overflow: hidden;
+  height: 100%;
+}
+
+/* Peek mode (overflow): show partial adjacent slides extending outside container */
+.carousel-peek {
+  overflow: visible;
+}
+
+.carousel-peek .carousel-wrapper {
+  overflow: visible;
+}
+
+.carousel-peek .carousel-slide {
+  width: 85%;
+  flex-shrink: 0;
+  opacity: 0.4;
+  transform: scale(0.9);
+  transition: opacity 300ms ease-out, transform 300ms ease-out;
+}
+
+/* Peek mode (contained): partial slides visible within container bounds */
+.carousel-peek-contained {
+  overflow: hidden;
+}
+
+.carousel-peek-contained .carousel-wrapper {
+  overflow: hidden;
+  padding: 0 5%;
+}
+
+.carousel-peek-contained .carousel-slide {
+  width: 85%;
+  flex-shrink: 0;
+  opacity: 0.4;
+  transform: scale(0.9);
+  transition: opacity 300ms ease-out, transform 300ms ease-out;
+}
+
+.carousel-track {
+  display: flex;
+  transition: transform 500ms ease-out;
+}
+
+.carousel-slide {
+  flex-shrink: 0;
+  width: 100%;
+  height: min(500px, calc(100vh - 250px));
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem 0;
+  overflow: hidden;
+}
+
+.carousel-slide > * {
+  flex-shrink: 1;
+  min-height: 0;
+  min-width: 0;
+}
+
+.carousel-slide img {
+  max-height: min(30vh, 600px);
+  max-width: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  background: white;
+}
+
+.carousel-slide .hero-image img {
+  max-height: min(30vh, 600px);
+}
+
+/* Side-by-side layout images should fill their container width */
+.carousel-slide .slide-image img {
+  width: 100%;
+  height: auto;
+  max-height: none;
+}
+
+/* Side-by-side slide layout for medium+ screens */
+@media (min-width: 768px) {
+  .carousel-slide.slide-layout-left,
+  .carousel-slide.slide-layout-right {
+    flex-direction: row;
+    text-align: left;
+    gap: 2rem;
+  }
+
+  .carousel-slide.slide-layout-right {
+    flex-direction: row-reverse;
+  }
+
+  .carousel-slide .slide-image {
+    width: 40%;
+    flex-shrink: 0;
+  }
+
+  .carousel-slide .slide-text {
+    flex-grow: 1;
+  }
+}
+
+.carousel-slide h1,
+.carousel-slide h2 {
+  margin: 0.25rem 0;
+  font-size: clamp(1.25rem, 4vw, 2rem);
+  white-space: nowrap;
+}
+
+.carousel-slide p,
+.carousel-slide .prose-links,
+.carousel-slide .text-lg {
+  margin: 0.25rem 0;
+  font-size: clamp(0.95rem, 2.5vw, 1.25rem);
+  line-height: 1.4;
+}
+
+/* Carousel navigation dots (circle with dot) */
+.carousel-dot {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0.25rem;
+  color: var(--color-paper-gray);
+  opacity: 0.5;
+  transition: opacity 200ms ease-out, color 200ms ease-out, transform 200ms ease-out;
+}
+
+.carousel-dot:hover {
+  opacity: 0.8;
+  transform: scale(1.1);
+}
+
+.carousel-dot.active {
+  opacity: 1;
+  color: var(--color-accent);
+}
+
+.carousel-dot:focus {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+  border-radius: 50%;
+}
+
+/* Carousel arrow buttons (triangle arrows) */
+.carousel-arrow {
+  border: none;
+  cursor: pointer;
+  background-color: rgba(74, 74, 74, 0.89); /* paper-brown with 89% opacity */
+  transition: background-color 200ms ease-out, transform 200ms ease-out;
+}
+
+.carousel-arrow:hover {
+  background-color: var(--color-accent);
+  transform: scale(1.1);
+}
+
+.carousel-arrow:focus {
+  outline: 2px solid var(--color-paper-black);
+  outline-offset: 2px;
+}
+
+html.dark .carousel-arrow {
+  background-color: rgba(42, 42, 42, 0.89); /* dark mode paper-brown with 89% opacity */
+}
+
+html.dark .carousel-arrow:hover {
+  background-color: var(--color-accent);
+}
+
+/* Tab-style carousel arrows (rectangular instead of round) */
+.carousel-arrow-tab {
+  border-radius: 0;
+  padding: 0.75rem 0.5rem;
+}
+
+.carousel-arrow-tab.rounded-lg {
+  border-radius: 0.5rem;
+}
+
+/* Slide image styling */
+.slide-image img,
+img.slide-image-bordered {
+  max-width: 100%;
+  height: auto;
+  border-radius: 0.5rem;
+}
+
+.slide-image-bordered img,
+img.slide-image-bordered {
+  border: 3px solid var(--color-paper-black);
+  box-shadow: 4px 4px 0 var(--color-paper-gray);
+}
+
+.slide-image-circle img,
+img.slide-image-circle {
+  border-radius: 50%;
+  border: 3px solid var(--color-paper-black);
+  box-shadow: 4px 4px 0 var(--color-paper-gray);
+}
+
+.slide-text {
+  text-align: left;
+}
+
+/* Responsive adjustments */
+@media (max-width: 639px) {
+  .carousel-container {
+    max-height: calc(100vh - 280px);
+  }
+
+  .carousel-slide {
+    padding: 0.25rem 0.5rem;
+    max-height: calc(100vh - 280px);
+  }
+
+  .carousel-slide img {
+    max-height: min(18vh, 360px);
+  }
+
+  .carousel-slide .hero-image img {
+    max-height: min(18vh, 360px);
+  }
+
+  .carousel-slide h1,
+  .carousel-slide h2 {
+    font-size: clamp(0.9rem, 4vw, 1.25rem);
+    line-height: 1.2;
+    white-space: nowrap;
+  }
+
+  .carousel-slide p,
+  .carousel-slide .prose-links,
+  .carousel-slide .slide-text {
+    font-size: clamp(0.7rem, 3vw, 0.9rem);
+    line-height: 1.3;
+  }
+
+  .carousel-dot svg {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+
+  .carousel-arrow svg {
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+
+  .slide-text {
+    text-align: center;
+  }
+}
+
+/* Desktop - larger carousel for bigger screens */
+@media (min-width: 1024px) {
+  .carousel-container {
+    height: min(600px, calc(100vh - 200px));
+  }
+
+  .carousel-slide {
+    height: min(600px, calc(100vh - 200px));
+  }
+
+  .carousel-slide img {
+    max-height: min(40vh, 500px);
+  }
+
+  .carousel-slide .hero-image img {
+    max-height: min(40vh, 500px);
+  }
+
+  .carousel-slide h1,
+  .carousel-slide h2 {
+    font-size: clamp(1.5rem, 3.5vw, 2.25rem);
+    white-space: nowrap;
+  }
+
+  .carousel-slide p,
+  .carousel-slide .prose-links,
+  .carousel-slide .text-lg {
+    font-size: clamp(1rem, 2vw, 1.35rem);
+  }
+}
+
+/* =============================================================================
+   Text Comparison Highlighting
+   Used for Bible translation comparison to show differences between texts
+   ============================================================================= */
+
+/* Light mode diff colors */
+:root {
+  --diff-typo: #f0f0f0;       /* Subtle gray - barely visible */
+  --diff-punct: #fff3cd;      /* Light yellow */
+  --diff-spelling: #cce5ff;   /* Light blue */
+  --diff-subst: #ffeeba;      /* Orange/amber */
+  --diff-add: #d4edda;        /* Light green */
+  --diff-omit: #f8d7da;       /* Light red */
+  --diff-move: #e2d5f1;       /* Purple */
+}
+
+/* Dark mode diff colors */
+html.dark {
+  --diff-typo: #3a3a3a;
+  --diff-punct: #5c4a1d;
+  --diff-spelling: #1c3d5a;
+  --diff-subst: #5c4a1d;
+  --diff-add: #1e4620;
+  --diff-omit: #4a1c1c;
+  --diff-move: #3d2d5c;
+}
+
+/* Diff highlight classes */
+.diff-typo {
+  background-color: var(--diff-typo);
+  border-radius: 0.125rem;
+  padding: 0 0.0625rem;
+}
+
+.diff-punct {
+  background-color: var(--diff-punct);
+  border-radius: 0.125rem;
+  padding: 0 0.0625rem;
+}
+
+.diff-spelling {
+  background-color: var(--diff-spelling);
+  border-radius: 0.125rem;
+  padding: 0 0.0625rem;
+}
+
+.diff-subst {
+  background-color: var(--diff-subst);
+  border-radius: 0.125rem;
+  padding: 0 0.0625rem;
+}
+
+.diff-add {
+  background-color: var(--diff-add);
+  border-radius: 0.125rem;
+  padding: 0 0.0625rem;
+}
+
+.diff-omit {
+  background-color: var(--diff-omit);
+  border-radius: 0.125rem;
+  padding: 0 0.0625rem;
+  text-decoration: line-through;
+}
+
+.diff-move {
+  background-color: var(--diff-move);
+  border-radius: 0.125rem;
+  padding: 0 0.0625rem;
+  text-decoration: underline;
+  text-decoration-style: dotted;
+}

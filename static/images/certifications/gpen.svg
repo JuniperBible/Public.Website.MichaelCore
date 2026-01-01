@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <circle cx="50" cy="50" r="45" fill="#1a1a1a" stroke="#0a0a0a" stroke-width="3"/>
+  <circle cx="50" cy="50" r="35" fill="none" stroke="#fff" stroke-width="2"/>
+  <text x="50" y="30" text-anchor="middle" font-family="Arial, sans-serif" font-size="6" font-weight="bold" fill="#fff">GIAC PENETRATION</text>
+  <text x="50" y="55" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#fff">GPEN</text>
+  <text x="50" y="72" text-anchor="middle" font-family="Arial, sans-serif" font-size="6" fill="#fff">TESTER</text>
+</svg>

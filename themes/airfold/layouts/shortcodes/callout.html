@@ -1,0 +1,29 @@
+{{/* Callout Shortcode
+     Usage: {{< callout type="info" >}}Your content here{{< /callout >}}
+     Types: info (default), warning, tip, danger
+*/}}
+{{- $type := .Get "type" | default "info" -}}
+{{- $title := .Get "title" -}}
+{{- $colors := dict
+    "info" "border-accent bg-accent/10"
+    "warning" "border-yellow-500 bg-yellow-500/10"
+    "tip" "border-green-500 bg-green-500/10"
+    "danger" "border-red-500 bg-red-500/10"
+-}}
+{{- $icons := dict
+    "info" "i"
+    "warning" "!"
+    "tip" "*"
+    "danger" "X"
+-}}
+{{- $color := index $colors $type | default (index $colors "info") -}}
+{{- $icon := index $icons $type | default "i" -}}
+<div class="callout p-4 my-4 border-l-4 rounded-r {{ $color }}">
+  <div class="flex gap-3">
+    <span class="flex-shrink-0 w-6 h-6 rounded-full border-2 border-current flex items-center justify-center text-xs font-bold">{{ $icon }}</span>
+    <div class="flex-grow">
+      {{- with $title -}}<strong class="block mb-1">{{ . }}</strong>{{- end -}}
+      {{ .Inner | markdownify }}
+    </div>
+  </div>
+</div>

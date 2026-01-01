@@ -1,0 +1,46 @@
+{{/*
+  Navigation Menu Items Partial
+
+  Renders menu items filtered by display parameter.
+
+  Usage:
+  {{ partial "nav-menu-items.html" (dict "context" . "location" "header") }}
+  {{ partial "nav-menu-items.html" (dict "context" . "location" "mobile") }}
+
+  Parameters:
+  - context: The page context (required, for .Site and .RelPermalink)
+  - location: "header" (display 1,3) or "mobile" (display 1,3) or "footer" (display 2,3)
+  - linkClass: Additional classes for the link (optional)
+  - activeClass: Class for active state (default: "underline-hand" for header, "nav-link-active" for mobile)
+
+  Display values: 1=header only, 2=footer only, 3=header and footer, 4=disabled
+  Items without display param default to 3 (show everywhere)
+*/}}
+{{- $ctx := .context -}}
+{{- $location := .location | default "header" -}}
+{{- $linkClass := .linkClass | default "" -}}
+{{- $activeClass := .activeClass | default (cond (eq $location "mobile") "nav-link-active" "underline-hand") -}}
+
+{{- $count := 0 -}}
+{{- range $ctx.Site.Menus.main -}}
+  {{- $display := .Params.display | default 3 | int -}}
+  {{- $showInHeader := or (eq $display 1) (eq $display 3) -}}
+  {{- $showInFooter := or (eq $display 2) (eq $display 3) -}}
+  {{- $show := cond (eq $location "footer") $showInFooter $showInHeader -}}
+
+  {{- if $show -}}
+    {{- $menuURL := .URL | default (printf "/%s/" .Name | urlize) -}}
+    {{- $isActive := or (eq $ctx.RelPermalink $menuURL) (eq $ctx.RelPermalink (strings.TrimSuffix "/" $menuURL)) (and (ne $menuURL "/") (hasPrefix $ctx.RelPermalink $menuURL)) -}}
+    {{- if eq $location "footer" -}}
+      {{- if $count }} | {{ end -}}
+      <a href="{{ .URL }}" class="nav-link-inline{{ if $isActive }} underline-hand{{ end }} {{ $linkClass }}">{{ .Name }}</a>
+      {{- $count = add $count 1 -}}
+    {{- else -}}
+<li>
+  <a href="{{ .URL }}" class="nav-link {{ if eq $location "mobile" }}block {{ end }}{{ if $isActive }}{{ $activeClass }}{{ end }} {{ $linkClass }}">
+    {{ .Name }}
+  </a>
+</li>
+    {{- end -}}
+  {{- end -}}
+{{- end -}}

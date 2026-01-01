@@ -1,0 +1,35 @@
+{{- /*
+  CAPTCHA Configuration Partial
+  Returns a scratch object with captcha settings.
+  Usage:
+    {{ partial "_captcha-config.html" . }}
+    Provider: {{ .Scratch.Get "captchaProvider" }}
+    Site Key: {{ .Scratch.Get "captchaSiteKey" }}
+    Enabled:  {{ .Scratch.Get "captchaEnabled" }}
+*/ -}}
+
+{{- $captcha := .Site.Params.captcha -}}
+{{- $provider := $captcha.provider | default "disabled" -}}
+
+{{- /* Site key: check env variable first (HUGO_ prefix), then config */ -}}
+{{- $siteKey := $captcha.siteKey -}}
+{{- with getenv "HUGO_TURNSTILE_SITE_KEY" }}{{ if eq $provider "turnstile" }}{{ $siteKey = . }}{{ end }}{{ end -}}
+{{- with getenv "HUGO_RECAPTCHA_SITE_KEY" }}{{ if or (eq $provider "recaptcha-v2") (eq $provider "recaptcha-v3") }}{{ $siteKey = . }}{{ end }}{{ end -}}
+{{- with getenv "HUGO_HCAPTCHA_SITE_KEY" }}{{ if eq $provider "hcaptcha" }}{{ $siteKey = . }}{{ end }}{{ end -}}
+{{- with getenv "HUGO_FRIENDLY_CAPTCHA_SITE_KEY" }}{{ if eq $provider "friendly-captcha" }}{{ $siteKey = . }}{{ end }}{{ end -}}
+
+{{- /* In dev server mode, use test keys if no key is set */ -}}
+{{- if and hugo.IsServer (not $siteKey) -}}
+  {{- if eq $provider "turnstile" -}}
+    {{- $siteKey = "1x00000000000000000000AA" -}}{{- /* Cloudflare Turnstile test key - always passes */ -}}
+  {{- end -}}
+{{- end -}}
+
+{{- $secretKey := $captcha.secretKey -}}
+{{- $enabled := and (ne $provider "disabled") $siteKey -}}
+
+{{- /* Store values in scratch for caller to access */ -}}
+{{- .Scratch.Set "captchaProvider" $provider -}}
+{{- .Scratch.Set "captchaSiteKey" $siteKey -}}
+{{- .Scratch.Set "captchaSecretKey" $secretKey -}}
+{{- .Scratch.Set "captchaEnabled" $enabled -}}

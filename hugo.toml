@@ -1,0 +1,282 @@
+baseURL = 'https://focuswithjustin.com/'
+languageCode = 'en-us'
+title = 'Focus with Justin'
+theme = 'airfold'
+buildDrafts = false
+enableRobotsTXT = true
+
+# Mount theme extension content for data-driven sections
+[module]
+  [[module.mounts]]
+    source = 'content'
+    target = 'content'
+  [[module.mounts]]
+    source = 'themes/airfold/extensions/certifications/content/certifications'
+    target = 'content/resume/certifications'
+  [[module.mounts]]
+    source = 'themes/airfold/extensions/certifications/content/skills'
+    target = 'content/resume/skills'
+  [[module.mounts]]
+    source = 'themes/airfold/extensions/tools/content/tools'
+    target = 'content/resume/tools'
+  [[module.mounts]]
+    source = 'themes/airfold/extensions/portfolio/content/projects'
+    target = 'content/projects'
+  [[module.mounts]]
+    source = 'themes/airfold/extensions/religion/content/bibles'
+    target = 'content/religion/bibles'
+
+# Enable RSS feeds and XSL stylesheets
+[outputs]
+  home = ['HTML', 'RSS', 'SitemapXSL', 'RSSXSL']
+  section = ['HTML', 'RSS']
+
+# Custom media types
+[mediaTypes."application/xslt+xml"]
+  suffixes = ["xsl"]
+
+# RSS feed configuration
+[outputFormats.RSS]
+  mediatype = 'application/rss+xml'
+  baseName = 'feed'
+
+# XSL stylesheet for sitemap (named sitemap-style to avoid conflict with sitemap.xml)
+[outputFormats.SitemapXSL]
+  mediaType = 'application/xslt+xml'
+  baseName = 'sitemap-style'
+  isPlainText = true
+  notAlternative = true
+  path = ''
+
+# XSL stylesheet for RSS (named rss-style to avoid conflict with feed.xml)
+[outputFormats.RSSXSL]
+  mediaType = 'application/xslt+xml'
+  baseName = 'rss-style'
+  isPlainText = true
+  notAlternative = true
+  path = ''
+
+# Enable sitemap generation
+[sitemap]
+  changefreq = 'weekly'
+  priority = 0.5
+  filename = 'sitemap.xml'
+
+[pagination]
+  pagerSize = 3
+
+# Markup configuration
+[markup]
+  [markup.goldmark]
+    [markup.goldmark.renderer]
+      unsafe = true  # Allow raw HTML in markdown (needed for chapter grid)
+
+[params]
+  description = 'Information Security Practitioner, Technology Hacker, Lifelong Learner, and creative. Helping organizations protect their assets while exploring the abyss of mind and technology.'
+  keywords = 'cybersecurity, CMMC, CISSP, security consulting, photography, Justin, Religion, Bible, Catholic, Christianity, Science, Engineering, Technology, Math, Theology, Philosophy'
+  # Add your header image path here (the hero image with "Focus with Justin" text)
+  heroImage = '/images/hero.png'
+  # Favicon path (place favicon.ico in static folder)
+  favicon = '/favicon.ico'
+  # Footer configuration
+  copyrightStartYear = 2024
+  # Footer text is now generated from data/trademarks.json via partial "trademark-footer.html"
+  # Credly profile URL
+  credlyUrl = 'https://www.credly.com/users/68218b7c-6c76-40d1-8bad-25e7c30a8565'
+
+  # SEO Configuration (centralized)
+  [params.seo]
+    # Default OG image (used when page has no specific image)
+    defaultImage = '/images/hero.png'
+    # Twitter/X handle (without @)
+    twitterSite = 'FocuswithJustin'
+    twitterCreator = 'FocuswithJustin'
+    # Theme color for mobile browsers
+    themeColor = '#7a00b0'
+    themeColorDark = '#1a1a1a'
+    # Google site verification (optional)
+    # googleSiteVerification = 'your-verification-code'
+    # Bing site verification (optional)
+    # bingSiteVerification = 'your-verification-code'
+    # Enable JSON-LD structured data
+    enableStructuredData = true
+    # Default reading speed (words per minute) for reading time calculation
+    wordsPerMinute = 200
+
+  # Author information for structured data
+  [params.author]
+    name = 'Justin'
+    email = 'noreply@focuswithjustin.com'
+    url = 'https://focuswithjustin.com/about/'
+    # Social profiles for Person schema sameAs
+    sameAs = [
+      'https://www.linkedin.com/in/focuswithjustin/',
+      'https://x.com/FocuswithJustin',
+      'https://www.instagram.com/focuswithjustin/',
+      'https://github.com/focuswithjustin'
+    ]
+    # Job title for Person schema
+    jobTitle = 'Cybersecurity Professional & Purveyor of Esoterica'
+
+  # Organization information for structured data
+  [params.organization]
+    name = 'Focus with Justin'
+    url = 'https://focuswithjustin.com/'
+    logo = '/images/hero.png'
+
+  # Email configuration (for contact form and workers)
+  [params.email]
+    # Domain for email addresses (used in message IDs, from addresses)
+    domain = 'focuswithjustin.com'
+    # Sender address for contact form emails
+    from = 'noreply@focuswithjustin.com'
+    # Recipient address for contact form submissions
+    to = 'jmw@focuswithjustin.com'
+    # Sender display name
+    senderName = 'Focus with Justin Contact Form'
+
+  # Homepage tagline (displayed below site title)
+  tagline = 'Cybersecurity professional, CMMC assessor, and creative. Helping organizations protect their assets while exploring photography and technology.'
+  # Social CTA text (displayed on pages with social links section)
+  socialCtaText = 'Explore my work and connect with me through social media.'
+
+  # UI strings are now in i18n/en.toml for internationalization
+  # See: https://gohugo.io/functions/i18n/
+
+  # Resume section titles
+  [params.resume]
+    securityPrograms = 'Security Programs'
+    compliance = 'Compliance'
+    technology = 'Technology'
+    toolsSkills = 'Tools, Technologies & Skills'
+    certifications = 'Certifications'
+    experience = 'Experience'
+    education = 'Education'
+
+  # Tool categories (for tools list page)
+  toolCategories = ['SIEM & Observability', 'Container', 'Development', 'RMM', 'Threat Informed Defense', 'Virtualization']
+
+  # Mermaid diagram configuration (self-hosted at /js/mermaid.min.js)
+  [params.mermaid]
+    selfHosted = true
+
+  # Carousel navigation configuration
+  [params.carousel]
+    # Theatre mode: overrides all settings below with cinematic defaults
+    # (tab arrows, outside-side position, contained peek mode, auto-advance)
+    theatreMode = false
+    # Arrow style: "triangle" (default) or "tab"
+    arrowStyle = "tab"
+    # Arrow position: "inside" (default), "outside" (in nav bar), "outside-side" (flanking carousel), or "outside-wide" (far left/right)
+    arrowPosition = "outside-wide"
+    # Dot selector position: "inside" or "outside" (default)
+    dotPosition = "outside"
+    # Tab rounded corners (only applies when arrowStyle = "tab"): true or false
+    tabRounded = true
+    # Background color opacity (0-100, default 89)
+    bgOpacity = 89
+    # Auto-advance slides: true (default) or false
+    autoAdvance = true
+    # Auto-advance delay in milliseconds (default 8000 = 8 seconds)
+    autoAdvanceDelay = 8000
+    # Peek mode: show partial prev/next slides on edges
+    # Options: false (disabled), "overflow" (slides extend outside), "contained" (within container)
+    peekMode = false
+
+  # Formspree form ID for contact form (get yours at https://formspree.io)
+  # formspreeId = 'your-form-id'
+  # PGP public key for encrypting contact form messages (optional)
+  # Messages will be encrypted client-side before sending to Formspree
+  # pgpPublicKey = '''
+  # -----BEGIN PGP PUBLIC KEY BLOCK-----
+  # ... your public key here ...
+  # -----END PGP PUBLIC KEY BLOCK-----
+  # '''
+  # CAPTCHA Configuration
+  # Supported providers: disabled, turnstile, recaptcha-v2, recaptcha-v3, hcaptcha, friendly-captcha
+  # Set provider to "disabled" or omit entirely to disable CAPTCHA
+  [params.captcha]
+    provider = "turnstile"
+    # siteKey = "your-site-key-here"      # Or use env variable (see below)
+    # secretKey = "your-secret-key-here"  # Or use env variable (recommended)
+    #
+    # Environment variables (set in Cloudflare Pages settings):
+    # Site keys (HUGO_ prefix required for build-time access):
+    # - turnstile: HUGO_TURNSTILE_SITE_KEY
+    # - recaptcha: HUGO_RECAPTCHA_SITE_KEY
+    # - hcaptcha: HUGO_HCAPTCHA_SITE_KEY
+    # - friendly-captcha: HUGO_FRIENDLY_CAPTCHA_SITE_KEY
+    #
+    # Secret keys (runtime, no prefix needed):
+    # - turnstile: TURNSTILE_SECRET_KEY
+    # - recaptcha: RECAPTCHA_SECRET_KEY
+    # - hcaptcha: HCAPTCHA_SECRET_KEY
+    # - friendly-captcha: FRIENDLY_CAPTCHA_SECRET_KEY
+    #
+    # Get keys from:
+    # - turnstile: https://dash.cloudflare.com/?to=/:account/turnstile
+    # - recaptcha: https://www.google.com/recaptcha/admin
+    # - hcaptcha: https://dashboard.hcaptcha.com/
+    # - friendly-captcha: https://friendlycaptcha.com/
+
+[taxonomies]
+  tag = 'tags'
+
+# Menu Configuration
+# display values: 1=header only, 2=footer only, 3=header and footer (default), 4=disabled
+[menus]
+  [[menus.main]]
+    name = 'Home'
+    pageRef = '/'
+    weight = 10
+    [menus.main.params]
+      display = 3
+  [[menus.main]]
+    name = 'About'
+    pageRef = '/about'
+    weight = 20
+    [menus.main.params]
+      display = 3
+  [[menus.main]]
+    name = 'Projects'
+    pageRef = '/projects'
+    weight = 30
+    [menus.main.params]
+      display = 4
+  [[menus.main]]
+    name = 'Esoterica'
+    pageRef = '/esoterica'
+    weight = 19
+    [menus.main.params]
+      display = 3
+  [[menus.main]]
+    name = 'Religion'
+    pageRef = '/religion'
+    weight = 50
+    [menus.main.params]
+      display = 4
+  [[menus.main]]
+  name = 'Bible'
+  pageRef = '/religion/bibles'
+  weight = 11
+  [menus.main.params]
+    display = 3
+  [[menus.main]]
+    name = 'Résumé'
+    pageRef = '/resume'
+    weight = 55
+    [menus.main.params]
+      display = 2
+  [[menus.main]]
+    name = 'Contact'
+    pageRef = '/contact'
+    weight = 60
+    [menus.main.params]
+      display = 3
+
+[params.social]
+  # Add your social links here - example format:
+  # [[params.social.links]]
+  #   name = 'Twitter'
+  #   url = 'https://twitter.com/yourusername'
+  #   icon = 'twitter'

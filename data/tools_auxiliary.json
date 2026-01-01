@@ -1,0 +1,803 @@
+{
+  "$schema": "https://focuswithjustin.com/schemas/tools-auxiliary.schema.json",
+  "tools": {
+    "splunk": {
+      "content": "Splunk is a leading data platform for security and observability, providing real-time visibility into machine-generated data from virtually any source.",
+      "sections": [
+        {
+          "heading": "Key Capabilities",
+          "list": [
+            "Security Information and Event Management (SIEM) - Centralized log collection, correlation, and security monitoring",
+            "Security Orchestration, Automation and Response (SOAR) - Automated incident response workflows",
+            "User and Entity Behavior Analytics (UEBA) - Machine learning-driven threat detection",
+            "Threat Intelligence Platform - Integration with threat feeds and IOC management"
+          ]
+        },
+        {
+          "heading": "Use Cases",
+          "list": [
+            "Log aggregation and centralized monitoring",
+            "Real-time security alerting and incident detection",
+            "Compliance reporting and audit trails",
+            "Forensic investigation and threat hunting",
+            "Application performance monitoring"
+          ]
+        },
+        {
+          "heading": "Related Technologies",
+          "content": "Splunk integrates with a wide ecosystem of security tools and data sources, making it a cornerstone of modern Security Operations Centers (SOCs)."
+        }
+      ]
+    },
+    "alienvault": {
+      "content": "AlienVault, now AT&T Cybersecurity USM (Unified Security Management), provides an all-in-one security platform combining multiple essential security capabilities.",
+      "sections": [
+        {
+          "heading": "Key Capabilities",
+          "list": [
+            "Asset Discovery - Automatic identification and inventory of network assets",
+            "Vulnerability Assessment - Continuous scanning for security weaknesses",
+            "Intrusion Detection - Network and host-based threat detection",
+            "Behavioral Monitoring - Detection of anomalous activities",
+            "SIEM & Log Management - Centralized logging and event correlation"
+          ]
+        },
+        {
+          "heading": "Open Threat Exchange (OTX)",
+          "content": "AlienVault operates the Open Threat Exchange, one of the world's largest open threat intelligence communities, enabling collaborative defense through shared indicators of compromise."
+        },
+        {
+          "heading": "Use Cases",
+          "list": [
+            "Small to mid-sized enterprise security monitoring",
+            "Managed Security Service Providers (MSSPs)",
+            "Compliance monitoring (PCI DSS, HIPAA, SOC 2)",
+            "Threat detection and response"
+          ]
+        }
+      ]
+    },
+    "elastic": {
+      "content": "The Elastic Stack (formerly ELK Stack) is a powerful open-source platform for search, observability, and security built on Elasticsearch, Kibana, Beats, and Logstash.",
+      "sections": [
+        {
+          "heading": "Core Components",
+          "list": [
+            "Elasticsearch - Distributed search and analytics engine",
+            "Kibana - Data visualization and exploration interface",
+            "Logstash - Server-side data processing pipeline",
+            "Beats - Lightweight data shippers for various data types"
+          ]
+        },
+        {
+          "heading": "Security Capabilities",
+          "list": [
+            "Elastic Security - SIEM functionality with detection rules and case management",
+            "Endpoint Security - Host-based protection and EDR capabilities",
+            "Threat Hunting - Interactive investigation and hunting workflows",
+            "Machine Learning - Anomaly detection and behavioral analysis"
+          ]
+        },
+        {
+          "heading": "Use Cases",
+          "list": [
+            "Log aggregation and analysis at scale",
+            "Security monitoring and threat detection",
+            "Application performance monitoring (APM)",
+            "Infrastructure monitoring",
+            "Full-text search applications"
+          ]
+        }
+      ]
+    },
+    "qradar": {
+      "content": "IBM QRadar is an enterprise-grade security intelligence platform that provides real-time visibility and advanced threat detection across the entire IT infrastructure.",
+      "sections": [
+        {
+          "heading": "Key Capabilities",
+          "list": [
+            "Log Management - Centralized collection and normalization of security events",
+            "Network Flow Analysis - Deep packet inspection and flow-based analytics",
+            "Offense Management - Automated correlation and prioritization of security incidents",
+            "Threat Intelligence - Integration with IBM X-Force and third-party feeds",
+            "Risk Assessment - Asset-based risk scoring and vulnerability correlation"
+          ]
+        },
+        {
+          "heading": "Advanced Features",
+          "list": [
+            "QRadar Advisor with Watson - AI-powered investigation assistance",
+            "User Behavior Analytics - Detection of insider threats and compromised credentials",
+            "Network Insights - Enhanced network visibility and application identification"
+          ]
+        },
+        {
+          "heading": "Use Cases",
+          "list": [
+            "Large enterprise security operations",
+            "Advanced persistent threat (APT) detection",
+            "Regulatory compliance (SOX, PCI DSS, HIPAA)",
+            "Incident investigation and forensics"
+          ]
+        }
+      ]
+    },
+    "opensearch": {
+      "content": "OpenSearch is a community-driven, open-source search and analytics suite derived from Elasticsearch and Kibana, maintained by AWS and a growing community of contributors.",
+      "sections": [
+        {
+          "heading": "Core Components",
+          "list": [
+            "OpenSearch - Distributed search and analytics engine",
+            "OpenSearch Dashboards - Visualization and user interface",
+            "Data Prepper - Server-side data collector for trace and log data"
+          ]
+        },
+        {
+          "heading": "Key Features",
+          "list": [
+            "Full-Text Search - Powerful search capabilities with relevance scoring",
+            "Log Analytics - Centralized logging and analysis at scale",
+            "Trace Analytics - Distributed tracing for microservices",
+            "Security Analytics - SIEM capabilities with detection rules",
+            "Anomaly Detection - Machine learning-based anomaly detection"
+          ]
+        },
+        {
+          "heading": "Use Cases",
+          "list": [
+            "Cost-effective alternative to commercial SIEM solutions",
+            "Log aggregation and observability",
+            "Security monitoring and compliance",
+            "Application search functionality",
+            "Business intelligence and analytics"
+          ]
+        }
+      ]
+    },
+    "kubernetes": {
+      "content": "Kubernetes (K8s) is an open-source container orchestration platform that automates the deployment, scaling, and management of containerized applications.",
+      "sections": [
+        {
+          "heading": "Core Concepts",
+          "list": [
+            "Pods - Smallest deployable units containing containers",
+            "Services - Network abstraction for pod communication",
+            "Deployments - Declarative updates for Pods and ReplicaSets",
+            "Namespaces - Virtual clusters for resource isolation",
+            "ConfigMaps and Secrets - Configuration and sensitive data management"
+          ]
+        },
+        {
+          "heading": "Security Features",
+          "list": [
+            "Role-Based Access Control (RBAC) - Fine-grained permissions",
+            "Network Policies - Pod-level network segmentation",
+            "Pod Security Standards - Security context constraints",
+            "Secrets Management - Encrypted storage for sensitive data",
+            "Admission Controllers - Policy enforcement at creation time"
+          ]
+        },
+        {
+          "heading": "Security Best Practices",
+          "list": [
+            "Implement least privilege for service accounts",
+            "Use network policies for micro-segmentation",
+            "Scan container images for vulnerabilities",
+            "Enable audit logging",
+            "Keep clusters and components updated"
+          ]
+        }
+      ]
+    },
+    "docker": {
+      "content": "Docker is a platform for developing, shipping, and running applications in containers, providing lightweight isolation and consistent environments across development and production.",
+      "sections": [
+        {
+          "heading": "Core Components",
+          "list": [
+            "Docker Engine - Runtime for building and running containers",
+            "Docker Images - Read-only templates for containers",
+            "Docker Containers - Running instances of images",
+            "Docker Compose - Multi-container application definition",
+            "Docker Registry - Storage and distribution of images"
+          ]
+        },
+        {
+          "heading": "Security Considerations",
+          "list": [
+            "Image Security - Use trusted base images and scan for vulnerabilities",
+            "Container Isolation - Namespace and cgroup isolation",
+            "Least Privilege - Run as non-root users",
+            "Secrets Management - Avoid hardcoded credentials",
+            "Network Security - Use custom networks and limit exposure"
+          ]
+        },
+        {
+          "heading": "Best Practices",
+          "list": [
+            "Use minimal base images (Alpine, distroless)",
+            "Multi-stage builds for smaller images",
+            "Sign and verify images",
+            "Implement resource limits",
+            "Regular vulnerability scanning"
+          ]
+        }
+      ]
+    },
+    "ansible": {
+      "content": "Ansible is an open-source automation platform that provides simple, powerful automation for configuration management, application deployment, and orchestration.",
+      "sections": [
+        {
+          "heading": "Key Features",
+          "list": [
+            "Agentless Architecture - No software required on managed nodes",
+            "YAML-Based Playbooks - Human-readable automation definitions",
+            "Idempotent Operations - Safe to run multiple times",
+            "Extensive Module Library - Support for virtually any system",
+            "Ansible Galaxy - Community-contributed roles and collections"
+          ]
+        },
+        {
+          "heading": "Security Automation Use Cases",
+          "list": [
+            "Security baseline configuration",
+            "Compliance enforcement and remediation",
+            "Patch management automation",
+            "Certificate and secret rotation",
+            "Firewall and network configuration",
+            "User access management"
+          ]
+        },
+        {
+          "heading": "Integration",
+          "content": "Ansible integrates with container platforms like Kubernetes and Docker, cloud providers (AWS, Azure, GCP), and security tools to enable comprehensive infrastructure as code (IaC) workflows."
+        }
+      ]
+    },
+    "go": {
+      "content": "Go (Golang) is a statically typed, compiled programming language designed at Google for simplicity, efficiency, and reliable software development.",
+      "sections": [
+        {
+          "heading": "Key Features",
+          "list": [
+            "Simplicity - Clean syntax with minimal keywords",
+            "Concurrency - Built-in goroutines and channels for parallel processing",
+            "Fast Compilation - Quick build times for rapid development",
+            "Static Binaries - Single executable with no external dependencies",
+            "Strong Typing - Compile-time error detection",
+            "Garbage Collection - Automatic memory management"
+          ]
+        },
+        {
+          "heading": "Security Applications",
+          "list": [
+            "Command-line security tools",
+            "Network scanning and analysis tools",
+            "Container and cloud-native security applications",
+            "API development and microservices",
+            "Cryptographic implementations"
+          ]
+        },
+        {
+          "heading": "Notable Security Tools in Go",
+          "content": "Many popular security tools are written in Go, including Docker, Kubernetes, Terraform, and numerous offensive and defensive security tools due to its cross-platform compilation and performance characteristics."
+        }
+      ]
+    },
+    "python": {
+      "content": "Python is a high-level, interpreted programming language known for its readability and extensive library ecosystem, making it ideal for security automation and analysis.",
+      "sections": [
+        {
+          "heading": "Key Features",
+          "list": [
+            "Readable Syntax - Clear, expressive code structure",
+            "Extensive Libraries - Rich ecosystem for security, data analysis, and automation",
+            "Cross-Platform - Runs on Windows, Linux, and macOS",
+            "Rapid Prototyping - Quick development for scripts and tools",
+            "Community Support - Large, active security community"
+          ]
+        },
+        {
+          "heading": "Security Applications",
+          "list": [
+            "Automation - Security task scripting and workflow automation",
+            "Penetration Testing - Exploit development and vulnerability research",
+            "Malware Analysis - Binary analysis and reverse engineering",
+            "Data Analysis - Log analysis and threat intelligence processing",
+            "API Integration - Security tool orchestration"
+          ]
+        },
+        {
+          "heading": "Popular Security Libraries",
+          "list": [
+            "requests - HTTP library for API interaction",
+            "scapy - Packet manipulation and network analysis",
+            "pycryptodome - Cryptographic operations",
+            "pandas - Data analysis and manipulation",
+            "yara-python - Malware pattern matching"
+          ]
+        }
+      ]
+    },
+    "git": {
+      "content": "Git is a distributed version control system designed for tracking changes in source code and enabling collaborative development workflows.",
+      "sections": [
+        {
+          "heading": "Key Concepts",
+          "list": [
+            "Repositories - Project containers with complete history",
+            "Branches - Parallel development lines",
+            "Commits - Snapshots of project state",
+            "Merging - Combining changes from different branches",
+            "Remote Repositories - Shared repositories for collaboration"
+          ]
+        },
+        {
+          "heading": "Security Considerations",
+          "list": [
+            "Signed Commits - GPG signing for authenticity verification",
+            "Access Control - Repository permissions and branch protection",
+            "Secret Management - Keeping credentials out of repositories",
+            "Audit Trail - Complete history of all changes",
+            "Code Review - Pull request workflows for security review"
+          ]
+        },
+        {
+          "heading": "DevSecOps Integration",
+          "content": "Git is foundational to DevSecOps practices, enabling infrastructure as code, configuration management versioning, security policy as code, and automated security testing in CI/CD pipelines."
+        }
+      ]
+    },
+    "vagrant": {
+      "content": "Vagrant is an open-source tool for building and managing virtualized development environments, enabling consistent, reproducible infrastructure across teams.",
+      "sections": [
+        {
+          "heading": "Key Features",
+          "list": [
+            "Declarative Configuration - Vagrantfiles define environment specifications",
+            "Provider Agnostic - Support for VirtualBox, VMware, Hyper-V, and more",
+            "Provisioning Integration - Works with Ansible, Chef, Puppet, and shell scripts",
+            "Box Ecosystem - Pre-built base images for quick starts",
+            "Networking - Configurable private and public networking"
+          ]
+        },
+        {
+          "heading": "Security Use Cases",
+          "list": [
+            "Lab Environments - Isolated security testing and research",
+            "Malware Analysis - Disposable analysis environments",
+            "Penetration Testing - Reproducible target environments",
+            "Training - Consistent lab setups for security training",
+            "Development - Secure, isolated development environments"
+          ]
+        },
+        {
+          "heading": "Benefits",
+          "content": "Vagrant enables security professionals to quickly spin up and tear down complex multi-machine environments for testing, training, and research without affecting production systems."
+        }
+      ]
+    },
+    "connectwise": {
+      "content": "ConnectWise provides a comprehensive suite of IT service management and remote monitoring tools designed for Managed Service Providers (MSPs) and IT departments.",
+      "sections": [
+        {
+          "heading": "Key Products",
+          "list": [
+            "ConnectWise Automate - Remote monitoring and management (RMM)",
+            "ConnectWise Manage - Professional Services Automation (PSA)",
+            "ConnectWise Control - Remote support and access",
+            "ConnectWise SIEM - Security information and event management"
+          ]
+        },
+        {
+          "heading": "Security Capabilities",
+          "list": [
+            "Endpoint Monitoring - Real-time system health and security monitoring",
+            "Patch Management - Automated patching for operating systems and applications",
+            "Antivirus Integration - Centralized AV deployment and management",
+            "Compliance Reporting - Documentation for regulatory requirements",
+            "Alerting - Customizable security and operational alerts"
+          ]
+        },
+        {
+          "heading": "Use Cases",
+          "list": [
+            "MSP service delivery and management",
+            "Enterprise IT operations",
+            "Security monitoring and response",
+            "Compliance management",
+            "Remote workforce support"
+          ]
+        }
+      ]
+    },
+    "kaseya": {
+      "content": "Kaseya provides IT infrastructure management solutions including remote monitoring, security, and compliance tools for MSPs and enterprise IT teams.",
+      "sections": [
+        {
+          "heading": "Key Products",
+          "list": [
+            "Kaseya VSA - Remote monitoring and management platform",
+            "Datto RMM - Cloud-based remote monitoring (acquired by Kaseya)",
+            "Unitrends - Backup and disaster recovery",
+            "IT Glue - IT documentation platform"
+          ]
+        },
+        {
+          "heading": "Security Features",
+          "list": [
+            "Endpoint Detection and Response - Threat detection on managed devices",
+            "Patch Management - Automated security patching",
+            "Backup Monitoring - Data protection verification",
+            "Compliance Automation - Policy enforcement and reporting",
+            "Network Monitoring - Infrastructure security oversight"
+          ]
+        },
+        {
+          "heading": "Use Cases",
+          "list": [
+            "MSP operations and service delivery",
+            "IT asset management",
+            "Security baseline enforcement",
+            "Disaster recovery planning",
+            "Multi-tenant environment management"
+          ]
+        }
+      ]
+    },
+    "mitre-attack": {
+      "content": "MITRE ATT&CK (Adversarial Tactics, Techniques, and Common Knowledge) is a globally-accessible knowledge base of adversary tactics and techniques based on real-world observations.",
+      "sections": [
+        {
+          "heading": "Framework Structure",
+          "list": [
+            "Tactics - The adversary's tactical goals (the \"why\")",
+            "Techniques - How adversaries achieve tactical goals (the \"how\")",
+            "Sub-techniques - More specific descriptions of adversarial behavior",
+            "Procedures - Specific implementations observed in the wild",
+            "Mitigations - Security controls to prevent or detect techniques",
+            "Groups - Known threat actor profiles"
+          ]
+        },
+        {
+          "heading": "Use Cases",
+          "list": [
+            "Threat Intelligence - Mapping threats to known adversary behaviors",
+            "Detection Engineering - Building detections aligned to techniques",
+            "Red Team Operations - Emulating real-world adversary tradecraft",
+            "Gap Analysis - Identifying defensive coverage gaps",
+            "Communication - Common language for security discussions"
+          ]
+        },
+        {
+          "heading": "Integration",
+          "content": "MITRE ATT&CK integrates with STIX/TAXII for machine-readable threat intelligence sharing and is widely adopted across security tools, frameworks, and organizations."
+        }
+      ]
+    },
+    "stix": {
+      "content": "STIX (Structured Threat Information eXpression) is a standardized language for representing and sharing cyber threat intelligence in a structured, machine-readable format.",
+      "sections": [
+        {
+          "heading": "Core Concepts",
+          "list": [
+            "STIX Domain Objects (SDOs) - Attack patterns, campaigns, indicators, malware, threat actors, tools, vulnerabilities",
+            "STIX Relationship Objects (SROs) - Connections between objects",
+            "STIX Cyber Observable Objects (SCOs) - Technical observables like IPs, domains, files",
+            "STIX Bundle - Collection of STIX objects"
+          ]
+        },
+        {
+          "heading": "Key Features",
+          "list": [
+            "JSON-Based Format - Human and machine-readable",
+            "Extensibility - Custom objects and properties",
+            "Versioning - Track changes to threat intelligence",
+            "Relationships - Rich connections between data points"
+          ]
+        },
+        {
+          "heading": "Use Cases",
+          "list": [
+            "Threat intelligence sharing between organizations",
+            "Automated ingestion of threat feeds",
+            "Incident documentation and analysis",
+            "Integration with SIEM and security tools",
+            "Regulatory and compliance reporting"
+          ]
+        }
+      ]
+    },
+    "taxii": {
+      "content": "TAXII (Trusted Automated eXchange of Intelligence Information) is a transport protocol designed for sharing cyber threat intelligence in a standardized, automated manner.",
+      "sections": [
+        {
+          "heading": "Core Concepts",
+          "list": [
+            "Collections - Sets of STIX objects organized by topic or source",
+            "Channels - Publication mechanism for threat intelligence",
+            "API Roots - Logical groupings of collections and channels",
+            "Discovery - Finding available TAXII services"
+          ]
+        },
+        {
+          "heading": "Service Models",
+          "list": [
+            "Collection Service - Request-response retrieval of threat intelligence",
+            "Channel Service - Publish-subscribe distribution model"
+          ]
+        },
+        {
+          "heading": "Key Features",
+          "list": [
+            "RESTful API - Standard HTTP-based communication",
+            "Authentication - Secure access control",
+            "Pagination - Handling large datasets efficiently",
+            "Filtering - Query specific threat intelligence"
+          ]
+        },
+        {
+          "heading": "Use Cases",
+          "list": [
+            "Automated threat feed consumption",
+            "Sharing indicators between organizations",
+            "ISAC/ISAO information sharing",
+            "Threat intelligence platform integration"
+          ]
+        }
+      ]
+    },
+    "veris": {
+      "content": "VERIS (Vocabulary for Event Recording and Incident Sharing) is a standardized framework for collecting and sharing information about security incidents in a structured, consistent manner.",
+      "sections": [
+        {
+          "heading": "Framework Structure",
+          "content": "The VERIS framework uses the A4 threat model:",
+          "list": [
+            "Actors - Who is behind the incident (external, internal, partner)",
+            "Actions - What tactics were used (malware, hacking, social, etc.)",
+            "Assets - What assets were affected (servers, user devices, data)",
+            "Attributes - How assets were affected (confidentiality, integrity, availability)"
+          ]
+        },
+        {
+          "heading": "Key Features",
+          "list": [
+            "Standardized Vocabulary - Consistent incident categorization",
+            "Enumerations - Predefined values for common attributes",
+            "JSON Schema - Machine-readable format",
+            "Metrics Focus - Designed for statistical analysis"
+          ]
+        },
+        {
+          "heading": "Use Cases",
+          "list": [
+            "Security incident documentation",
+            "Trend analysis and reporting",
+            "Benchmarking against industry data",
+            "Risk assessment and prioritization",
+            "Compliance and audit documentation"
+          ]
+        },
+        {
+          "heading": "Related Projects",
+          "content": "VERIS is the foundation of the Verizon Data Breach Investigations Report (DBIR), providing the methodology for one of the industry's most comprehensive security research publications."
+        }
+      ]
+    },
+    "hyper-v": {
+      "content": "Hyper-V is Microsoft's hardware virtualization platform, providing enterprise-grade virtualization capabilities natively integrated with Windows Server and Windows 10/11 Pro.",
+      "sections": [
+        {
+          "heading": "Key Features",
+          "list": [
+            "Type 1 Hypervisor - Runs directly on hardware for better performance",
+            "Live Migration - Move running VMs between hosts without downtime",
+            "Replica - Asynchronous replication for disaster recovery",
+            "Generation 2 VMs - UEFI-based VMs with Secure Boot support",
+            "Shielded VMs - Protected VMs for sensitive workloads"
+          ]
+        },
+        {
+          "heading": "Security Capabilities",
+          "list": [
+            "Secure Boot - Prevent unauthorized OS and bootloader execution",
+            "Virtual TPM - Virtualized Trusted Platform Module",
+            "Host Guardian Service - Attestation for shielded VM hosts",
+            "Network Isolation - Software-defined networking and microsegmentation",
+            "Integration with Windows Security - Credential Guard, Device Guard"
+          ]
+        },
+        {
+          "heading": "Use Cases",
+          "list": [
+            "Enterprise server virtualization",
+            "Development and testing environments",
+            "Security lab infrastructure",
+            "Disaster recovery solutions",
+            "Windows-centric virtualization deployments"
+          ]
+        }
+      ]
+    },
+    "esxi": {
+      "content": "VMware ESXi is a Type 1 bare-metal hypervisor that forms the foundation of VMware's virtualization platform, widely deployed in enterprise data centers globally.",
+      "sections": [
+        {
+          "heading": "Key Features",
+          "list": [
+            "Bare-Metal Architecture - Direct hardware access for maximum performance",
+            "vMotion - Live migration of running VMs",
+            "High Availability - Automatic VM restart on host failure",
+            "Distributed Resource Scheduler - Automatic load balancing",
+            "vSAN - Software-defined storage integration"
+          ]
+        },
+        {
+          "heading": "Security Features",
+          "list": [
+            "vSphere Trust Authority - Hardware and software attestation",
+            "VM Encryption - Encryption of VM files and vMotion traffic",
+            "Secure Boot - UEFI Secure Boot for VMs and hypervisor",
+            "Role-Based Access Control - Granular permissions management",
+            "Audit Logging - Comprehensive activity tracking"
+          ]
+        },
+        {
+          "heading": "Use Cases",
+          "list": [
+            "Enterprise data center virtualization",
+            "Private cloud infrastructure",
+            "Virtual Desktop Infrastructure (VDI)",
+            "Development and test environments",
+            "Disaster recovery and business continuity"
+          ]
+        }
+      ]
+    },
+    "kvm": {
+      "content": "KVM (Kernel-based Virtual Machine) is a full virtualization solution for Linux that turns the Linux kernel into a Type 1 hypervisor, leveraging hardware virtualization extensions.",
+      "sections": [
+        {
+          "heading": "Key Features",
+          "list": [
+            "Kernel Integration - Built into the Linux kernel since 2.6.20",
+            "Hardware Acceleration - Uses Intel VT-x and AMD-V extensions",
+            "QEMU Integration - Works with QEMU for device emulation",
+            "Live Migration - Move running VMs between hosts",
+            "Memory Management - Kernel Same-page Merging (KSM) for efficiency"
+          ]
+        },
+        {
+          "heading": "Security Features",
+          "list": [
+            "SELinux Integration - Mandatory access control for VMs",
+            "sVirt - Security framework for VM isolation",
+            "Secure Boot - UEFI Secure Boot support",
+            "Memory Encryption - AMD SEV and Intel TME support",
+            "Namespaces and Cgroups - Resource isolation"
+          ]
+        },
+        {
+          "heading": "Use Cases",
+          "list": [
+            "Linux-based server virtualization",
+            "Cloud infrastructure (OpenStack, Proxmox)",
+            "Cost-effective enterprise virtualization",
+            "Security research and malware analysis labs",
+            "Development environments"
+          ]
+        }
+      ]
+    },
+    "xen": {
+      "content": "Xen is an open-source Type 1 hypervisor that runs directly on hardware, providing strong isolation between virtual machines and forming the foundation of many cloud platforms.",
+      "sections": [
+        {
+          "heading": "Key Features",
+          "list": [
+            "Paravirtualization - Modified guest OS for improved performance",
+            "Hardware Virtual Machine (HVM) - Full virtualization support",
+            "PVH Mode - Combines PV and HVM benefits",
+            "Live Migration - Move running VMs without downtime",
+            "Dom0 - Privileged management domain"
+          ]
+        },
+        {
+          "heading": "Security Architecture",
+          "list": [
+            "Minimal TCB - Small trusted computing base",
+            "Disaggregation - Separation of privileged functions",
+            "XSM/FLASK - Mandatory access control",
+            "Stub Domains - Isolated device emulation",
+            "Memory Isolation - Hardware-enforced separation"
+          ]
+        },
+        {
+          "heading": "Use Cases",
+          "list": [
+            "Cloud infrastructure (AWS EC2 originally used Xen)",
+            "High-security environments (Qubes OS)",
+            "Server consolidation",
+            "Multi-tenant hosting",
+            "Research and development"
+          ]
+        }
+      ]
+    },
+    "qemu": {
+      "content": "QEMU (Quick Emulator) is a versatile open-source machine emulator and virtualizer that can emulate various hardware platforms or work with KVM for near-native virtualization performance.",
+      "sections": [
+        {
+          "heading": "Operating Modes",
+          "list": [
+            "Full System Emulation - Emulates complete hardware systems",
+            "User Mode Emulation - Run binaries for different architectures",
+            "KVM Acceleration - Near-native performance with hardware support",
+            "Xen Integration - Works as a device model for Xen"
+          ]
+        },
+        {
+          "heading": "Key Features",
+          "list": [
+            "Multi-Architecture - x86, ARM, MIPS, PowerPC, and more",
+            "Device Emulation - Extensive hardware device support",
+            "Snapshot Support - Save and restore VM states",
+            "Live Migration - Move running instances between hosts",
+            "Flexible Disk Formats - qcow2, raw, vmdk, and others"
+          ]
+        },
+        {
+          "heading": "Security Use Cases",
+          "list": [
+            "Malware Analysis - Isolated analysis environments",
+            "Reverse Engineering - Run binaries from different architectures",
+            "Fuzzing - Test software on various platforms",
+            "Security Research - Kernel and driver development",
+            "CTF Challenges - Cross-architecture challenge solving"
+          ]
+        }
+      ]
+    },
+    "smartos": {
+      "content": "SmartOS is a specialized Type 1 hypervisor based on illumos (OpenSolaris derivative), combining OS-level virtualization (Zones) with hardware virtualization (KVM) on a ZFS foundation.",
+      "sections": [
+        {
+          "heading": "Key Technologies",
+          "list": [
+            "Zones - Lightweight OS-level virtualization containers",
+            "KVM - Full hardware virtualization for Linux, Windows, BSD",
+            "ZFS - Enterprise-grade file system with built-in data protection",
+            "DTrace - Dynamic tracing for deep system observability",
+            "Crossbow - Network virtualization stack"
+          ]
+        },
+        {
+          "heading": "Key Features",
+          "list": [
+            "Live from USB/PXE - Stateless hypervisor boots from image",
+            "imgadm - VM image management",
+            "vmadm - VM lifecycle management",
+            "ZFS Snapshots - Instant, space-efficient backups",
+            "Resource Controls - CPU caps, memory limits, I/O throttling"
+          ]
+        },
+        {
+          "heading": "Use Cases",
+          "list": [
+            "Cloud infrastructure (originally developed by Joyent)",
+            "High-performance containerized workloads",
+            "Multi-tenant hosting environments",
+            "Storage-intensive applications",
+            "Environments requiring advanced debugging (DTrace)"
+          ]
+        }
+      ]
+    }
+  },
+  "meta": {
+    "version": "1.0.0",
+    "lastModified": "2025-12-27"
+  }
+}
