@@ -1,0 +1,52 @@
+# Michael - Hugo Bible Extension TODO
+# Last Updated: 2026-01-01
+# Reference: attic branch for feature parity
+
+== PHASE 0: BRANCH SETUP (Priority: CRITICAL) ==
+[x] Rename main → old
+[x] Create fresh main with README.md
+[ ] Create empty production branch
+
+== PHASE 1: CORE STRUCTURE (Priority: HIGH) ==
+[ ] Create hugo.toml with module configuration
+[ ] Create layouts/michael/bibles/list.html
+[ ] Create layouts/michael/bibles/single.html
+[ ] Create layouts/michael/compare.html
+[ ] Create layouts/michael/search.html
+[ ] Create partials/michael/bible-nav.html
+[ ] Create partials/michael/canonical-comparison.html
+
+== PHASE 2: JAVASCRIPT (Priority: HIGH) ==
+[ ] Extract assets/js/parallel.js
+[ ] Extract assets/js/share.js
+[ ] Extract assets/js/strongs.js
+[ ] Extract assets/js/text-compare.js
+[ ] Extract assets/js/bible-search.js
+
+== PHASE 3: DATA & I18N (Priority: HIGH) ==
+[ ] Create i18n/en.toml with Bible UI strings
+[ ] Create i18n/es.toml, fr.toml, de.toml, it.toml
+[ ] Create static/schemas/bibles.schema.json
+[ ] Create static/schemas/bibles_auxiliary.schema.json
+
+== PHASE 4: BASE BIBLES (Priority: HIGH) ==
+[ ] Generate KJV data with Juniper
+[ ] Generate Geneva data with Juniper
+[ ] Generate Tyndale data with Juniper
+[ ] Generate DRC (Douay-Rheims) data with Juniper
+[ ] Generate Vulgate data with Juniper
+[ ] Create data/bibles.json with 5 translations
+
+== PHASE 5: TESTING (Priority: MEDIUM) ==
+[ ] Create test for Bible list rendering
+[ ] Create test for chapter navigation
+[ ] Create test for translation comparison
+[ ] Create test for Strong's number tooltips
+[ ] Create test for Bible search
+[ ] Visual regression test vs attic branch
+
+== PHASE 6: DOCUMENTATION (Priority: MEDIUM) ==
+[ ] Complete README.md with installation guide
+[ ] Create docs/data-format.md
+[ ] Create docs/customization.md
+[ ] Add THIRD-PARTY-LICENSES.md
