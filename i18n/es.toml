@@ -1,0 +1,114 @@
+# Michael - Hugo Bible Module
+# Spanish UI Strings
+
+# Navigation
+[bibleNavigation]
+other = "Navegación Bíblica"
+
+[bibles]
+other = "Traducciones de la Biblia"
+
+[biblesDescription]
+other = "Explora traducciones históricas de la Biblia"
+
+[backToReligion]
+other = "Volver"
+
+[backToBook]
+other = "Volver al Libro"
+
+[backToBible]
+other = "Volver a la Biblia"
+
+[allBibles]
+other = "Todas las Biblias"
+
+[allChapters]
+other = "Todos los Capítulos"
+
+[selectBible]
+other = "Seleccionar Biblia"
+
+[selectBook]
+other = "Seleccionar Libro"
+
+[selectChapter]
+other = "Seleccionar Capítulo"
+
+[chapter]
+other = "Cap"
+
+[previousChapter]
+other = "Capítulo Anterior"
+
+[nextChapter]
+other = "Capítulo Siguiente"
+
+[unavailable]
+other = "no disponible"
+
+# Filtering
+[filterByTag]
+other = "Filtrar por Etiqueta"
+
+[all]
+other = "Todos"
+
+[noBiblesMatch]
+other = "Ninguna Biblia coincide con este filtro."
+
+# Compare translations
+[compareTranslations]
+other = "Comparar Traducciones"
+
+[selectTranslations]
+other = "Seleccionar Traducciones"
+
+[selectTranslationsHint]
+other = "Selecciona 2-4 traducciones para comparar lado a lado."
+
+[selectPassage]
+other = "Seleccionar Pasaje"
+
+[compare]
+other = "Comparar"
+
+[selectPassagePrompt]
+other = "Selecciona traducciones y un pasaje para comenzar a comparar."
+
+[maxTranslationsWarning]
+other = "Se pueden comparar un máximo de 4 traducciones a la vez."
+
+# Bible search
+[searchBible]
+other = "Buscar en la Biblia"
+
+[searchQuery]
+other = "Buscar"
+
+[searchPlaceholder]
+other = "palabra, \"frase exacta\", o H1234/G5678"
+
+[search]
+other = "Buscar"
+
+[caseSensitive]
+other = "Distinguir mayúsculas"
+
+[wholeWord]
+other = "Palabra completa"
+
+[searching]
+other = "Buscando..."
+
+[searchPrompt]
+other = "Ingresa un término de búsqueda para encontrar versículos en la Biblia."
+
+[searchTypesHint]
+other = "Prueba: palabra, \"frase exacta\", o números de Strong (H430, G2316)"
+
+[searchResults]
+other = "Resultados de Búsqueda"
+
+[noResults]
+other = "No se encontraron resultados"

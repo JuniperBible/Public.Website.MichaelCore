@@ -1,0 +1,165 @@
+{{/* Generate Bible pages from JSON data */}}
+{{/* Skips books/chapters with no real content (e.g., just verse references like "Book 1:2:") */}}
+{{- $bibleData := .Site.Data.bibles -}}
+{{- $auxData := .Site.Data.bibles_auxiliary -}}
+{{- $basePath := .Site.Params.michael.basePath | default "/religion/bibles" -}}
+
+{{- if not $bibleData -}}
+  {{- warnf "No bibles.json data found. Run juniper to generate Bible data." -}}
+{{- end -}}
+
+{{- range $bibleData.bibles -}}
+  {{- $bible := . -}}
+  {{- $id := .id -}}
+  {{- $aux := index $auxData $id -}}
+
+  {{/* Build markdown content from JSON structure and collect valid books */}}
+  {{- $content := "" -}}
+  {{- $validBooks := slice -}}
+  {{- with $aux -}}
+    {{/* Skip .content here - description is shown in header via params */}}
+
+    {{/* Generate book list - only include books with real content */}}
+    {{- $content = printf "%s\n\n## Books\n\n<div class=\"book-grid\">\n" $content -}}
+    {{- range .books -}}
+      {{- $bookHasContent := false -}}
+      {{- range .chapters -}}
+        {{- range .verses -}}
+          {{- if gt (len .text) 50 -}}
+            {{- $bookHasContent = true -}}
+          {{- end -}}
+        {{- end -}}
+      {{- end -}}
+      {{- if $bookHasContent -}}
+        {{- $content = printf "%s<a href=\"%s/%s/%s/\" class=\"book-link\">%s</a>\n" $content $basePath $id (lower .id) .name -}}
+        {{- $validBooks = $validBooks | append (dict "id" (lower .id) "name" .name) -}}
+      {{- end -}}
+    {{- end -}}
+    {{- $content = printf "%s</div>\n" $content -}}
+
+    {{/* Add any custom sections */}}
+    {{- range .sections -}}
+      {{- $content = printf "%s\n\n## %s\n\n" $content .heading -}}
+      {{- with .content -}}
+        {{- $content = printf "%s%s\n" $content . -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+
+  {{- $params := dict
+    "title" .title
+    "description" .description
+    "abbrev" .abbrev
+    "bible" $id
+    "language" .language
+    "features" .features
+    "tags" .tags
+    "weight" .weight
+    "validBooks" $validBooks
+  -}}
+
+  {{/* Generate main Bible page */}}
+  {{- $page := dict
+    "path" $id
+    "title" .title
+    "kind" "page"
+    "params" $params
+    "content" (dict "mediaType" "text/markdown" "value" $content)
+  -}}
+  {{- $.AddPage $page -}}
+
+  {{/* Generate book pages - only for books with real content */}}
+  {{- with $aux -}}
+    {{- range .books -}}
+      {{- $book := . -}}
+      {{- $bookIdLower := lower .id -}}
+
+      {{/* Check if book has any chapters with real content */}}
+      {{- $bookHasContent := false -}}
+      {{- $validChapters := slice -}}
+      {{- range .chapters -}}
+        {{- $chapterHasContent := false -}}
+        {{- range .verses -}}
+          {{- if gt (len .text) 50 -}}
+            {{- $chapterHasContent = true -}}
+          {{- end -}}
+        {{- end -}}
+        {{- if $chapterHasContent -}}
+          {{- $bookHasContent = true -}}
+          {{- $validChapters = $validChapters | append (int .number) -}}
+        {{- end -}}
+      {{- end -}}
+
+      {{/* Only generate book page if it has content */}}
+      {{- if $bookHasContent -}}
+        {{- $bookContent := "" -}}
+        {{/* Chapter navigation - responsive grid - only valid chapters */}}
+        {{- $bookContent = printf "<div class=\"chapter-grid\">\n" -}}
+        {{- range $validChapters -}}
+          {{- $chapNum := . -}}
+          {{- $bookContent = printf "%s<a href=\"%s/%s/%s/%d/\" class=\"chapter-link\">%d</a>\n" $bookContent $basePath $id $bookIdLower $chapNum $chapNum -}}
+        {{- end -}}
+        {{- $bookContent = printf "%s</div>\n" $bookContent -}}
+
+        {{- $bookParams := dict
+          "title" (printf "%s - %s" .name $bible.title)
+          "description" (printf "%s from the %s" .name $bible.title)
+          "book" $bookIdLower
+          "testament" .testament
+          "bible" $id
+        -}}
+
+        {{- $bookPage := dict
+          "path" (printf "%s/%s" $id $bookIdLower)
+          "title" .name
+          "kind" "page"
+          "params" $bookParams
+          "content" (dict "mediaType" "text/markdown" "value" $bookContent)
+        -}}
+        {{- $.AddPage $bookPage -}}
+
+        {{/* Generate chapter pages - only for chapters with real content */}}
+        {{- range .chapters -}}
+          {{- $chapter := . -}}
+          {{- $chapterNum := int .number -}}
+
+          {{/* Check if chapter has real content */}}
+          {{- $chapterHasContent := false -}}
+          {{- range .verses -}}
+            {{- if gt (len .text) 50 -}}
+              {{- $chapterHasContent = true -}}
+            {{- end -}}
+          {{- end -}}
+
+          {{- if $chapterHasContent -}}
+            {{- $chapterContent := "" -}}
+
+            {{/* Verse content */}}
+            {{- range .verses -}}
+              {{- $verseNum := int .number -}}
+              {{- $chapterContent = printf "%s**%d** %s " $chapterContent $verseNum .text -}}
+            {{- end -}}
+
+            {{- $chapterParams := dict
+              "title" (printf "%s %d - %s" $book.name $chapterNum $bible.title)
+              "description" (printf "%s chapter %d from the %s" $book.name $chapterNum $bible.title)
+              "book" $bookIdLower
+              "chapter" $chapterNum
+              "testament" $book.testament
+              "bible" $id
+            -}}
+
+            {{- $chapterPage := dict
+              "path" (printf "%s/%s/%d" $id $bookIdLower $chapterNum)
+              "title" (printf "%s %d" $book.name $chapterNum)
+              "kind" "page"
+              "params" $chapterParams
+              "content" (dict "mediaType" "text/markdown" "value" $chapterContent)
+            -}}
+            {{- $.AddPage $chapterPage -}}
+          {{- end -}}
+        {{- end -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}

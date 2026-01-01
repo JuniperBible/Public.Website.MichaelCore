@@ -1,0 +1,114 @@
+# Michael - Hugo Bible Module
+# German UI Strings
+
+# Navigation
+[bibleNavigation]
+other = "Bibel-Navigation"
+
+[bibles]
+other = "Bibelübersetzungen"
+
+[biblesDescription]
+other = "Historische Bibelübersetzungen durchstöbern"
+
+[backToReligion]
+other = "Zurück"
+
+[backToBook]
+other = "Zurück zum Buch"
+
+[backToBible]
+other = "Zurück zur Bibel"
+
+[allBibles]
+other = "Alle Bibeln"
+
+[allChapters]
+other = "Alle Kapitel"
+
+[selectBible]
+other = "Bibel auswählen"
+
+[selectBook]
+other = "Buch auswählen"
+
+[selectChapter]
+other = "Kapitel auswählen"
+
+[chapter]
+other = "Kap"
+
+[previousChapter]
+other = "Vorheriges Kapitel"
+
+[nextChapter]
+other = "Nächstes Kapitel"
+
+[unavailable]
+other = "nicht verfügbar"
+
+# Filtering
+[filterByTag]
+other = "Nach Schlagwort filtern"
+
+[all]
+other = "Alle"
+
+[noBiblesMatch]
+other = "Keine Bibeln entsprechen diesem Filter."
+
+# Compare translations
+[compareTranslations]
+other = "Übersetzungen vergleichen"
+
+[selectTranslations]
+other = "Übersetzungen auswählen"
+
+[selectTranslationsHint]
+other = "Wählen Sie 2-4 Übersetzungen zum Vergleichen nebeneinander."
+
+[selectPassage]
+other = "Passage auswählen"
+
+[compare]
+other = "Vergleichen"
+
+[selectPassagePrompt]
+other = "Wählen Sie Übersetzungen und eine Passage, um den Vergleich zu starten."
+
+[maxTranslationsWarning]
+other = "Maximal 4 Übersetzungen können gleichzeitig verglichen werden."
+
+# Bible search
+[searchBible]
+other = "Bibel durchsuchen"
+
+[searchQuery]
+other = "Suchen nach"
+
+[searchPlaceholder]
+other = "Wort, \"exakter Ausdruck\", oder H1234/G5678"
+
+[search]
+other = "Suchen"
+
+[caseSensitive]
+other = "Groß-/Kleinschreibung"
+
+[wholeWord]
+other = "Ganzes Wort"
+
+[searching]
+other = "Suche..."
+
+[searchPrompt]
+other = "Geben Sie einen Suchbegriff ein, um Verse in der Bibel zu finden."
+
+[searchTypesHint]
+other = "Versuchen Sie: Wort, \"exakter Ausdruck\", oder Strong-Nummern (H430, G2316)"
+
+[searchResults]
+other = "Suchergebnisse"
+
+[noResults]
+other = "Keine Ergebnisse gefunden"
