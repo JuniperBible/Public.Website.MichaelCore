@@ -1,0 +1,525 @@
+/**
+ * Bible-specific CSS - Modern Best Practices
+ * Navigation, verse display, compare view, search results
+ */
+
+/* ==========================================================================
+   Bible Page Header
+   ========================================================================== */
+
+.michael-header {
+  text-align: center;
+  margin-block-end: var(--space-8);
+}
+
+.michael-header h1 {
+  font-family: var(--font-hand);
+  margin-block-end: var(--space-2);
+}
+
+.michael-header p {
+  color: var(--color-text-muted);
+  font-family: var(--font-hand);
+}
+
+/* ==========================================================================
+   Bible Card
+   ========================================================================== */
+
+.bible-card {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+}
+
+.bible-card h2 {
+  font-family: var(--font-hand);
+  font-size: var(--text-xl);
+  margin-block-end: var(--space-2);
+}
+
+.bible-card p {
+  color: var(--color-text-muted);
+  font-family: var(--font-hand);
+  font-size: var(--text-sm);
+  margin-block-end: var(--space-3);
+}
+
+/* ==========================================================================
+   Bible Navigation Bar
+   ========================================================================== */
+
+.bible-nav {
+  background: var(--color-surface-dim);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  margin-block-end: var(--space-4);
+}
+
+.bible-nav .nav-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+@media (min-width: 48rem) {
+  .bible-nav .nav-controls {
+    gap: var(--space-4);
+  }
+}
+
+.bible-nav select {
+  inline-size: auto;
+  min-inline-size: 7.5rem;
+  padding-block: var(--space-2);
+  padding-inline: var(--space-3) var(--space-8);
+  margin-block-end: 0;
+}
+
+.bible-nav .nav-buttons {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-inline-start: auto;
+}
+
+.bible-nav .nav-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: 2rem;
+  block-size: 2rem;
+  padding: 0;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  border-radius: var(--radius-md);
+  color: var(--color-text);
+  text-decoration: none;
+  transition:
+    border-color var(--duration-fast) var(--ease-out),
+    color var(--duration-fast) var(--ease-out);
+}
+
+.bible-nav .nav-btn:hover:not([aria-disabled="true"]) {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
+.bible-nav .nav-btn:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+.bible-nav .nav-btn[aria-disabled="true"] {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* ==========================================================================
+   Bible Text Display
+   ========================================================================== */
+
+.bible-text {
+  font-size: var(--text-lg);
+  line-height: 1.8;
+}
+
+.bible-text .verse {
+  margin-block-end: var(--space-2);
+}
+
+.bible-text .verse-num {
+  font-weight: bold;
+  color: var(--color-accent);
+  font-size: 0.75em;
+  vertical-align: super;
+  margin-inline-end: var(--space-1);
+}
+
+.bible-text .strongs-ref {
+  color: var(--color-accent);
+  cursor: pointer;
+  text-decoration: underline dotted;
+  text-underline-offset: 0.15em;
+  transition: text-decoration-style var(--duration-fast) var(--ease-out);
+}
+
+.bible-text .strongs-ref:hover {
+  text-decoration-style: solid;
+}
+
+.bible-text .strongs-ref:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+/* Verse sharing */
+.verse-share-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: 1.25rem;
+  block-size: 1.25rem;
+  padding: 0;
+  margin-inline-start: var(--space-1);
+  background: transparent;
+  border: none;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity var(--duration-fast) var(--ease-out);
+  vertical-align: middle;
+}
+
+@media (hover: hover) {
+  .verse:hover .verse-share-btn {
+    opacity: 1;
+  }
+}
+
+.verse-share-btn:focus-visible {
+  opacity: 1;
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+.verse-share-btn:hover {
+  color: var(--color-accent);
+}
+
+.highlight-verse {
+  background-color: oklch(from var(--color-accent) l c h / 20%);
+  border-radius: 2px;
+  padding: var(--space-1);
+}
+
+/* Fallback for browsers without relative color syntax */
+@supports not (color: oklch(from red l c h)) {
+  .highlight-verse {
+    background-color: rgba(107, 76, 107, 0.2);
+  }
+}
+
+/* ==========================================================================
+   Share Menu
+   ========================================================================== */
+
+.share-menu {
+  position: absolute;
+  z-index: 100;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  padding-block: var(--space-1);
+  min-inline-size: 9.375rem;
+}
+
+.share-menu-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  inline-size: 100%;
+  padding-block: var(--space-2);
+  padding-inline: var(--space-4);
+  background: none;
+  border: none;
+  text-align: start;
+  font-family: var(--font-hand);
+  font-size: var(--text-sm);
+  color: var(--color-text);
+  cursor: pointer;
+  transition: background-color var(--duration-fast) var(--ease-out);
+}
+
+.share-menu-item:hover {
+  background: var(--color-surface-dim);
+}
+
+.share-menu-item:focus-visible {
+  background: var(--color-surface-dim);
+  outline: 2px solid var(--color-accent);
+  outline-offset: -2px;
+}
+
+.share-menu-divider {
+  block-size: 1px;
+  background: var(--color-border);
+  margin-block: var(--space-1);
+}
+
+/* ==========================================================================
+   Strong's Tooltip
+   ========================================================================== */
+
+.strongs-tooltip {
+  position: fixed;
+  z-index: 200;
+  max-inline-size: 18.75rem;
+  padding-block: var(--space-3);
+  padding-inline: var(--space-4);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  font-family: var(--font-hand);
+  font-size: var(--text-sm);
+}
+
+.strongs-tooltip h4 {
+  margin: 0 0 var(--space-2);
+  color: var(--color-accent);
+  font-size: var(--text-base);
+}
+
+.strongs-tooltip p {
+  margin: 0;
+}
+
+/* ==========================================================================
+   Color Picker
+   ========================================================================== */
+
+.color-picker {
+  position: absolute;
+  z-index: 50;
+  inset-block-start: 100%;
+  inset-inline-end: 0;
+  margin-block-start: var(--space-2);
+  padding: var(--space-2);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+}
+
+.color-picker .color-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: var(--space-1);
+}
+
+.color-picker .color-option {
+  inline-size: 1.5rem;
+  block-size: 1.5rem;
+  padding: 0;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: transform var(--duration-fast) var(--ease-out);
+}
+
+.color-picker .color-option:hover {
+  transform: scale(1.15);
+}
+
+.color-picker .color-option:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+.color-btn {
+  inline-size: 1.25rem;
+  block-size: 1.25rem;
+  padding: 0;
+  border: 1px solid var(--color-text-muted);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: border-color var(--duration-fast) var(--ease-out);
+}
+
+.color-btn:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+/* ==========================================================================
+   Parallel/Compare View
+   ========================================================================== */
+
+.parallel-pane {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+}
+
+.parallel-verse {
+  padding: var(--space-3);
+  border-block-end: 1px solid var(--color-border);
+}
+
+.parallel-verse:last-child {
+  border-block-end: none;
+}
+
+.parallel-verse-num {
+  font-weight: bold;
+  color: var(--color-accent);
+  margin-inline-end: var(--space-2);
+}
+
+.translation-label {
+  font-family: var(--font-hand);
+  font-weight: bold;
+  color: var(--color-text-muted);
+  font-size: var(--text-xs);
+  margin-block-end: var(--space-1);
+}
+
+/* Diff highlighting */
+.diff-insert {
+  background-color: var(--highlight-color, var(--color-accent));
+  color: white;
+  padding-block: var(--space-1);
+  padding-inline: var(--space-1);
+  border-radius: 2px;
+}
+
+.diff-delete {
+  text-decoration: line-through;
+  opacity: 0.6;
+}
+
+/* ==========================================================================
+   Verse Grid (for verse selection)
+   ========================================================================== */
+
+#verse-grid,
+#sss-verse-grid {
+  margin-block-start: var(--space-3);
+  padding-block-start: var(--space-3);
+  border-block-start: 1px solid var(--color-border);
+}
+
+#verse-grid nav,
+#sss-verse-grid nav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  justify-content: flex-start;
+  padding: 0;
+}
+
+#verse-buttons button,
+#sss-verse-buttons button {
+  min-inline-size: 2rem;
+  padding-block: var(--space-1);
+  padding-inline: var(--space-2);
+  font-size: var(--text-sm);
+}
+
+/* ==========================================================================
+   Search Results
+   ========================================================================== */
+
+.search-result {
+  margin-block-end: var(--space-6);
+}
+
+.search-result header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-block-end: var(--space-2);
+}
+
+.search-result h3 {
+  font-family: var(--font-hand);
+  margin: 0;
+}
+
+.search-result .reference {
+  font-family: var(--font-hand);
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
+
+.search-result .verse-text {
+  line-height: 1.6;
+}
+
+.search-result mark {
+  background-color: oklch(90% 0.15 100);
+  padding-inline: var(--space-1);
+  border-radius: 2px;
+}
+
+/* Fallback for browsers without oklch */
+@supports not (color: oklch(90% 0.15 100)) {
+  .search-result mark {
+    background-color: rgba(255, 255, 0, 0.5);
+  }
+}
+
+/* ==========================================================================
+   SSS Mode Button
+   ========================================================================== */
+
+#sss-mode-btn,
+#sss-toggle-btn,
+#sss-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding-block: var(--space-2);
+  padding-inline: var(--space-3);
+}
+
+#sss-mode-btn svg,
+#sss-toggle-btn svg {
+  inline-size: 1.25rem;
+  block-size: 1.25rem;
+}
+
+/* ==========================================================================
+   Print Styles
+   ========================================================================== */
+
+@media print {
+  .bible-nav,
+  .filter-group,
+  .actions,
+  .verse-share-btn,
+  .share-menu,
+  #theme-toggle {
+    display: none !important;
+  }
+
+  .bible-text {
+    font-size: 11pt;
+    line-height: 1.5;
+  }
+
+  article {
+    break-inside: avoid;
+  }
+
+  /* Ensure good contrast in print */
+  .verse-num {
+    color: #333;
+  }
+
+  a {
+    color: #000;
+    text-decoration: underline;
+  }
+}
+
+/* ==========================================================================
+   Reduced Motion
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .verse-share-btn,
+  .color-picker .color-option,
+  .share-menu-item,
+  .bible-nav .nav-btn,
+  .strongs-ref {
+    transition: none;
+  }
+}

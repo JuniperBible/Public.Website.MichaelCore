@@ -1,0 +1,450 @@
+/**
+ * Components CSS - Modern Best Practices
+ * Accessible, performant UI components
+ */
+
+/* ==========================================================================
+   Buttons
+   ========================================================================== */
+
+button,
+[role="button"],
+.btn {
+  --btn-bg: var(--color-text);
+  --btn-color: var(--color-bg);
+  --btn-border: var(--color-text);
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding-block: var(--space-2);
+  padding-inline: var(--space-4);
+  font-family: var(--font-hand);
+  font-size: var(--text-base);
+  font-weight: 500;
+  line-height: 1.25;
+  text-decoration: none;
+  color: var(--btn-color);
+  background-color: var(--btn-bg);
+  border: 1px solid var(--btn-border);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition:
+    background-color var(--duration-fast) var(--ease-out),
+    border-color var(--duration-fast) var(--ease-out),
+    color var(--duration-fast) var(--ease-out),
+    box-shadow var(--duration-fast) var(--ease-out);
+  white-space: nowrap;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+button:hover,
+[role="button"]:hover,
+.btn:hover {
+  --btn-bg: var(--color-accent);
+  --btn-border: var(--color-accent);
+  --btn-color: white;
+}
+
+button:focus-visible,
+[role="button"]:focus-visible,
+.btn:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+button:active,
+[role="button"]:active,
+.btn:active {
+  transform: translateY(1px);
+}
+
+button:disabled,
+[role="button"][aria-disabled="true"],
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* Secondary variant */
+.btn-secondary,
+button.secondary {
+  --btn-bg: transparent;
+  --btn-color: var(--color-text);
+}
+
+.btn-secondary:hover,
+button.secondary:hover {
+  --btn-bg: var(--color-surface-dim);
+  --btn-border: var(--color-text);
+  --btn-color: var(--color-text);
+}
+
+/* Outline variant */
+.btn-outline,
+button.outline {
+  --btn-bg: transparent;
+  --btn-color: var(--color-text);
+}
+
+/* Icon button */
+.btn-icon {
+  inline-size: 2.5rem;
+  block-size: 2.5rem;
+  padding: 0;
+}
+
+.btn-icon svg {
+  inline-size: 1.25rem;
+  block-size: 1.25rem;
+}
+
+/* ==========================================================================
+   Cards
+   ========================================================================== */
+
+article,
+.card {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+  margin-block-end: var(--space-4);
+  transition: box-shadow var(--duration-base) var(--ease-out);
+}
+
+@media (hover: hover) {
+  article:hover,
+  .card:hover {
+    box-shadow: var(--shadow-md);
+  }
+}
+
+a.card,
+a article,
+article:has(> a:only-child) {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+}
+
+article header,
+.card-header {
+  margin-block-end: var(--space-4);
+}
+
+article footer,
+.card-footer {
+  margin-block-start: var(--space-4);
+  padding-block-start: var(--space-4);
+  border-block-start: 1px solid var(--color-border);
+}
+
+/* ==========================================================================
+   Navigation
+   ========================================================================== */
+
+nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  padding-block: var(--space-4);
+}
+
+nav ul {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+@media (min-width: 48rem) {
+  nav ul {
+    gap: var(--space-4);
+  }
+}
+
+nav a {
+  display: inline-flex;
+  align-items: center;
+  color: var(--color-text);
+  text-decoration: none;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  transition:
+    color var(--duration-fast) var(--ease-out),
+    background-color var(--duration-fast) var(--ease-out);
+}
+
+nav a:hover {
+  color: var(--color-accent);
+  background-color: var(--color-surface-dim);
+}
+
+nav a[aria-current="page"] {
+  color: var(--color-accent);
+  font-weight: 600;
+}
+
+/* ==========================================================================
+   Forms
+   ========================================================================== */
+
+label {
+  display: block;
+  font-weight: 500;
+  margin-block-end: var(--space-1);
+}
+
+input,
+textarea,
+select {
+  inline-size: 100%;
+  padding-block: var(--space-2);
+  padding-inline: var(--space-3);
+  font-family: var(--font-hand);
+  font-size: var(--text-base);
+  color: var(--color-text);
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  transition:
+    border-color var(--duration-fast) var(--ease-out),
+    box-shadow var(--duration-fast) var(--ease-out);
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px oklch(from var(--color-accent) l c h / 15%);
+}
+
+/* Fallback for browsers without relative color syntax */
+@supports not (color: oklch(from red l c h)) {
+  input:focus,
+  textarea:focus,
+  select:focus {
+    box-shadow: 0 0 0 3px rgba(107, 76, 107, 0.15);
+  }
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--color-text-muted);
+}
+
+select {
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236b6560' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 0.75rem;
+  padding-inline-end: 2.5rem;
+  appearance: none;
+}
+
+/* Checkbox and radio */
+input[type="checkbox"],
+input[type="radio"] {
+  inline-size: 1.125rem;
+  block-size: 1.125rem;
+  margin: 0;
+  margin-inline-end: var(--space-2);
+  accent-color: var(--color-accent);
+  cursor: pointer;
+}
+
+/* Fieldset */
+fieldset {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  border: none;
+  padding: 0;
+  margin: 0;
+}
+
+fieldset label {
+  display: inline-flex;
+  align-items: center;
+  font-weight: normal;
+  margin-block-end: 0;
+  cursor: pointer;
+}
+
+/* ==========================================================================
+   Tags / Badges
+   ========================================================================== */
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  padding-block: var(--space-1);
+  padding-inline: var(--space-2);
+  font-family: var(--font-hand);
+  font-size: var(--text-xs);
+  line-height: 1.4;
+  border-radius: var(--radius-full);
+  white-space: nowrap;
+}
+
+.tag-primary {
+  background-color: var(--color-text);
+  color: var(--color-bg);
+}
+
+.tag-accent {
+  background-color: oklch(from var(--color-accent) l c h / 15%);
+  color: var(--color-accent);
+}
+
+/* Fallback */
+@supports not (color: oklch(from red l c h)) {
+  .tag-accent {
+    background-color: rgba(107, 76, 107, 0.15);
+  }
+}
+
+.tag-license {
+  background: linear-gradient(135deg, #8b7355, #6b6560);
+  color: white;
+  cursor: pointer;
+  transition: background var(--duration-base) var(--ease-out);
+}
+
+.tag-license:hover {
+  background: var(--color-accent);
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-block-end: var(--space-4);
+}
+
+/* ==========================================================================
+   Header & Footer
+   ========================================================================== */
+
+body > header {
+  background-color: var(--color-bg);
+  border-block-end: 1px solid var(--color-border);
+  position: sticky;
+  inset-block-start: 0;
+  z-index: 100;
+}
+
+body > footer {
+  margin-block-start: auto;
+  padding-block: var(--space-6);
+  border-block-start: 1px solid var(--color-border);
+  text-align: center;
+  color: var(--color-text-muted);
+}
+
+/* ==========================================================================
+   Main Content
+   ========================================================================== */
+
+main {
+  flex: 1;
+  padding-block: var(--space-8);
+}
+
+/* Page header */
+.page-header,
+.michael-header {
+  text-align: center;
+  margin-block-end: var(--space-8);
+}
+
+.page-header h1,
+.michael-header h1 {
+  font-family: var(--font-hand);
+  margin-block-end: var(--space-2);
+}
+
+.page-header p,
+.michael-header p {
+  color: var(--color-text-muted);
+  font-family: var(--font-hand);
+  margin-block-end: var(--space-6);
+  margin-inline: auto;
+}
+
+/* Actions row */
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-4);
+}
+
+/* ==========================================================================
+   Filter Buttons
+   ========================================================================== */
+
+.filter-group {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-2);
+  margin-block-start: var(--space-4);
+}
+
+.filter-group button {
+  padding-block: var(--space-1);
+  padding-inline: var(--space-3);
+  font-size: var(--text-sm);
+  background: transparent;
+  color: var(--color-text);
+  border: 1px solid var(--color-text);
+}
+
+.filter-group button:hover,
+.filter-group button[aria-pressed="true"] {
+  background-color: var(--color-accent);
+  border-color: var(--color-accent);
+  color: white;
+}
+
+/* ==========================================================================
+   Skip Link (Accessibility)
+   ========================================================================== */
+
+.skip-link {
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline-start: 0;
+  padding: var(--space-2) var(--space-4);
+  background: var(--color-accent);
+  color: white;
+  text-decoration: none;
+  z-index: 1000;
+  transform: translateY(-100%);
+  transition: transform var(--duration-fast) var(--ease-out);
+}
+
+.skip-link:focus {
+  transform: translateY(0);
+}
+
+/* ==========================================================================
+   Separator
+   ========================================================================== */
+
+[role="separator"] {
+  color: var(--color-text-muted);
+  user-select: none;
+}
