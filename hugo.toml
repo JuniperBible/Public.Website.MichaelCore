@@ -28,8 +28,3 @@
   [[module.mounts]]
     source = "data"
     target = "data"
-
-  # Content mount - consuming site configures target path
-  [[module.mounts]]
-    source = "content/bibles"
-    target = "content/religion/bibles"
