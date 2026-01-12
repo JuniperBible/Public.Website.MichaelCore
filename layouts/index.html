@@ -1,0 +1,27 @@
+{{ define "main" }}
+<main class="container">
+  <div class="michael-header">
+    <h1 class="font-hand">{{ .Site.Title }}</h1>
+    {{ with .Site.Params.description }}<p class="font-hand">{{ . }}</p>{{ end }}
+  </div>
+
+  {{ with .Site.GetPage "/religion/bibles" }}
+  <section>
+    <h2 class="font-hand">Bible Translations</h2>
+    <div class="grid-2">
+      {{ range .Pages | first 4 }}
+      <article class="card">
+        <a href="{{ .RelPermalink }}" class="bible-card">
+          <h3>{{ .Title }}</h3>
+          {{ with .Description }}<p>{{ . }}</p>{{ end }}
+        </a>
+      </article>
+      {{ end }}
+    </div>
+    <div class="actions">
+      <a href="{{ .RelPermalink }}" class="btn">View All Bibles</a>
+    </div>
+  </section>
+  {{ end }}
+</main>
+{{ end }}

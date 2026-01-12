@@ -4,6 +4,7 @@ pkgs.mkShell {
   buildInputs = with pkgs; [
     hugo
     nodejs_22
+    cloc
   ];
 
   shellHook = ''

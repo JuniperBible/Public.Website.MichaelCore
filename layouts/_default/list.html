@@ -1,0 +1,26 @@
+{{ define "main" }}
+<main class="container">
+  <div class="michael-header">
+    <h1 class="font-hand">{{ .Title }}</h1>
+    {{ with .Description }}<p class="font-hand">{{ . }}</p>{{ end }}
+  </div>
+
+  <div class="grid-2">
+    {{ range .Pages }}
+    <article class="card">
+      <a href="{{ .RelPermalink }}" class="bible-card">
+        <h2>{{ .Title }}</h2>
+        {{ with .Description }}<p>{{ . }}</p>{{ end }}
+        {{ with .Params.tags }}
+        <div class="tags">
+          {{ range . }}
+          <span class="tag tag-accent">{{ . }}</span>
+          {{ end }}
+        </div>
+        {{ end }}
+      </a>
+    </article>
+    {{ end }}
+  </div>
+</main>
+{{ end }}
