@@ -1,0 +1,40 @@
+{{/*
+  tag.html - Badge/tag component
+
+  Usage:
+    {{ partial "michael/tag.html" (dict
+      "text" "Tag Text"
+      "type" "primary"
+      "link" "/some-url"
+      "title" "Tooltip text"
+      "data_attrs" (dict "data-version" "1.0" "data-id" "123")
+    ) }}
+
+  Parameters:
+    - text (string, required): Tag display text
+    - type (string, optional): Tag style - "primary", "accent", or "license" (default: primary)
+    - link (string, optional): URL to wrap tag in anchor
+    - title (string, optional): Title attribute for tooltip
+    - data_attrs (dict, optional): Dictionary of data-* attributes
+*/}}
+
+{{ $type := default "primary" .type }}
+{{ $classes := printf "tag tag-%s" $type }}
+
+{{ $attrs := "" }}
+{{ with .title }}
+  {{ $attrs = printf "%s title=\"%s\"" $attrs . }}
+{{ end }}
+{{ with .data_attrs }}
+  {{ range $key, $value := . }}
+    {{ $attrs = printf "%s %s=\"%s\"" $attrs $key $value }}
+  {{ end }}
+{{ end }}
+
+{{ if .link }}
+  <a href="{{ .link }}"{{ $attrs | safeHTMLAttr }}>
+    <span class="{{ $classes }}">{{ .text }}</span>
+  </a>
+{{ else }}
+  <span class="{{ $classes }}"{{ $attrs | safeHTMLAttr }}>{{ .text }}</span>
+{{ end }}

@@ -208,7 +208,7 @@
     // For Strong's numbers, use case-insensitive matching
     const flags = (parsed.type === 'strongs') ? 'gi' : (caseSensitive ? 'g' : 'gi');
     const regex = new RegExp(`(${escapeRegex(searchTerm)})`, flags);
-    return text.replace(regex, '<mark class="bg-yellow-200 dark:bg-yellow-800">$1</mark>');
+    return text.replace(regex, '<mark>$1</mark>');
   }
 
   // Perform search
@@ -323,11 +323,10 @@
     }
 
     let html = `
-      <div class="font-hand text-paper-gray mb-4">
+      <p class="font-hand" style="color: var(--michael-gray); margin-bottom: 1rem;">
         Found ${results.length} result${results.length !== 1 ? 's' : ''}${searchDesc} in ${bibleData.title}
         ${results.length > 100 ? ' (showing first 100)' : ''}
-      </div>
-      <div class="space-y-3">
+      </p>
     `;
 
     for (const result of limitedResults) {
@@ -335,20 +334,19 @@
       const highlightedText = highlightMatches(result.text, query, caseSensitive);
 
       html += `
-        <div class="card-paper p-4 hover:shadow-md transition-shadow">
-          <a href="${url}" class="block">
-            <div class="font-hand font-bold text-accent mb-1">
-              ${result.book} ${result.chapter}:${result.verse}
-            </div>
-            <div class="font-hand text-paper-black">
-              ${highlightedText}
-            </div>
-          </a>
-        </div>
+        <article class="search-result">
+          <header>
+            <h3>
+              <a href="${url}">${result.book} ${result.chapter}:${result.verse}</a>
+            </h3>
+          </header>
+          <div class="verse-text font-hand">
+            ${highlightedText}
+          </div>
+        </article>
       `;
     }
 
-    html += '</div>';
     resultsEl.innerHTML = html;
   }
 
@@ -356,9 +354,9 @@
   function showMessage(msg) {
     statusEl.classList.add('hidden');
     resultsEl.innerHTML = `
-      <div class="text-center text-paper-gray font-hand py-12">
+      <p class="font-hand" style="text-align: center; color: var(--michael-gray); padding: 3rem 0;">
         ${msg}
-      </div>
+      </p>
     `;
   }
 

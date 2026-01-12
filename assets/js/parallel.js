@@ -411,9 +411,10 @@
       verses.forEach(verse => {
         const btn = document.createElement('button');
         btn.type = 'button';
-        btn.className = 'verse-btn w-7 h-7 font-hand text-sm rounded hover:bg-accent hover:text-white transition-colors cursor-pointer';
+        btn.className = 'verse-btn';
         btn.textContent = verse.number;
         btn.dataset.verse = verse.number;
+        btn.style.cssText = 'width: 1.75rem; height: 1.75rem; font-family: var(--michael-font-hand); font-size: 0.875rem; border-radius: var(--pico-border-radius); cursor: pointer;';
         addTapListener(btn, () => handleVerseButtonClick(verse.number));
         verseButtons.appendChild(btn);
       });
@@ -449,9 +450,11 @@
     buttons.forEach(btn => {
       const verseNum = parseInt(btn.dataset.verse);
       if (verseNum === currentVerse) {
-        btn.classList.add('bg-accent', 'text-white');
+        btn.style.background = 'var(--michael-accent)';
+        btn.style.color = 'white';
       } else {
-        btn.classList.remove('bg-accent', 'text-white');
+        btn.style.background = '';
+        btn.style.color = '';
       }
     });
   }
@@ -566,9 +569,11 @@
     // Handle no translations selected
     if (selectedTranslations.length === 0) {
       parallelContent.innerHTML = `
-        <div class="text-center text-paper-gray font-hand py-8">
-          Select at least one translation to view.
-        </div>
+        <article>
+          <p style="text-align: center; color: var(--michael-gray); font-family: var(--michael-font-hand); padding: 2rem 0;">
+            Select at least one translation to view.
+          </p>
+        </article>
       `;
       return Promise.resolve();
     }
@@ -578,10 +583,9 @@
 
     // Show loading state
     parallelContent.innerHTML = `
-      <div class="text-center text-paper-gray font-hand py-8">
-        <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-accent mb-4"></div>
-        <p>Loading...</p>
-      </div>
+      <article aria-busy="true" style="text-align: center; font-family: var(--michael-font-hand); padding: 2rem 0;">
+        Loading...
+      </article>
     `;
 
     // Fetch chapter data for all selected translations in parallel
@@ -606,7 +610,7 @@
     const firstVerses = chaptersData.find(verses => verses && verses.length > 0);
 
     if (!firstVerses) {
-      return '<div class="text-center text-paper-gray font-hand py-8">No verses found for this chapter.</div>';
+      return '<article><p style="text-align: center; color: var(--michael-gray); font-family: var(--michael-font-hand); padding: 2rem 0;">No verses found for this chapter.</p></article>';
     }
 
     // Get book name (books is now an array)
@@ -615,14 +619,13 @@
 
     // Compact header showing current reference
     const verseRef = currentVerse > 0 ? `:${currentVerse}` : '';
-    html += `<div class="text-center mb-4">
-      <span class="font-hand font-bold text-xl">${bookName} ${currentChapter}${verseRef}</span>
-      <span class="text-paper-gray mx-2">·</span>
-      <span class="font-hand text-sm text-paper-gray">${selectedTranslations.map(id => {
+    html += `<header style="text-align: center; margin-bottom: 1.5rem;">
+      <h2 style="font-family: var(--michael-font-hand); margin-bottom: 0.25rem;">${bookName} ${currentChapter}${verseRef}</h2>
+      <p style="color: var(--michael-gray); font-family: var(--michael-font-hand); font-size: 0.875rem; margin: 0;">${selectedTranslations.map(id => {
         const bible = bibleData.bibles.find(b => b.id === id);
         return bible?.abbrev || id;
-      }).join(', ')}</span>
-    </div>`;
+      }).join(', ')}</p>
+    </header>`;
 
     // Filter verses if specific verse selected
     const versesToShow = currentVerse > 0
@@ -633,9 +636,11 @@
     versesToShow.forEach((verse) => {
       const verseNum = verse.number;
 
-      html += `<div class="p-3 verse-group card-paper !bg-transparent" data-verse="${verseNum}">
-        <div class="font-hand font-bold text-accent mb-2">${bookName} ${currentChapter}:${verseNum}</div>
-        <div class="space-y-2">`;
+      html += `<article class="parallel-verse" data-verse="${verseNum}">
+        <header>
+          <h3 style="font-family: var(--michael-font-hand); font-weight: bold; color: var(--michael-accent); margin-bottom: 0.5rem; font-size: 1rem;">${bookName} ${currentChapter}:${verseNum}</h3>
+        </header>
+        <div>`;
 
       // Collect all verse texts for this verse number for highlighting
       const allVerseTexts = selectedTranslations.map((tid, i) => {
@@ -649,7 +654,7 @@
         const verses = chaptersData[idx] || [];
         const v = verses.find(v => v.number === verseNum);
 
-        let text = v?.text || '<em class="text-paper-gray">Verse not available</em>';
+        let text = v?.text || '<em style="color: var(--michael-gray);">Verse not available</em>';
 
         // Apply highlighting if enabled
         if (normalHighlightEnabled && v?.text) {
@@ -657,12 +662,13 @@
           text = highlightNormalDifferences(v.text, otherTexts);
         }
 
-        html += `<div class="translation-row border-l-2 border-accent ml-2 py-1" style="padding-left: 1.5rem;">
-          <span class="font-hand bible-text"><span class="text-sm font-bold text-accent">${bible?.abbrev || translationId}:</span> ${text}</span>
+        html += `<div class="translation-label" style="margin-top: 0.75rem;">
+          <strong style="color: var(--michael-accent); font-family: var(--michael-font-hand); font-size: 0.75rem;">${bible?.abbrev || translationId}</strong>
+          <p style="margin: 0.25rem 0 0 0; line-height: 1.8;">${text}</p>
         </div>`;
       });
 
-      html += `</div></div>`;
+      html += `</div></article>`;
     });
 
     return html;
@@ -936,10 +942,10 @@
 
     // Show loading
     if (sssLeftPane) {
-      sssLeftPane.innerHTML = '<div class="text-center text-paper-gray font-hand py-8">Loading...</div>';
+      sssLeftPane.innerHTML = '<article aria-busy="true" style="text-align: center; font-family: var(--michael-font-hand); padding: 2rem 0;">Loading...</article>';
     }
     if (sssRightPane) {
-      sssRightPane.innerHTML = '<div class="text-center text-paper-gray font-hand py-8">Loading...</div>';
+      sssRightPane.innerHTML = '<article aria-busy="true" style="text-align: center; font-family: var(--michael-font-hand); padding: 2rem 0;">Loading...</article>';
     }
 
     // Fetch both chapters
@@ -987,9 +993,10 @@
       verses.forEach(verse => {
         const btn = document.createElement('button');
         btn.type = 'button';
-        btn.className = 'sss-verse-btn w-7 h-7 font-hand text-sm rounded hover:bg-accent hover:text-white transition-colors cursor-pointer';
+        btn.className = 'sss-verse-btn';
         btn.textContent = verse.number;
         btn.dataset.verse = verse.number;
+        btn.style.cssText = 'width: 1.75rem; height: 1.75rem; font-family: var(--michael-font-hand); font-size: 0.875rem; border-radius: var(--pico-border-radius); cursor: pointer;';
         addTapListener(btn, () => handleSSSVerseButtonClick(verse.number));
         sssVerseButtons.appendChild(btn);
       });
@@ -1023,9 +1030,11 @@
     buttons.forEach(btn => {
       const verseNum = parseInt(btn.dataset.verse);
       if (verseNum === sssVerse) {
-        btn.classList.add('bg-accent', 'text-white');
+        btn.style.background = 'var(--michael-accent)';
+        btn.style.color = 'white';
       } else {
-        btn.classList.remove('bg-accent', 'text-white');
+        btn.style.background = '';
+        btn.style.color = '';
       }
     });
   }
@@ -1035,23 +1044,23 @@
    */
   function buildSSSPaneHTML(verses, bible, bookName, compareVerses) {
     if (!verses || verses.length === 0) {
-      return '<div class="text-center text-paper-gray font-hand py-8">No verses found</div>';
+      return '<article><p style="text-align: center; color: var(--michael-gray); font-family: var(--michael-font-hand); padding: 2rem 0;">No verses found</p></article>';
     }
 
-    let html = `<div class="text-center font-hand font-bold text-accent pb-2">${bible?.abbrev || 'Unknown'}</div>`;
-    html += '<div class="space-y-2">';
+    let html = `<header class="translation-label" style="text-align: center; padding-bottom: 0.5rem;">
+      <strong>${bible?.abbrev || 'Unknown'}</strong>
+    </header>`;
 
     verses.forEach(verse => {
       const compareVerse = compareVerses?.find(v => v.number === verse.number);
       const highlightedText = highlightDifferences(verse.text, compareVerse?.text);
 
-      html += `<div class="verse-row">
-        <span class="font-bold text-accent mr-2">${verse.number}</span>
-        <span class="bible-text">${highlightedText}</span>
+      html += `<div class="parallel-verse">
+        <span class="parallel-verse-num">${verse.number}</span>
+        <span>${highlightedText}</span>
       </div>`;
     });
 
-    html += '</div>';
     return html;
   }
 
@@ -1105,7 +1114,7 @@
     return words.map(word => {
       const cleanWord = word.toLowerCase().replace(/[.,;:!?'"]/g, '');
       if (!otherWords.has(cleanWord) && cleanWord.length > 0) {
-        return `<mark style="background-color: ${highlightColor}; color: ${textColor}; border-radius: 0.125rem; padding: 0 0.125rem;">${word}</mark>`;
+        return `<span class="diff-insert">${word}</span>`;
       }
       return word;
     }).join(' ');
@@ -1133,7 +1142,7 @@
     return words.map(word => {
       const cleanWord = word.toLowerCase().replace(/[.,;:!?'"]/g, '');
       if (!compareWords.includes(cleanWord) && cleanWord.length > 0) {
-        return `<mark style="background-color: ${highlightColor}; color: ${textColor}; border-radius: 0.125rem; padding: 0 0.125rem;">${word}</mark>`;
+        return `<span class="diff-insert">${word}</span>`;
       }
       return word;
     }).join(' ');
@@ -1188,7 +1197,7 @@
         if (h.offset > pos) {
           html += TC.escapeHtml(normalizedText.slice(pos, h.offset));
         }
-        html += `<mark style="background-color: ${highlightColor}; color: ${textColor}; border-radius: 0.125rem; padding: 0 0.125rem;">${TC.escapeHtml(h.original)}</mark>`;
+        html += `<span class="diff-insert">${TC.escapeHtml(h.original)}</span>`;
         pos = h.offset + h.length;
       }
       if (pos < normalizedText.length) {

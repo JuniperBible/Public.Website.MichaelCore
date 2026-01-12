@@ -25,28 +25,9 @@
     tooltip = document.createElement('div');
     tooltip.className = 'strongs-tooltip';
     tooltip.innerHTML = `
-      <div class="strongs-tooltip-header">
-        <span class="strongs-number"></span>
-        <a class="strongs-link" href="#" target="_blank" rel="noopener">View Full Entry</a>
-      </div>
-      <div class="strongs-tooltip-content">
-        <div class="strongs-loading">Loading...</div>
-        <div class="strongs-definition" style="display:none;"></div>
-      </div>
-    `;
-    tooltip.style.cssText = `
-      position: fixed;
-      z-index: 9999;
-      background: var(--color-paper-white, #f8f8f8);
-      border: 2px solid var(--color-paper-border, #2a2a2a);
-      border-radius: 8px;
-      padding: 12px;
-      max-width: 320px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-      font-family: var(--font-hand, 'Patrick Hand', cursive);
-      font-size: 14px;
-      display: none;
-      pointer-events: auto;
+      <h4 class="strongs-number"></h4>
+      <p class="strongs-definition"></p>
+      <a class="strongs-link" href="#" target="_blank" rel="noopener">View Full Entry</a>
     `;
     document.body.appendChild(tooltip);
 
@@ -69,8 +50,8 @@
     let left = rect.left;
 
     // Adjust if would go off screen
-    if (left + 320 > window.innerWidth) {
-      left = window.innerWidth - 330;
+    if (left + 300 > window.innerWidth) {
+      left = window.innerWidth - 310;
     }
     if (top + 200 > window.innerHeight) {
       top = rect.top - 200;
@@ -87,11 +68,7 @@
     const baseUrl = type === 'H' ? STRONGS_URLS.hebrew : STRONGS_URLS.greek;
     tip.querySelector('.strongs-link').href = `${baseUrl}${number}/kjv/`;
 
-    // Show loading state
-    tip.querySelector('.strongs-loading').style.display = 'block';
-    tip.querySelector('.strongs-definition').style.display = 'none';
-
-    // Load definition (simplified - shows link to full definition)
+    // Load definition
     loadDefinition(number, type, tip);
   }
 
@@ -123,12 +100,8 @@
   }
 
   function showDefinition(tip, def) {
-    tip.querySelector('.strongs-loading').style.display = 'none';
     const defEl = tip.querySelector('.strongs-definition');
-    defEl.innerHTML = `
-      <p class="text-paper-gray text-sm">${def.note}</p>
-    `;
-    defEl.style.display = 'block';
+    defEl.textContent = def.note;
   }
 
   function processStrongsNumbers() {
@@ -178,12 +151,6 @@
           span.dataset.strongsType = match[1];
           span.dataset.strongsNumber = match[2];
           span.textContent = match[0];
-          span.style.cssText = `
-            color: var(--color-accent, #7a00b0);
-            cursor: pointer;
-            text-decoration: underline;
-            text-decoration-style: dotted;
-          `;
           span.setAttribute('role', 'button');
           span.setAttribute('aria-label', `Strong's ${match[1] === 'H' ? 'Hebrew' : 'Greek'} ${match[2]}`);
           span.setAttribute('tabindex', '0');

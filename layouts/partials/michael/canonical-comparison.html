@@ -8,32 +8,32 @@
 {{ $books := $mappings.books }}
 
 {{/* Legend */}}
-<div class="mb-6 text-sm font-hand">
-  <h3 class="font-bold text-paper-black mb-2">Legend</h3>
-  <div class="flex flex-wrap gap-4">
+<section class="font-hand" style="margin-block-end: var(--pico-spacing);">
+  <h3>Legend</h3>
+  <div style="display: flex; flex-wrap: wrap; gap: 1rem; font-size: 0.875rem;">
     {{ range $id, $cat := $categories }}
     <span title="{{ $cat.description }}">{{ $cat.symbol }} {{ $cat.name }}</span>
     {{ end }}
   </div>
-  <div class="mt-2 text-paper-gray">
-    <span class="text-green-600">✓</span> = Present or historically received |
-    <span class="text-paper-gray/40">—</span> = Not included
-  </div>
-</div>
+  <p style="margin-block-start: 0.5rem; color: var(--michael-gray); font-size: 0.875rem;">
+    <span class="present">✓</span> = Present or historically received |
+    <span class="absent">—</span> = Not included
+  </p>
+</section>
 
-<div class="overflow-x-auto bg-paper-bright rounded-lg">
-  <table class="w-full text-sm font-hand">
+<figure style="overflow-x: auto;">
+  <table class="canon-table">
     <thead>
-      <tr class="border-b-2 border-paper-border">
-        <th class="text-left py-2 px-3 sticky left-0 bg-paper-bright">#</th>
-        <th class="text-left py-2 px-3 sticky left-[2rem] bg-paper-bright">Book</th>
-        <th class="text-center py-2 px-2">Cat</th>
+      <tr>
+        <th scope="col" style="text-align: left;">#</th>
+        <th scope="col" style="text-align: left;">Book</th>
+        <th scope="col" style="text-align: center;">Cat</th>
         {{ range $traditions }}
-        <th class="text-center py-2 px-2 whitespace-nowrap" title="{{ .fullName }}: {{ .description }}">
+        <th scope="col" style="text-align: center; white-space: nowrap;" title="{{ .fullName }}: {{ .description }}">
           {{ .name }}
         </th>
         {{ end }}
-        <th class="text-left py-2 px-3">Notes</th>
+        <th scope="col" style="text-align: left;">Notes</th>
       </tr>
     </thead>
     <tbody>
@@ -48,24 +48,24 @@
             {{ $sectionData = . }}
           {{ end }}
         {{ end }}
-        <tr class="bg-paper-light/50">
-          <td colspan="{{ add (len $traditions) 4 }}" class="py-2 px-3 font-bold text-paper-gray">
+        <tr class="section-row">
+          <td colspan="{{ add (len $traditions) 4 }}" scope="row">
             {{ $sectionData.name }}
           </td>
         </tr>
       {{ end }}
       {{/* Book row */}}
-      <tr class="border-b border-paper-light hover-accent">
-        <td class="py-1.5 px-3 sticky left-0 bg-paper-bright text-paper-gray text-xs">{{ .seq }}</td>
-        <td class="py-1.5 px-3 sticky left-[2rem] bg-paper-bright">
+      <tr>
+        <td style="font-size: 0.75rem;">{{ .seq }}</td>
+        <td>
           {{ $basePath := $.Site.Params.michael.basePath | default "/religion/bibles" }}
           {{ if .drc_id }}
-          <a href="{{ $basePath }}/drc/{{ .drc_id }}/" class="font-medium text-accent hover:underline">{{ .name }}</a>
+          <a href="{{ $basePath }}/drc/{{ .drc_id }}/">{{ .name }}</a>
           {{ else }}
-          <span class="font-medium">{{ .name }}</span>
+          <strong>{{ .name }}</strong>
           {{ end }}
         </td>
-        <td class="text-center py-1.5 px-2">
+        <td style="text-align: center;">
           {{/* Handle both single category and categories array */}}
           {{ if .categories }}
             {{ range $i, $catId := .categories }}{{ if $i }} {{ end }}{{ $cat := index $categories $catId }}<span title="{{ $cat.name }}: {{ $cat.description }}">{{ $cat.symbol }}</span>{{ end }}
@@ -76,33 +76,33 @@
         </td>
         {{ $canonical := .canonical_in }}
         {{ range $traditions }}
-        <td class="text-center py-1.5 px-2">
+        <td style="text-align: center;">
           {{ if in $canonical .id }}
-          <span class="text-green-600" title="Present in {{ .fullName }}">✓</span>
+          <span class="present" title="Present in {{ .fullName }}">✓</span>
           {{ else }}
-          <span class="text-paper-gray/40">—</span>
+          <span class="absent">—</span>
           {{ end }}
         </td>
         {{ end }}
-        <td class="py-1.5 px-3 text-xs text-paper-gray">
+        <td style="font-size: 0.75rem; color: var(--michael-gray);">
           {{ .notes }}
         </td>
       </tr>
       {{ end }}
     </tbody>
   </table>
-</div>
+</figure>
 
 {{/* Book count summary table */}}
-<div class="mt-8 mb-6">
-  <h3 class="font-bold text-paper-black mb-3 font-hand">Canon Summary by Tradition</h3>
-  <div class="overflow-x-auto">
-    <table class="text-sm font-hand">
+<section style="margin-block-start: calc(var(--pico-spacing) * 2);">
+  <h3 class="font-hand">Canon Summary by Tradition</h3>
+  <figure style="overflow-x: auto;">
+    <table class="font-hand" style="font-size: 0.875rem;">
       <thead>
-        <tr class="border-b-2 border-paper-border">
-          <th class="text-left py-2 px-3">Tradition</th>
-          <th class="text-center py-2 px-3">Books</th>
-          <th class="text-left py-2 px-3">Description</th>
+        <tr>
+          <th scope="col" style="text-align: left;">Tradition</th>
+          <th scope="col" style="text-align: center;">Books</th>
+          <th scope="col" style="text-align: left;">Description</th>
         </tr>
       </thead>
       <tbody>
@@ -115,27 +115,27 @@
             {{ $count = add $count 1 }}
           {{ end }}
         {{ end }}
-        <tr class="border-b border-paper-light hover-accent">
-          <td class="py-1.5 px-3">
-            <span class="font-bold">{{ .name }}</span>
-            <span class="text-paper-gray ml-1">({{ .fullName }})</span>
+        <tr>
+          <td>
+            <strong>{{ .name }}</strong>
+            <span style="color: var(--michael-gray); margin-inline-start: 0.25rem;">({{ .fullName }})</span>
           </td>
-          <td class="text-center py-1.5 px-3 font-bold">{{ $count }}</td>
-          <td class="py-1.5 px-3 text-paper-gray text-xs">{{ .description }}</td>
+          <td style="text-align: center;"><strong>{{ $count }}</strong></td>
+          <td style="font-size: 0.75rem; color: var(--michael-gray);">{{ .description }}</td>
         </tr>
         {{ end }}
-        <tr class="border-t-2 border-paper-border bg-paper-light/30">
-          <td class="py-2 px-3 font-bold">Total Unique Texts</td>
-          <td class="text-center py-2 px-3 font-bold">{{ len $books }}</td>
-          <td class="py-2 px-3 text-paper-gray text-xs">All texts across all traditions</td>
+        <tr style="border-top: 2px solid var(--michael-border); background: color-mix(in srgb, var(--michael-light) 30%, transparent);">
+          <td><strong>Total Unique Texts</strong></td>
+          <td style="text-align: center;"><strong>{{ len $books }}</strong></td>
+          <td style="font-size: 0.75rem; color: var(--michael-gray);">All texts across all traditions</td>
         </tr>
       </tbody>
     </table>
-  </div>
-</div>
+  </figure>
+</section>
 
-<div class="mt-4 text-xs text-paper-gray font-hand">
-  <p class="mb-1"><strong>Traditions:</strong>
+<footer class="font-hand" style="margin-block-start: 1rem; font-size: 0.75rem; color: var(--michael-gray);">
+  <p><strong>Traditions:</strong>
     {{ range $i, $trad := $traditions }}{{ if $i }}, {{ end }}{{ $trad.name }} = {{ $trad.fullName }}{{ end }}
   </p>
-</div>
+</footer>

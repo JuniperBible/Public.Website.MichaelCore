@@ -24,14 +24,14 @@
   {{ $chapterCount = len $bookData.chapters }}
 {{ end }}
 
-<nav class="bible-nav mb-6 p-3 md:p-4" aria-label="{{ i18n "bibleNavigation" | default "Bible Navigation" }}">
-  <div class="flex flex-wrap items-center gap-2 md:gap-4">
+<nav class="bible-nav" aria-label="{{ i18n "bibleNavigation" | default "Bible Navigation" }}">
+  <div class="nav-controls">
     <!-- Bible selector (always shown when bible is set) -->
     {{ with $bible }}
-    <div class="relative">
+    <div>
       <label class="sr-only" for="bible-select">{{ i18n "selectBible" | default "Select Bible" }}</label>
       <select id="bible-select"
-              class="bible-nav-select appearance-none border border-[var(--color-paper-border)] rounded px-2 md:px-3 py-1 md:py-1.5 pr-6 md:pr-8 font-hand text-xs md:text-sm cursor-pointer hover:border-accent focus:border-accent focus:outline-none"
+              class="font-hand"
               onchange="if(this.value) window.location.href=this.value">
         {{ range $page.Site.Data.bibles.bibles }}
         <option value="{{ $basePath }}/{{ .id }}/" {{ if eq .id $bible }}selected{{ end }}>
@@ -39,16 +39,15 @@
         </option>
         {{ end }}
       </select>
-      <span class="absolute right-1.5 md:right-2 top-1/2 -translate-y-1/2 pointer-events-none text-[var(--color-paper-gray)] text-xs">▾</span>
     </div>
     {{ end }}
 
     <!-- Book selector (always shown - uses validBooks if available) -->
     {{ if $bible }}
-    <div class="relative">
+    <div>
       <label class="sr-only" for="book-select">{{ i18n "selectBook" | default "Select Book" }}</label>
       <select id="book-select"
-              class="bible-nav-select appearance-none border border-[var(--color-paper-border)] rounded px-2 md:px-3 py-1 md:py-1.5 pr-6 md:pr-8 font-hand text-xs md:text-sm cursor-pointer hover:border-accent focus:border-accent focus:outline-none"
+              class="font-hand"
               onchange="if(this.value) window.location.href=this.value">
         {{/* Show placeholder when no book selected */}}
         {{ if not $book }}
@@ -80,16 +79,15 @@
           {{ end }}
         {{ end }}
       </select>
-      <span class="absolute right-1.5 md:right-2 top-1/2 -translate-y-1/2 pointer-events-none text-[var(--color-paper-gray)] text-xs">▾</span>
     </div>
     {{ end }}
 
     <!-- Chapter selector (if viewing a chapter) -->
     {{ with $chapter }}
-    <div class="relative">
+    <div>
       <label class="sr-only" for="chapter-select">{{ i18n "selectChapter" | default "Select Chapter" }}</label>
       <select id="chapter-select"
-              class="bible-nav-select appearance-none border border-[var(--color-paper-border)] rounded px-2 md:px-3 py-1 md:py-1.5 pr-6 md:pr-8 font-hand text-xs md:text-sm cursor-pointer hover:border-accent focus:border-accent focus:outline-none"
+              class="font-hand"
               onchange="if(this.value) window.location.href=this.value">
         {{ range $i := seq $chapterCount }}
         <option value="{{ $basePath }}/{{ $bible }}/{{ $book }}/{{ $i }}/" {{ if eq $i $chapter }}selected{{ end }}>
@@ -97,29 +95,28 @@
         </option>
         {{ end }}
       </select>
-      <span class="absolute right-1.5 md:right-2 top-1/2 -translate-y-1/2 pointer-events-none text-[var(--color-paper-gray)] text-xs">▾</span>
     </div>
 
     <!-- Prev/Next Navigation -->
-    <div class="flex items-center gap-1 ml-auto">
+    <div class="nav-buttons">
       {{ if gt $chapter 1 }}
       <a href="{{ $basePath }}/{{ $bible }}/{{ $book }}/{{ sub $chapter 1 }}/"
-         class="bible-nav-btn"
+         class="nav-btn"
          title="{{ i18n "previousChapter" | default "Previous Chapter" }}">
         ←
       </a>
       {{ else }}
-      <span class="bible-nav-btn bible-nav-btn-disabled" aria-disabled="true">←</span>
+      <span class="nav-btn" aria-disabled="true">←</span>
       {{ end }}
 
       {{ if lt $chapter $chapterCount }}
       <a href="{{ $basePath }}/{{ $bible }}/{{ $book }}/{{ add $chapter 1 }}/"
-         class="bible-nav-btn"
+         class="nav-btn"
          title="{{ i18n "nextChapter" | default "Next Chapter" }}">
         →
       </a>
       {{ else }}
-      <span class="bible-nav-btn bible-nav-btn-disabled" aria-disabled="true">→</span>
+      <span class="nav-btn" aria-disabled="true">→</span>
       {{ end }}
     </div>
     {{ end }}
