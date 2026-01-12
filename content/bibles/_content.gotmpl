@@ -2,7 +2,10 @@
 {{/* Skips books/chapters with no real content (e.g., just verse references like "Book 1:2:") */}}
 {{- $bibleData := .Site.Data.bibles -}}
 {{- $auxData := .Site.Data.bibles_auxiliary -}}
-{{- $basePath := .Site.Params.michael.basePath | default "/religion/bibles" -}}
+{{/* Build basePath with language prefix for proper localization */}}
+{{- $langPrefix := "" -}}
+{{- with .Site.LanguagePrefix -}}{{- $langPrefix = . -}}{{- end -}}
+{{- $basePath := .Site.Params.michael.basePath | default (printf "%s/religion/bibles" $langPrefix) -}}
 
 {{- if not $bibleData -}}
   {{- warnf "No bibles.json data found. Run juniper to generate Bible data." -}}
