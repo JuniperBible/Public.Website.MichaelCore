@@ -7,22 +7,12 @@
 {{ $chapter := .chapter }}
 {{ $basePath := .basePath | default "/religion/bibles" }}
 
-{{ $bibleData := index $page.Site.Data.bibles_auxiliary $bible }}
+{{/* Get validBooks from Bible's _index.md (pre-computed during content generation) */}}
+{{ $bibleIndex := $page.Site.GetPage (printf "%s/%s" $basePath $bible) }}
+{{ $validBooks := $bibleIndex.Params.validBooks }}
 
-{{/* Get valid books from page params if available, otherwise use all books from data */}}
-{{ $validBooks := $page.Params.validBooks }}
-
-{{/* Find current book data once (used by chapter selector and navigation) */}}
-{{ $bookData := dict }}
-{{ $chapterCount := 0 }}
-{{ if and $book $chapter }}
-  {{ range $bibleData.books }}
-    {{ if eq (.id | lower) $book }}
-      {{ $bookData = . }}
-    {{ end }}
-  {{ end }}
-  {{ $chapterCount = len $bookData.chapters }}
-{{ end }}
+{{/* Get chapterCount from page params (pre-computed during content generation) */}}
+{{ $chapterCount := $page.Params.chapterCount | default 0 }}
 
 <nav class="bible-nav" aria-label="{{ i18n "bibleNavigation" | default "Bible Navigation" }}">
   <div class="nav-controls">
@@ -32,9 +22,16 @@
       <label class="sr-only" for="bible-select">{{ i18n "selectBible" | default "Select Bible" }}</label>
       <select id="bible-select"
               class="font-hand"
-              onchange="if(this.value) window.location.href=this.value">
+              onchange="navigateToBible(this.value, this.options[this.selectedIndex].dataset)">
         {{ range $page.Site.Data.bibles.bibles }}
-        <option value="{{ $basePath }}/{{ .id }}/" {{ if eq .id $bible }}selected{{ end }}>
+        {{/* Preserve current book and chapter when switching bibles */}}
+        {{ $url := printf "%s/%s/" $basePath .id }}
+        {{ if $book }}{{ $url = printf "%s/%s/%s/" $basePath .id $book }}{{ end }}
+        {{ if $chapter }}{{ $url = printf "%s/%s/%s/%d/" $basePath .id $book $chapter }}{{ end }}
+        <option value="{{ $url }}"
+                data-bible="{{ .id }}"
+                data-base="{{ $basePath }}"
+                {{ if eq .id $bible }}selected{{ end }}>
           {{ .abbrev }}
         </option>
         {{ end }}
@@ -42,7 +39,7 @@
     </div>
     {{ end }}
 
-    <!-- Book selector (always shown - uses validBooks if available) -->
+    <!-- Book selector (uses pre-computed validBooks) -->
     {{ if $bible }}
     <div>
       <label class="sr-only" for="book-select">{{ i18n "selectBook" | default "Select Book" }}</label>
@@ -53,30 +50,13 @@
         {{ if not $book }}
         <option value="" selected disabled>{{ i18n "selectBook" | default "Select Book" }}</option>
         {{ end }}
-        {{/* Use validBooks if available (from Bible overview page), otherwise use all books */}}
-        {{ if $validBooks }}
-          {{ range $validBooks }}
-          <option value="{{ $basePath }}/{{ $bible }}/{{ .id }}/" {{ if eq .id $book }}selected{{ end }}>
-            {{ .name }}
-          </option>
-          {{ end }}
-        {{ else }}
-          {{/* Filter books to only show those with actual content (at least one verse) */}}
-          {{ range $bibleData.books }}
-            {{/* Check if book has any verses - skip if all chapters are empty */}}
-            {{ $hasContent := false }}
-            {{ range .chapters }}
-              {{ if gt (len .verses) 0 }}
-                {{ $hasContent = true }}
-              {{ end }}
-            {{ end }}
-            {{ if $hasContent }}
-              {{ $bookIdLower := .id | lower }}
-              <option value="{{ $basePath }}/{{ $bible }}/{{ $bookIdLower }}/" {{ if eq $bookIdLower $book }}selected{{ end }}>
-                {{ .name }}
-              </option>
-            {{ end }}
-          {{ end }}
+        {{ range $validBooks }}
+        {{/* If viewing a chapter, go to chapter 1 of new book; otherwise go to book overview */}}
+        {{ $bookUrl := printf "%s/%s/%s/" $basePath $bible .id }}
+        {{ if $chapter }}{{ $bookUrl = printf "%s/%s/%s/1/" $basePath $bible .id }}{{ end }}
+        <option value="{{ $bookUrl }}" {{ if eq .id $book }}selected{{ end }}>
+          {{ .name }}
+        </option>
         {{ end }}
       </select>
     </div>
@@ -118,6 +98,50 @@
       {{ else }}
       <span class="nav-btn" aria-disabled="true">→</span>
       {{ end }}
+
+      <!-- Expand/Collapse toggle -->
+      <button class="nav-btn expand-btn"
+              id="expand-toggle"
+              title="{{ i18n "toggleFullWidth" | default "Toggle full width" }}"
+              aria-pressed="false"
+              onclick="toggleExpand()">
+        <svg id="expand-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="15 3 21 3 21 9"></polyline>
+          <polyline points="9 21 3 21 3 15"></polyline>
+          <line x1="21" y1="3" x2="14" y2="10"></line>
+          <line x1="3" y1="21" x2="10" y2="14"></line>
+        </svg>
+        <svg id="collapse-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none">
+          <polyline points="4 14 10 14 10 20"></polyline>
+          <polyline points="20 10 14 10 14 4"></polyline>
+          <line x1="14" y1="10" x2="21" y2="3"></line>
+          <line x1="3" y1="21" x2="10" y2="14"></line>
+        </svg>
+      </button>
+
+      <!-- Side-by-Side Scripture toggle -->
+      <div class="sss-wrapper">
+        <button class="nav-btn sss-btn sss-toggle"
+                title="{{ i18n "sideBySide" | default "Side-by-Side Scripture" }}"
+                aria-expanded="false"
+                onclick="toggleSSSDropdown(this)">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <text x="1" y="17" font-size="12" font-weight="bold" fill="currentColor" font-family="system-ui, sans-serif">SSS</text>
+          </svg>
+        </button>
+        <div class="sss-dropdown hidden">
+          <label class="sr-only">{{ i18n "compareBible" | default "Compare with" }}</label>
+          <select class="sss-bible-select font-hand" onchange="loadComparisonBible(this)">
+            <option value="">{{ i18n "selectComparison" | default "Compare with..." }}</option>
+            {{ range $page.Site.Data.bibles.bibles }}
+            {{ if ne .id $bible }}
+            <option value="{{ .id }}">{{ .abbrev }}</option>
+            {{ end }}
+            {{ end }}
+          </select>
+          <button class="sss-close-btn" onclick="closeSSSComparison()" title="{{ i18n "closeComparison" | default "Close comparison" }}">✕</button>
+        </div>
+      </div>
     </div>
     {{ end }}
   </div>

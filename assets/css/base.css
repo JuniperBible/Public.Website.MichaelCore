@@ -102,9 +102,10 @@ ol[role="list"] {
 
 :root {
   /* Colors - Paper palette */
-  --clr-bg: oklch(96% 0.01 80);
-  --clr-surface: oklch(100% 0 0);
-  --clr-surface-dim: oklch(94% 0.01 80);
+  --clr-bg: oklch(75% 0.08 70);
+  --clr-surface: oklch(96% 0.02 85);
+  --clr-surface-dim: oklch(92% 0.02 80);
+  --clr-chrome: oklch(22% 0.08 180);
   --clr-text: oklch(20% 0.01 80);
   --clr-text-muted: oklch(45% 0.02 80);
   --clr-border: oklch(85% 0.02 80);
@@ -113,9 +114,10 @@ ol[role="list"] {
   --clr-focus: oklch(60% 0.15 320);
 
   /* Fallback hex for older browsers */
-  --color-bg: #f5f1e8;
-  --color-surface: #ffffff;
-  --color-surface-dim: #f0ece3;
+  --color-bg: #b8a080;
+  --color-surface: #f5f1e8;
+  --color-surface-dim: #ebe5d8;
+  --color-chrome: #1a3230;
   --color-text: #1a1a1a;
   --color-text-muted: #6b6560;
   --color-border: #d4cfc5;
@@ -127,15 +129,15 @@ ol[role="list"] {
   --font-hand: "Patrick Hand", cursive;
   --font-mono: ui-monospace, "Cascadia Code", "Source Code Pro", monospace;
 
-  /* Type scale - Minor third (1.2) */
-  --text-xs: clamp(0.7rem, 0.66rem + 0.2vw, 0.75rem);
-  --text-sm: clamp(0.8rem, 0.75rem + 0.25vw, 0.875rem);
-  --text-base: clamp(0.9rem, 0.85rem + 0.25vw, 1rem);
-  --text-lg: clamp(1rem, 0.95rem + 0.25vw, 1.125rem);
-  --text-xl: clamp(1.15rem, 1.05rem + 0.5vw, 1.25rem);
-  --text-2xl: clamp(1.3rem, 1.15rem + 0.75vw, 1.5rem);
-  --text-3xl: clamp(1.5rem, 1.25rem + 1.25vw, 1.875rem);
-  --text-4xl: clamp(1.8rem, 1.4rem + 2vw, 2.25rem);
+  /* Type scale - Minor third (1.2) - increased 11% */
+  --text-xs: clamp(0.78rem, 0.73rem + 0.22vw, 0.83rem);
+  --text-sm: clamp(0.89rem, 0.83rem + 0.28vw, 0.97rem);
+  --text-base: clamp(1rem, 0.94rem + 0.28vw, 1.11rem);
+  --text-lg: clamp(1.11rem, 1.05rem + 0.28vw, 1.25rem);
+  --text-xl: clamp(1.28rem, 1.17rem + 0.56vw, 1.39rem);
+  --text-2xl: clamp(1.44rem, 1.28rem + 0.83vw, 1.67rem);
+  --text-3xl: clamp(1.67rem, 1.39rem + 1.39vw, 2.08rem);
+  --text-4xl: clamp(2rem, 1.55rem + 2.22vw, 2.5rem);
 
   /* Spacing - Based on 0.25rem (4px) */
   --space-1: 0.25rem;
@@ -271,7 +273,8 @@ a {
 }
 
 a:hover {
-  color: var(--color-accent-hover);
+  color: var(--color-surface);
+  background-color: #684580;
 }
 
 a:focus-visible {
@@ -351,16 +354,29 @@ hr {
   display: none !important;
 }
 
-/* Grid */
-.grid-2 {
+/* Grid - Mobile first responsive grids */
+.grid-2,
+.grid-3,
+.grid-4 {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: repeat(2, 1fr);
   gap: var(--space-4);
 }
 
+/* Tablet: 3 columns for grid-3, 2 for grid-2 */
 @media (min-width: 48rem) {
-  .grid-2 {
-    grid-template-columns: repeat(2, 1fr);
+  .grid-3 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .grid-4 {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* Desktop: full columns */
+@media (min-width: 64rem) {
+  .grid-4 {
+    grid-template-columns: repeat(6, 1fr);
   }
 }
 

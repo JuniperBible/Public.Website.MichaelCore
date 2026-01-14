@@ -9,13 +9,17 @@
   <section>
     <h2 class="font-hand">Bible Translations</h2>
     <div class="grid-2">
-      {{ range .Pages | first 4 }}
+      {{ $count := 0 }}
+      {{ range .Pages }}
+      {{ if and .Params.abbrev (lt $count 4) }}
       <article class="card">
         <a href="{{ .RelPermalink }}" class="bible-card">
           <h3>{{ .Title }}</h3>
           {{ with .Description }}<p>{{ . }}</p>{{ end }}
         </a>
       </article>
+      {{ $count = add $count 1 }}
+      {{ end }}
       {{ end }}
     </div>
     <div class="actions">

@@ -10,9 +10,9 @@
 button,
 [role="button"],
 .btn {
-  --btn-bg: var(--color-text);
-  --btn-color: var(--color-bg);
-  --btn-border: var(--color-text);
+  --btn-bg: var(--color-chrome);
+  --btn-color: var(--color-surface);
+  --btn-border: var(--color-chrome);
 
   display: inline-flex;
   align-items: center;
@@ -44,9 +44,9 @@ button,
 button:hover,
 [role="button"]:hover,
 .btn:hover {
-  --btn-bg: var(--color-accent);
-  --btn-border: var(--color-accent);
-  --btn-color: white;
+  --btn-bg: #684580;
+  --btn-border: #684580;
+  --btn-color: var(--color-surface);
 }
 
 button:focus-visible,
@@ -79,9 +79,9 @@ button.secondary {
 
 .btn-secondary:hover,
 button.secondary:hover {
-  --btn-bg: var(--color-surface-dim);
-  --btn-border: var(--color-text);
-  --btn-color: var(--color-text);
+  --btn-bg: #684580;
+  --btn-border: #684580;
+  --btn-color: var(--color-surface);
 }
 
 /* Outline variant */
@@ -103,18 +103,69 @@ button.outline {
   block-size: 1.25rem;
 }
 
+.btn-icon:hover {
+  background-color: #684580;
+  color: var(--color-surface);
+}
+
+[data-theme="dark"] .btn-icon:hover {
+  background-color: #684580;
+  color: var(--color-surface);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .btn-icon:hover {
+    background-color: #684580;
+    color: var(--color-surface);
+  }
+}
+
 /* ==========================================================================
    Cards
    ========================================================================== */
 
-article,
-.card {
-  background-color: var(--color-surface);
+article {
+  background-color: #e6ddc0;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
   padding: var(--space-6);
   margin-block-end: var(--space-4);
   transition: box-shadow var(--duration-base) var(--ease-out);
+}
+
+[data-theme="dark"] article:not(.card) {
+  background-color: var(--color-surface);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) article:not(.card) {
+    background-color: var(--color-surface);
+  }
+}
+
+.card {
+  background-color: var(--color-chrome);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+  margin-block-end: var(--space-4);
+  transition: box-shadow var(--duration-base) var(--ease-out);
+  color: var(--color-surface);
+}
+
+.card a {
+  color: inherit;
+}
+
+.card a:hover {
+  color: var(--color-surface);
+  background-color: var(--color-chrome);
+}
+
+/* Bible cards inside .card should use consistent purple hover */
+.card a.bible-card:hover {
+  background-color: #684580 !important;
+  color: #f5f1e8 !important;
 }
 
 @media (hover: hover) {
@@ -124,12 +175,16 @@ article,
   }
 }
 
-a.card,
 a article,
 article:has(> a:only-child) {
   display: block;
   text-decoration: none;
   color: inherit;
+}
+
+a.card {
+  display: block;
+  text-decoration: none;
 }
 
 article header,
@@ -175,7 +230,7 @@ nav ul {
 nav a {
   display: inline-flex;
   align-items: center;
-  color: var(--color-text);
+  color: var(--color-surface);
   text-decoration: none;
   padding: var(--space-2) var(--space-3);
   border-radius: var(--radius-md);
@@ -185,8 +240,8 @@ nav a {
 }
 
 nav a:hover {
-  color: var(--color-accent);
-  background-color: var(--color-surface-dim);
+  color: var(--color-surface);
+  background-color: #684580;
 }
 
 nav a[aria-current="page"] {
@@ -304,14 +359,14 @@ fieldset label {
 }
 
 .tag-accent {
-  background-color: oklch(from var(--color-accent) l c h / 15%);
+  background-color: color-mix(in srgb, var(--color-accent) 70%, var(--color-surface-dim));
   color: var(--color-accent);
 }
 
-/* Fallback */
-@supports not (color: oklch(from red l c h)) {
+/* Dark mode - use darker base */
+@media (prefers-color-scheme: dark) {
   .tag-accent {
-    background-color: rgba(107, 76, 107, 0.15);
+    background-color: color-mix(in srgb, var(--color-accent) 35%, var(--color-surface-dim));
   }
 }
 
@@ -337,20 +392,137 @@ fieldset label {
    Header & Footer
    ========================================================================== */
 
+body > header,
+body > footer {
+  background-color: var(--color-chrome);
+  color: var(--color-surface);
+  box-shadow: var(--shadow-md);
+}
+
 body > header {
-  background-color: var(--color-bg);
   border-block-end: 1px solid var(--color-border);
+  border-radius: 0 0 1rem 1rem;
   position: sticky;
   inset-block-start: 0;
   z-index: 100;
 }
 
+body > header nav a,
+body > header .site-name {
+  font-size: clamp(1.22rem, 1.15rem + 0.34vw, 1.35rem);
+}
+
 body > footer {
   margin-block-start: auto;
-  padding-block: var(--space-6);
+  padding-block: var(--space-1) var(--space-6);
+  padding-inline: var(--space-2);
   border-block-start: 1px solid var(--color-border);
+  border-radius: 1rem 1rem 0 0;
   text-align: center;
-  color: var(--color-text-muted);
+}
+
+body > footer nav {
+  justify-content: center;
+}
+
+body > footer nav ul {
+  justify-content: center;
+}
+
+body > footer nav a {
+  font-size: var(--text-sm);
+  padding: var(--space-1) var(--space-2);
+}
+
+body > footer small {
+  display: block;
+  inline-size: 100%;
+  margin-block-start: var(--space-4);
+  font-size: var(--text-xs);
+}
+
+body > footer small p {
+  margin-block-end: var(--space-2);
+  max-inline-size: none !important;
+  text-wrap: wrap;
+}
+
+[data-theme="dark"] body > header,
+[data-theme="dark"] body > footer,
+[data-theme="dark"] body > header nav a,
+[data-theme="dark"] body > footer nav a {
+  color: #ffffff;
+}
+
+[data-theme="dark"] nav a:hover {
+  color: var(--color-text);
+  background-color: #684580;
+}
+
+[data-theme="dark"] .card {
+  color: var(--color-text);
+}
+
+[data-theme="dark"] .card a {
+  color: var(--color-text);
+}
+
+[data-theme="dark"] .card a:hover {
+  background-color: #684580;
+  color: #f5f1e8;
+}
+
+[data-theme="dark"] button,
+[data-theme="dark"] [role="button"],
+[data-theme="dark"] .btn {
+  --btn-color: #f5f1e8;
+}
+
+[data-theme="dark"] button:hover,
+[data-theme="dark"] [role="button"]:hover,
+[data-theme="dark"] .btn:hover {
+  --btn-color: #f5f1e8 !important;
+  color: #f5f1e8 !important;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) body > header,
+  :root:not([data-theme="light"]) body > footer,
+  :root:not([data-theme="light"]) body > header nav a,
+  :root:not([data-theme="light"]) body > footer nav a {
+    color: #ffffff;
+  }
+
+  :root:not([data-theme="light"]) nav a:hover {
+    color: var(--color-text);
+    background-color: #684580;
+  }
+
+  :root:not([data-theme="light"]) .card {
+    color: var(--color-text);
+  }
+
+  :root:not([data-theme="light"]) .card a {
+    color: var(--color-text);
+  }
+
+  :root:not([data-theme="light"]) .card a:hover {
+    background-color: #684580;
+    color: #f5f1e8;
+  }
+
+  :root:not([data-theme="light"]) button,
+  :root:not([data-theme="light"]) [role="button"],
+  :root:not([data-theme="light"]) .btn {
+    --btn-color: #f5f1e8;
+  }
+
+  :root:not([data-theme="light"]) button:hover,
+  :root:not([data-theme="light"]) [role="button"]:hover,
+  :root:not([data-theme="light"]) .btn:hover {
+    --btn-color: #f5f1e8 !important;
+    color: #f5f1e8 !important;
+  }
 }
 
 /* ==========================================================================
@@ -414,9 +586,9 @@ main {
 
 .filter-group button:hover,
 .filter-group button[aria-pressed="true"] {
-  background-color: var(--color-accent);
-  border-color: var(--color-accent);
-  color: white;
+  background-color: #684580;
+  border-color: #684580;
+  color: var(--color-surface);
 }
 
 /* ==========================================================================
@@ -447,4 +619,153 @@ main {
 [role="separator"] {
   color: var(--color-text-muted);
   user-select: none;
+}
+
+/* ==========================================================================
+   Canon Comparison Table (Mobile-First)
+   ========================================================================== */
+
+.canon-table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Base mobile styles */
+.canon-table {
+  font-size: 0.6rem;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.canon-table th,
+.canon-table td {
+  padding: 0.15em 0.1em;
+  border: 1px solid var(--color-border);
+  text-align: center;
+  white-space: nowrap;
+}
+
+.canon-table th {
+  background: var(--color-surface-dim);
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+
+/* # column */
+.canon-table th:nth-child(1),
+.canon-table td:nth-child(1) {
+  width: 1.2em;
+}
+
+/* Book column */
+.canon-table th:nth-child(2) {
+  width: 5em;
+}
+
+.canon-table td:nth-child(2) {
+  text-align: left;
+  width: 5em;
+  white-space: normal;
+}
+
+/* Cat column */
+.canon-table th:nth-child(3),
+.canon-table td:nth-child(3) {
+  width: 1.5em;
+}
+
+/* Tradition columns */
+.canon-table th:nth-child(n+4):not(.notes-col),
+.canon-table td:nth-child(n+4):not(.notes-col) {
+  width: 1.2em;
+  padding: 0.15em 0.05em;
+}
+
+/* Notes column */
+.canon-table th.notes-col,
+.canon-table td.notes-col {
+  font-size: 0.8em;
+  white-space: normal;
+  text-align: left;
+  min-width: 8em;
+  line-height: 1.2;
+}
+
+.canon-table tbody tr:nth-child(even) {
+  background: color-mix(in srgb, var(--color-surface) 50%, transparent);
+}
+
+.canon-table tr:hover td {
+  background: var(--color-surface-dim);
+}
+
+.canon-table .section-row td {
+  background: var(--color-accent);
+  color: white;
+  font-weight: bold;
+  padding: var(--space-1) var(--space-2);
+}
+
+/* Tablet and up */
+@media (min-width: 640px) {
+  .canon-table {
+    font-size: 0.7rem;
+  }
+
+  .canon-table th,
+  .canon-table td {
+    padding: 0.2em 0.15em;
+  }
+
+  .canon-table th:nth-child(2),
+  .canon-table td:nth-child(2) {
+    width: 6em;
+  }
+
+  .canon-table th:nth-child(n+4):not(.notes-col),
+  .canon-table td:nth-child(n+4):not(.notes-col) {
+    width: 1.4em;
+    padding: 0.2em 0.1em;
+  }
+
+  .canon-table td.notes-col {
+    min-width: 10em;
+  }
+
+  .canon-table .section-row td {
+    padding: var(--space-2) var(--space-3);
+  }
+}
+
+/* Desktop */
+@media (min-width: 1024px) {
+  .canon-table {
+    font-size: 0.8rem;
+  }
+
+  .canon-table th,
+  .canon-table td {
+    padding: 0.25em 0.2em;
+  }
+
+  .canon-table th:nth-child(2),
+  .canon-table td:nth-child(2) {
+    width: 7em;
+  }
+
+  .canon-table td.notes-col {
+    min-width: 12em;
+  }
+}
+
+.canon-present {
+  color: #16a34a;
+  font-weight: bold;
+}
+
+.canon-absent {
+  color: var(--color-text-muted);
+  opacity: 0.3;
 }

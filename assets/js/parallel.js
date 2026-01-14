@@ -526,8 +526,34 @@
     if (!bibleText) return [];
 
     const verses = [];
-    const strongElements = bibleText.querySelectorAll('strong');
 
+    // Try parsing .verse spans first (new format)
+    const verseSpans = bibleText.querySelectorAll('.verse[data-verse]');
+    if (verseSpans.length > 0) {
+      verseSpans.forEach(span => {
+        const num = parseInt(span.dataset.verse);
+        if (isNaN(num)) return;
+
+        // Get text content excluding the sup element
+        let text = '';
+        span.childNodes.forEach(node => {
+          if (node.nodeType === Node.TEXT_NODE) {
+            text += node.textContent;
+          } else if (node.nodeType === Node.ELEMENT_NODE && node.tagName !== 'SUP') {
+            text += node.textContent;
+          }
+        });
+
+        verses.push({
+          number: num,
+          text: text.trim()
+        });
+      });
+      return verses;
+    }
+
+    // Fallback: try strong elements (old format)
+    const strongElements = bibleText.querySelectorAll('strong');
     strongElements.forEach(strong => {
       const num = strong.textContent.trim();
       if (!/^\d+$/.test(num)) return;
@@ -771,11 +797,8 @@
       populateChapterDropdown();
       chapterSelect.value = currentChapter;
 
-      if (canLoadComparison()) {
-        loadComparison().then(() => {
-          populateVerseGrid();
-        });
-      }
+      // Default to SSS mode ON
+      enterSSSMode();
     }
 
   }
@@ -969,12 +992,12 @@
 
     // Render left pane
     if (sssLeftPane) {
-      sssLeftPane.innerHTML = buildSSSPaneHTML(leftFiltered, leftBible, bookName, rightFiltered);
+      sssLeftPane.innerHTML = buildSSSPaneHTML(leftFiltered, leftBible, bookName, rightFiltered, rightBible);
     }
 
     // Render right pane
     if (sssRightPane) {
-      sssRightPane.innerHTML = buildSSSPaneHTML(rightFiltered, rightBible, bookName, leftFiltered);
+      sssRightPane.innerHTML = buildSSSPaneHTML(rightFiltered, rightBible, bookName, leftFiltered, leftBible);
     }
   }
 
@@ -1042,13 +1065,19 @@
   /**
    * Build HTML for one SSS pane with diff highlighting
    */
-  function buildSSSPaneHTML(verses, bible, bookName, compareVerses) {
+  function buildSSSPaneHTML(verses, bible, bookName, compareVerses, compareBible) {
     if (!verses || verses.length === 0) {
       return '<article><p style="text-align: center; color: var(--michael-gray); font-family: var(--michael-font-hand); padding: 2rem 0;">No verses found</p></article>';
     }
 
+    // Check for versification mismatch
+    const versificationWarning = (compareBible && bible?.versification && compareBible?.versification &&
+      bible.versification !== compareBible.versification)
+      ? `<small style="color: var(--michael-gray); display: block; font-size: 0.7rem;">${bible.versification} versification</small>`
+      : '';
+
     let html = `<header class="translation-label" style="text-align: center; padding-bottom: 0.5rem;">
-      <strong>${bible?.abbrev || 'Unknown'}</strong>
+      <strong>${bible?.abbrev || 'Unknown'}</strong>${versificationWarning}
     </header>`;
 
     verses.forEach(verse => {

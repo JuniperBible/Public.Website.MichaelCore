@@ -14,9 +14,6 @@
       <a href="{{ $basePath }}/search/" role="button">
         {{ i18n "searchBible" | default "Search Bible" }}
       </a>
-      <a href="{{ $basePath }}/compare/" role="button">
-        {{ i18n "compareTranslations" | default "Compare Translations" }}
-      </a>
     </nav>
 
     <!-- Filter by tag -->
@@ -78,14 +75,8 @@
           {{ with .Params.language }}
           <span class="tag tag-primary">{{ . }}</span>
           {{ end }}
-          {{/* License badge */}}
-          {{ $pageAbbrev := .Params.abbrev | upper }}
-          {{ range $.Site.Data.bibles.bibles }}
-            {{ if eq (.abbrev | upper) $pageAbbrev }}
-              {{ with .license }}
-              <span class="tag tag-license" title="License: {{ . }}" data-license="{{ . }}">{{ . }}</span>
-              {{ end }}
-            {{ end }}
+          {{ with .Params.license }}
+          <span class="tag tag-license" title="License: {{ . }}" data-license="{{ . }}">{{ . }}</span>
           {{ end }}
           {{ range .Params.tags }}
           <span class="tag tag-accent">{{ . }}</span>
@@ -163,7 +154,11 @@
       if (badge && badge.dataset.license) {
         e.preventDefault();
         e.stopPropagation();
-        window.location.href = '/licenses/' + badge.dataset.license.toLowerCase() + '/';
+        // Convert license name to URL slug (lowercase, replace spaces/punctuation with hyphens)
+        var slug = badge.dataset.license.toLowerCase()
+          .replace(/[^a-z0-9]+/g, '-')
+          .replace(/^-|-$/g, '');
+        window.location.href = '/licenses/' + slug + '/';
       }
     });
   }
