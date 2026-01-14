@@ -127,6 +127,7 @@
 }
 
 .bible-text .verse {
+  display: block;
   margin-block-end: var(--space-2);
 }
 
