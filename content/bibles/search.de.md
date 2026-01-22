@@ -1,6 +1,6 @@
 ---
 title: "Bibel durchsuchen"
-description: "Suche in Bibelübersetzungen"
+description: "Geben Sie einen Suchbegriff ein, um Verse in der Bibel zu finden."
 layout: "search"
 type: "michael"
 ---

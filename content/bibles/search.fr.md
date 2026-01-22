@@ -1,6 +1,6 @@
 ---
 title: "Rechercher dans la Bible"
-description: "Rechercher dans les traductions de la Bible"
+description: "Entrez un terme de recherche pour trouver des versets dans la Bible."
 layout: "search"
 type: "michael"
 ---

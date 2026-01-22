@@ -1,6 +1,6 @@
 ---
-title: "Comparar Traducciones"
-description: "Compara traducciones de la Biblia lado a lado"
+title: "Comparar traducciones"
+description: "Selecciona 2-4 traducciones para comparar lado a lado."
 layout: "compare"
 type: "michael"
 ---

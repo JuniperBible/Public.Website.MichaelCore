@@ -1,6 +1,6 @@
 ---
 title: "Übersetzungen vergleichen"
-description: "Vergleichen Sie Bibelübersetzungen nebeneinander"
+description: "Wählen Sie 2-4 Übersetzungen zum Vergleich nebeneinander aus."
 layout: "compare"
 type: "michael"
 ---
