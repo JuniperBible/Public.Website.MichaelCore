@@ -1,39 +1,39 @@
 {{/* Canonical comparison table partial */}}
 {{/* Shows which books are in which traditions with category indicators */}}
 
-{{ $mappings := .Site.Data.christian_canon_compared }}
+{{ $mappings := .Site.Data.book_mappings }}
 {{ $traditions := $mappings.traditions }}
 {{ $categories := $mappings.categories }}
 {{ $sections := $mappings.sections }}
 {{ $books := $mappings.books }}
 
 {{/* Legend */}}
-<section class="font-hand" style="margin-block-end: var(--space-4);">
-  <h3>Legend</h3>
-  <div style="display: flex; flex-wrap: wrap; gap: 1rem; font-size: var(--text-sm);">
+<div class="canon-legend">
+  <h3 class="canon-legend-title">Legend</h3>
+  <div class="canon-legend-items">
     {{ range $id, $cat := $categories }}
     <span title="{{ $cat.description }}">{{ $cat.symbol }} {{ $cat.name }}</span>
     {{ end }}
   </div>
-  <p style="margin-block-start: 0.5rem; color: var(--color-text-muted); font-size: var(--text-sm);">
-    <span class="canon-present">✓</span> = Present or historically received |
-    <span class="canon-absent">—</span> = Not included
-  </p>
-</section>
+  <div class="canon-legend-hint">
+    <span class="canon-present">&#10003;</span> = Present or historically received |
+    <span class="canon-absent">&mdash;</span> = Not included
+  </div>
+</div>
 
 <div class="canon-table-wrapper">
-  <table class="canon-table font-hand">
+  <table class="canon-table">
     <thead>
-      <tr>
-        <th scope="col" style="text-align: left;">#</th>
-        <th scope="col" style="text-align: left;">Book</th>
-        <th scope="col" style="text-align: center;">Cat</th>
+      <tr class="canon-header-row">
+        <th class="canon-th-seq">#</th>
+        <th class="canon-th-book">Book</th>
+        <th class="canon-th-cat">Cat</th>
         {{ range $traditions }}
-        <th scope="col" style="text-align: center; white-space: nowrap;" title="{{ .fullName }}: {{ .description }}">
+        <th class="canon-th-tradition" title="{{ .fullName }}: {{ .description }}">
           {{ .name }}
         </th>
         {{ end }}
-        <th scope="col" style="text-align: left;">Notes</th>
+        <th class="canon-th-notes">Notes</th>
       </tr>
     </thead>
     <tbody>
@@ -48,24 +48,24 @@
             {{ $sectionData = . }}
           {{ end }}
         {{ end }}
-        <tr class="section-row">
-          <td colspan="{{ add (len $traditions) 4 }}" scope="row">
+        <tr class="canon-section-row">
+          <td colspan="{{ add (len $traditions) 4 }}" class="canon-section-cell">
             {{ $sectionData.name }}
           </td>
         </tr>
       {{ end }}
       {{/* Book row */}}
-      <tr>
-        <td>{{ .seq }}</td>
-        <td>
+      <tr class="canon-book-row">
+        <td class="canon-td-seq">{{ .seq }}</td>
+        <td class="canon-td-book">
           {{ $basePath := $.Site.Params.michael.basePath | default "/religion/bibles" }}
           {{ if .drc_id }}
-          <a href="{{ $basePath }}/drc/{{ .drc_id }}/">{{ .name }}</a>
+          <a href="{{ $basePath }}/drc/{{ .drc_id }}/" class="canon-book-link">{{ .name }}</a>
           {{ else }}
-          <strong>{{ .name }}</strong>
+          <span class="canon-book-name">{{ .name }}</span>
           {{ end }}
         </td>
-        <td style="text-align: center;">
+        <td class="canon-td-cat">
           {{/* Handle both single category and categories array */}}
           {{ if .categories }}
             {{ range $i, $catId := .categories }}{{ if $i }} {{ end }}{{ $cat := index $categories $catId }}<span title="{{ $cat.name }}: {{ $cat.description }}">{{ $cat.symbol }}</span>{{ end }}
@@ -76,15 +76,15 @@
         </td>
         {{ $canonical := .canonical_in }}
         {{ range $traditions }}
-        <td style="text-align: center;">
+        <td class="canon-td-tradition">
           {{ if in $canonical .id }}
-          <span class="canon-present" title="Present in {{ .fullName }}">✓</span>
+          <span class="canon-present" title="Present in {{ .fullName }}">&#10003;</span>
           {{ else }}
-          <span class="canon-absent">—</span>
+          <span class="canon-absent">&mdash;</span>
           {{ end }}
         </td>
         {{ end }}
-        <td class="notes-col">
+        <td class="canon-td-notes">
           {{ .notes }}
         </td>
       </tr>
@@ -94,15 +94,15 @@
 </div>
 
 {{/* Book count summary table */}}
-<div class="card" style="margin-block-start: var(--space-8); color: white;">
-  <h3 class="font-hand" style="color: white;">Canon Summary by Tradition</h3>
-  <figure style="overflow-x: auto;">
-    <table class="font-hand" style="font-size: var(--text-sm); color: white;">
+<div class="canon-summary">
+  <h3 class="canon-summary-title">Canon Summary by Tradition</h3>
+  <div class="canon-summary-table-wrapper">
+    <table class="canon-summary-table">
       <thead>
-        <tr>
-          <th scope="col" style="text-align: left; color: white;">Tradition</th>
-          <th scope="col" style="text-align: center; color: white;">Books</th>
-          <th scope="col" style="text-align: left; color: white;">Description</th>
+        <tr class="canon-header-row">
+          <th class="canon-th-tradition-name">Tradition</th>
+          <th class="canon-th-count">Books</th>
+          <th class="canon-th-desc">Description</th>
         </tr>
       </thead>
       <tbody>
@@ -115,27 +115,27 @@
             {{ $count = add $count 1 }}
           {{ end }}
         {{ end }}
-        <tr>
-          <td>
-            <strong>{{ .name }}</strong>
-            <span style="opacity: 0.8; margin-inline-start: 0.25rem;">({{ .fullName }})</span>
+        <tr class="canon-book-row">
+          <td class="canon-td-tradition-name">
+            <span class="canon-tradition-name">{{ .name }}</span>
+            <span class="canon-tradition-fullname">({{ .fullName }})</span>
           </td>
-          <td style="text-align: center;"><strong>{{ $count }}</strong></td>
-          <td style="font-size: var(--text-xs); opacity: 0.8;">{{ .description }}</td>
+          <td class="canon-td-count">{{ $count }}</td>
+          <td class="canon-td-desc">{{ .description }}</td>
         </tr>
         {{ end }}
-        <tr style="border-top: 2px solid rgba(255,255,255,0.3);">
-          <td><strong>Total Unique Texts</strong></td>
-          <td style="text-align: center;"><strong>{{ len $books }}</strong></td>
-          <td style="font-size: var(--text-xs); opacity: 0.8;">All texts across all traditions</td>
+        <tr class="canon-total-row">
+          <td class="canon-td-total-label">Total Unique Texts</td>
+          <td class="canon-td-total-count">{{ len $books }}</td>
+          <td class="canon-td-total-desc">All texts across all traditions</td>
         </tr>
       </tbody>
     </table>
-  </figure>
+  </div>
 </div>
 
-<footer class="font-hand" style="margin-block-start: 1rem; font-size: var(--text-xs); color: var(--color-text-muted);">
-  <p><strong>Traditions:</strong>
+<div class="canon-footer">
+  <p class="canon-footer-text"><strong>Traditions:</strong>
     {{ range $i, $trad := $traditions }}{{ if $i }}, {{ end }}{{ $trad.name }} = {{ $trad.fullName }}{{ end }}
   </p>
-</footer>
+</div>

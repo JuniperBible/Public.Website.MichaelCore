@@ -10,324 +10,93 @@
 {{ if $share }}
 <script src="{{ $share.RelPermalink }}" defer></script>
 {{ end }}
-<!-- Expand/Collapse toggle -->
-<script>
-function toggleExpand() {
-  var container = document.querySelector('.expandable-container');
-  var btn = document.getElementById('expand-toggle');
-  var expandIcon = document.getElementById('expand-icon');
-  var collapseIcon = document.getElementById('collapse-icon');
-  if (!container || !btn) return;
-
-  var isExpanded = container.classList.toggle('expanded');
-  btn.setAttribute('aria-pressed', isExpanded);
-
-  if (expandIcon && collapseIcon) {
-    expandIcon.style.display = isExpanded ? 'none' : 'block';
-    collapseIcon.style.display = isExpanded ? 'block' : 'none';
-  }
-}
-
-// Navigate to bible with fallback
-function navigateToBible(url, dataset) {
-  var bible = dataset.bible;
-  var base = dataset.base;
-
-  // Try the requested URL first
-  fetch(url, { method: 'HEAD' })
-    .then(function(response) {
-      if (response.ok) {
-        window.location.href = url;
-      } else {
-        return tryFallback(bible, base);
-      }
-    })
-    .catch(function() {
-      return tryFallback(bible, base);
-    });
-}
-
-function tryFallback(bible, base) {
-  var genesisUrl = base + '/' + bible + '/gen/1/';
-  var johnUrl = base + '/' + bible + '/john/1/';
-  var bibleHomeUrl = base + '/' + bible + '/';
-
-  // Try Genesis 1
-  fetch(genesisUrl, { method: 'HEAD' })
-    .then(function(response) {
-      if (response.ok) {
-        sessionStorage.setItem('bibleNavWarning', 'The requested book or chapter is not available in this translation. Showing Genesis 1 instead.');
-        window.location.href = genesisUrl;
-      } else {
-        // Try John 1
-        return fetch(johnUrl, { method: 'HEAD' });
-      }
-    })
-    .then(function(response) {
-      if (response && response.ok) {
-        sessionStorage.setItem('bibleNavWarning', 'The requested book or chapter is not available in this translation. Showing John 1 instead.');
-        window.location.href = johnUrl;
-      } else if (response) {
-        // Go to bible home
-        sessionStorage.setItem('bibleNavWarning', 'The requested book or chapter is not available in this translation.');
-        window.location.href = bibleHomeUrl;
-      }
-    })
-    .catch(function() {
-      window.location.href = bibleHomeUrl;
-    });
-}
-
-// Show warning banner if set
-(function() {
-  var warning = sessionStorage.getItem('bibleNavWarning');
-  if (warning) {
-    sessionStorage.removeItem('bibleNavWarning');
-    var banner = document.createElement('div');
-    banner.className = 'warning-banner';
-    banner.innerHTML = '<span>' + warning + '</span><button onclick="this.parentElement.remove()" aria-label="Dismiss">&times;</button>';
-    var main = document.querySelector('main');
-    if (main) main.insertBefore(banner, main.firstChild);
-  }
-})();
-
-// Side-by-Side Scripture (SSS) functionality
-var sssActive = false;
-var sssComparisonPane = null;
-var sssCurrentBible = null;
-
-function toggleSSSDropdown(btn) {
-  var wrapper = btn.closest('.sss-wrapper');
-  if (!wrapper) return;
-  var dropdown = wrapper.querySelector('.sss-dropdown');
-  if (!dropdown) return;
-
-  var isHidden = dropdown.classList.toggle('hidden');
-  btn.setAttribute('aria-expanded', !isHidden);
-}
-
-function loadComparisonBible(selectEl) {
-  var bibleId = selectEl.value;
-  if (!bibleId) return;
-
-  // Get current page info from URL
-  var path = window.location.pathname;
-  var match = path.match(/\/religion\/bibles\/([^\/]+)\/([^\/]+)\/(\d+)/);
-  if (!match) return;
-
-  var currentBible = match[1];
-  var book = match[2];
-  var chapter = match[3];
-
-  // Store selected bible
-  sssCurrentBible = bibleId;
-
-  // Update all SSS selects to match
-  document.querySelectorAll('.sss-bible-select').forEach(function(sel) {
-    sel.value = bibleId;
-  });
-
-  // Construct URL for comparison Bible
-  var comparisonUrl = '/religion/bibles/' + bibleId + '/' + book + '/' + chapter + '/';
-
-  // Show loading state
-  if (sssComparisonPane) {
-    var compText = sssComparisonPane.querySelector('.bible-text');
-    if (compText) compText.innerHTML = '<p style="text-align:center;">Loading ' + bibleId.toUpperCase() + '...</p>';
-  }
-
-  // Fetch the comparison chapter
-  fetch(comparisonUrl)
-    .then(function(response) {
-      if (!response.ok) throw new Error('Chapter not found');
-      return response.text();
-    })
-    .then(function(html) {
-      var parser = new DOMParser();
-      var doc = parser.parseFromString(html, 'text/html');
-      var bibleText = doc.querySelector('.bible-text');
-
-      if (!bibleText) {
-        showSideBySideError(bibleId, book, chapter);
-        return;
-      }
-
-      showSideBySide(bibleId, bibleText.innerHTML);
-    })
-    .catch(function(err) {
-      showSideBySideError(bibleId, book, chapter);
-    });
-}
-
-function showSideBySideError(bibleId, book, chapter) {
-  var errorHtml = '<div class="sss-error">' +
-    '<p><strong>' + book.charAt(0).toUpperCase() + book.slice(1) + ' ' + chapter + '</strong> is not available in <strong>' + bibleId.toUpperCase() + '</strong>.</p>' +
-    '<p>This translation may not include this book, or the chapter numbering may differ.</p>' +
-    '</div>';
-  showSideBySide(bibleId, errorHtml);
-}
-
-function showSideBySide(bibleId, comparisonHtml) {
-  var mainBibleText = document.querySelector('.bible-text');
-  if (!mainBibleText) return;
-
-  // Get current bible abbrev from select
-  var bibleSelect = document.getElementById('bible-select');
-  var currentAbbrev = bibleSelect ? bibleSelect.options[bibleSelect.selectedIndex].text : 'Current';
-
-  // If already in side-by-side mode, just update the comparison pane
-  if (sssActive && sssComparisonPane) {
-    var compText = sssComparisonPane.querySelector('.bible-text');
-    var compHeader = sssComparisonPane.querySelector('.bible-pane-header');
-    if (compText) compText.innerHTML = comparisonHtml;
-    if (compHeader) compHeader.textContent = bibleId.toUpperCase();
-    return;
-  }
-
-  // Create wrapper for side-by-side
-  var wrapper = document.createElement('div');
-  wrapper.className = 'bible-content-wrapper';
-
-  // Wrap original content
-  var originalPane = document.createElement('div');
-  originalPane.className = 'bible-pane';
-  var originalHeader = document.createElement('div');
-  originalHeader.className = 'bible-pane-header';
-  originalHeader.textContent = currentAbbrev;
-  originalPane.appendChild(originalHeader);
-
-  // Move original bible-text into pane
-  mainBibleText.parentNode.insertBefore(wrapper, mainBibleText);
-  originalPane.appendChild(mainBibleText);
-  wrapper.appendChild(originalPane);
-
-  // Create comparison pane
-  sssComparisonPane = document.createElement('div');
-  sssComparisonPane.className = 'bible-pane';
-  var compHeader = document.createElement('div');
-  compHeader.className = 'bible-pane-header';
-  compHeader.textContent = bibleId.toUpperCase();
-  sssComparisonPane.appendChild(compHeader);
-
-  var compText = document.createElement('div');
-  compText.className = 'bible-text';
-  compText.innerHTML = comparisonHtml;
-  sssComparisonPane.appendChild(compText);
-
-  wrapper.appendChild(sssComparisonPane);
-
-  sssActive = true;
-}
-
-function closeSSSComparison() {
-  if (!sssActive) return;
-
-  var wrapper = document.querySelector('.bible-content-wrapper');
-  if (!wrapper) return;
-
-  var originalBibleText = wrapper.querySelector('.bible-pane:first-child .bible-text');
-  if (originalBibleText) {
-    wrapper.parentNode.insertBefore(originalBibleText, wrapper);
-  }
-
-  wrapper.remove();
-  sssComparisonPane = null;
-  sssActive = false;
-  sssCurrentBible = null;
-
-  // Reset all dropdowns
-  document.querySelectorAll('.sss-bible-select').forEach(function(sel) {
-    sel.value = '';
-  });
-
-  // Hide all dropdowns
-  document.querySelectorAll('.sss-dropdown').forEach(function(dropdown) {
-    dropdown.classList.add('hidden');
-  });
-}
-</script>
 {{ end }}
 {{ end }}
 
 {{ define "main" }}
 {{ $basePath := .Site.Params.michael.basePath | default "/religion/bibles" }}
-<main class="container expandable-container">
-  <article>
-    <header class="michael-header">
-      <h1 class="font-hand">
-        {{ .Title }}
-      </h1>
-      {{ with .Params.description }}
-      <p class="font-hand">{{ . }}</p>
-      {{ end }}
-
-      <!-- Features/tags -->
-      <div class="actions">
-        {{/* Get language and license from Bible's _index.md (pre-computed) */}}
-        {{ $bibleIndex := .Site.GetPage (printf "%s/%s" $basePath .Params.bible) }}
-        {{ with $bibleIndex.Params.language }}
-        <span class="tag tag-primary font-hand">{{ . }}</span>
-        {{ end }}
-        {{ with $bibleIndex.Params.license }}
-        <a href="/licenses/{{ . | urlize }}/" class="tag tag-license font-hand" title="SPDX License: {{ . }}">{{ . }}</a>
-        {{ end }}
-        {{ range .Params.features }}
-        <span class="tag tag-accent font-hand">{{ . }}</span>
-        {{ end }}
-      </div>
-    </header>
-
-    <!-- Bible chapter content or book navigation -->
-    {{ if .Params.chapter }}
-      <!-- Chapter view: show verses -->
-      <section>
-        {{/* Cache bible-nav since it's rendered twice (top and bottom) with identical output */}}
-        {{ $navKey := printf "%s-%s-%d-%d" .Params.bible .Params.book .Params.chapter (.Params.chapterCount | default 0) }}
-        {{ $navParams := dict "page" . "bible" .Params.bible "book" .Params.book "chapter" .Params.chapter "basePath" $basePath }}
-        {{ $cachedNav := partialCached "michael/bible-nav.html" $navParams $navKey }}
-
-        <!-- Navigation with dropdowns -->
-        {{ $cachedNav }}
-
-        <div class="bible-text">
-          {{ .Content }}
-        </div>
-
-        <!-- Bottom navigation for convenience -->
-        {{ $cachedNav }}
-      </section>
-
-    {{ else if .Params.book }}
-      <!-- Book view: show chapter list -->
-      <section>
-        {{ partial "michael/bible-nav.html" (dict "page" . "bible" .Params.bible "book" .Params.book "chapter" 0 "basePath" $basePath) }}
-        {{ partial "prose-content.html" .Content }}
-      </section>
-
-    {{ else }}
-      <!-- Bible overview: show book list -->
-      <section>
-        {{ partial "michael/bible-nav.html" (dict "page" . "bible" .Params.bible "book" "" "chapter" 0 "basePath" $basePath) }}
-        {{ partial "prose-content.html" .Content }}
-      </section>
+<article class="bible-article">
+  <header class="bible-header">
+    <h1 class="bible-title">
+      {{ .Title }}
+    </h1>
+    {{ with .Params.description }}
+    <p class="bible-description">{{ . }}</p>
     {{ end }}
 
-    <!-- Navigation -->
-    <nav class="actions">
-      {{ if .Params.chapter }}
-        <a href="{{ $basePath }}/{{ .Params.bible }}/{{ .Params.book }}/" role="button">
-          &larr; {{ i18n "backToBook" | default "Back to Book" }}
-        </a>
-      {{ else if .Params.book }}
-        <a href="{{ $basePath }}/{{ .Params.bible }}/" role="button">
-          &larr; {{ i18n "backToBible" | default "Back to Bible" }}
-        </a>
-      {{ else }}
-        <a href="{{ $basePath }}/" role="button">
-          &larr; {{ i18n "allBibles" | default "All Bibles" }}
-        </a>
+    <!-- Features/tags -->
+    <div class="bible-tags">
+      {{/* Look up language and license from bibles.json */}}
+      {{ $bibleId := .Params.bible | default .Params.abbrev | default .File.ContentBaseName }}
+      {{ range .Site.Data.bibles.bibles }}
+        {{ if eq .id $bibleId }}
+          {{ with .language }}
+          <span class="bible-tag bible-tag-language">{{ . }}</span>
+          {{ end }}
+          {{ with .license }}
+          <a href="/licenses/{{ . | urlize }}/" class="bible-tag bible-tag-license" title="SPDX License: {{ . }}">{{ . }}</a>
+          {{ end }}
+        {{ end }}
       {{ end }}
-    </nav>
-  </article>
-</main>
+      {{/* Fallback to params if not in bibles.json */}}
+      {{ if not .Site.Data.bibles.bibles }}
+        {{ with .Params.language }}
+        <span class="bible-tag bible-tag-language">{{ . }}</span>
+        {{ end }}
+      {{ end }}
+      {{ range .Params.features }}
+      <span class="bible-tag bible-tag-feature">{{ . }}</span>
+      {{ end }}
+    </div>
+  </header>
+
+  <!-- Bible chapter content or book navigation -->
+  {{ if .Params.chapter }}
+    <!-- Chapter view: show verses -->
+    <div class="bible-content">
+      <!-- Navigation with dropdowns -->
+      {{ partial "michael/bible-nav.html" (dict "page" . "bible" .Params.bible "book" .Params.book "chapter" .Params.chapter "basePath" $basePath) }}
+
+      <div class="bible-text">
+        {{ .Content }}
+      </div>
+
+      <!-- Bottom navigation for convenience -->
+      {{ partial "michael/bible-nav.html" (dict "page" . "bible" .Params.bible "book" .Params.book "chapter" .Params.chapter "basePath" $basePath) }}
+    </div>
+
+  {{ else if .Params.book }}
+    <!-- Book view: show chapter list -->
+    {{ partial "michael/bible-nav.html" (dict "page" . "bible" .Params.bible "book" .Params.book "chapter" 0 "basePath" $basePath) }}
+    {{ partial "prose-content.html" .Content }}
+
+  {{ else }}
+    <!-- Bible overview: show book list -->
+    {{ partial "michael/bible-nav.html" (dict "page" . "bible" .Params.bible "book" "" "chapter" 0 "basePath" $basePath) }}
+    {{ partial "prose-content.html" .Content }}
+  {{ end }}
+
+  <!-- Navigation -->
+  <div class="bible-bottom-nav">
+    {{ if .Params.chapter }}
+      <a href="{{ $basePath }}/{{ .Params.bible }}/{{ .Params.book }}/" class="btn-paper">
+        &larr; {{ i18n "backToBook" | default "Back to Book" }}
+      </a>
+      <a href="{{ $basePath }}/compare/?bibles={{ .Params.bible }}&ref={{ .Params.book }}.{{ .Params.chapter }}" class="btn-paper">
+        {{ i18n "compareTranslations" | default "Compare Translations" }}
+      </a>
+    {{ else if .Params.book }}
+      <a href="{{ $basePath }}/{{ .Params.bible }}/" class="btn-paper">
+        &larr; {{ i18n "backToBible" | default "Back to Bible" }}
+      </a>
+    {{ else }}
+      <a href="{{ $basePath }}/" class="btn-paper">
+        &larr; {{ i18n "allBibles" | default "All Bibles" }}
+      </a>
+      <a href="{{ $basePath }}/compare/?bibles={{ .Params.bible }}" class="btn-paper">
+        {{ i18n "compareTranslations" | default "Compare Translations" }}
+      </a>
+    {{ end }}
+  </div>
+</article>
 {{ end }}
