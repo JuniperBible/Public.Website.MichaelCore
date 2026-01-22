@@ -90,7 +90,7 @@ other = "Caută în Biblie"
 other = "Caută"
 
 [searchPlaceholder]
-other = "cuvânt, "frază exactă", sau H1234/G5678"
+other = "cuvânt, 'frază exactă', sau H1234/G5678"
 
 [search]
 other = "Caută"
@@ -108,7 +108,7 @@ other = "Se caută..."
 other = "Introduceți un termen de căutare pentru a găsi versete în Biblie."
 
 [searchTypesHint]
-other = "Încercați: cuvânt, "frază exactă", sau numere Strong (H430, G2316)"
+other = "Încercați: cuvânt, 'frază exactă', sau numere Strong (H430, G2316)"
 
 [searchResults]
 other = "Rezultate Căutare"

@@ -90,7 +90,7 @@ other = "Cari Alkitab"
 other = "Cari"
 
 [searchPlaceholder]
-other = "kata, "frasa tepat", atau H1234/G5678"
+other = "kata, 'frasa tepat', atau H1234/G5678"
 
 [search]
 other = "Cari"
@@ -108,7 +108,7 @@ other = "Mencari..."
 other = "Masukkan istilah pencarian untuk menemukan ayat di seluruh Alkitab."
 
 [searchTypesHint]
-other = "Coba: kata, "frasa tepat", atau nomor Strong (H430, G2316)"
+other = "Coba: kata, 'frasa tepat', atau nomor Strong (H430, G2316)"
 
 [searchResults]
 other = "Hasil Pencarian"

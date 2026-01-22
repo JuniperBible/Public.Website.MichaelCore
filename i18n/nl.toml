@@ -90,7 +90,7 @@ other = "Zoek in Bijbel"
 other = "Zoek naar"
 
 [searchPlaceholder]
-other = "woord, "exacte zin", of H1234/G5678"
+other = "woord, 'exacte zin', of H1234/G5678"
 
 [search]
 other = "Zoeken"
@@ -108,7 +108,7 @@ other = "Zoeken..."
 other = "Voer een zoekterm in om verzen te vinden in de Bijbel."
 
 [searchTypesHint]
-other = "Probeer: woord, "exacte zin", of Strong's nummers (H430, G2316)"
+other = "Probeer: woord, 'exacte zin', of Strong's nummers (H430, G2316)"
 
 [searchResults]
 other = "Zoekresultaten"

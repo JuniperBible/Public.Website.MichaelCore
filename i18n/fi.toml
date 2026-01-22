@@ -90,7 +90,7 @@ other = "Etsi Raamatusta"
 other = "Etsi"
 
 [searchPlaceholder]
-other = "sana, "tarkka lause", tai H1234/G5678"
+other = "sana, 'tarkka lause', tai H1234/G5678"
 
 [search]
 other = "Etsi"
@@ -108,7 +108,7 @@ other = "Etsitään..."
 other = "Syötä hakusana löytääksesi jakeita Raamatusta."
 
 [searchTypesHint]
-other = "Kokeile: sana, "tarkka lause", tai Strongin numerot (H430, G2316)"
+other = "Kokeile: sana, 'tarkka lause', tai Strongin numerot (H430, G2316)"
 
 [searchResults]
 other = "Hakutulokset"

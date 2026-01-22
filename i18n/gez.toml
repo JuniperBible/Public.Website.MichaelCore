@@ -90,7 +90,7 @@ other = "ኅሥሥ መጽሐፍ ቅዱስ"
 other = "ኅሥሥ"
 
 [searchPlaceholder]
-other = "ቃል፣ "ርቱዕ ሐረግ"፣ ወይኒ H1234/G5678"
+other = "ቃል፣ 'ርቱዕ ሐረግ'፣ ወይኒ H1234/G5678"
 
 [search]
 other = "ኅሥሥ"
@@ -108,7 +108,7 @@ other = "እኴንን..."
 other = "አስተባእ ቃል ኅሡሣ ለማግኘት ክፍላት በመጽሐፍ ቅዱስ።"
 
 [searchTypesHint]
-other = "ሞክር: ቃል፣ "ርቱዕ ሐረግ"፣ ወይኒ ቁጥራተ Strong (H430, G2316)"
+other = "ሞክር: ቃል፣ 'ርቱዕ ሐረግ'፣ ወይኒ ቁጥራተ Strong (H430, G2316)"
 
 [searchResults]
 other = "ፍሬያተ ኅሡሣ"

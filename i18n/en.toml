@@ -89,7 +89,7 @@ other = "Search Bible"
 other = "Search for"
 
 [searchPlaceholder]
-other = "word, "exact phrase", or H1234/G5678"
+other = "word, 'exact phrase', or H1234/G5678"
 
 [search]
 other = "Search"
@@ -107,7 +107,7 @@ other = "Searching..."
 other = "Enter a search term to find verses across the Bible."
 
 [searchTypesHint]
-other = "Try: word, "exact phrase", or Strong's numbers (H430, G2316)"
+other = "Try: word, 'exact phrase', or Strong's numbers (H430, G2316)"
 
 [searchResults]
 other = "Search Results"

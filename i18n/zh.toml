@@ -90,7 +90,7 @@ other = "搜索圣经"
 other = "搜索："
 
 [searchPlaceholder]
-other = "词语、"精确短语"、或 H1234/G5678"
+other = "词语、'精确短语'、或 H1234/G5678"
 
 [search]
 other = "搜索"
@@ -108,7 +108,7 @@ other = "搜索中..."
 other = "输入搜索词以在整本圣经中查找经文。"
 
 [searchTypesHint]
-other = "尝试：词语、"精确短语"、或斯特朗编号（H430、G2316）"
+other = "尝试：词语、'精确短语'、或斯特朗编号（H430、G2316）"
 
 [searchResults]
 other = "搜索结果"

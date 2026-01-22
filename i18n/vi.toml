@@ -90,7 +90,7 @@ other = "Tìm kiếm Kinh Thánh"
 other = "Tìm kiếm"
 
 [searchPlaceholder]
-other = "từ, "cụm từ chính xác", hoặc H1234/G5678"
+other = "từ, 'cụm từ chính xác', hoặc H1234/G5678"
 
 [search]
 other = "Tìm kiếm"
@@ -108,7 +108,7 @@ other = "Đang tìm kiếm..."
 other = "Nhập từ khóa tìm kiếm để tìm các câu trong Kinh Thánh."
 
 [searchTypesHint]
-other = "Thử: từ, "cụm từ chính xác", hoặc số Strong (H430, G2316)"
+other = "Thử: từ, 'cụm từ chính xác', hoặc số Strong (H430, G2316)"
 
 [searchResults]
 other = "Kết quả tìm kiếm"

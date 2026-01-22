@@ -90,7 +90,7 @@ other = "Maghanap sa Bibliya"
 other = "Maghanap para sa"
 
 [searchPlaceholder]
-other = "salita, "eksaktong parirala", o H1234/G5678"
+other = "salita, 'eksaktong parirala', o H1234/G5678"
 
 [search]
 other = "Maghanap"
@@ -108,7 +108,7 @@ other = "Naghahanap..."
 other = "Maglagay ng terminong hinahanap upang makahanap ng mga talata sa buong Bibliya."
 
 [searchTypesHint]
-other = "Subukan: salita, "eksaktong parirala", o mga Strong's number (H430, G2316)"
+other = "Subukan: salita, 'eksaktong parirala', o mga Strong's number (H430, G2316)"
 
 [searchResults]
 other = "Mga Resulta ng Paghahanap"

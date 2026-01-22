@@ -90,7 +90,7 @@ other = "성경 검색"
 other = "검색"
 
 [searchPlaceholder]
-other = "단어, "정확한 구문", 또는 H1234/G5678"
+other = "단어, '정확한 구문', 또는 H1234/G5678"
 
 [search]
 other = "검색"
@@ -108,7 +108,7 @@ other = "검색 중..."
 other = "성경 전체에서 구절을 찾으려면 검색어를 입력하세요."
 
 [searchTypesHint]
-other = "예: 단어, "정확한 구문", 또는 스트롱 번호 (H430, G2316)"
+other = "예: 단어, '정확한 구문', 또는 스트롱 번호 (H430, G2316)"
 
 [searchResults]
 other = "검색 결과"

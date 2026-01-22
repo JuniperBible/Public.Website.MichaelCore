@@ -90,7 +90,7 @@ other = "Cerca nella Bibbia"
 other = "Cerca"
 
 [searchPlaceholder]
-other = "parola, "frase esatta", o H1234/G5678"
+other = "parola, 'frase esatta', o H1234/G5678"
 
 [search]
 other = "Cerca"
@@ -108,7 +108,7 @@ other = "Ricerca in corso..."
 other = "Inserisci un termine di ricerca per trovare versetti nella Bibbia."
 
 [searchTypesHint]
-other = "Prova: parola, "frase esatta", o numeri Strong (H430, G2316)"
+other = "Prova: parola, 'frase esatta', o numeri Strong (H430, G2316)"
 
 [searchResults]
 other = "Risultati della ricerca"

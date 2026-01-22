@@ -6,13 +6,13 @@
 
 # Navigation
 [bibleNavigation]
-other = "ניווט בתנ"ך"
+other = "ניווט בתנ\"ך"
 
 [bibles]
-other = "תרגומי תנ"ך"
+other = "תרגומי תנ\"ך"
 
 [biblesDescription]
-other = "עיין בתרגומי תנ"ך היסטוריים"
+other = "עיין בתרגומי תנ\"ך היסטוריים"
 
 [backToReligion]
 other = "חזרה"
@@ -21,16 +21,16 @@ other = "חזרה"
 other = "חזרה לספר"
 
 [backToBible]
-other = "חזרה לתנ"ך"
+other = "חזרה לתנ\"ך"
 
 [allBibles]
-other = "כל התנ"כים"
+other = "כל התנ\"כים"
 
 [allChapters]
 other = "כל הפרקים"
 
 [selectBible]
-other = "בחר תנ"ך"
+other = "בחר תנ\"ך"
 
 [selectBook]
 other = "בחר ספר"
@@ -58,7 +58,7 @@ other = "סנן לפי תגית"
 other = "הכל"
 
 [noBiblesMatch]
-other = "אין תנ"כים תואמים לסינון זה."
+other = "אין תנ\"כים תואמים לסינון זה."
 
 # Compare translations
 [compareTranslations]
@@ -84,13 +84,13 @@ other = "ניתן להשוות עד 4 תרגומים בו-זמנית."
 
 # Bible search
 [searchBible]
-other = "חפש בתנ"ך"
+other = "חפש בתנ\"ך"
 
 [searchQuery]
 other = "חפש עבור"
 
 [searchPlaceholder]
-other = "מילה, "ביטוי מדויק", או H1234/G5678"
+other = "מילה, 'ביטוי מדויק', או H1234/G5678"
 
 [search]
 other = "חפש"
@@ -105,10 +105,10 @@ other = "מילה שלמה"
 other = "מחפש..."
 
 [searchPrompt]
-other = "הזן מונח חיפוש כדי למצוא פסוקים בכל התנ"ך."
+other = "הזן מונח חיפוש כדי למצוא פסוקים בכל התנ\"ך."
 
 [searchTypesHint]
-other = "נסה: מילה, "ביטוי מדויק", או מספרי Strong (H430, G2316)"
+other = "נסה: מילה, 'ביטוי מדויק', או מספרי Strong (H430, G2316)"
 
 [searchResults]
 other = "תוצאות חיפוש"

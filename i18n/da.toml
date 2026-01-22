@@ -90,7 +90,7 @@ other = "Søg i Bibelen"
 other = "Søg efter"
 
 [searchPlaceholder]
-other = "ord, "nøjagtig sætning", eller H1234/G5678"
+other = "ord, 'nøjagtig sætning', eller H1234/G5678"
 
 [search]
 other = "Søg"
@@ -108,7 +108,7 @@ other = "Søger..."
 other = "Indtast et søgeord for at finde vers i Bibelen."
 
 [searchTypesHint]
-other = "Prøv: ord, "nøjagtig sætning", eller Strongs numre (H430, G2316)"
+other = "Prøv: ord, 'nøjagtig sætning', eller Strongs numre (H430, G2316)"
 
 [searchResults]
 other = "Søgeresultater"

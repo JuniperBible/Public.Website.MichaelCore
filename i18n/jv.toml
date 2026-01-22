@@ -90,7 +90,7 @@ other = "Golèk Alkitab"
 other = "Golèk"
 
 [searchPlaceholder]
-other = "tembung, "frasa pas", utawa H1234/G5678"
+other = "tembung, 'frasa pas', utawa H1234/G5678"
 
 [search]
 other = "Golèk"
@@ -108,7 +108,7 @@ other = "Nggolèki..."
 other = "Lebokake istilah golèkan kanggo nemokake ayat ing Alkitab."
 
 [searchTypesHint]
-other = "Coba: tembung, "frasa pas", utawa nomer Strong (H430, G2316)"
+other = "Coba: tembung, 'frasa pas', utawa nomer Strong (H430, G2316)"
 
 [searchResults]
 other = "Asil Golèkan"

@@ -90,7 +90,7 @@ other = "聖書を検索"
 other = "検索："
 
 [searchPlaceholder]
-other = "単語、"完全一致"、またはH1234/G5678"
+other = "単語、'完全一致'、またはH1234/G5678"
 
 [search]
 other = "検索"
@@ -108,7 +108,7 @@ other = "検索中..."
 other = "検索語を入力して聖書全体から節を検索します。"
 
 [searchTypesHint]
-other = "例：単語、"完全一致"、またはストロング番号（H430、G2316）"
+other = "例：単語、'完全一致'、またはストロング番号（H430、G2316）"
 
 [searchResults]
 other = "検索結果"

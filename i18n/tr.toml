@@ -90,7 +90,7 @@ other = "İncil'de ara"
 other = "Ara"
 
 [searchPlaceholder]
-other = "kelime, "tam ifade", veya H1234/G5678"
+other = "kelime, 'tam ifade', veya H1234/G5678"
 
 [search]
 other = "Ara"
@@ -108,7 +108,7 @@ other = "Aranıyor..."
 other = "İncil genelinde ayetleri bulmak için bir arama terimi girin."
 
 [searchTypesHint]
-other = "Deneyin: kelime, "tam ifade", veya Strong numaraları (H430, G2316)"
+other = "Deneyin: kelime, 'tam ifade', veya Strong numaraları (H430, G2316)"
 
 [searchResults]
 other = "Arama sonuçları"

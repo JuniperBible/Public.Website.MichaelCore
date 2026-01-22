@@ -90,7 +90,7 @@ other = "Nemo Littafi Mai Tsarki"
 other = "Nemo"
 
 [searchPlaceholder]
-other = "kalma, "daidaitaccen jumla", ko H1234/G5678"
+other = "kalma, 'daidaitaccen jumla', ko H1234/G5678"
 
 [search]
 other = "Nemo"
@@ -108,7 +108,7 @@ other = "Ana nemowa..."
 other = "Shigar da kalmar bincike don nemo ayoyi a cikin Littafi Mai Tsarki."
 
 [searchTypesHint]
-other = "Gwada: kalma, "daidaitaccen jumla", ko lambobin Strong (H430, G2316)"
+other = "Gwada: kalma, 'daidaitaccen jumla', ko lambobin Strong (H430, G2316)"
 
 [searchResults]
 other = "Sakamakon Bincike"

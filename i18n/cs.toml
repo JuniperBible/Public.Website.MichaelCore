@@ -90,7 +90,7 @@ other = "Hledat v Bibli"
 other = "Hledat"
 
 [searchPlaceholder]
-other = "slovo, "přesná fráze", nebo H1234/G5678"
+other = "slovo, 'přesná fráze', nebo H1234/G5678"
 
 [search]
 other = "Hledat"
@@ -108,7 +108,7 @@ other = "Vyhledávání..."
 other = "Zadejte hledaný výraz pro vyhledání veršů v celé Bibli."
 
 [searchTypesHint]
-other = "Zkuste: slovo, "přesná fráze", nebo Strongova čísla (H430, G2316)"
+other = "Zkuste: slovo, 'přesná fráze', nebo Strongova čísla (H430, G2316)"
 
 [searchResults]
 other = "Výsledky vyhledávání"
