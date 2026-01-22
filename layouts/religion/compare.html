@@ -200,7 +200,7 @@
 
   <!-- Back Navigation -->
   <div class="bible-back-nav">
-    <a href="{{ $basePath }}/" class="btn-paper">
+    <a href="{{ printf "%s/" $basePath | relLangURL }}" class="btn-paper">
       &larr; {{ i18n "allBibles" | default "All Bibles" }}
     </a>
   </div>
@@ -218,6 +218,6 @@
 {{ range $aux.books }}
   {{ $booksList = $booksList | append (dict "id" .id "name" .name "chapters" (len .chapters)) }}
 {{ end }}
-{{ dict "bibles" $biblesMeta "books" $booksList "basePath" $basePath | jsonify | safeJS }}
+{{ dict "bibles" $biblesMeta "books" $booksList "basePath" ($basePath | relLangURL) | jsonify | safeJS }}
 </script>
 {{ end }}

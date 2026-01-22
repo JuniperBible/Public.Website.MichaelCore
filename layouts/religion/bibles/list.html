@@ -11,7 +11,7 @@
     <!-- Quick actions -->
     <nav class="actions">
       {{ $basePath := .Site.Params.michael.basePath | default "/religion/bibles" }}
-      <a href="{{ $basePath }}/search/" role="button">
+      <a href="{{ printf "%s/search/" $basePath | relLangURL }}" role="button">
         {{ i18n "searchBible" | default "Search Bible" }}
       </a>
     </nav>
@@ -54,7 +54,7 @@
               onchange="if(this.value) window.location.href=this.value">
         <option value="" selected disabled>{{ i18n "selectBible" | default "Select Bible" }}</option>
         {{ range .Site.Data.bibles.bibles }}
-        <option value="{{ $basePath }}/{{ .id }}/">
+        <option value="{{ printf "%s/%s/" $basePath .id | relLangURL }}">
           {{ .title }} ({{ .abbrev }})
         </option>
         {{ end }}

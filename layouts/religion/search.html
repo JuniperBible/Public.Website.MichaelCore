@@ -76,7 +76,7 @@
 
   <!-- Back Navigation -->
   <div class="bible-back-nav">
-    <a href="{{ $basePath }}/" class="btn-paper">
+    <a href="{{ printf "%s/" $basePath | relLangURL }}" class="btn-paper">
       &larr; {{ i18n "allBibles" | default "All Bibles" }}
     </a>
   </div>
@@ -95,6 +95,6 @@
   {{- $bibleIndex = $bibleIndex | merge (dict $bible.id (dict "title" $bible.title "abbrev" $bible.abbrev "books" $books)) -}}
 {{- end -}}
 <script id="bible-index" type="application/json">
-{{ dict "bibles" $bibleIndex "basePath" $basePath | jsonify | safeJS }}
+{{ dict "bibles" $bibleIndex "basePath" ($basePath | relLangURL) | jsonify | safeJS }}
 </script>
 {{ end }}

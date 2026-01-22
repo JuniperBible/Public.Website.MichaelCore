@@ -60,7 +60,7 @@
         <td class="canon-td-book">
           {{ $basePath := $.Site.Params.michael.basePath | default "/religion/bibles" }}
           {{ if .drc_id }}
-          <a href="{{ $basePath }}/drc/{{ .drc_id }}/" class="canon-book-link">{{ .name }}</a>
+          <a href="{{ printf "%s/drc/%s/" $basePath .drc_id | relLangURL }}" class="canon-book-link">{{ .name }}</a>
           {{ else }}
           <span class="canon-book-name">{{ .name }}</span>
           {{ end }}

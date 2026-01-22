@@ -34,7 +34,7 @@
               class="bible-nav-select"
               onchange="if(this.value) window.location.href=this.value">
         {{ range $page.Site.Data.bibles.bibles }}
-        <option value="{{ $basePath }}/{{ .id }}/" {{ if eq .id $bible }}selected{{ end }}>
+        <option value="{{ printf "%s/%s/" $basePath .id | relLangURL }}" {{ if eq .id $bible }}selected{{ end }}>
           {{ .abbrev }}
         </option>
         {{ end }}
@@ -57,7 +57,7 @@
         {{/* Use validBooks if available (from Bible overview page), otherwise use all books */}}
         {{ if $validBooks }}
           {{ range $validBooks }}
-          <option value="{{ $basePath }}/{{ $bible }}/{{ .id }}/" {{ if eq .id $book }}selected{{ end }}>
+          <option value="{{ printf "%s/%s/%s/" $basePath $bible .id | relLangURL }}" {{ if eq .id $book }}selected{{ end }}>
             {{ .name }}
           </option>
           {{ end }}
@@ -73,7 +73,7 @@
             {{ end }}
             {{ if $hasContent }}
               {{ $bookIdLower := .id | lower }}
-              <option value="{{ $basePath }}/{{ $bible }}/{{ $bookIdLower }}/" {{ if eq $bookIdLower $book }}selected{{ end }}>
+              <option value="{{ printf "%s/%s/%s/" $basePath $bible $bookIdLower | relLangURL }}" {{ if eq $bookIdLower $book }}selected{{ end }}>
                 {{ .name }}
               </option>
             {{ end }}
@@ -92,7 +92,7 @@
               class="bible-nav-select"
               onchange="if(this.value) window.location.href=this.value">
         {{ range $i := seq $chapterCount }}
-        <option value="{{ $basePath }}/{{ $bible }}/{{ $book }}/{{ $i }}/" {{ if eq $i $chapter }}selected{{ end }}>
+        <option value="{{ printf "%s/%s/%s/%d/" $basePath $bible $book $i | relLangURL }}" {{ if eq $i $chapter }}selected{{ end }}>
           {{ i18n "chapter" | default "Ch" }} {{ $i }}
         </option>
         {{ end }}
@@ -103,7 +103,7 @@
     <!-- Prev/Next Navigation -->
     <div class="bible-nav-buttons">
       {{ if gt $chapter 1 }}
-      <a href="{{ $basePath }}/{{ $bible }}/{{ $book }}/{{ sub $chapter 1 }}/"
+      <a href="{{ printf "%s/%s/%s/%d/" $basePath $bible $book (sub $chapter 1) | relLangURL }}"
          class="bible-nav-btn"
          title="{{ i18n "previousChapter" | default "Previous Chapter" }}">
         ←
@@ -113,7 +113,7 @@
       {{ end }}
 
       {{ if lt $chapter $chapterCount }}
-      <a href="{{ $basePath }}/{{ $bible }}/{{ $book }}/{{ add $chapter 1 }}/"
+      <a href="{{ printf "%s/%s/%s/%d/" $basePath $bible $book (add $chapter 1) | relLangURL }}"
          class="bible-nav-btn"
          title="{{ i18n "nextChapter" | default "Next Chapter" }}">
         →

@@ -79,15 +79,15 @@
     <!-- Navigation -->
     <nav class="actions">
       {{ if .Params.chapter }}
-        <a href="{{ $basePath }}/{{ .Params.bible }}/{{ .Params.book }}/" role="button">
+        <a href="{{ printf "%s/%s/%s/" $basePath .Params.bible .Params.book | relLangURL }}" role="button">
           &larr; {{ i18n "backToBook" | default "Back to Book" }}
         </a>
       {{ else if .Params.book }}
-        <a href="{{ $basePath }}/{{ .Params.bible }}/" role="button">
+        <a href="{{ printf "%s/%s/" $basePath .Params.bible | relLangURL }}" role="button">
           &larr; {{ i18n "backToBible" | default "Back to Bible" }}
         </a>
       {{ else }}
-        <a href="{{ $basePath }}/" role="button">
+        <a href="{{ printf "%s/" $basePath | relLangURL }}" role="button">
           &larr; {{ i18n "allBibles" | default "All Bibles" }}
         </a>
       {{ end }}

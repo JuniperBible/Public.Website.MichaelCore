@@ -79,21 +79,21 @@
   <!-- Navigation -->
   <div class="bible-bottom-nav">
     {{ if .Params.chapter }}
-      <a href="{{ $basePath }}/{{ .Params.bible }}/{{ .Params.book }}/" class="btn-paper">
+      <a href="{{ printf "%s/%s/%s/" $basePath .Params.bible .Params.book | relLangURL }}" class="btn-paper">
         &larr; {{ i18n "backToBook" | default "Back to Book" }}
       </a>
-      <a href="{{ $basePath }}/compare/?bibles={{ .Params.bible }}&ref={{ .Params.book }}.{{ .Params.chapter }}" class="btn-paper">
+      <a href="{{ printf "%s/compare/?bibles=%s&ref=%s.%d" $basePath .Params.bible .Params.book .Params.chapter | relLangURL }}" class="btn-paper">
         {{ i18n "compareTranslations" | default "Compare Translations" }}
       </a>
     {{ else if .Params.book }}
-      <a href="{{ $basePath }}/{{ .Params.bible }}/" class="btn-paper">
+      <a href="{{ printf "%s/%s/" $basePath .Params.bible | relLangURL }}" class="btn-paper">
         &larr; {{ i18n "backToBible" | default "Back to Bible" }}
       </a>
     {{ else }}
-      <a href="{{ $basePath }}/" class="btn-paper">
+      <a href="{{ printf "%s/" $basePath | relLangURL }}" class="btn-paper">
         &larr; {{ i18n "allBibles" | default "All Bibles" }}
       </a>
-      <a href="{{ $basePath }}/compare/?bibles={{ .Params.bible }}" class="btn-paper">
+      <a href="{{ printf "%s/compare/?bibles=%s" $basePath .Params.bible | relLangURL }}" class="btn-paper">
         {{ i18n "compareTranslations" | default "Compare Translations" }}
       </a>
     {{ end }}
