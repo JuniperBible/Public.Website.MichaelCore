@@ -67,27 +67,30 @@
   </nav>
 
   <section class="grid-2" id="bibles-grid">
-    {{/* Only show pages with abbrev param (actual Bible translations, not books/chapters) */}}
-    {{ range where .Pages ".Params.abbrev" "!=" nil }}
+    {{/* Generate cards from data, only for bibles with auxiliary data */}}
+    {{ range .Site.Data.bibles.bibles }}
+      {{ $hasAuxData := index $.Site.Data.bibles_auxiliary .id }}
+      {{ if $hasAuxData }}
     <article>
-      <a href="{{ .RelPermalink }}" class="bible-card" data-tags="{{ delimit .Params.tags "," | urlize }}">
-        <h2 class="font-hand">{{ .Title }}</h2>
-        {{ with .Params.description }}
+      <a href="{{ printf "%s/%s/" $basePath .id | relLangURL }}" class="bible-card" data-tags="{{ delimit .tags "," | urlize }}">
+        <h2 class="font-hand">{{ .title }}</h2>
+        {{ with .description }}
         <p class="font-hand">{{ . }}</p>
         {{ end }}
         <div class="tags">
-          {{ with .Params.language }}
+          {{ with .language }}
           <span class="tag tag-primary">{{ . }}</span>
           {{ end }}
-          {{ with .Params.license }}
+          {{ with .license }}
           <span class="tag tag-license" title="License: {{ . }}" data-license="{{ . }}">{{ . }}</span>
           {{ end }}
-          {{ range .Params.tags }}
+          {{ range .tags }}
           <span class="tag tag-accent">{{ . }}</span>
           {{ end }}
         </div>
       </a>
     </article>
+      {{ end }}
     {{ end }}
   </section>
 
