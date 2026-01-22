@@ -68,10 +68,15 @@
         {{ partial "prose-content.html" .Content }}
       </section>
 
-    {{ else }}
+    {{ else if .Params.bible }}
       <!-- Bible overview: show book list -->
       <section>
         {{ partial "michael/bible-nav.html" (dict "page" . "bible" .Params.bible "book" "" "chapter" 0 "basePath" $basePath) }}
+        {{ partial "prose-content.html" .Content }}
+      </section>
+    {{ else }}
+      <!-- Bibles list page (no specific bible) -->
+      <section>
         {{ partial "prose-content.html" .Content }}
       </section>
     {{ end }}
@@ -86,10 +91,11 @@
         <a href="{{ printf "%s/%s/" $basePath .Params.bible | relLangURL }}" role="button">
           &larr; {{ i18n "backToBible" | default "Back to Bible" }}
         </a>
-      {{ else }}
+      {{ else if .Params.bible }}
         <a href="{{ printf "%s/" $basePath | relLangURL }}" role="button">
           &larr; {{ i18n "allBibles" | default "All Bibles" }}
         </a>
+      {{/* No navigation shown for the bibles list page itself */}}
       {{ end }}
     </nav>
   </article>
