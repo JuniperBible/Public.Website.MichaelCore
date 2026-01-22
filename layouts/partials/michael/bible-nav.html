@@ -34,9 +34,13 @@
               class="bible-nav-select"
               onchange="if(this.value) window.location.href=this.value">
         {{ range $page.Site.Data.bibles.bibles }}
+          {{/* Only show bibles that have auxiliary data */}}
+          {{ $hasAuxData := index $page.Site.Data.bibles_auxiliary .id }}
+          {{ if $hasAuxData }}
         <option value="{{ printf "%s/%s/" $basePath .id | relLangURL }}" {{ if eq .id $bible }}selected{{ end }}>
           {{ .abbrev }}
         </option>
+          {{ end }}
         {{ end }}
       </select>
       <span class="bible-select-arrow">▾</span>
@@ -62,21 +66,12 @@
           </option>
           {{ end }}
         {{ else }}
-          {{/* Filter books to only show those with actual content (at least one verse) */}}
+          {{/* Show all books from auxiliary data */}}
           {{ range $bibleData.books }}
-            {{/* Check if book has any verses - skip if all chapters are empty */}}
-            {{ $hasContent := false }}
-            {{ range .chapters }}
-              {{ if gt (len .verses) 0 }}
-                {{ $hasContent = true }}
-              {{ end }}
-            {{ end }}
-            {{ if $hasContent }}
-              {{ $bookIdLower := .id | lower }}
-              <option value="{{ printf "%s/%s/%s/" $basePath $bible $bookIdLower | relLangURL }}" {{ if eq $bookIdLower $book }}selected{{ end }}>
-                {{ .name }}
-              </option>
-            {{ end }}
+            {{ $bookIdLower := .id | lower }}
+            <option value="{{ printf "%s/%s/%s/" $basePath $bible $bookIdLower | relLangURL }}" {{ if eq $bookIdLower $book }}selected{{ end }}>
+              {{ .name }}
+            </option>
           {{ end }}
         {{ end }}
       </select>

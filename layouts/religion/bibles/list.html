@@ -54,9 +54,13 @@
               onchange="if(this.value) window.location.href=this.value">
         <option value="" selected disabled>{{ i18n "selectBible" | default "Select Bible" }}</option>
         {{ range .Site.Data.bibles.bibles }}
+          {{/* Only show bibles that have auxiliary data */}}
+          {{ $hasAuxData := index $.Site.Data.bibles_auxiliary .id }}
+          {{ if $hasAuxData }}
         <option value="{{ printf "%s/%s/" $basePath .id | relLangURL }}">
           {{ .title }} ({{ .abbrev }})
         </option>
+          {{ end }}
         {{ end }}
       </select>
     </div>
