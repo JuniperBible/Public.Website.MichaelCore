@@ -88,8 +88,7 @@
           <span class="tag tag-license" title="License: {{ . }}" data-license="{{ . }}">{{ . }}</span>
           {{ end }}
           {{ range .tags }}
-          {{ $tagSlug := . | urlize }}
-          <span class="tag tag-accent" data-tag="{{ $tagSlug }}">{{ . }}</span>
+          <span class="tag tag-accent">{{ . }}</span>
           {{ end }}
         </div>
       </a>
@@ -165,10 +164,12 @@
     biblesGrid.addEventListener('click', function(e) {
       // Handle tag-accent clicks - filter by tag
       var tagBadge = e.target.closest('.tag-accent');
-      if (tagBadge && tagBadge.dataset.tag) {
+      if (tagBadge) {
         e.preventDefault();
         e.stopPropagation();
-        filterBibles(tagBadge.dataset.tag);
+        // Use the tag text content, convert to slug format for filter matching
+        var tagText = tagBadge.textContent.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+        filterBibles(tagText);
         return;
       }
 
