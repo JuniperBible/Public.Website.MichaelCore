@@ -88,7 +88,7 @@
           <span class="tag tag-license" title="License: {{ . }}" data-license="{{ . }}">{{ . }}</span>
           {{ end }}
           {{ range .tags }}
-          <span class="tag tag-accent">{{ . }}</span>
+          <span class="tag tag-accent" data-tag="{{ . | urlize }}">{{ . }}</span>
           {{ end }}
         </div>
       </a>
@@ -156,12 +156,22 @@
     });
   }
 
-  // License badge clicks - navigate to license page
+  // Tag and license badge clicks on bible cards
   var biblesGrid = document.getElementById('bibles-grid');
   if (biblesGrid) {
     // Get the base URL from the page's language prefix
     var basePath = document.documentElement.lang ? '/' + document.documentElement.lang : '';
     biblesGrid.addEventListener('click', function(e) {
+      // Handle tag-accent clicks - filter by tag
+      var tagBadge = e.target.closest('.tag-accent');
+      if (tagBadge && tagBadge.dataset.tag) {
+        e.preventDefault();
+        e.stopPropagation();
+        filterBibles(tagBadge.dataset.tag);
+        return;
+      }
+
+      // Handle license badge clicks - navigate to license page
       var badge = e.target.closest('.tag-license');
       if (badge && badge.dataset.license) {
         e.preventDefault();
