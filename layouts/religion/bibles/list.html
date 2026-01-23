@@ -88,7 +88,8 @@
           <span class="tag tag-license" title="License: {{ . }}" data-license="{{ . }}">{{ . }}</span>
           {{ end }}
           {{ range .tags }}
-          <span class="tag tag-accent" data-tag="{{ . | urlize }}">{{ . }}</span>
+          {{ $tagSlug := . | urlize }}
+          <span class="tag tag-accent" data-tag="{{ $tagSlug }}">{{ . }}</span>
           {{ end }}
         </div>
       </a>
