@@ -5,7 +5,8 @@
     </ul>
     <ul>
       {{- range .Site.Menus.main }}
-      <li><a href="{{ .URL | relLangURL }}"{{ if $.IsMenuCurrent "main" . }} aria-current="page"{{ end }} class="font-hand">{{ .Name }}</a></li>
+      {{- $menuURL := cond .Page .Page.RelPermalink (.URL | relLangURL) }}
+      <li><a href="{{ $menuURL }}"{{ if $.IsMenuCurrent "main" . }} aria-current="page"{{ end }} class="font-hand">{{ .Name }}</a></li>
       {{- end }}
       <li>
         <button id="theme-toggle" class="btn-icon" aria-label="Toggle dark mode">
