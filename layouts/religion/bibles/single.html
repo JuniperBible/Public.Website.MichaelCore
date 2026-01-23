@@ -34,7 +34,7 @@
           <span class="bible-tag bible-tag-language">{{ . }}</span>
           {{ end }}
           {{ with .license }}
-          <a href="/licenses/{{ . | urlize }}/" class="bible-tag bible-tag-license" title="SPDX License: {{ . }}">{{ . }}</a>
+          <a href="{{ printf "/licenses/%s/" (. | urlize) | relLangURL }}" class="bible-tag bible-tag-license" title="SPDX License: {{ . }}">{{ . }}</a>
           {{ end }}
         {{ end }}
       {{ end }}

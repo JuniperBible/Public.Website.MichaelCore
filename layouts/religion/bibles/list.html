@@ -159,6 +159,8 @@
   // License badge clicks - navigate to license page
   var biblesGrid = document.getElementById('bibles-grid');
   if (biblesGrid) {
+    // Get the base URL from the page's language prefix
+    var basePath = document.documentElement.lang ? '/' + document.documentElement.lang : '';
     biblesGrid.addEventListener('click', function(e) {
       var badge = e.target.closest('.tag-license');
       if (badge && badge.dataset.license) {
@@ -168,7 +170,7 @@
         var slug = badge.dataset.license.toLowerCase()
           .replace(/[^a-z0-9]+/g, '-')
           .replace(/^-|-$/g, '');
-        window.location.href = '/licenses/' + slug + '/';
+        window.location.href = basePath + '/licenses/' + slug + '/';
       }
     });
   }
