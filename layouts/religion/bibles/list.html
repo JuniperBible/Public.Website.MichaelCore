@@ -9,10 +9,13 @@
     </p>
 
     <!-- Quick actions -->
-    <nav class="actions">
+    <nav class="actions btn-group">
       {{ $basePath := .Site.Params.michael.basePath | default "/religion/bibles" }}
       <a href="{{ printf "%s/search/" $basePath | relLangURL }}" role="button">
         {{ i18n "searchBible" | default "Search Bible" }}
+      </a>
+      <a href="{{ printf "%s/compare/" $basePath | relLangURL }}" role="button" class="secondary">
+        {{ i18n "compareTranslations" | default "Compare Translations" }}
       </a>
     </nav>
 
