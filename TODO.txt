@@ -1,206 +1,114 @@
-# Michael TODO
+# Michael CSS Architecture Refactor
+# Branch: css-refactor
+# Last Updated: 2026-01-23
+# Reference: Website docs/css-architecture-charter.md
 
-This file tracks detailed tasks for the Michael submodule.
-For the project charter, see [docs/PROJECT-CHARTER.md](docs/PROJECT-CHARTER.md).
+## Overview
+
+Consolidate Michael's 4 CSS files into a single standalone michael.css:
+- Include own CSS reset + defaults (copy pattern from AirFold core.css)
+- Keep only Bible-specific components
+- Remove any AirFold-dependent styling
+
+This module should be STANDALONE - usable as a drop-in for any Hugo site.
 
 ---
 
-## Project Overview
-Extract Bible functionality from FocuswithJustin.com into a standalone Hugo module.
-Repository: git@github.com:FocuswithJustin/michael.git
+## Current State
 
-== PHASE 0: BRANCH SETUP (Priority: CRITICAL) - COMPLETE ==
-[x] Rename main → old
-[x] Create fresh main with README.md
-[x] Create empty production branch
-[x] Copy code from old branch
+4 files (2781 lines total):
+- assets/css/base.css (396 lines) - Modern CSS reset
+- assets/css/bible.css (979 lines) - Bible-specific components
+- assets/css/components.css (771 lines) - Generic UI components
+- assets/css/michael.css (635 lines) - Theme variables and overrides
 
-## COMPLETED TASKS
+---
 
-### 1. Repository Setup - COMPLETE
-[x] Initialize empty git repository on GitHub
-[x] Add michael as git submodule to parent project
-[x] Create go.mod for Hugo module identification
-[x] Create hugo.toml with module mount configuration
+## Phase 2: Refactor to michael.css (~600 lines)
 
-### 2. Layouts Extracted - COMPLETE
-[x] layouts/religion/bibles/list.html - Bible translations list with filtering
-[x] layouts/religion/bibles/single.html - Bible/book/chapter page layout
-[x] layouts/religion/compare.html - Side-by-side translation comparison (SSS mode)
-[x] layouts/religion/search.html - Full-text Bible search interface
+### Task 2.1: CSS Reset + Defaults Section (~100 lines)
+- [ ] Copy reset pattern from AirFold core.css
+- [ ] Include only elements used by Bible UI
+- [ ] Minimal semantic defaults
 
-### 3. Partials Extracted - COMPLETE
-[x] layouts/partials/michael/bible-nav.html - Bible/book/chapter dropdown navigation
-[x] layouts/partials/michael/canonical-comparison.html - Canonical traditions comparison table
+### Task 2.2: Bible Navigation Components (~150 lines)
+- [ ] .bible-nav (nav bar wrapper)
+- [ ] .bible-nav-select (dropdown styling)
+- [ ] .bible-nav-prev, .bible-nav-next (navigation buttons)
+- [ ] .bible-breadcrumb
 
-### 4. JavaScript Assets - COMPLETE
-[x] assets/js/parallel.js - Parallel translation view controller
-[x] assets/js/share.js - Verse sharing functionality
-[x] assets/js/strongs.js - Strong's number processing
-[x] assets/js/text-compare.js - Text diff/comparison engine
-[x] assets/js/bible-search.js - Client-side Bible search
+### Task 2.3: Bible Content Display (~200 lines)
+- [ ] .bible-text (main verse content)
+- [ ] .bible-verse (verse number, text)
+- [ ] .bible-verse-num (verse number styling)
+- [ ] .bible-chapter-header
+- [ ] .strongs-ref (Strong's reference links)
+- [ ] .parallel-pane (compare view panes)
 
-### 5. Content Templates - COMPLETE
-[x] content/bibles/_content.gotmpl - Page generator template
-[x] content/bibles/_index.md - Section mount point
+### Task 2.4: Bible Selection/Grid Components (~100 lines)
+- [ ] .bible-card (translation selection cards)
+- [ ] .book-grid, .book-link (book selection)
+- [ ] .chapter-grid, .chapter-link (chapter selection)
+- [ ] .bible-filter (tag filter buttons)
 
-### 6. Internationalization - COMPLETE
-[x] i18n/en.toml - English Bible UI strings
-[x] i18n/es.toml - Spanish
-[x] i18n/fr.toml - French
-[x] i18n/de.toml - German
-[x] i18n/it.toml - Italian
+### Task 2.5: Bible Tables (~50 lines)
+- [ ] .canon-table (canonical comparison table)
+- [ ] .canon-th-*, .canon-td-* (table cell classes)
+- [ ] Mobile responsive hiding
 
-### 7. Data Structure - COMPLETE
-[x] data/bibles/ - Example Bible data (mounted from parent)
-[x] static/schemas/ - JSON schemas (if needed)
+### Task 2.6: Bible Interactive Elements
+- [ ] .search-result (search results display)
+- [ ] .share-menu (share verse popup)
+- [ ] .color-picker (highlight color selection)
+- [ ] .diff-* classes (text comparison highlighting)
 
-### 8. Juniper Submodule - COMPLETE
-[x] tools/juniper/ - Juniper submodule reference
+### Task 2.7: Print Styles
+- [ ] Bible-optimized @media print
+- [ ] Hide navigation, show content
+- [ ] Verse reference formatting
 
-### 9. Documentation - COMPLETE
-[x] README.md - Module overview
-[x] docs/PROJECT-CHARTER.md - Project charter
+---
 
-== IMPLEMENTATION COMPLETE ==
-All tasks completed. Code restored from old branch.
-Ready for integration with main repository.
+## Files to Create/Modify
 
-## CONFIGURATION OPTIONS (for consuming sites)
+### Create
+- [ ] assets/css/michael.css - Consolidated standalone CSS (new file, replace current)
 
-```toml
-# hugo.toml
-[params.michael]
-  basePath = "/religion/bibles"  # URL path for Bible section
-  backLink = "/religion/"        # Back navigation link
+### Delete After Consolidation
+- [ ] assets/css/base.css
+- [ ] assets/css/bible.css
+- [ ] assets/css/components.css
+- [ ] Old assets/css/michael.css
 
-# Module imports
-[module]
-  [[module.imports]]
-    path = "github.com/FocuswithJustin/michael"
+### Modify
+- [ ] layouts/_default/baseof.html - Update CSS import
 
-  # Override content mount if needed
-  [[module.mounts]]
-    source = "node_modules/michael/content/bibles"
-    target = "content/my-custom-path/bibles"
-```
+---
 
-## DATA REQUIREMENTS
+## Testing
 
-Consuming sites must provide:
-1. data/bibles.json - Bible metadata
-2. data/bibles_auxiliary/{id}.json - Per-translation verse data
+- [ ] Test michael.css standalone with minimal Hugo site
+- [ ] Test all Bible pages:
+  - [ ] /religion/bibles/ (list)
+  - [ ] /religion/bibles/kjv/ (translation)
+  - [ ] /religion/bibles/kjv/gen/ (book)
+  - [ ] /religion/bibles/kjv/gen/1/ (chapter)
+  - [ ] /religion/bibles/canonical-comparison/ (table)
+  - [ ] /religion/bibles/search/ (search)
+  - [ ] /religion/bibles/compare/ (compare)
+- [ ] Test all viewports (mobile, tablet, desktop)
+- [ ] Test dark mode
+- [ ] Test print styles
 
-Structure:
-```json
-// data/bibles.json
-{
-  "bibles": [
-    {
-      "id": "kjv",
-      "title": "King James Version",
-      "abbrev": "KJV",
-      "description": "1769 edition",
-      "language": "English",
-      "license": "public-domain",
-      "features": ["Strong's Numbers"],
-      "tags": ["Historic", "Protestant"],
-      "weight": 1
-    }
-  ]
-}
+---
 
-// data/bibles_auxiliary/kjv.json
-{
-  "books": [
-    {
-      "id": "Gen",
-      "name": "Genesis",
-      "abbrev": "Gen",
-      "testament": "OT",
-      "chapters": [
-        {
-          "number": 1,
-          "verses": [
-            { "number": 1, "text": "In the beginning..." }
-          ]
-        }
-      ]
-    }
-  ]
-}
-```
+## Notes
 
-## CSS/STYLING DEPENDENCIES
+- michael.css should work WITHOUT AirFold
+- Use CSS custom properties for colors (can be overridden by theme)
+- Include sensible default colors that work standalone
 
-The module assumes these CSS classes exist:
-- btn-paper, btn-paper-dark - Button styles
-- card-paper - Card container
-- input-paper - Form inputs
-- font-hand - Handwriting font
-- text-paper-black, text-paper-gray, text-accent - Text colors
-- bg-paper-*, bg-accent - Background colors
+---
 
-Tailwind CSS classes are used throughout.
-
-## EXTERNAL SERVICE INTEGRATIONS
-
-- Blue Letter Bible - Strong's number definitions
-- Twitter/X - Share dialogs
-- Facebook - Share dialogs
-
-## FILES TO COPY FROM SOURCE PROJECT
-
-Source: Website.Public.FocuswithJustin.com
-
-### Layouts
-- themes/airfold/layouts/religion/bibles/list.html → layouts/michael/bibles/list.html
-- themes/airfold/layouts/religion/bibles/single.html → layouts/michael/bibles/single.html
-- layouts/religion/compare.html → layouts/michael/compare.html
-- layouts/religion/search.html → layouts/michael/search.html
-
-### Partials
-- themes/airfold/layouts/partials/bible-nav.html → layouts/partials/michael/bible-nav.html
-- themes/airfold/layouts/partials/canonical-comparison.html → layouts/partials/michael/canonical-comparison.html
-- themes/airfold/layouts/partials/translation-selector.html → layouts/partials/michael/translation-selector.html
-
-### JavaScript
-- themes/airfold/assets/js/parallel.js → assets/js/parallel.js
-- themes/airfold/assets/js/share.js → assets/js/share.js
-- themes/airfold/assets/js/strongs.js → assets/js/strongs.js
-- themes/airfold/assets/js/text-compare.js → assets/js/text-compare.js
-- assets/js/bible-search.js → assets/js/bible-search.js
-
-### Content
-- themes/airfold/extensions/religion/content/bibles/_content.gotmpl → content/bibles/_content.gotmpl
-- themes/airfold/extensions/religion/content/bibles/_index.md → content/bibles/_index.md
-
-### i18n (Bible-related strings only)
-- i18n/en.toml (lines 167-267) → i18n/en.toml
-
-### Schemas
-- static/schemas/bibles.schema.json → static/schemas/bibles.schema.json
-- static/schemas/bibles-auxiliary.schema.json → static/schemas/bibles-auxiliary.schema.json
-
-## MODIFICATIONS FOR MODULE
-
-1. Change hardcoded /religion/bibles/ paths to use $basePath variable
-2. Add .Site.Params.michael.basePath configuration support
-3. Namespace partials under michael/ to avoid conflicts
-4. Create module-specific layout lookup paths (layouts/michael/)
-5. Document all configuration options
-6. Create example data files for testing
-7. Update JavaScript to use configurable base paths
-
-## COMMIT PLAN
-
-1. ADD hugo module configuration files (go.mod, hugo.toml)
-2. ADD layouts for Bible pages (list, single, compare, search)
-3. ADD partials for Bible navigation and components
-4. ADD JavaScript assets for Bible functionality
-5. ADD content templates for page generation
-6. ADD i18n strings for Bible UI
-7. ADD example data and schemas
-8. ADD juniper as submodule for data generation
-9. ADD documentation (README, docs/)
-10. TEST module integration with clean Hugo site
+*Created: 2026-01-23*
+*Status: Pending (depends on Phase 1)*
