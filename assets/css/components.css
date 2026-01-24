@@ -162,10 +162,10 @@ article {
   background-color: var(--color-chrome);
 }
 
-/* Bible cards inside .card should use consistent purple hover */
+/* Bible cards inside .card should use consistent accent hover */
 .card a.bible-card:hover {
-  background-color: #684580 !important;
-  color: #f5f1e8 !important;
+  background-color: var(--color-accent, #684580);
+  color: var(--color-surface, #f5f1e8);
 }
 
 @media (hover: hover) {
@@ -468,21 +468,21 @@ body > footer small p {
 }
 
 [data-theme="dark"] .card a:hover {
-  background-color: #684580;
-  color: #f5f1e8;
+  background-color: var(--color-accent, #684580);
+  color: var(--color-surface, #f5f1e8);
 }
 
 [data-theme="dark"] button,
 [data-theme="dark"] [role="button"],
 [data-theme="dark"] .btn {
-  --btn-color: #f5f1e8;
+  --btn-color: var(--color-surface, #f5f1e8);
 }
 
 [data-theme="dark"] button:hover,
 [data-theme="dark"] [role="button"]:hover,
 [data-theme="dark"] .btn:hover {
-  --btn-color: #f5f1e8 !important;
-  color: #f5f1e8 !important;
+  --btn-color: var(--color-surface, #f5f1e8);
+  color: var(--color-surface, #f5f1e8);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -490,12 +490,12 @@ body > footer small p {
   :root:not([data-theme="light"]) body > footer,
   :root:not([data-theme="light"]) body > header nav a,
   :root:not([data-theme="light"]) body > footer nav a {
-    color: #ffffff;
+    color: var(--color-surface, #ffffff);
   }
 
   :root:not([data-theme="light"]) nav a:hover {
     color: var(--color-text);
-    background-color: #684580;
+    background-color: var(--color-accent, #684580);
   }
 
   :root:not([data-theme="light"]) .card {
@@ -507,21 +507,21 @@ body > footer small p {
   }
 
   :root:not([data-theme="light"]) .card a:hover {
-    background-color: #684580;
-    color: #f5f1e8;
+    background-color: var(--color-accent, #684580);
+    color: var(--color-surface, #f5f1e8);
   }
 
   :root:not([data-theme="light"]) button,
   :root:not([data-theme="light"]) [role="button"],
   :root:not([data-theme="light"]) .btn {
-    --btn-color: #f5f1e8;
+    --btn-color: var(--color-surface, #f5f1e8);
   }
 
   :root:not([data-theme="light"]) button:hover,
   :root:not([data-theme="light"]) [role="button"]:hover,
   :root:not([data-theme="light"]) .btn:hover {
-    --btn-color: #f5f1e8 !important;
-    color: #f5f1e8 !important;
+    --btn-color: var(--color-surface, #f5f1e8);
+    color: var(--color-surface, #f5f1e8);
   }
 }
 
