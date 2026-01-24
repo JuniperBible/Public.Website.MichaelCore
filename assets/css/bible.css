@@ -163,38 +163,22 @@ article:not(.card):has(> .bible-card) {
 .bible-card {
   display: block;
   text-decoration: none;
-  color: #f5f1e8 !important;
-  padding: var(--space-4);
-  background-color: var(--color-chrome) !important;
-  border-radius: var(--radius-lg);
+  color: inherit;
+  transition: box-shadow 0.2s ease;
+}
+
+.bible-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .bible-card article {
-  background-color: transparent !important;
-  background: transparent !important;
-  border: none !important;
-  padding: 0 !important;
-  margin: 0 !important;
-  box-shadow: none !important;
-  border-radius: 0 !important;
-}
-
-.bible-card h1,
-.bible-card h2,
-.bible-card h3,
-.bible-card h4,
-.bible-card h5,
-.bible-card h6 {
-  color: #f5f1e8 !important;
-}
-
-.bible-card:hover h1,
-.bible-card:hover h2,
-.bible-card:hover h3,
-.bible-card:hover h4,
-.bible-card:hover h5,
-.bible-card:hover h6 {
-  color: #f5f1e8 !important;
+  background-color: transparent;
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin: 0;
+  box-shadow: none;
+  border-radius: 0;
 }
 
 .bible-card h2 {
@@ -213,14 +197,6 @@ article:not(.card):has(> .bible-card) {
   font-family: var(--font-hand);
   font-size: var(--text-base);
   margin-block-end: var(--space-3);
-  color: #f5f1e8 !important;
-}
-
-a.bible-card:hover,
-.bible-card:hover {
-  background-color: #684580 !important;
-  color: #f5f1e8 !important;
-  border-radius: var(--radius-lg);
 }
 
 /* ==========================================================================
@@ -228,33 +204,31 @@ a.bible-card:hover,
    ========================================================================== */
 
 .bible-grid {
-  background-color: #1a3230 !important;
-  background: #1a3230 !important;
-  color: #ffffff !important;
+  background-color: var(--color-chrome, #1a3230);
+  color: var(--color-surface, #ffffff);
   border-radius: var(--radius-lg);
   padding: var(--space-4);
 }
 
 .bible-grid article {
-  background-color: transparent !important;
-  background: transparent !important;
-  border: none !important;
-  padding: 0 !important;
-  margin: 0 !important;
-  box-shadow: none !important;
-  border-radius: 0 !important;
+  background-color: transparent;
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin: 0;
+  box-shadow: none;
+  border-radius: 0;
 }
 
 .bible-grid a {
-  color: #ffffff !important;
+  color: inherit;
   padding: var(--space-1) var(--space-2);
   border-radius: var(--radius-sm);
   transition: background-color var(--duration-base) var(--ease-out);
 }
 
 .bible-grid a:hover {
-  color: #f5f1e8 !important;
-  background-color: #684580;
+  background-color: var(--color-accent, #684580);
 }
 
 /* ==========================================================================
@@ -871,109 +845,6 @@ a.bible-card:hover,
 }
 
 /* ==========================================================================
-   Dark Mode
+   Dark Mode - styles inherit from CSS variables defined by theme
+   No hardcoded colors needed - let the theme handle dark mode
    ========================================================================== */
-
-[data-theme="dark"] .bible-card {
-  background-color: var(--color-chrome) !important;
-  color: #f5f1e8 !important;
-}
-
-[data-theme="dark"] .bible-card article {
-  background-color: transparent !important;
-  background: transparent !important;
-  border: none !important;
-  padding: 0 !important;
-  margin: 0 !important;
-  box-shadow: none !important;
-  border-radius: 0 !important;
-}
-
-[data-theme="dark"] .bible-card h1,
-[data-theme="dark"] .bible-card h2,
-[data-theme="dark"] .bible-card h3,
-[data-theme="dark"] .bible-card h4,
-[data-theme="dark"] .bible-card h5,
-[data-theme="dark"] .bible-card h6,
-[data-theme="dark"] .bible-card p {
-  color: #f5f1e8 !important;
-}
-
-[data-theme="dark"] .bible-card:hover,
-[data-theme="dark"] .bible-card:hover h1,
-[data-theme="dark"] .bible-card:hover h2,
-[data-theme="dark"] .bible-card:hover h3,
-[data-theme="dark"] .bible-card:hover h4,
-[data-theme="dark"] .bible-card:hover h5,
-[data-theme="dark"] .bible-card:hover h6,
-[data-theme="dark"] .bible-card:hover p {
-  color: #f5f1e8 !important;
-  background-color: #684580;
-}
-
-[data-theme="dark"] .bible-grid,
-[data-theme="dark"] .bible-grid a {
-  color: #ffffff !important;
-}
-
-[data-theme="dark"] .bible-grid a:hover {
-  color: #f5f1e8 !important;
-  background-color: transparent;
-}
-
-[data-theme="dark"] .bible-nav {
-  color: #f5f1e8;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) .bible-card {
-    background-color: var(--color-chrome) !important;
-    color: #f5f1e8 !important;
-  }
-
-  :root:not([data-theme="light"]) .bible-card article {
-    background-color: transparent !important;
-    background: transparent !important;
-    border: none !important;
-    padding: 0 !important;
-    margin: 0 !important;
-    box-shadow: none !important;
-    border-radius: 0 !important;
-  }
-
-  :root:not([data-theme="light"]) .bible-card h1,
-  :root:not([data-theme="light"]) .bible-card h2,
-  :root:not([data-theme="light"]) .bible-card h3,
-  :root:not([data-theme="light"]) .bible-card h4,
-  :root:not([data-theme="light"]) .bible-card h5,
-  :root:not([data-theme="light"]) .bible-card h6,
-  :root:not([data-theme="light"]) .bible-card p {
-    color: #f5f1e8 !important;
-  }
-
-  :root:not([data-theme="light"]) .bible-card:hover,
-  :root:not([data-theme="light"]) .bible-card:hover h1,
-  :root:not([data-theme="light"]) .bible-card:hover h2,
-  :root:not([data-theme="light"]) .bible-card:hover h3,
-  :root:not([data-theme="light"]) .bible-card:hover h4,
-  :root:not([data-theme="light"]) .bible-card:hover h5,
-  :root:not([data-theme="light"]) .bible-card:hover h6,
-  :root:not([data-theme="light"]) .bible-card:hover p {
-    color: #f5f1e8 !important;
-    background-color: #684580;
-  }
-
-  :root:not([data-theme="light"]) .bible-grid,
-  :root:not([data-theme="light"]) .bible-grid a {
-    color: #f5f1e8 !important;
-  }
-
-  :root:not([data-theme="light"]) .bible-grid a:hover {
-    color: #f5f1e8 !important;
-    background-color: transparent;
-  }
-
-  :root:not([data-theme="light"]) .bible-nav {
-    color: #f5f1e8;
-  }
-}
