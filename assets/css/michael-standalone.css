@@ -1,0 +1,839 @@
+/**
+ * Michael Standalone CSS - Bible UI Module
+ * Consolidated, standalone CSS for Bible interface components
+ * ~600 lines, zero dependencies on AirFold theme
+ */
+
+/* ==========================================================================
+   1. MINIMAL CSS RESET + DEFAULTS (~100 lines)
+   ========================================================================== */
+
+/* Box model reset */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* Document defaults */
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+body {
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  font-family: var(--bible-font-family, system-ui, sans-serif);
+  background-color: var(--bible-bg-color, #faf8f5);
+  color: var(--bible-text-color, #2d2a26);
+}
+
+/* Form elements */
+input,
+button,
+textarea,
+select {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0;
+}
+
+/* Links */
+a {
+  color: var(--bible-accent-color, #6b4c6b);
+  text-decoration: none;
+}
+
+a:focus-visible {
+  outline: 2px solid var(--bible-accent-color, #6b4c6b);
+  outline-offset: 2px;
+}
+
+/* Tables */
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+th,
+td {
+  text-align: left;
+  padding: 0.5rem;
+}
+
+/* Utility classes */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* CSS Custom Properties - Neutral Defaults */
+:root {
+  --bible-bg-color: #faf8f5;
+  --bible-surface-color: #ffffff;
+  --bible-surface-dim: #f5f3f0;
+  --bible-text-color: #2d2a26;
+  --bible-text-muted: #6b6560;
+  --bible-border-color: #e5e0d8;
+  --bible-accent-color: #6b4c6b;
+  --bible-accent-hover: #7d5c7d;
+  --bible-chrome-color: #1a3230;
+  --bible-chrome-text: #f5f1e8;
+  --bible-font-family: system-ui, -apple-system, sans-serif;
+  --bible-font-hand: "Patrick Hand", cursive, system-ui;
+  --bible-spacing: 1rem;
+  --bible-radius: 0.5rem;
+}
+
+/* ==========================================================================
+   2. BIBLE NAVIGATION COMPONENTS (~150 lines)
+   ========================================================================== */
+
+/* Bible Navigation Bar */
+.bible-nav {
+  background: var(--bible-chrome-color);
+  border: 1px solid var(--bible-border-color);
+  border-radius: var(--bible-radius);
+  padding: var(--bible-spacing);
+  margin-bottom: var(--bible-spacing);
+  color: var(--bible-chrome-text);
+}
+
+.bible-nav .nav-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+@media (min-width: 48rem) {
+  .bible-nav .nav-controls {
+    gap: 1rem;
+  }
+}
+
+/* Navigation Select Dropdowns */
+.bible-nav select,
+.bible-nav-select {
+  width: auto;
+  min-width: 7.5rem;
+  padding: 0.5rem 2rem 0.5rem 0.75rem;
+  margin-bottom: 0;
+  font-family: var(--bible-font-hand);
+  font-size: 0.875rem;
+  background-color: var(--bible-surface-color);
+  color: var(--bible-text-color);
+  border: 1px solid var(--bible-border-color);
+  border-radius: calc(var(--bible-radius) * 0.75);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236b6560' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.5rem center;
+  background-size: 0.75rem;
+  appearance: none;
+  cursor: pointer;
+}
+
+.bible-nav select:focus,
+.bible-nav-select:focus {
+  outline: none;
+  border-color: var(--bible-accent-color);
+}
+
+/* Navigation Buttons Container */
+.bible-nav .nav-buttons {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-left: auto;
+}
+
+/* Previous/Next Navigation Buttons */
+.bible-nav .nav-btn,
+.bible-nav-prev,
+.bible-nav-next {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.65rem;
+  height: 2.65rem;
+  padding: 0;
+  border: 1px solid var(--bible-border-color);
+  background: var(--bible-surface-color);
+  border-radius: calc(var(--bible-radius) * 0.75);
+  color: var(--bible-text-color);
+  text-decoration: none;
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+
+.bible-nav .nav-btn:hover:not([aria-disabled="true"]),
+.bible-nav-prev:hover:not([aria-disabled="true"]),
+.bible-nav-next:hover:not([aria-disabled="true"]) {
+  border-color: var(--bible-accent-color);
+  color: var(--bible-accent-color);
+}
+
+.bible-nav .nav-btn:focus-visible,
+.bible-nav-prev:focus-visible,
+.bible-nav-next:focus-visible {
+  outline: 2px solid var(--bible-accent-color);
+  outline-offset: 2px;
+}
+
+.bible-nav .nav-btn[aria-disabled="true"],
+.bible-nav-prev[aria-disabled="true"],
+.bible-nav-next[aria-disabled="true"] {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Bible Breadcrumb */
+.bible-breadcrumb {
+  font-family: var(--bible-font-hand);
+  color: var(--bible-text-muted);
+  margin-bottom: var(--bible-spacing);
+}
+
+.bible-breadcrumb a {
+  color: var(--bible-accent-color);
+}
+
+.bible-breadcrumb a:hover {
+  text-decoration: underline;
+}
+
+/* Warning Banner */
+.warning-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.75rem 1rem;
+  margin-bottom: var(--bible-spacing);
+  background-color: #f5e6c8;
+  border: 1px solid #d4a843;
+  border-radius: calc(var(--bible-radius) * 0.75);
+  color: #6b5a30;
+  font-family: var(--bible-font-hand);
+}
+
+.warning-banner button {
+  background: transparent;
+  border: none;
+  font-size: 1.25rem;
+  cursor: pointer;
+  color: inherit;
+  padding: 0;
+  line-height: 1;
+}
+
+.warning-banner button:hover {
+  color: #4a3d1f;
+}
+
+/* ==========================================================================
+   3. BIBLE CONTENT DISPLAY (~200 lines)
+   ========================================================================== */
+
+/* Bible Text Container */
+.bible-text {
+  font-size: 1.125rem;
+  line-height: 1.8;
+  text-align: justify;
+  hyphens: auto;
+  max-width: 100%;
+  padding-left: 11%;
+  padding-right: 11%;
+}
+
+.bible-text p {
+  max-width: 100%;
+}
+
+/* Individual Verse */
+.bible-text .verse,
+.bible-verse {
+  margin-bottom: 0.5rem;
+}
+
+/* Verse Number */
+.bible-text .verse-num,
+.bible-verse-num {
+  font-weight: bold;
+  color: var(--bible-accent-color);
+  font-size: 0.75em;
+  vertical-align: super;
+  margin-right: 0.25rem;
+}
+
+/* Chapter Header */
+.bible-chapter-header {
+  font-family: var(--bible-font-hand);
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  color: var(--bible-text-color);
+}
+
+/* Strong's Reference Links */
+.bible-text .strongs-ref,
+.strongs-ref {
+  color: var(--bible-accent-color);
+  cursor: pointer;
+  text-decoration: underline dotted;
+  text-underline-offset: 0.15em;
+  transition: text-decoration-style 0.15s ease;
+}
+
+.bible-text .strongs-ref:hover,
+.strongs-ref:hover {
+  text-decoration-style: solid;
+}
+
+.bible-text .strongs-ref:focus-visible,
+.strongs-ref:focus-visible {
+  outline: 2px solid var(--bible-accent-color);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* Strong's Tooltip */
+.strongs-tooltip {
+  position: fixed;
+  z-index: 200;
+  max-width: 18.75rem;
+  padding: 0.75rem 1rem;
+  background: var(--bible-surface-color);
+  border: 1px solid var(--bible-border-color);
+  border-radius: calc(var(--bible-radius) * 0.75);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  font-family: var(--bible-font-hand);
+  font-size: 0.875rem;
+}
+
+.strongs-tooltip h4 {
+  margin: 0 0 0.5rem;
+  color: var(--bible-accent-color);
+  font-size: 1rem;
+}
+
+.strongs-tooltip p {
+  margin: 0;
+}
+
+/* Verse Sharing */
+.verse-share-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.25rem;
+  height: 1.25rem;
+  padding: 0;
+  margin-left: 0.25rem;
+  background: transparent;
+  border: none;
+  color: var(--bible-text-muted);
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+  vertical-align: middle;
+}
+
+@media (hover: hover) {
+  .verse:hover .verse-share-btn,
+  .bible-verse:hover .verse-share-btn {
+    opacity: 1;
+  }
+}
+
+.verse-share-btn:focus-visible {
+  opacity: 1;
+  outline: 2px solid var(--bible-accent-color);
+  outline-offset: 2px;
+}
+
+.verse-share-btn:hover {
+  color: var(--bible-accent-color);
+}
+
+.highlight-verse {
+  background-color: rgba(107, 76, 107, 0.2);
+  border-radius: 2px;
+  padding: 0.25rem;
+}
+
+/* Parallel/Compare View Panes */
+.parallel-pane {
+  background: var(--bible-surface-color);
+  border: 1px solid var(--bible-border-color);
+  border-radius: var(--bible-radius);
+  padding: var(--bible-spacing);
+}
+
+.parallel-verse {
+  padding: 0.75rem;
+  border-bottom: 1px solid var(--bible-border-color);
+}
+
+.parallel-verse:last-child {
+  border-bottom: none;
+}
+
+.parallel-verse-num {
+  font-weight: bold;
+  color: var(--bible-accent-color);
+  margin-right: 0.5rem;
+}
+
+.translation-label {
+  font-family: var(--bible-font-hand);
+  font-weight: bold;
+  color: var(--bible-text-muted);
+  font-size: 0.75rem;
+  margin-bottom: 0.25rem;
+}
+
+/* Bible Content Wrapper (Side-by-Side) */
+.bible-content-wrapper {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.bible-content-wrapper .bible-pane {
+  flex: 1;
+  min-width: 0;
+}
+
+.bible-content-wrapper .bible-pane-header {
+  font-family: var(--bible-font-hand);
+  font-weight: bold;
+  color: var(--bible-text-muted);
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--bible-border-color);
+}
+
+@media (max-width: 48rem) {
+  .bible-content-wrapper {
+    flex-direction: column;
+  }
+}
+
+/* Side-by-Side Scripture Comparison */
+.sss-comparison {
+  margin-top: var(--bible-spacing);
+  padding: var(--bible-spacing);
+  background: var(--bible-surface-dim);
+  border: 1px solid var(--bible-border-color);
+  border-radius: var(--bible-radius);
+}
+
+.sss-comparison-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--bible-spacing);
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--bible-border-color);
+}
+
+.sss-comparison-header h3 {
+  margin: 0;
+  font-family: var(--bible-font-hand);
+  font-size: 1.125rem;
+}
+
+.sss-comparison .bible-text {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+/* ==========================================================================
+   4. BIBLE SELECTION/GRID COMPONENTS (~100 lines)
+   ========================================================================== */
+
+/* Bible Card (Translation Selection) */
+.bible-card {
+  display: block;
+  text-decoration: none;
+  color: var(--bible-chrome-text);
+  padding: var(--bible-spacing);
+  background-color: var(--bible-chrome-color);
+  border-radius: var(--bible-radius);
+  transition: background-color 0.2s ease;
+}
+
+.bible-card:hover {
+  background-color: var(--bible-accent-hover);
+}
+
+.bible-card h2,
+.bible-card h3 {
+  font-family: var(--bible-font-hand);
+  color: inherit;
+  margin-bottom: 0.5rem;
+}
+
+.bible-card p {
+  font-family: var(--bible-font-hand);
+  color: inherit;
+  margin-bottom: 0.75rem;
+}
+
+/* Bible Grid Container */
+.bible-grid {
+  background-color: var(--bible-chrome-color);
+  color: var(--bible-chrome-text);
+  border-radius: var(--bible-radius);
+  padding: var(--bible-spacing);
+}
+
+.bible-grid a {
+  color: inherit;
+  padding: 0.25rem 0.5rem;
+  border-radius: calc(var(--bible-radius) * 0.5);
+  transition: background-color 0.2s ease;
+}
+
+.bible-grid a:hover {
+  background-color: var(--bible-accent-color);
+}
+
+/* Book Grid */
+.book-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
+  gap: 0.5rem;
+}
+
+.book-link {
+  padding: 0.75rem;
+  background: var(--bible-surface-color);
+  border: 1px solid var(--bible-border-color);
+  border-radius: calc(var(--bible-radius) * 0.75);
+  text-align: center;
+  color: var(--bible-text-color);
+  transition: border-color 0.15s ease;
+}
+
+.book-link:hover {
+  border-color: var(--bible-accent-color);
+  background-color: var(--bible-surface-dim);
+}
+
+/* Chapter Grid */
+.chapter-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(3rem, 1fr));
+  gap: 0.5rem;
+}
+
+@media (min-width: 48rem) {
+  .chapter-grid {
+    grid-template-columns: repeat(10, 1fr);
+  }
+}
+
+.chapter-link {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.25rem;
+  background: var(--bible-surface-color);
+  border: 1px solid var(--bible-border-color);
+  border-radius: calc(var(--bible-radius) * 0.75);
+  color: var(--bible-text-color);
+  font-size: 0.875rem;
+  transition: border-color 0.15s ease;
+}
+
+.chapter-link:hover {
+  border-color: var(--bible-accent-color);
+  background-color: var(--bible-surface-dim);
+}
+
+/* Bible Filter Buttons */
+.filter-group,
+.bible-filter {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: var(--bible-spacing);
+}
+
+.filter-group button,
+.bible-filter button {
+  padding: 0.25rem 0.75rem;
+  font-size: 0.875rem;
+  font-family: var(--bible-font-hand);
+  background: transparent;
+  color: var(--bible-text-color);
+  border: 1px solid var(--bible-text-color);
+  border-radius: calc(var(--bible-radius) * 0.5);
+  transition: all 0.2s ease;
+}
+
+.filter-group button:hover,
+.filter-group button[aria-pressed="true"],
+.bible-filter button:hover,
+.bible-filter button[aria-pressed="true"] {
+  background-color: var(--bible-accent-color);
+  border-color: var(--bible-accent-color);
+  color: var(--bible-chrome-text);
+}
+
+/* ==========================================================================
+   5. BIBLE TABLES (~50 lines)
+   ========================================================================== */
+
+/* Canon Comparison Table */
+.canon-table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.canon-table {
+  font-size: 0.75rem;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.canon-table th,
+.canon-table td {
+  padding: 0.25rem 0.5rem;
+  border: 1px solid var(--bible-border-color);
+  text-align: center;
+  white-space: nowrap;
+}
+
+.canon-table th {
+  background: var(--bible-surface-dim);
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  font-weight: 600;
+}
+
+.canon-table td:nth-child(2) {
+  text-align: left;
+  white-space: normal;
+}
+
+.canon-table tbody tr:nth-child(even) {
+  background: var(--bible-surface-dim);
+}
+
+.canon-table tr:hover td {
+  background: rgba(107, 76, 107, 0.1);
+}
+
+.canon-table .section-row td {
+  background: var(--bible-accent-color);
+  color: white;
+  font-weight: bold;
+  padding: 0.5rem;
+}
+
+.canon-present {
+  color: #16a34a;
+  font-weight: bold;
+}
+
+.canon-absent {
+  color: var(--bible-text-muted);
+  opacity: 0.3;
+}
+
+/* Hide notes column on mobile */
+@media (max-width: 48rem) {
+  .canon-table th.notes-col,
+  .canon-table td.notes-col {
+    display: none;
+  }
+}
+
+/* ==========================================================================
+   6. INTERACTIVE ELEMENTS
+   ========================================================================== */
+
+/* Search Results */
+.search-result {
+  margin-bottom: 1.5rem;
+}
+
+.search-result header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 0.5rem;
+}
+
+.search-result h3 {
+  font-family: var(--bible-font-hand);
+  margin: 0;
+}
+
+.search-result .reference {
+  font-family: var(--bible-font-hand);
+  color: var(--bible-text-muted);
+  font-size: 0.875rem;
+}
+
+.search-result .verse-text {
+  line-height: 1.6;
+}
+
+.search-result mark {
+  background-color: rgba(255, 255, 0, 0.5);
+  padding: 0.125rem 0.25rem;
+  border-radius: 2px;
+}
+
+/* Share Menu */
+.share-menu {
+  position: absolute;
+  z-index: 100;
+  background: var(--bible-surface-color);
+  border: 1px solid var(--bible-border-color);
+  border-radius: calc(var(--bible-radius) * 0.75);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  padding: 0.25rem 0;
+  min-width: 9.375rem;
+}
+
+.share-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.5rem 1rem;
+  background: none;
+  border: none;
+  text-align: left;
+  font-family: var(--bible-font-hand);
+  font-size: 0.875rem;
+  color: var(--bible-text-color);
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.share-menu-item:hover {
+  background: var(--bible-surface-dim);
+}
+
+.share-menu-item:focus-visible {
+  background: var(--bible-surface-dim);
+  outline: 2px solid var(--bible-accent-color);
+  outline-offset: -2px;
+}
+
+.share-menu-divider {
+  height: 1px;
+  background: var(--bible-border-color);
+  margin: 0.25rem 0;
+}
+
+/* Diff Highlighting (Text Comparison) */
+.diff-insert {
+  background-color: var(--highlight-color, var(--bible-accent-color));
+  color: white;
+  padding: 0.125rem 0.25rem;
+  border-radius: 2px;
+}
+
+.diff-delete {
+  text-decoration: line-through;
+  opacity: 0.6;
+}
+
+/* SSS Error Message */
+.sss-error {
+  text-align: center;
+  padding: 2rem 1rem;
+  color: var(--bible-text-muted);
+  font-family: var(--bible-font-hand);
+}
+
+.sss-error p {
+  margin-bottom: 0.5rem;
+}
+
+.sss-error p:last-child {
+  font-size: 0.875rem;
+}
+
+/* ==========================================================================
+   7. PRINT STYLES
+   ========================================================================== */
+
+@media print {
+  .bible-nav,
+  .filter-group,
+  .bible-filter,
+  .verse-share-btn,
+  .share-menu,
+  .warning-banner {
+    display: none !important;
+  }
+
+  .bible-text {
+    font-size: 11pt;
+    line-height: 1.5;
+    text-align: left;
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  .bible-verse,
+  .verse {
+    break-inside: avoid;
+  }
+
+  .bible-verse-num,
+  .verse-num {
+    color: #333;
+  }
+
+  a {
+    color: #000;
+    text-decoration: underline;
+  }
+
+  .canon-table {
+    font-size: 8pt;
+  }
+}
