@@ -101,28 +101,17 @@ ol[role="list"] {
    ========================================================================== */
 
 :root {
-  /* Colors - Paper palette */
-  --clr-bg: oklch(75% 0.08 70);
-  --clr-surface: oklch(96% 0.02 85);
-  --clr-surface-dim: oklch(92% 0.02 80);
-  --clr-chrome: oklch(22% 0.08 180);
-  --clr-text: oklch(20% 0.01 80);
-  --clr-text-muted: oklch(45% 0.02 80);
-  --clr-border: oklch(85% 0.02 80);
-  --clr-accent: oklch(45% 0.12 320);
-  --clr-accent-hover: oklch(55% 0.12 320);
-  --clr-focus: oklch(60% 0.15 320);
-
-  /* Fallback hex for older browsers */
-  --color-bg: #b8a080;
-  --color-surface: #f5f1e8;
-  --color-surface-dim: #ebe5d8;
-  --color-chrome: #1a3230;
-  --color-text: #1a1a1a;
-  --color-text-muted: #6b6560;
-  --color-border: #d4cfc5;
-  --color-accent: #6b4c6b;
-  --color-accent-hover: #7d5c7d;
+  /* Michael aliases to AirFold paper theme variables */
+  /* These map Michael's variable names to AirFold's --color-paper-* variables */
+  --color-bg: var(--color-paper-white, #b5a48e);
+  --color-surface: var(--color-paper-bright, #e6ddc0);
+  --color-surface-dim: var(--color-paper-light, #ebe5d9);
+  --color-chrome: var(--color-paper-brown, #4a4a4a);
+  --color-text: var(--color-paper-black, #2c2416);
+  --color-text-muted: var(--color-paper-gray, #5c5347);
+  --color-border: var(--color-paper-border, #3d3428);
+  --color-accent: var(--color-accent, #6b4c6b);
+  --color-accent-hover: var(--color-accent-hover, #7d5c7d);
 
   /* Typography */
   --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
@@ -172,74 +161,13 @@ ol[role="list"] {
   --content-max: 65ch;
 }
 
-/* Dark mode */
-[data-theme="dark"] {
-  --clr-bg: oklch(15% 0.01 80);
-  --clr-surface: oklch(20% 0.01 80);
-  --clr-surface-dim: oklch(25% 0.01 80);
-  --clr-text: oklch(92% 0.01 80);
-  --clr-text-muted: oklch(65% 0.02 80);
-  --clr-border: oklch(35% 0.02 80);
-  --clr-accent: oklch(70% 0.1 320);
-  --clr-accent-hover: oklch(75% 0.1 320);
-
-  --color-bg: #1a1918;
-  --color-surface: #252321;
-  --color-surface-dim: #2d2a26;
-  --color-text: #f0ece3;
-  --color-text-muted: #a09890;
-  --color-border: #4a4540;
-  --color-accent: #b08eb0;
-  --color-accent-hover: #c0a0c0;
-
-  --shadow-sm: 0 1px 2px oklch(0% 0 0 / 20%);
-  --shadow-md: 0 4px 6px oklch(0% 0 0 / 25%);
-  --shadow-lg: 0 10px 15px oklch(0% 0 0 / 30%);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --clr-bg: oklch(15% 0.01 80);
-    --clr-surface: oklch(20% 0.01 80);
-    --clr-surface-dim: oklch(25% 0.01 80);
-    --clr-text: oklch(92% 0.01 80);
-    --clr-text-muted: oklch(65% 0.02 80);
-    --clr-border: oklch(35% 0.02 80);
-    --clr-accent: oklch(70% 0.1 320);
-    --clr-accent-hover: oklch(75% 0.1 320);
-
-    --color-bg: #1a1918;
-    --color-surface: #252321;
-    --color-surface-dim: #2d2a26;
-    --color-text: #f0ece3;
-    --color-text-muted: #a09890;
-    --color-border: #4a4540;
-    --color-accent: #b08eb0;
-    --color-accent-hover: #c0a0c0;
-
-    --shadow-sm: 0 1px 2px oklch(0% 0 0 / 20%);
-    --shadow-md: 0 4px 6px oklch(0% 0 0 / 25%);
-    --shadow-lg: 0 10px 15px oklch(0% 0 0 / 30%);
-  }
-}
+/* Dark mode is handled by AirFold via html.dark class
+   Michael variables reference AirFold's --color-paper-* vars which change automatically */
 
 /* ==========================================================================
    Base Elements
+   Note: html/body background and text colors are handled by AirFold core
    ========================================================================== */
-
-html {
-  background-color: var(--color-bg);
-  color: var(--color-text);
-}
-
-body {
-  font-family: var(--font-sans);
-  font-size: var(--text-base);
-  background-color: var(--color-bg);
-  color: var(--color-text);
-  display: flex;
-  flex-direction: column;
-}
 
 /* Typography */
 h1, h2, h3, h4, h5, h6 {
