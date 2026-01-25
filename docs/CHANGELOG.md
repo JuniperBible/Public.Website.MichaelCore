@@ -55,6 +55,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Now tracking `development` branch for latest features
   - JuniperBible includes capsule commands and versification system
   - All 100+ JuniperBible tests passing
+- **Code Cleanup** - Security and quality improvements from code review
+  - `share-menu.js` - Added HTML escaping for UI strings (XSS prevention)
+  - `share-menu.js` - Fixed race condition in click handler setup
+  - `strongs.js` - Fixed MutationObserver memory leak with cleanup handlers
+  - `parallel.js` - Fixed color picker event conflict between click/touch
+  - `theme.css` - Consolidated duplicate toast/share-toast rules
+  - `theme.css` - Fixed conflicting focus-visible CSS rules
+  - `theme.css` - Added clip-path for .sr-only (modern replacement)
 - **Documentation Overhaul** - Comprehensive update to all documentation
   - `README.md` - Complete rewrite with features, quick start, and status table
   - `docs/README.md` - New quick links section and project metrics table
