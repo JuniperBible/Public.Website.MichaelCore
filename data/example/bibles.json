@@ -94,8 +94,8 @@
       "description": "This text is based on the Westminster Leningrad Codex, tagged with Strong's numbers, and maintained by OpenScriptures.org. OpenScriptures plans to add morphology tagging. To contribute to this effort...",
       "abbrev": "OSMHB",
       "language": "he",
-      "license": "CC-PDDC",
-      "licenseText": "This text is based on the Westminster Leningrad Codex, tagged with Strong's numbers, and maintained by OpenScriptures.org. OpenScriptures plans to add morphology tagging. To contribute to this effort or follow its progress, see http://beta.openscriptures.org/projects/project/morphhb/.",
+      "license": "CC-BY-4.0",
+      "licenseText": "This text is based on the Westminster Leningrad Codex, tagged with Strong's numbers, and maintained by OpenScriptures.org.\n\nLicense: The underlying biblical text (WLC) is in the Public Domain. The lemma and morphology data is licensed under Creative Commons Attribution 4.0 International (CC-BY-4.0). You must give appropriate credit to the Open Scriptures Hebrew Bible Project.\n\nSee: https://github.com/openscriptures/morphhb",
       "versification": "leningrad",
       "features": [],
       "tags": [

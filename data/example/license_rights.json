@@ -1,5 +1,23 @@
 {
   "licenses": {
+    "CC-BY-4.0": {
+      "name": "Creative Commons Attribution 4.0 International",
+      "description": "This license lets others distribute, remix, adapt, and build upon the work, even commercially, as long as they credit the original creator.",
+      "permissions": [
+        {"key": "commercial", "label": "Commercial use", "description": "You may use the work for commercial purposes"},
+        {"key": "modify", "label": "Modify", "description": "You may remix, transform, or build upon the work"},
+        {"key": "distribute", "label": "Distribute", "description": "You may copy and redistribute the work in any medium or format"},
+        {"key": "private", "label": "Private use", "description": "You may use the work for private purposes"}
+      ],
+      "conditions": [
+        {"key": "attribution", "label": "Attribution", "description": "You must give appropriate credit, provide a link to the license, and indicate if changes were made"},
+        {"key": "notice", "label": "License notice", "description": "You must indicate the license and provide a link to the license text"}
+      ],
+      "limitations": [
+        {"key": "liability", "label": "No liability", "description": "The licensor is not liable for any damages"},
+        {"key": "warranty", "label": "No warranty", "description": "The work is provided without any warranty"}
+      ]
+    },
     "CC-PDDC": {
       "name": "Creative Commons Public Domain Dedication and Certification",
       "description": "The Creative Commons Public Domain Dedication waives copyright interest in a work and dedicates it to the world-wide public domain.",
