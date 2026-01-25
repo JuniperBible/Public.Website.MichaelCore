@@ -7,17 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **SBOM (Software Bill of Materials)** - Multiple SBOM formats generated
+  - `assets/downloads/sbom/sbom.spdx.json` - SPDX 2.3 format
+  - `assets/downloads/sbom/sbom.cdx.json` - CycloneDX JSON format
+  - `assets/downloads/sbom/sbom.cdx.xml` - CycloneDX XML format
+  - `assets/downloads/sbom/sbom.syft.json` - Syft native format
+  - `scripts/generate-sbom.sh` - Automated SBOM generation script
+- **WCAG Accessibility Audit** - Comprehensive accessibility compliance audit
+  - `docs/ACCESSIBILITY-AUDIT-2026-01-25.md` - Full WCAG 2.1 AA audit report
+  - Documented 0 WCAG violations in core flows
+  - All form controls properly labeled
+  - Color contrast meets WCAG AA standards (4.5:1 minimum)
+
 ### Changed
 - Updated `docs/README.md` to serve as comprehensive documentation index
 - Updated main `README.md` to reflect current documentation status
-- Marked planned documentation files (SECURITY.md, CSP.md, ACCESSIBILITY.md, SBOM/) as pending
-
-### Pending
-- Complete WCAG 2.1 AA compliance testing
-- Create SECURITY.md with security model documentation
-- Create CSP.md with Content Security Policy guidance
-- Create ACCESSIBILITY.md with WCAG conformance notes
-- Create SBOM/ directory with Software Bill of Materials
+- Marked documentation complete for accessibility and SBOM
 
 ## [1.1.0] - 2026-01-25
 

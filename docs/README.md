@@ -17,9 +17,13 @@ Complete documentation for the Michael Hugo Bible Module.
 ## Technical Documentation
 
 - **[SERVICE-WORKER.md](SERVICE-WORKER.md)** - Offline capabilities and caching strategy
+- **[CSP.md](CSP.md)** - Content Security Policy implementation and guidance
 - **[PHASE-0-BASELINE-INVENTORY.md](PHASE-0-BASELINE-INVENTORY.md)** - Initial codebase inventory and CSP audit
 - **[THIRD-PARTY-LICENSES.md](THIRD-PARTY-LICENSES.md)** - Third-party license tracking
 - **[ZERO-DEPENDENCIES-VERIFICATION.md](ZERO-DEPENDENCIES-VERIFICATION.md)** - External dependency audit
+- **[ACCESSIBILITY-AUDIT-2026-01-25.md](ACCESSIBILITY-AUDIT-2026-01-25.md)** - WCAG 2.1 AA compliance audit
+- **[SBOM Documentation](SBOM/)** - Software Bill of Materials (components, dependencies, generation)
+- **[SBOM Files](../assets/downloads/sbom/)** - Generated SBOM files (SPDX, CycloneDX, Syft)
 
 ## Project Management
 
@@ -30,7 +34,7 @@ Complete documentation for the Michael Hugo Bible Module.
 
 **Last updated:** 2026-01-25
 
-### Available Documentation (12 files)
+### Available Documentation (18 files)
 
 All core documentation is complete:
 - ✅ Architecture and system design
@@ -38,23 +42,31 @@ All core documentation is complete:
 - ✅ Hugo module usage guide
 - ✅ Versification guide
 - ✅ Service worker documentation
+- ✅ Content Security Policy guide
 - ✅ Code cleanup charter
 - ✅ Task tracking (TODO.txt)
 - ✅ Changelog
 - ✅ Baseline inventory
 - ✅ Third-party licenses
 - ✅ Zero dependencies verification
+- ✅ Accessibility audit (WCAG 2.1 AA)
+- ✅ SBOM documentation (README, components, dependencies)
+- ✅ SBOM generation (4 formats)
 - ✅ This index (README.md)
+
+### Recently Added Documentation
+
+- ✅ `CSP.md` - Content Security Policy implementation guide (37 innerHTML usages audited)
+- ✅ `ACCESSIBILITY-AUDIT-2026-01-25.md` - WCAG 2.1 AA compliance audit (0 violations)
+- ✅ `SBOM/` - Software Bill of Materials documentation (README, components, dependencies)
+- ✅ `assets/downloads/sbom/` - Generated SBOM files (SPDX, CycloneDX, Syft formats)
 
 ### Planned Documentation
 
-The following specialized documents are referenced in the main README but not yet created:
-- ⏳ `SECURITY.md` - Security model and hardening notes
-- ⏳ `CSP.md` - Content Security Policy guidance
-- ⏳ `ACCESSIBILITY.md` - WCAG conformance notes
-- ⏳ `SBOM/` - Software Bill of Materials directory
+The following specialized documents may be created in the future if needed:
+- ⏳ `SECURITY.md` - Comprehensive security model documentation
 
-These documents will be created as needed based on user requirements and project maturity.
+Note: Security information is currently documented in CSP.md, CHANGELOG.md, TODO.txt, and code comments.
 
 ## Quick Reference
 
@@ -65,10 +77,14 @@ These documents will be created as needed based on user requirements and project
 | System architecture | [ARCHITECTURE.md](ARCHITECTURE.md) |
 | Bible canon differences | [VERSIFICATION.md](VERSIFICATION.md) |
 | Offline features | [SERVICE-WORKER.md](SERVICE-WORKER.md) |
+| Security policy (CSP) | [CSP.md](CSP.md) |
 | Development tasks | [TODO.txt](TODO.txt) |
 | Release history | [CHANGELOG.md](CHANGELOG.md) |
 | Code cleanup plan | [CODE_CLEANUP_CHARTER.md](CODE_CLEANUP_CHARTER.md) |
 | License tracking | [THIRD-PARTY-LICENSES.md](THIRD-PARTY-LICENSES.md) |
+| Accessibility audit | [ACCESSIBILITY-AUDIT-2026-01-25.md](ACCESSIBILITY-AUDIT-2026-01-25.md) |
+| SBOM documentation | [SBOM/](SBOM/) |
+| SBOM files | [assets/downloads/sbom/](../assets/downloads/sbom/) |
 
 ## Contributing
 

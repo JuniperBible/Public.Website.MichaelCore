@@ -7,17 +7,15 @@
     - id (string, required): Element ID for the select
     - label (string, optional): Placeholder text (default: "Bible...")
     - class (string, optional): Additional CSS classes
-    - style (string, optional): Inline styles
 
   Usage:
     {{ partial "michael/bible-select.html" (dict "id" "sss-bible-left" "label" "Left Bible...") }}
 */}}
 {{- $id := .id -}}
 {{- $label := .label | default "Bible..." -}}
-{{- $class := .class | default "select" -}}
-{{- $style := .style | default "width: auto;" -}}
+{{- $class := .class | default "select w-auto" -}}
 <label for="{{ $id }}" class="sr-only">{{ i18n "selectBible" | default "Select Bible" }}</label>
-<select id="{{ $id }}" class="{{ $class }}" style="{{ $style }}" aria-label="{{ i18n "selectBible" | default "Select Bible" }}">
+<select id="{{ $id }}" class="{{ $class }}" aria-label="{{ i18n "selectBible" | default "Select Bible" }}">
   <option value="">{{ $label }}</option>
   {{- range $.Site.Data.bibles.bibles -}}
   <option value="{{ .id }}">{{ .title }} ({{ .abbrev }})</option>

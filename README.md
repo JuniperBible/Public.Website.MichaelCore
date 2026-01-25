@@ -21,15 +21,15 @@ Core references:
 - **Versification notes (canon differences):** [`docs/VERSIFICATION.md`](docs/VERSIFICATION.md) ✅
 - **Service worker & offline behavior:** [`docs/SERVICE-WORKER.md`](docs/SERVICE-WORKER.md) ✅
 - **Baseline inventory & CSP audit:** [`docs/PHASE-0-BASELINE-INVENTORY.md`](docs/PHASE-0-BASELINE-INVENTORY.md) ✅
+- **WCAG accessibility audit:** [`docs/ACCESSIBILITY-AUDIT-2026-01-25.md`](docs/ACCESSIBILITY-AUDIT-2026-01-25.md) ✅
+- **SBOM (Software Bill of Materials):** [`docs/SBOM/`](docs/SBOM/) ✅
 
-Planned documentation (not yet created):
+Security & CSP documentation:
 
-- **Security model & hardening notes:** `docs/SECURITY.md` ⏳
-- **Content Security Policy guidance:** `docs/CSP.md` ⏳
-- **Accessibility conformance notes:** `docs/ACCESSIBILITY.md` ⏳
-- **SBOM (Software Bill of Materials):** `docs/SBOM/` ⏳
+- **CSP implementation:** Documented in [`docs/CHANGELOG.md`](docs/CHANGELOG.md) (Security section) ✅
+- **XSS vulnerability fixes:** See CHANGELOG.md v1.1.0 Security section ✅
 
-> These specialized documents will be created as needed based on user requirements and project maturity.
+> Additional specialized security documentation (SECURITY.md, CSP.md) may be created in the future if needed.
 
 ---
 

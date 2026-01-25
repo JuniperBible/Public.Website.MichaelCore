@@ -37,7 +37,7 @@
 
 {{ define "main" }}
 {{ $basePath := .Site.Params.michael.basePath | default "/bibles" }}
-<main class="container" style="padding: var(--pad-3) var(--pad-2);">
+<main class="container pad-3-2">
   <article class="panel">
     <header class="page-header">
       <h1>{{ .Title }}</h1>
@@ -46,7 +46,7 @@
       {{ end }}
 
       <!-- Features/tags -->
-      <div class="row mt-1" style="justify-content: center;">
+      <div class="row row--center mt-1">
         {{/* Look up language and license from bibles.json */}}
         {{ $bibleId := .Params.bible | default .Params.abbrev | default .File.ContentBaseName }}
         {{ range .Site.Data.bibles.bibles }}

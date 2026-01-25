@@ -440,11 +440,14 @@ a:focus-visible {
    10) Small utility classes
 ------------------------------ */
 .row { display: flex; gap: 10px; flex-wrap: wrap; }
+.row--center { justify-content: center; }
 .center { display: grid; place-items: center; }
 .muted { color: var(--text-500); }
 .mt-1 { margin-top: 8px; }
 .mt-2 { margin-top: 16px; }
 .mt-3 { margin-top: 24px; }
+.mb-2 { margin-bottom: var(--pad-2); }
+.mr-1 { margin-right: 4px; }
 .sr-only {
   position: absolute;
   width: 1px;
@@ -457,6 +460,21 @@ a:focus-visible {
   border: 0;
 }
 .hidden { display: none !important; }
+
+/* Padding utilities */
+.pad-3-2 {
+  padding: var(--pad-3) var(--pad-2);
+}
+
+/* Width utilities */
+.w-auto {
+  width: auto;
+}
+
+/* Cursor utilities */
+.cursor-pointer {
+  cursor: pointer;
+}
 
 /* -----------------------------
    11) Grid layouts

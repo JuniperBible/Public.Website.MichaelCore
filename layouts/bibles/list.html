@@ -58,7 +58,7 @@ These are loaded with defer to avoid blocking page rendering.
 
 {{ define "main" }}
 {{ $basePath := .Site.Params.michael.basePath | default "/bibles" }}
-<main class="container" style="padding: var(--pad-3) var(--pad-2);">
+<main class="container pad-3-2">
   <div class="panel">
     {{/*
     ============================================================================
@@ -78,7 +78,7 @@ These are loaded with defer to avoid blocking page rendering.
     Links use relLangURL for multilingual support.
     ============================================================================
     */}}
-    <nav class="actions" style="margin-bottom: var(--pad-2);">
+    <nav class="actions mb-2">
       <a href="{{ printf "%s/compare/" $basePath | relLangURL }}" class="btn btn--secondary">
         {{ i18n "compareTranslations" | default "Compare Translations" }}
       </a>
