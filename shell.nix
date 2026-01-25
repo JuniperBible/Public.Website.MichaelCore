@@ -3,22 +3,17 @@
 pkgs.mkShell {
   buildInputs = with pkgs; [
     hugo
-    nodejs_22
-    cloc
+    gnumake
   ];
 
   shellHook = ''
-    echo "Michael - Bible UI Hugo Module"
-    echo "==============================="
+    echo "Michael - Hugo Bible Module"
+    echo "==========================="
     echo ""
-    echo "This is a Hugo module, not standalone."
-    echo "Use from parent project with module mounts."
-    echo ""
-    echo "Contents:"
-    echo "  layouts/religion/bibles/  - Bible page layouts"
-    echo "  assets/js/               - Bible JavaScript"
-    echo "  i18n/                    - Translations"
-    echo "  content/bibles/          - Bible content pages"
+    echo "Commands:"
+    echo "  make dev     Start development server"
+    echo "  make build   Build static site"
+    echo "  make clean   Remove generated files"
     echo ""
   '';
 }
