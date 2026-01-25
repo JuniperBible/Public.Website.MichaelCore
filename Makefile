@@ -1,7 +1,7 @@
 # Michael - Hugo Bible Module
 # https://github.com/FocuswithJustin/michael
 
-.PHONY: dev dev-hugo dev-caddy build clean help vendor vendor-fetch vendor-convert vendor-package vendor-restore juniper caddy sbom ensure-data test test-compare test-search test-single test-offline test-mobile test-keyboard check push sync-submodules
+.PHONY: dev dev-hugo dev-caddy build clean help vendor vendor-fetch vendor-convert vendor-package vendor-restore juniper caddy hugo sbom ensure-data test test-compare test-search test-single test-offline test-mobile test-keyboard check push sync-submodules fmt lint watch info
 
 # Bible modules to vendor
 BIBLES := KJVA DRC Tyndale Coverdale Geneva1599 WEB Vulgate SBLGNT LXX ASV OSMHB
@@ -20,20 +20,19 @@ help:
 	@echo "Michael - Hugo Bible Module"
 	@echo "Current branch: $(BRANCH)"
 	@echo ""
-	@echo "Usage:"
-	@echo "  make dev       Build and serve with Caddy (production-like, no HTTPS)"
-	@echo "  make dev-hugo  Start Hugo's internal development server"
-	@echo "  make build     Build static site to public/"
-	@echo "  make clean     Remove generated files"
-	@echo "  make sbom      Generate SBOM in all formats"
+	@echo "Development:"
+	@echo "  make dev        Build + serve with Caddy (production-like)"
+	@echo "  make dev-caddy  Alias for make dev"
+	@echo "  make dev-hugo   Hugo dev server with live reload"
+	@echo "  make build      Build static site to public/"
+	@echo "  make clean      Remove generated files"
+	@echo "  make info       Show project info and tool versions"
 	@echo ""
 	@echo "Quality:"
-	@echo "  make check     Run all build checks (updates README.md status)"
-	@echo "  make push      Verify checks, then push (main requires 'RELEASE' confirmation)"
-	@echo ""
-	@echo "Branch Management:"
-	@echo "  make sync-submodules  Sync submodules to match current branch"
-	@echo "                        main -> main, development -> development"
+	@echo "  make check      Run all build checks (updates README.md)"
+	@echo "  make fmt        Format Go code in tests/"
+	@echo "  make lint       Run linters (go vet)"
+	@echo "  make push       Verify checks, then push"
 	@echo ""
 	@echo "Testing:"
 	@echo "  make test          Run all regression tests"
@@ -44,11 +43,14 @@ help:
 	@echo "  make test-mobile   Run mobile touch tests"
 	@echo "  make test-keyboard Run keyboard navigation tests"
 	@echo ""
-	@echo "Vendor commands:"
-	@echo "  make vendor    Full vendor workflow (fetch + convert + package)"
-	@echo "  make vendor-restore  Restore data from xz packages"
-	@echo "  make juniper   Build the juniper tool"
-	@echo "  make caddy     Build the caddy server"
+	@echo "Tools & Vendor:"
+	@echo "  make vendor         Full vendor workflow (fetch + convert + package)"
+	@echo "  make vendor-restore Restore data from xz packages"
+	@echo "  make juniper        Build juniper tool"
+	@echo "  make hugo           Build hugo from source"
+	@echo "  make caddy          Build caddy server"
+	@echo "  make sbom           Generate SBOM"
+	@echo "  make sync-submodules Sync submodules to current branch"
 	@echo ""
 
 # Hugo binary - use local build if available, else system hugo
@@ -57,8 +59,11 @@ HUGO := $(shell test -x tools/hugo/hugo && echo ./tools/hugo/hugo || echo hugo)
 # Caddy binary - use local build if available, else system caddy
 CADDY := $(shell test -x tools/caddy/cmd/caddy/caddy && echo ./tools/caddy/cmd/caddy/caddy || echo caddy)
 
-# Default dev: build site and serve with Caddy (production-like, HTTP only)
-dev: sync-submodules caddy build
+# Default dev: alias to dev-caddy
+dev: dev-caddy
+
+# Caddy dev server: build site and serve with Caddy (production-like, HTTP only)
+dev-caddy: sync-submodules caddy build
 	@echo "Starting Caddy server on http://localhost:1313"
 	@echo "Press Ctrl+C to stop"
 	$(CADDY) run --config Caddyfile
@@ -280,3 +285,56 @@ sync-submodules:
 	else \
 		echo "Unknown branch $(BRANCH) - skipping submodule sync"; \
 	fi
+
+# ============================================================================
+# Developer Tools
+# ============================================================================
+
+# Build hugo from source
+hugo:
+	@if [ ! -x tools/hugo/hugo ]; then \
+		echo "Building Hugo..."; \
+		cd tools/hugo && go build -o hugo .; \
+	else \
+		echo "Hugo already built at tools/hugo/hugo"; \
+	fi
+
+# Format Go code
+fmt:
+	@echo "Formatting Go code..."
+	@cd tests && go fmt ./...
+	@cd tools/juniper && go fmt ./...
+	@cd tools/magellan && go fmt ./...
+	@echo "Done."
+
+# Run linters
+lint:
+	@echo "Running Go vet..."
+	@cd tests && go vet ./... 2>&1 || true
+	@echo ""
+	@echo "Checking for common issues..."
+	@grep -rn "TODO" --include="*.go" tests/ 2>/dev/null | head -10 || true
+	@echo "Done."
+
+# Show project info and tool versions
+info:
+	@echo "========================================"
+	@echo "Michael - Project Info"
+	@echo "========================================"
+	@echo ""
+	@echo "Branch: $(BRANCH)"
+	@echo "Go:     $$(go version 2>/dev/null || echo 'not installed')"
+	@echo "Hugo:   $$($(HUGO) version 2>/dev/null | head -1 || echo 'not built')"
+	@echo "Caddy:  $$($(CADDY) version 2>/dev/null | head -1 || echo 'not built')"
+	@echo ""
+	@echo "Submodules:"
+	@git submodule status
+	@echo ""
+	@echo "Data:"
+	@if [ -f "$(DATA_DIR)/bibles.json" ]; then \
+		echo "  Bible data: $(DATA_DIR)/bibles.json"; \
+		echo "  Bibles: $$(cat $(DATA_DIR)/bibles.json | grep -o '"id"' | wc -l) translations"; \
+	else \
+		echo "  Bible data: not found (run 'make vendor')"; \
+	fi
+	@echo ""
