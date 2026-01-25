@@ -1,7 +1,7 @@
 # Michael - Hugo Bible Module
 # https://github.com/FocuswithJustin/michael
 
-.PHONY: dev build clean help vendor vendor-fetch vendor-convert vendor-package vendor-restore juniper sbom ensure-data test test-compare test-search test-single test-offline test-mobile test-keyboard check push sync-submodules
+.PHONY: dev dev-hugo dev-caddy build clean help vendor vendor-fetch vendor-convert vendor-package vendor-restore juniper caddy sbom ensure-data test test-compare test-search test-single test-offline test-mobile test-keyboard check push sync-submodules
 
 # Bible modules to vendor
 BIBLES := KJVA DRC Tyndale Coverdale Geneva1599 WEB Vulgate SBLGNT LXX ASV OSMHB
@@ -21,7 +21,8 @@ help:
 	@echo "Current branch: $(BRANCH)"
 	@echo ""
 	@echo "Usage:"
-	@echo "  make dev       Start Hugo development server"
+	@echo "  make dev       Build and serve with Caddy (production-like, no HTTPS)"
+	@echo "  make dev-hugo  Start Hugo's internal development server"
 	@echo "  make build     Build static site to public/"
 	@echo "  make clean     Remove generated files"
 	@echo "  make sbom      Generate SBOM in all formats"
@@ -47,13 +48,23 @@ help:
 	@echo "  make vendor    Full vendor workflow (fetch + convert + package)"
 	@echo "  make vendor-restore  Restore data from xz packages"
 	@echo "  make juniper   Build the juniper tool"
+	@echo "  make caddy     Build the caddy server"
 	@echo ""
 
 # Hugo binary - use local build if available, else system hugo
 HUGO := $(shell test -x tools/hugo/hugo && echo ./tools/hugo/hugo || echo hugo)
 
-# Start Hugo development server (syncs submodules to current branch first)
-dev: sync-submodules
+# Caddy binary - use local build if available, else system caddy
+CADDY := $(shell test -x tools/caddy/cmd/caddy/caddy && echo ./tools/caddy/cmd/caddy/caddy || echo caddy)
+
+# Default dev: build site and serve with Caddy (production-like, HTTP only)
+dev: sync-submodules caddy build
+	@echo "Starting Caddy server on http://localhost:1313"
+	@echo "Press Ctrl+C to stop"
+	$(CADDY) run --config Caddyfile
+
+# Hugo's internal development server (live reload, drafts, etc.)
+dev-hugo: sync-submodules
 	$(HUGO) server --buildDrafts --buildFuture --disableFastRender
 
 # Build static site (regenerates SBOM and Bible data first)
@@ -94,6 +105,13 @@ clean:
 # Build juniper tool
 juniper:
 	cd $(JUNIPER) && go build -o bin/juniper ./cmd/juniper
+
+# Build caddy server (built to cmd/caddy/caddy to match submodule's .gitignore)
+caddy:
+	@if [ ! -x tools/caddy/cmd/caddy/caddy ]; then \
+		echo "Building Caddy..."; \
+		cd tools/caddy/cmd/caddy && go build -o caddy .; \
+	fi
 
 # Full vendor workflow
 vendor: juniper vendor-fetch vendor-convert vendor-package
