@@ -20,6 +20,8 @@
 */}}
 
 {{ define "scripts" }}
+{{/* Inject Strong's definitions data for offline use */}}
+{{ partial "michael/strongs-data.html" . }}
 {{ $domUtils := resources.Get "js/michael/dom-utils.js" }}
 {{ if $domUtils }}<script src="{{ $domUtils.RelPermalink }}" defer></script>{{ end }}
 {{ $bibleApi := resources.Get "js/michael/bible-api.js" }}

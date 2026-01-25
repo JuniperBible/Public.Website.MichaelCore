@@ -25,6 +25,8 @@
 */}}
 
 {{ define "scripts" }}
+{{/* Inject Strong's definitions data for offline use */}}
+{{ partial "michael/strongs-data.html" . }}
 {{ $shareMenu := resources.Get "js/michael/share-menu.js" }}
 {{ if $shareMenu }}<script src="{{ $shareMenu.RelPermalink }}" defer></script>{{ end }}
 {{ $share := resources.Get "js/share.js" }}

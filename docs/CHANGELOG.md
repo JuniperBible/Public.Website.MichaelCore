@@ -24,6 +24,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `color-picker.html` — Highlight color selection
   - `verse-grid.html` — Verse grid markup
   - `sss-toggle.html` — SSS mode toggle button
+  - `strongs-data.html` — Data injection partial for Strong's definitions
+  - `offline-settings.html` — Cache management panel
+
+- **Strong's Concordance Bundle** — Offline lexicon support
+  - `data/strongs/hebrew.json` — 150+ Hebrew/Aramaic definitions (H0001-H8674)
+  - `data/strongs/greek.json` — 150+ Greek definitions (G0001-G5624)
+  - `data/strongs/README.md` — Documentation for Strong's data format
+  - `layouts/partials/michael/strongs-data.html` — Hugo partial to inject definitions
+  - `assets/js/strongs.js` — Updated to use local data first, with API fallback
 
 - **CSS Components** (`assets/css/theme.css`)
   - Diff highlighting classes (`.diff-insert`, `.diff-punct`, etc.)
@@ -35,6 +44,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `prefers-reduced-motion` support
   - `prefers-contrast` support
   - Enhanced `focus-visible` styling
+  - Enhanced print stylesheet for Bible chapters
+
+- **Strong's Definitions Bundle** (`data/strongs/`)
+  - `hebrew.json` — Local Hebrew Strong's definitions (H0001-H8674)
+  - `greek.json` — Local Greek Strong's definitions (G0001-G5624)
+  - Provenance metadata (source, version, license)
+  - `layouts/partials/michael/strongs-data.html` — Data injection partial
+
+- **Service Worker** (`static/sw.js`)
+  - Progressive caching with shell pre-cache
+  - Cache versioning and cleanup
+  - Pre-cache default chapters (KJV Gen/Ps/Matt/John)
+  - Cache-on-navigate for Bible chapters
+  - Offline fallback page (`static/offline.html`)
+  - Service worker registration in baseof.html (guarded)
+
+- **Offline Settings UI**
+  - `layouts/partials/michael/offline-settings.html` — Cache management panel
+  - `assets/js/michael/offline-manager.js` — SW communication layer
+  - Clear offline cache control
 
 - **Architecture Documentation** (`docs/`)
   - `ARCHITECTURE.md` — System overview and data flow
@@ -50,6 +79,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `parallel.js` refactored to use shared modules (`dom-utils.js`, `bible-api.js`, `verse-grid.js`, `chapter-dropdown.js`)
   - `bible-search.js` refactored to use `bible-api.js` for chapter fetching
   - `share.js` refactored to use `ShareMenu` component with accessibility improvements
+  - `strongs.js` now uses local definitions first, external API as fallback
+  - `share.js` and `share-menu.js` support offline mode with clipboard fallback
   - All inline styles removed from JavaScript files (replaced with CSS classes)
 - **Template Improvements**
   - `compare.html` refactored to use partials (color-picker, verse-grid, sss-toggle)
@@ -71,10 +102,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - XSS vulnerability patched in `bible-search.js` `highlightMatches()` function
   - User search terms now properly escaped to prevent code injection
 
-### Pending (Code Cleanup Charter)
-- Bundle Strong's definitions locally
-- Add service worker for offline support
-- Enhance print stylesheet
+### Documentation
+- Added comprehensive JSDoc to `parallel.js`, `bible-search.js`, `share.js`, `strongs.js`
+- Added section separators to all main JavaScript files
+- Added documentation header to `list.html`
+- All JavaScript modules in `assets/js/michael/` have full JSDoc coverage
+
+### Pending
 - Complete WCAG 2.1 AA compliance testing
 
 ## [1.0.0] - 2026-01-24

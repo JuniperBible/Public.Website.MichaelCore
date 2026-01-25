@@ -39,5 +39,8 @@
 
   {{/* Page-specific scripts */}}
   {{ block "scripts" . }}{{ end }}
+
+  {{/* Service Worker registration */}}
+  {{ partial "michael/sw-register.html" . }}
 </body>
 </html>

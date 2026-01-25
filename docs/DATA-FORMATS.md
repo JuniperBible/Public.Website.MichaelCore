@@ -146,23 +146,79 @@ Example: `/bibles/kjv/john/3/`
 
 Example: `<span class="strongs" data-strongs="H430">אֱלֹהִים</span>`
 
-## Strong's Definitions (Planned)
+## Strong's Definitions
 
 Location: `data/strongs/hebrew.json` and `data/strongs/greek.json`
 
-### Schema (Planned)
+Strong's definitions provide offline lexicon data for Hebrew and Greek words referenced by Strong's numbers in Bible texts.
+
+### Schema
 
 ```json
 {
+  "_meta": {
+    "source": "Strong's Hebrew Lexicon",
+    "license": "Public Domain",
+    "generated": "2026-01-25",
+    "count": 150,
+    "description": "Representative sample of Strong's Hebrew definitions"
+  },
   "H0001": {
     "lemma": "אָב",
     "xlit": "'ab",
     "pron": "awb",
-    "def": "father",
-    "usage": "chief, (fore-)father(-less), patrimony, principal"
+    "def": "father, in a literal and immediate, or figurative and remote application",
+    "derivation": "a primitive word"
   }
 }
 ```
+
+### Fields
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `lemma` | string | Yes | Original Hebrew/Greek word |
+| `xlit` | string | Yes | Transliteration (romanized form) |
+| `pron` | string | Yes | Pronunciation guide |
+| `def` | string | Yes | English definition |
+| `derivation` | string | Yes | Etymology and derivation information |
+
+### Metadata (_meta)
+
+Each Strong's JSON file includes a `_meta` object with:
+
+- `source` - Data source name
+- `license` - License information (Public Domain)
+- `generated` - Generation date (YYYY-MM-DD)
+- `count` - Number of definitions included
+- `description` - Brief description of the data set
+
+### Usage in Hugo
+
+Include the Strong's data partial in Bible layouts:
+
+```html
+{{ partial "michael/strongs-data.html" . }}
+```
+
+This injects definitions into `window.Michael.StrongsData.hebrew` and `window.Michael.StrongsData.greek` for offline use.
+
+### JavaScript Integration
+
+The `strongs.js` script automatically uses local data when available:
+
+1. **Local data available**: Shows rich definition with lemma, transliteration, pronunciation, definition, and derivation
+2. **Online without local data**: Shows link to Blue Letter Bible
+3. **Offline without local data**: Shows "Definition not available offline" message
+
+### Coverage
+
+Current implementation includes representative samples:
+
+- **Hebrew**: 150+ common entries (H0001-H8674)
+- **Greek**: 150+ common entries (G0001-G5624)
+
+To add more definitions, extend the JSON files following the same format. Strong's numbers must be zero-padded to 4 digits (e.g., "H0001").
 
 ## JSON Schema Validation
 

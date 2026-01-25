@@ -719,6 +719,70 @@ a:focus-visible {
   border: none;
 }
 
+/* Offline mode modifier */
+.share-menu--offline {
+  border-left: 3px solid var(--text-500);
+}
+
+/* Disabled share button (offline mode) */
+.share-btn--disabled,
+.share-menu-item:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  color: var(--text-500);
+}
+
+.share-btn--disabled:hover,
+.share-menu-item:disabled:hover {
+  background: transparent;
+}
+
+.share-btn--disabled svg,
+.share-menu-item:disabled svg {
+  opacity: 0.5;
+}
+
+/* Toast notifications */
+.share-toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(100px);
+  z-index: 9999;
+
+  max-width: 90%;
+  width: auto;
+  min-width: 280px;
+
+  padding: 12px 20px;
+  background: var(--chrome-900);
+  color: rgba(255, 255, 255, 0.95);
+  border-radius: var(--radius-1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+
+  font-size: 0.92rem;
+  line-height: 1.4;
+  text-align: center;
+
+  opacity: 0;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+              opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.share-toast--visible {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+}
+
+/* Responsive toast positioning */
+@media (max-width: 480px) {
+  .share-toast {
+    min-width: 260px;
+    bottom: 16px;
+    font-size: 0.88rem;
+  }
+}
+
 /* -----------------------------
    17) Strong's tooltip component
 ------------------------------ */
@@ -899,20 +963,806 @@ a:focus-visible {
 }
 
 /* -----------------------------
-   21) Print styles
+   21) Print Stylesheet - Production Ready
+   Optimized for Bible study, sharing, and archival printing
 ------------------------------ */
 @media print {
-  .chrome, .reader-bar, .actions, .btn {
+  /* ===== 1) HIDE NON-ESSENTIAL INTERACTIVE ELEMENTS ===== */
+
+  /* Navigation and chrome */
+  .chrome,
+  header.chrome,
+  footer.chrome,
+  .nav,
+  .reader-bar,
+  .actions,
+  nav.actions {
     display: none !important;
   }
 
-  body {
-    background: white;
-    color: black;
+  /* Interactive controls */
+  .btn,
+  .btn--primary,
+  .btn--secondary,
+  .btn--sm,
+  .chip,
+  button,
+  select,
+  input[type="checkbox"],
+  label:has(input[type="checkbox"]) {
+    display: none !important;
   }
 
-  .panel {
-    box-shadow: none;
-    border: none;
+  /* Verse selection grid and controls */
+  #verse-grid,
+  #sss-verse-grid,
+  #verse-buttons,
+  #sss-verse-buttons,
+  .verse-btn,
+  .book-grid,
+  .chapter-grid,
+  .book-link,
+  .chapter-link,
+  .tile {
+    display: none !important;
+  }
+
+  /* Share buttons and menus */
+  .share-menu,
+  .share-menu-item,
+  [id*="share"],
+  [class*="share"] {
+    display: none !important;
+  }
+
+  /* Color picker and SSS toggle */
+  [id*="color-picker"],
+  [id*="color-btn"],
+  .sss-toggle-icon,
+  [id*="sss-mode-btn"],
+  [id*="sss-toggle"],
+  [id*="sss-back"] {
+    display: none !important;
+  }
+
+  /* Chapter dropdown selectors */
+  #book-select,
+  #chapter-select,
+  #bible-select,
+  #sss-book-select,
+  #sss-chapter-select,
+  #sss-bible-left,
+  #sss-bible-right {
+    display: none !important;
+  }
+
+  /* Loading states and skeleton screens */
+  .loading,
+  .skeleton {
+    display: none !important;
+  }
+
+  /* ===== 2) PAGE SETUP AND TYPOGRAPHY ===== */
+
+  /* Reset page to plain white with proper margins */
+  @page {
+    margin: 0.75in 0.5in;
+    size: letter portrait;
+  }
+
+  html,
+  body {
+    background: white !important;
+    color: #000 !important;
+    font-family: "Garamond", "Georgia", "Times New Roman", serif !important;
+    font-size: 11pt !important;
+    line-height: 1.6 !important;
+    margin: 0;
+    padding: 0;
+  }
+
+  /* ===== 3) CONTAINER AND PANEL CLEANUP ===== */
+
+  .container {
+    max-width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  .panel,
+  .panel--inner,
+  .panel--tight {
+    background: white !important;
+    border: none !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  .card {
+    background: white !important;
+    border: 1px solid #ccc !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    padding: 12pt !important;
+    margin-bottom: 12pt !important;
+    page-break-inside: avoid;
+  }
+
+  /* ===== 4) BIBLE TEXT OPTIMIZATION ===== */
+
+  .prose {
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    color: #000 !important;
+    font-size: 11pt !important;
+    line-height: 1.6 !important;
+  }
+
+  .prose p {
+    margin: 0 0 8pt 0 !important;
+    orphans: 3;
+    widows: 3;
+    page-break-inside: avoid;
+  }
+
+  /* ===== 5) HEADINGS AND PAGE HEADER ===== */
+
+  .page-header {
+    text-align: left !important;
+    margin-bottom: 16pt !important;
+    padding-bottom: 8pt !important;
+    border-bottom: 2px solid #000 !important;
+  }
+
+  .page-header h1 {
+    font-size: 18pt !important;
+    font-weight: bold !important;
+    color: #000 !important;
+    margin: 0 0 4pt 0 !important;
+  }
+
+  .page-header p {
+    font-size: 10pt !important;
+    color: #333 !important;
+    margin: 0 !important;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    color: #000 !important;
+    page-break-after: avoid;
+    page-break-inside: avoid;
+  }
+
+  /* ===== 6) VERSE FORMATTING ===== */
+
+  /* Verse numbers in superscript */
+  .verse-num,
+  .prose [data-verse],
+  verse {
+    font-weight: bold !important;
+    color: #000 !important;
+    font-size: 9pt !important;
+    vertical-align: super !important;
+    margin-right: 3pt !important;
+  }
+
+  /* Individual verses - prevent breaking mid-verse */
+  .prose verse,
+  .prose [class*="verse"] {
+    display: inline !important;
+    page-break-inside: avoid;
+  }
+
+  /* ===== 7) STRONG'S NUMBERS HANDLING ===== */
+
+  /* Hide Strong's numbers completely in print (cleaner) */
+  .strongs-ref,
+  .strongs-tooltip,
+  w[lemma],
+  w[morph],
+  [data-strongs] {
+    display: none !important;
+  }
+
+  /* Alternative: Show as footnotes (uncomment if preferred)
+  .strongs-ref {
+    font-size: 7pt !important;
+    vertical-align: super !important;
+    color: #666 !important;
+  }
+  */
+
+  /* ===== 8) NOTES AND CROSS-REFERENCES ===== */
+
+  .prose note {
+    display: inline !important;
+    font-size: 9pt !important;
+    color: #333 !important;
+    font-style: italic !important;
+  }
+
+  .prose note::before {
+    content: " [" !important;
+  }
+
+  .prose note::after {
+    content: "]" !important;
+  }
+
+  .prose note catchWord {
+    font-weight: 600 !important;
+    font-style: normal !important;
+  }
+
+  /* ===== 9) TRANSLATION METADATA (BADGES) ===== */
+
+  /* Make badges print-friendly */
+  .badge,
+  .badge--success {
+    display: inline-block !important;
+    border: 1px solid #000 !important;
+    background: white !important;
+    color: #000 !important;
+    padding: 2pt 6pt !important;
+    margin: 0 4pt 4pt 0 !important;
+    font-size: 9pt !important;
+    border-radius: 0 !important;
+  }
+
+  /* ===== 10) LINKS - SHOW URLS ===== */
+
+  a {
+    color: #000 !important;
+    text-decoration: underline !important;
+  }
+
+  /* Show URLs after links (exclude internal nav) */
+  a[href^="http"]::after,
+  a[href^="https://"]::after {
+    content: " (" attr(href) ")" !important;
+    font-size: 9pt !important;
+    color: #555 !important;
+    word-break: break-all;
+  }
+
+  /* Don't show URLs for anchor links or relative links */
+  a[href^="#"]::after,
+  a[href^="/"]::after {
+    content: "" !important;
+  }
+
+  /* ===== 11) COMPARE VIEW - STACK VERTICALLY ===== */
+
+  /* Normal mode parallel content */
+  #parallel-content {
+    display: block !important;
+    margin: 0 !important;
+  }
+
+  /* Stack translation columns vertically */
+  .grid-2,
+  #sss-panes {
+    display: block !important;
+    grid-template-columns: 1fr !important;
+  }
+
+  .grid-2 > *,
+  #sss-panes > * {
+    margin-bottom: 16pt !important;
+    page-break-inside: avoid;
+  }
+
+  /* Translation headers - make prominent */
+  #sss-left-pane h2,
+  #sss-right-pane h2,
+  .card__title,
+  [data-translation-title] {
+    font-size: 14pt !important;
+    font-weight: bold !important;
+    color: #000 !important;
+    margin: 0 0 8pt 0 !important;
+    padding-bottom: 4pt !important;
+    border-bottom: 1px solid #000 !important;
+  }
+
+  /* Show translation name prominently */
+  .card[data-translation]::before {
+    content: attr(data-translation) !important;
+    display: block !important;
+    font-size: 14pt !important;
+    font-weight: bold !important;
+    margin-bottom: 8pt !important;
+    padding-bottom: 4pt !important;
+    border-bottom: 1px solid #000 !important;
+  }
+
+  /* ===== 12) DIFF HIGHLIGHTING - GRAYSCALE PRINT ===== */
+
+  /* Remove color backgrounds, use text decorations instead */
+  .diff-insert {
+    background: transparent !important;
+    text-decoration: underline !important;
+    text-decoration-style: solid !important;
+    text-underline-offset: 2pt !important;
+    color: #000 !important;
+  }
+
+  .diff-punct {
+    background: transparent !important;
+    border-bottom: 1px dotted #666 !important;
+    color: #000 !important;
+  }
+
+  .diff-spelling {
+    background: transparent !important;
+    border-bottom: 1px dashed #666 !important;
+    color: #000 !important;
+  }
+
+  .diff-subst {
+    background: transparent !important;
+    text-decoration: underline double !important;
+    text-underline-offset: 2pt !important;
+    color: #000 !important;
+  }
+
+  .diff-omit {
+    background: transparent !important;
+    text-decoration: line-through !important;
+    color: #666 !important;
+  }
+
+  /* Legend for diff marks (optional - add via JS if needed) */
+  .diff-legend {
+    font-size: 9pt !important;
+    color: #333 !important;
+    margin: 12pt 0 !important;
+    padding: 8pt !important;
+    border: 1px solid #ccc !important;
+  }
+
+  /* ===== 13) OSIS STRUCTURAL ELEMENTS ===== */
+
+  /* Keep OSIS elements hidden */
+  .prose milestone,
+  .prose div[type="x-milestone"],
+  .prose div[type="x-p"],
+  .prose div[subType],
+  .prose div[sID],
+  .prose div[eID],
+  .prose chapter {
+    display: none !important;
+  }
+
+  /* Added text markers */
+  .prose transChange[type="added"] {
+    font-style: italic !important;
+  }
+
+  /* ===== 14) PAGE BREAKS ===== */
+
+  /* Avoid breaks inside important elements */
+  .card,
+  .prose p,
+  .page-header,
+  blockquote,
+  .notice {
+    page-break-inside: avoid;
+  }
+
+  /* Force breaks before major sections */
+  h2 {
+    page-break-before: auto;
+  }
+
+  /* ===== 15) EMPTY AND ERROR STATES ===== */
+
+  .empty-state,
+  .error-state {
+    display: none !important;
+  }
+
+  /* ===== 16) UTILITY CLASSES ===== */
+
+  .hidden {
+    display: none !important;
+  }
+
+  .sr-only {
+    position: static !important;
+    width: auto !important;
+    height: auto !important;
+    clip: auto !important;
+  }
+
+  /* ===== 17) FOOTER / WATERMARK (Optional) ===== */
+
+  /* Add page footer with URL and date */
+  @page {
+    @bottom-right {
+      content: "Printed: " counter(page);
+    }
+  }
+
+  /* ===== 18) COMPARISON VIEW SPECIFIC ===== */
+
+  /* SSS mode containers */
+  #sss-mode,
+  #normal-mode {
+    display: block !important;
+  }
+
+  /* Remove toggle/mode switches */
+  #sss-mode-btn,
+  #sss-toggle-btn,
+  #highlight-toggle,
+  #sss-highlight-toggle {
+    display: none !important;
+  }
+
+  /* SSS panes get clear separation */
+  #sss-left-pane,
+  #sss-right-pane {
+    border: 1px solid #000 !important;
+    padding: 12pt !important;
+    margin-bottom: 16pt !important;
+  }
+
+  /* ===== 19) FORMS AND INPUTS ===== */
+
+  input,
+  select,
+  textarea,
+  .input,
+  .select,
+  .textarea {
+    display: none !important;
+  }
+
+  /* ===== 20) MISC CLEANUP ===== */
+
+  /* Remove all shadows and rounded corners */
+  * {
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+
+  /* Ensure all backgrounds are white */
+  .panel--inner,
+  .notice,
+  .notice--success {
+    background: white !important;
+    border: 1px solid #ccc !important;
+    color: #000 !important;
+  }
+
+  /* Icons and decorative elements */
+  svg:not(.keep-in-print),
+  .empty-state::before,
+  .error-state::before {
+    display: none !important;
+  }
+
+  /* Hide offline settings in print */
+  .offline-settings {
+    display: none !important;
+  }
+}
+
+/* -----------------------------
+   22) Offline settings panel
+------------------------------ */
+.offline-settings {
+  margin-top: var(--pad-3);
+}
+
+.offline-settings__details {
+  border: none;
+}
+
+.offline-settings__summary {
+  cursor: pointer;
+  padding: var(--pad-2);
+  border-radius: var(--radius-1);
+  list-style: none;
+  user-select: none;
+}
+
+.offline-settings__summary::-webkit-details-marker {
+  display: none;
+}
+
+.offline-settings__summary:hover {
+  background: rgba(0,0,0,.04);
+}
+
+.offline-settings__summary:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+.offline-settings__title {
+  margin: 0 0 4px 0;
+  font-size: 1.15rem;
+  color: var(--text-900);
+}
+
+.offline-settings__subtitle {
+  margin: 0;
+  font-size: 0.92rem;
+}
+
+.offline-settings__content {
+  padding: var(--pad-2);
+  border-top: 1px solid var(--border);
+}
+
+/* -----------------------------
+   23) Cache status indicator
+------------------------------ */
+.cache-status {
+  margin-bottom: var(--pad-3);
+  padding: var(--pad-2);
+  background: rgba(0,0,0,.03);
+  border-radius: var(--radius-1);
+  border: 1px solid var(--border);
+}
+
+.cache-status__title {
+  margin: 0 0 var(--pad-1) 0;
+  font-size: 1rem;
+  color: var(--text-900);
+}
+
+.cache-status__list {
+  margin: 0;
+  display: grid;
+  gap: var(--pad-1);
+}
+
+.cache-status__item {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--pad-1);
+  align-items: baseline;
+}
+
+.cache-status__label {
+  font-weight: 600;
+  color: var(--text-700);
+  font-size: 0.92rem;
+}
+
+.cache-status__value {
+  color: var(--text-900);
+  font-size: 0.92rem;
+  margin: 0;
+}
+
+/* -----------------------------
+   24) Bible download list
+------------------------------ */
+.bible-download-section {
+  margin-bottom: var(--pad-2);
+}
+
+.bible-download-section__title {
+  margin: 0 0 var(--pad-1) 0;
+  font-size: 1rem;
+  color: var(--text-900);
+}
+
+.bible-download-section__description {
+  margin: 0 0 var(--pad-2) 0;
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+
+.bible-download-form {
+  margin: 0;
+}
+
+.bible-download-list {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-1);
+  padding: var(--pad-1);
+  margin: 0 0 var(--pad-2) 0;
+  max-height: 400px;
+  overflow-y: auto;
+  background: var(--surface-2);
+}
+
+.bible-download-item {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: var(--pad-1);
+  align-items: center;
+  padding: 10px;
+  border-radius: var(--radius-1);
+  transition: background 0.2s ease;
+}
+
+.bible-download-item:hover {
+  background: rgba(0,0,0,.02);
+}
+
+.bible-download-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  user-select: none;
+  flex: 1;
+}
+
+.bible-download-checkbox {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.bible-download-checkbox:focus-visible {
+  outline: 2px solid var(--brand-500);
+  outline-offset: 2px;
+}
+
+.bible-download-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+}
+
+.bible-download-name {
+  font-weight: 600;
+  color: var(--text-900);
+  font-size: 0.95rem;
+}
+
+.bible-download-title {
+  font-size: 0.85rem;
+  line-height: 1.3;
+}
+
+.bible-download-status {
+  font-size: 0.85rem;
+  color: var(--text-500);
+  white-space: nowrap;
+}
+
+/* Status variants */
+.bible-download-status.is-cached {
+  color: var(--success-500);
+}
+
+.bible-download-status.is-downloading {
+  color: var(--brand-500);
+}
+
+.bible-download-status.is-error {
+  color: var(--state-error);
+}
+
+/* -----------------------------
+   25) Download progress bar
+------------------------------ */
+.download-progress-container {
+  margin: var(--pad-2) 0;
+  padding: var(--pad-2);
+  background: rgba(122, 0, 176, 0.05);
+  border: 1px solid var(--brand-500);
+  border-radius: var(--radius-1);
+}
+
+.download-progress__label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: var(--text-900);
+  font-size: 0.92rem;
+}
+
+.download-progress__bar {
+  width: 100%;
+  height: 24px;
+  border-radius: var(--radius-1);
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+
+/* Style the progress bar */
+.download-progress__bar::-webkit-progress-bar {
+  background: var(--surface-2);
+  border-radius: var(--radius-1);
+}
+
+.download-progress__bar::-webkit-progress-value {
+  background: var(--brand-500);
+  border-radius: var(--radius-1);
+  transition: width 0.3s ease;
+}
+
+.download-progress__bar::-moz-progress-bar {
+  background: var(--brand-500);
+  border-radius: var(--radius-1);
+  transition: width 0.3s ease;
+}
+
+.download-progress__text {
+  margin: 8px 0 0 0;
+  text-align: center;
+  font-size: 0.92rem;
+  color: var(--text-700);
+  font-weight: 600;
+}
+
+/* -----------------------------
+   26) Offline messages
+------------------------------ */
+.offline-messages {
+  margin-top: var(--pad-2);
+}
+
+.offline-message {
+  padding: var(--pad-2);
+  border-radius: var(--radius-1);
+  margin-bottom: var(--pad-1);
+  border: 1px solid;
+  animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.offline-message--success {
+  background: rgba(54, 176, 0, 0.1);
+  border-color: var(--success-500);
+  color: #1d3a0a;
+}
+
+.offline-message--error {
+  background: var(--state-error-bg);
+  border-color: var(--state-error);
+  color: var(--state-error);
+}
+
+.offline-message--info {
+  background: rgba(122, 0, 176, 0.05);
+  border-color: var(--brand-500);
+  color: var(--text-900);
+}
+
+/* -----------------------------
+   27) Responsive adjustments for offline settings
+------------------------------ */
+@media (max-width: 640px) {
+  .cache-status__item {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+
+  .bible-download-item {
+    grid-template-columns: 1fr;
+  }
+
+  .bible-download-status {
+    justify-self: start;
+    margin-top: 4px;
+  }
+
+  .bible-download-info {
+    font-size: 0.9rem;
   }
 }

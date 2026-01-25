@@ -166,38 +166,38 @@ SPRINT 3: OFFLINE + SELF-CONTAINMENT
 
 ## 3.1 Strong's Definitions Bundle
 
-[ ] S3-001: Add juniper extract-strongs command
+[x] S3-001: Add juniper extract-strongs command
     - Extract from SWORD StrongsHebrew module
     - Extract from SWORD StrongsGreek module
-[ ] S3-002: Generate data/strongs/hebrew.json
-[ ] S3-003: Generate data/strongs/greek.json
-[ ] S3-004: Add provenance metadata (source, version, license)
-[ ] S3-005: Create Hugo partial to inject Strong's data
-[ ] S3-006: Update strongs.js to use local definitions first
-[ ] S3-007: Keep external "Learn more" link as optional
-[ ] S3-008: Update THIRD-PARTY-LICENSES.md
-[ ] S3-009: Verify Strong's tooltips work offline
+[x] S3-002: Generate data/strongs/hebrew.json
+[x] S3-003: Generate data/strongs/greek.json
+[x] S3-004: Add provenance metadata (source, version, license)
+[x] S3-005: Create Hugo partial to inject Strong's data
+[x] S3-006: Update strongs.js to use local definitions first
+[x] S3-007: Keep external "Learn more" link as optional
+[x] S3-008: Update THIRD-PARTY-LICENSES.md
+[x] S3-009: Verify Strong's tooltips work offline
 
 ## 3.2 Service Worker
 
-[ ] S3-010: Create static/sw.js
-[ ] S3-011: Implement cache versioning scheme
-[ ] S3-012: Pre-cache shell assets (CSS, JS, fonts)
-[ ] S3-013: Pre-cache default chapters (KJV Gen/Ps/Matt/John)
-[ ] S3-014: Implement cache-on-navigate for chapters
-[ ] S3-015: Add offline fallback page
-[ ] S3-016: Add SW registration to baseof.html (guarded)
-[ ] S3-017: Create settings UI for offline downloads
-[ ] S3-018: Create "Clear offline cache" control
-[ ] S3-019: Test offline operation after first visit
+[x] S3-010: Create static/sw.js
+[x] S3-011: Implement cache versioning scheme
+[x] S3-012: Pre-cache shell assets (CSS, JS, fonts)
+[x] S3-013: Pre-cache default chapters (KJV Gen/Ps/Matt/John)
+[x] S3-014: Implement cache-on-navigate for chapters
+[x] S3-015: Add offline fallback page
+[x] S3-016: Add SW registration to baseof.html (guarded)
+[x] S3-017: Create settings UI for offline downloads
+[x] S3-018: Create "Clear offline cache" control
+[x] S3-019: Test offline operation after first visit
 
 ## 3.3 Social Sharing Offline Fallbacks
 
-[ ] S3-020: Add isOnline() utility to share.js
-[ ] S3-021: Replace social buttons with "Copy formatted text" when offline
-[ ] S3-022: Format clipboard text with verse reference + text
-[ ] S3-023: Add toast notification: "Copied! Share when online."
-[ ] S3-024: Test sharing behavior when offline
+[x] S3-020: Add isOnline() utility to share.js
+[x] S3-021: Replace social buttons with "Copy formatted text" when offline
+[x] S3-022: Format clipboard text with verse reference + text
+[x] S3-023: Add toast notification: "Copied! Share when online."
+[x] S3-024: Test sharing behavior when offline
 
 ================================================================================
 SPRINT 4: CSS + DOCUMENTATION
@@ -214,7 +214,7 @@ SPRINT 4: CSS + DOCUMENTATION
 [x] S4-006: Create .error-state and .empty-state components
 [x] S4-007: Add touch target improvements for pointer:coarse
 [x] S4-008: Add responsive control layout
-[ ] S4-009: Enhance print stylesheet
+[x] S4-009: Enhance print stylesheet
 
 ## 4.2 Remove Inline Styles
 
@@ -229,13 +229,11 @@ SPRINT 4: CSS + DOCUMENTATION
 ## 4.3 JavaScript Documentation
 
 [x] S4-020: Add JSDoc file header to parallel.js
-    - Note: New modules have JSDoc, parallel.js update pending
 [x] S4-021: Add JSDoc to all functions in parallel.js
-    - Note: New modules have full JSDoc
-[ ] S4-022: Add section separators to parallel.js
-[ ] S4-023: Add JSDoc to bible-search.js
-[ ] S4-024: Add JSDoc to share.js / share-menu.js
-[ ] S4-025: Add inline comments to strongs.js
+[x] S4-022: Add section separators to parallel.js
+[x] S4-023: Add JSDoc to bible-search.js
+[x] S4-024: Add JSDoc to share.js / share-menu.js
+[x] S4-025: Add inline comments to strongs.js
 [x] S4-026: Document all new michael/ modules
     - All 5 modules have comprehensive JSDoc
 
@@ -314,3 +312,12 @@ Sprint 1 & 2 Progress (2026-01-25):
 - ✓ Added template documentation headers
 - ✓ Phase 0 baseline inventory completed
 - ✓ Architecture documentation created
+
+Sprint 3 & 4 Progress (2026-01-25):
+- ✓ Strong's definitions bundled locally
+- ✓ Service worker with progressive caching implemented
+- ✓ Offline share fallbacks added
+- ✓ Print stylesheet enhanced
+- ✓ All JavaScript files fully documented with JSDoc
+- ✓ All templates have documentation headers
+- ✓ CODE CLEANUP CHARTER 100% COMPLETE

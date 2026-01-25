@@ -24,17 +24,23 @@ window.Michael.ShareMenu = (function() {
    * ShareMenu constructor
    * @param {Object} options - Configuration options
    * @param {boolean} options.includeTextCopy - Whether to include "Copy text" option
+   * @param {boolean} options.offline - Whether to start in offline mode
    * @param {Function} options.getShareUrl - Function to generate share URL
    * @param {Function} options.getShareText - Function to generate share text (for Twitter/copy)
+   * @param {Function} options.getOfflineText - Function to generate formatted offline text
    * @param {Function} options.getShareTitle - Function to generate share title
+   * @param {Function} options.onOfflineCopy - Callback when offline copy is performed
    * @param {Object} options.ui - UI string overrides
    */
   function ShareMenu(options) {
     this.options = Object.assign({
       includeTextCopy: false,
+      offline: false,
       getShareUrl: () => window.location.href,
       getShareText: () => document.title,
+      getOfflineText: null,
       getShareTitle: () => document.title,
+      onOfflineCopy: null,
       ui: {}
     }, options);
 
@@ -46,6 +52,11 @@ window.Michael.ShareMenu = (function() {
     this.clickHandler = null;
     this.escHandler = null;
     this.keyHandler = null;
+    this.offlineMode = this.options.offline;
+
+    // Listen for network changes
+    this.onlineHandler = () => this.handleNetworkChange(true);
+    this.offlineHandler = () => this.handleNetworkChange(false);
   }
 
   /**
@@ -55,6 +66,9 @@ window.Michael.ShareMenu = (function() {
   ShareMenu.prototype.show = function(anchorBtn) {
     // Remove any existing menu first
     this.hide();
+
+    // Update offline mode based on current network status
+    this.offlineMode = !this.isOnline();
 
     this.anchorBtn = anchorBtn;
     this.menu = this.buildMenuHTML();
@@ -75,6 +89,7 @@ window.Michael.ShareMenu = (function() {
     this.setupCloseHandlers();
     this.setupKeyboardNavigation();
     this.setupMenuActions();
+    this.setupNetworkListeners();
   };
 
   /**
@@ -101,6 +116,9 @@ window.Michael.ShareMenu = (function() {
       this.keyHandler = null;
     }
 
+    // Clean up network listeners
+    this.removeNetworkListeners();
+
     // Return focus to trigger button
     if (this.anchorBtn) {
       this.anchorBtn.focus();
@@ -119,6 +137,12 @@ window.Michael.ShareMenu = (function() {
   ShareMenu.prototype.buildMenuHTML = function() {
     const menu = document.createElement('div');
     menu.className = 'share-menu';
+
+    // Add offline modifier class if offline
+    if (this.offlineMode) {
+      menu.classList.add('share-menu--offline');
+    }
+
     menu.setAttribute('role', 'menu');
     menu.setAttribute('aria-label', 'Share options');
 
@@ -146,13 +170,45 @@ window.Michael.ShareMenu = (function() {
       `);
     }
 
-    // Divider before social options
-    items.push('<hr class="share-menu-divider" role="separator">');
+    // If offline, show only copy options with special formatted text
+    if (this.offlineMode) {
+      // If we have offline text formatter, add special offline copy option
+      if (this.options.getOfflineText) {
+        items.push('<hr class="share-menu-divider" role="separator">');
+        items.push(`
+          <button class="share-menu-item" role="menuitem" data-action="copy-offline">
+            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/>
+            </svg>
+            Copy for sharing
+          </button>
+        `);
+      }
 
-    // Check if online for social sharing
-    const isOnline = navigator.onLine !== false;
+      // Show disabled social share buttons with tooltip
+      items.push('<hr class="share-menu-divider" role="separator">');
+      items.push(`
+        <button class="share-menu-item share-btn--disabled" role="menuitem" disabled
+                title="Unavailable offline" aria-label="Share on X (unavailable offline)">
+          <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+          </svg>
+          ${this.ui.shareTwitter}
+        </button>
+      `);
+      items.push(`
+        <button class="share-menu-item share-btn--disabled" role="menuitem" disabled
+                title="Unavailable offline" aria-label="Share on Facebook (unavailable offline)">
+          <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+          </svg>
+          ${this.ui.shareFacebook}
+        </button>
+      `);
+    } else {
+      // Online mode - show all social sharing options
+      items.push('<hr class="share-menu-divider" role="separator">');
 
-    if (isOnline) {
       // Twitter/X share option
       items.push(`
         <button class="share-menu-item" role="menuitem" data-action="share-twitter">
@@ -211,6 +267,21 @@ window.Michael.ShareMenu = (function() {
         }
         break;
 
+      case 'copy-offline':
+        {
+          // Use specialized offline text formatter if available
+          const text = this.options.getOfflineText
+            ? this.options.getOfflineText()
+            : this.options.getShareText();
+          const success = await this.copyToClipboard(text);
+
+          // Trigger offline copy callback
+          if (success && this.options.onOfflineCopy) {
+            this.options.onOfflineCopy();
+          }
+        }
+        break;
+
       case 'share-twitter':
         {
           const text = this.options.getShareText();
@@ -235,12 +306,33 @@ window.Michael.ShareMenu = (function() {
   /**
    * Copy text to clipboard with visual feedback
    * @param {string} text - Text to copy
+   * @returns {Promise<boolean>} True if successful
    */
   ShareMenu.prototype.copyToClipboard = async function(text) {
     if (!this.anchorBtn) return false;
 
     try {
-      await navigator.clipboard.writeText(text);
+      // Try modern clipboard API first
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(text);
+      } else {
+        // Fallback for older browsers
+        const textArea = document.createElement('textarea');
+        textArea.value = text;
+        textArea.style.position = 'fixed';
+        textArea.style.left = '-999999px';
+        textArea.style.top = '-999999px';
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+
+        const successful = document.execCommand('copy');
+        document.body.removeChild(textArea);
+
+        if (!successful) {
+          throw new Error('Copy command failed');
+        }
+      }
 
       // Show visual feedback on anchor button
       const originalTitle = this.anchorBtn.getAttribute('title');
@@ -392,6 +484,56 @@ window.Michael.ShareMenu = (function() {
 
     this.currentFocusIndex = this.menuItems.length - 1;
     this.menuItems[this.currentFocusIndex].focus();
+  };
+
+  /**
+   * Check if browser is online
+   * @returns {boolean} True if online
+   */
+  ShareMenu.prototype.isOnline = function() {
+    return navigator.onLine !== false;
+  };
+
+  /**
+   * Set offline mode and optionally re-render menu
+   * @param {boolean} offline - True to enable offline mode
+   * @param {boolean} rerender - Whether to re-render the menu if open
+   */
+  ShareMenu.prototype.setOfflineMode = function(offline, rerender = false) {
+    const wasOffline = this.offlineMode;
+    this.offlineMode = offline;
+
+    // Re-render menu if it's currently open and mode changed
+    if (rerender && this.menu && wasOffline !== offline) {
+      const currentAnchor = this.anchorBtn;
+      this.hide();
+      this.show(currentAnchor);
+    }
+  };
+
+  /**
+   * Setup network status listeners
+   */
+  ShareMenu.prototype.setupNetworkListeners = function() {
+    window.addEventListener('online', this.onlineHandler);
+    window.addEventListener('offline', this.offlineHandler);
+  };
+
+  /**
+   * Remove network status listeners
+   */
+  ShareMenu.prototype.removeNetworkListeners = function() {
+    window.removeEventListener('online', this.onlineHandler);
+    window.removeEventListener('offline', this.offlineHandler);
+  };
+
+  /**
+   * Handle network status changes
+   * @param {boolean} online - True if coming online, false if going offline
+   */
+  ShareMenu.prototype.handleNetworkChange = function(online) {
+    // Update offline mode
+    this.setOfflineMode(!online, true);
   };
 
   // Export the constructor

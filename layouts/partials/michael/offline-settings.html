@@ -1,0 +1,183 @@
+{{/*
+  Partial: offline-settings.html
+  Purpose: Offline settings and cache management panel for Bible translations
+
+  Description:
+    This partial provides a collapsible settings panel for managing offline Bible content
+    and cache functionality. It displays current cache status, allows users to select
+    Bibles for pre-caching, and provides controls for downloading and clearing cached content.
+
+  Parameters (via dict):
+    - page: Current page context (required) - provides access to site data
+    - basePath: Base URL path for Bible content (optional, defaults to "/bibles")
+
+  Data Sources:
+    - .Site.Data.bibles.bibles: Bible metadata including ID, abbreviation, and display name
+
+  Usage Examples:
+
+    # On Bible list page (at bottom):
+    {{ partial "michael/offline-settings.html" (dict "page" .) }}
+
+    # With custom base path:
+    {{ partial "michael/offline-settings.html" (dict "page" . "basePath" "/custom/path") }}
+
+  Features:
+    - Collapsible panel (uses HTML details/summary for no-JS support)
+    - Cache status display (size, number of cached chapters)
+    - Bible selection checkboxes for pre-caching
+    - Download for offline button with progress indicator
+    - Clear cache button with confirmation dialog
+    - Graceful degradation without JavaScript
+    - Accessible (ARIA labels, keyboard navigation, semantic HTML)
+    - Mobile-friendly responsive design
+
+  JavaScript Integration:
+    - Requires offline-manager.js for cache management functionality
+    - Listens for 'download-progress', 'download-complete', 'cache-cleared' events
+    - Updates UI dynamically when JavaScript is available
+
+  Notes:
+    - Without JavaScript, the panel is still visible and usable (shows information)
+    - Progress indicators and dynamic updates require JavaScript
+    - Cache operations communicate with service worker via offline-manager.js
+    - Uses existing theme CSS classes for consistent styling
+*/}}
+
+{{ $page := .page }}
+{{ $basePath := .basePath | default "/bibles" }}
+
+<section class="offline-settings panel--inner" style="margin-top: var(--pad-3);">
+  <details class="offline-settings__details">
+    <summary class="offline-settings__summary">
+      <h2 class="offline-settings__title">
+        {{ i18n "offlineSettings" | default "Offline Settings" }}
+      </h2>
+      <p class="offline-settings__subtitle muted">
+        {{ i18n "offlineSettingsDescription" | default "Download Bible translations for offline reading" }}
+      </p>
+    </summary>
+
+    <div class="offline-settings__content">
+      <!-- Cache Status Section -->
+      <section class="cache-status" aria-live="polite" aria-atomic="true">
+        <h3 class="cache-status__title">
+          {{ i18n "cacheStatus" | default "Cache Status" }}
+        </h3>
+        <div class="cache-status__info">
+          <dl class="cache-status__list">
+            <div class="cache-status__item">
+              <dt class="cache-status__label">{{ i18n "cachedChapters" | default "Cached Chapters" }}:</dt>
+              <dd class="cache-status__value" id="cached-chapters-count">
+                <span class="loading">{{ i18n "loading" | default "Loading..." }}</span>
+              </dd>
+            </div>
+            <div class="cache-status__item">
+              <dt class="cache-status__label">{{ i18n "cacheSize" | default "Cache Size" }}:</dt>
+              <dd class="cache-status__value" id="cache-size">
+                <span class="loading">{{ i18n "loading" | default "Loading..." }}</span>
+              </dd>
+            </div>
+          </dl>
+        </div>
+      </section>
+
+      <!-- Bible Download Selection -->
+      <section class="bible-download-section">
+        <h3 class="bible-download-section__title">
+          {{ i18n "selectBiblesForOffline" | default "Select Bibles for Offline Use" }}
+        </h3>
+        <p class="bible-download-section__description muted">
+          {{ i18n "selectBiblesDescription" | default "Choose which Bible translations to download for offline reading. Selected Bibles will be cached in your browser." }}
+        </p>
+
+        <form id="offline-download-form" class="bible-download-form">
+          <fieldset class="bible-download-list" role="group" aria-label="{{ i18n "availableBibles" | default "Available Bibles" }}">
+            <legend class="sr-only">{{ i18n "selectBibles" | default "Select Bibles to Download" }}</legend>
+            {{ range $page.Site.Data.bibles.bibles }}
+            <div class="bible-download-item">
+              <label class="bible-download-label">
+                <input
+                  type="checkbox"
+                  name="bible"
+                  value="{{ .id }}"
+                  class="bible-download-checkbox"
+                  id="bible-{{ .id }}"
+                  data-bible-id="{{ .id }}"
+                  data-bible-abbrev="{{ .abbrev }}"
+                  data-bible-title="{{ .title }}"
+                />
+                <span class="bible-download-info">
+                  <span class="bible-download-name">{{ .abbrev }}</span>
+                  <span class="bible-download-title muted">{{ .title }}</span>
+                </span>
+              </label>
+              <span class="bible-download-status" id="status-{{ .id }}" aria-live="polite"></span>
+            </div>
+            {{ end }}
+          </fieldset>
+
+          <!-- Download Progress Section (hidden by default) -->
+          <div id="download-progress-container" class="download-progress-container hidden" aria-live="polite" aria-atomic="true">
+            <div class="download-progress">
+              <label for="download-progress-bar" class="download-progress__label" id="download-progress-label">
+                {{ i18n "downloading" | default "Downloading..." }}
+              </label>
+              <progress
+                id="download-progress-bar"
+                class="download-progress__bar"
+                max="100"
+                value="0"
+                aria-labelledby="download-progress-label"
+              ></progress>
+              <p class="download-progress__text" id="download-progress-text">0%</p>
+            </div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="offline-settings__actions actions" style="margin-top: var(--pad-2);">
+            <button
+              type="submit"
+              id="download-offline-btn"
+              class="btn btn--primary"
+              aria-describedby="download-description"
+            >
+              <span aria-hidden="true">⬇</span>
+              {{ i18n "downloadForOffline" | default "Download for Offline" }}
+            </button>
+            <button
+              type="button"
+              id="clear-cache-btn"
+              class="btn btn--secondary"
+              aria-describedby="clear-description"
+            >
+              <span aria-hidden="true">🗑</span>
+              {{ i18n "clearCache" | default "Clear Cache" }}
+            </button>
+          </div>
+
+          <!-- Screen reader descriptions -->
+          <div class="sr-only">
+            <p id="download-description">
+              {{ i18n "downloadDescription" | default "Download selected Bible translations for offline reading" }}
+            </p>
+            <p id="clear-description">
+              {{ i18n "clearDescription" | default "Clear all cached Bible content from your browser" }}
+            </p>
+          </div>
+        </form>
+      </section>
+
+      <!-- Error/Status Messages Section -->
+      <div id="offline-messages" class="offline-messages" role="status" aria-live="polite"></div>
+
+      <!-- No JavaScript Fallback -->
+      <noscript>
+        <div class="notice" style="margin-top: var(--pad-2);">
+          <strong>{{ i18n "javascriptRequired" | default "JavaScript Required" }}</strong>
+          <p>{{ i18n "javascriptRequiredMessage" | default "Offline functionality requires JavaScript to be enabled. You can still read Bible content online without JavaScript." }}</p>
+        </div>
+      </noscript>
+    </div>
+  </details>
+</section>

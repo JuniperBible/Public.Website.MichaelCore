@@ -1,0 +1,64 @@
+{{- /*
+  Strong's Definitions Data Injector
+
+  This partial injects Strong's Hebrew and Greek lexicon data into the page
+  for offline use. The data is loaded from JSON files and made available
+  to the strongs.js script via window.Michael.StrongsData.
+
+  Usage: {{ partial "michael/strongs-data.html" . }}
+*/ -}}
+
+{{- $hebrewData := "" -}}
+{{- $greekData := "" -}}
+
+{{- with resources.Get "data/strongs/hebrew.json" -}}
+  {{- $hebrewData = . | transform.Unmarshal -}}
+{{- else -}}
+  {{- with site.GetPage "/data/strongs/hebrew.json" -}}
+    {{- $hebrewData = .Resources.Get "hebrew.json" | transform.Unmarshal -}}
+  {{- else -}}
+    {{- /* Try loading from data directory */ -}}
+    {{- $hebrewFile := "data/strongs/hebrew.json" -}}
+    {{- if fileExists $hebrewFile -}}
+      {{- $hebrewData = getJSON $hebrewFile -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+
+{{- with resources.Get "data/strongs/greek.json" -}}
+  {{- $greekData = . | transform.Unmarshal -}}
+{{- else -}}
+  {{- with site.GetPage "/data/strongs/greek.json" -}}
+    {{- $greekData = .Resources.Get "greek.json" | transform.Unmarshal -}}
+  {{- else -}}
+    {{- /* Try loading from data directory */ -}}
+    {{- $greekFile := "data/strongs/greek.json" -}}
+    {{- if fileExists $greekFile -}}
+      {{- $greekData = getJSON $greekFile -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+
+{{- /* Initialize Michael namespace if needed */ -}}
+<script>
+  window.Michael = window.Michael || {};
+  window.Michael.StrongsData = window.Michael.StrongsData || {};
+</script>
+
+{{- if $hebrewData -}}
+<script>
+  // Hebrew Strong's definitions ({{ len $hebrewData }} entries)
+  window.Michael.StrongsData.hebrew = {{ $hebrewData | jsonify | safeJS }};
+</script>
+{{- else -}}
+<!-- Warning: Hebrew Strong's data not found at data/strongs/hebrew.json -->
+{{- end -}}
+
+{{- if $greekData -}}
+<script>
+  // Greek Strong's definitions ({{ len $greekData }} entries)
+  window.Michael.StrongsData.greek = {{ $greekData | jsonify | safeJS }};
+</script>
+{{- else -}}
+<!-- Warning: Greek Strong's data not found at data/strongs/greek.json -->
+{{- end -}}

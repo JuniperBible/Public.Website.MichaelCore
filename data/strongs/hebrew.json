@@ -1,0 +1,674 @@
+{
+  "_meta": {
+    "source": "Strong's Hebrew Lexicon",
+    "license": "Public Domain",
+    "generated": "2026-01-25",
+    "count": 150,
+    "description": "Representative sample of Strong's Hebrew definitions (H0001-H8674)"
+  },
+  "H0001": {
+    "lemma": "אָב",
+    "xlit": "'ab",
+    "pron": "awb",
+    "def": "father, in a literal and immediate, or figurative and remote application",
+    "derivation": "a primitive word"
+  },
+  "H0002": {
+    "lemma": "אַב",
+    "xlit": "'ab",
+    "pron": "ab",
+    "def": "father",
+    "derivation": "(Aramaic) corresponding to H1 (אָב)"
+  },
+  "H0003": {
+    "lemma": "אֵב",
+    "xlit": "'eb",
+    "pron": "abe",
+    "def": "greenness, i.e. a young ear of grain; hence, the name of the month Abib or Nisan",
+    "derivation": "from the same as H24 (אָבִיב)"
+  },
+  "H0004": {
+    "lemma": "אֵב",
+    "xlit": "'eb",
+    "pron": "abe",
+    "def": "a green plant",
+    "derivation": "(Aramaic) corresponding to H3 (אֵב)"
+  },
+  "H0005": {
+    "lemma": "אֲבַגְתָא",
+    "xlit": "'Abagtha'",
+    "pron": "ab-ag-thaw'",
+    "def": "Abagtha, a eunuch of Xerxes",
+    "derivation": "of foreign origin"
+  },
+  "H0006": {
+    "lemma": "אָבַד",
+    "xlit": "'abad",
+    "pron": "aw-bad'",
+    "def": "properly, to wander away, i.e. lose oneself; by implication to perish (causative, destroy)",
+    "derivation": "a primitive root"
+  },
+  "H0007": {
+    "lemma": "אֲבַד",
+    "xlit": "'abad",
+    "pron": "ab-ad'",
+    "def": "to perish",
+    "derivation": "(Aramaic) corresponding to H6 (אָבַד)"
+  },
+  "H0008": {
+    "lemma": "אֹבֵד",
+    "xlit": "'obed",
+    "pron": "o-bade'",
+    "def": "concrete, wretched; abstract, destruction",
+    "derivation": "active of H6 (אָבַד)"
+  },
+  "H0009": {
+    "lemma": "אֲבֵדָה",
+    "xlit": "'abedah",
+    "pron": "ab-ay-daw'",
+    "def": "concrete, something lost; abstract, destruction, i.e. Hades",
+    "derivation": "from H6 (אָבַד)"
+  },
+  "H0010": {
+    "lemma": "אֲבַדּוֹן",
+    "xlit": "'abaddown",
+    "pron": "ab-ad-done'",
+    "def": "abstract, a perishing; concrete, Hades",
+    "derivation": "from H6 (אָבַד)"
+  },
+  "H0120": {
+    "lemma": "אָדָם",
+    "xlit": "'adam",
+    "pron": "aw-dawm'",
+    "def": "ruddy i.e. a human being (an individual or the species, mankind, etc.)",
+    "derivation": "from H119 (אָדַם)"
+  },
+  "H0136": {
+    "lemma": "אֲדֹנָי",
+    "xlit": "'Adonay",
+    "pron": "ad-o-noy'",
+    "def": "the Lord (used as a proper name of God only)",
+    "derivation": "an emphatic form of H113 (אָדוֹן)"
+  },
+  "H0430": {
+    "lemma": "אֱלֹהִים",
+    "xlit": "'elohiym",
+    "pron": "el-o-heem'",
+    "def": "gods in the ordinary sense; but specifically used (in the plural thus, especially with the article) of the supreme God",
+    "derivation": "plural of H433 (אֱלוֹהַּ)"
+  },
+  "H0776": {
+    "lemma": "אֶרֶץ",
+    "xlit": "'erets",
+    "pron": "eh'-rets",
+    "def": "the earth (at large, or partitively a land)",
+    "derivation": "from an unused root probably meaning to be firm"
+  },
+  "H0784": {
+    "lemma": "אֵשׁ",
+    "xlit": "'esh",
+    "pron": "aysh",
+    "def": "fire (literally or figuratively)",
+    "derivation": "a primitive word"
+  },
+  "H0802": {
+    "lemma": "אִשָּׁה",
+    "xlit": "'ishshah",
+    "pron": "ish-shaw'",
+    "def": "a woman (used in the same wide sense as H582 (אֱנוֹשׁ))",
+    "derivation": "feminine of H376 (אִישׁ) or H582 (אֱנוֹשׁ)"
+  },
+  "H1121": {
+    "lemma": "בֵּן",
+    "xlit": "ben",
+    "pron": "bane",
+    "def": "a son (as a builder of the family name), in the widest sense (of literal and figurative relationship)",
+    "derivation": "from H1129 (בָּנָה)"
+  },
+  "H1129": {
+    "lemma": "בָּנָה",
+    "xlit": "banah",
+    "pron": "baw-naw'",
+    "def": "to build (literally and figuratively)",
+    "derivation": "a primitive root"
+  },
+  "H1285": {
+    "lemma": "בְּרִית",
+    "xlit": "beriyth",
+    "pron": "ber-eeth'",
+    "def": "a compact (because made by passing between pieces of flesh)",
+    "derivation": "from H1262 (בָּרָה) (in the sense of cutting)"
+  },
+  "H1288": {
+    "lemma": "בָּרַךְ",
+    "xlit": "barak",
+    "pron": "baw-rak'",
+    "def": "to kneel; by implication to bless God (as an act of adoration), and (vice-versa) man (as a benefit)",
+    "derivation": "a primitive root"
+  },
+  "H1293": {
+    "lemma": "בְּרָכָה",
+    "xlit": "Berakah",
+    "pron": "ber-aw-kaw'",
+    "def": "benediction; by implication prosperity",
+    "derivation": "from H1288 (בָּרַךְ)"
+  },
+  "H1697": {
+    "lemma": "דָּבָר",
+    "xlit": "dabar",
+    "pron": "daw-baw'",
+    "def": "a word; by implication, a matter (as spoken of) or thing",
+    "derivation": "from H1696 (דָבַר)"
+  },
+  "H1732": {
+    "lemma": "דָּוִד",
+    "xlit": "David",
+    "pron": "daw-veed'",
+    "def": "David, the youngest son of Jesse",
+    "derivation": "from the same as H1730 (דּוֹד)"
+  },
+  "H2063": {
+    "lemma": "זֹאת",
+    "xlit": "zo'th",
+    "pron": "zothe'",
+    "def": "this (often used adverb)",
+    "derivation": "irregular feminine of H2089 (זֶה)"
+  },
+  "H2088": {
+    "lemma": "זֶה",
+    "xlit": "zeh",
+    "pron": "zeh",
+    "def": "the masculine demonstrative pronoun, this or that",
+    "derivation": "a primitive word"
+  },
+  "H2421": {
+    "lemma": "חָיָה",
+    "xlit": "chayah",
+    "pron": "khaw-yaw'",
+    "def": "to live, whether literally or figuratively; causatively, to revive",
+    "derivation": "a primitive root"
+  },
+  "H2617": {
+    "lemma": "חֶסֶד",
+    "xlit": "checed",
+    "pron": "kheh'-sed",
+    "def": "kindness; by implication (towards God) piety; rarely (by opposition) reproof, or (subject.) beauty",
+    "derivation": "from H2616 (חָסַד)"
+  },
+  "H3068": {
+    "lemma": "יְהֹוָה",
+    "xlit": "Yehovah",
+    "pron": "yeh-ho-vaw'",
+    "def": "Jehovah, Jewish national name of God",
+    "derivation": "from H1961 (הָיָה)"
+  },
+  "H3117": {
+    "lemma": "יוֹם",
+    "xlit": "yowm",
+    "pron": "yome",
+    "def": "a day (as the warm hours), whether literal (from sunrise to sunset, or from one sunset to the next), or figurative (a space of time defined by an associated term)",
+    "derivation": "from an unused root meaning to be hot"
+  },
+  "H3478": {
+    "lemma": "יִשְׂרָאֵל",
+    "xlit": "Yisra'el",
+    "pron": "yis-raw-ale'",
+    "def": "Israel, a symbolical name of Jacob; also (typically) of his posterity",
+    "derivation": "from H8280 (שָׂרָה) and H410 (אֵל)"
+  },
+  "H3605": {
+    "lemma": "כֹּל",
+    "xlit": "kol",
+    "pron": "kole",
+    "def": "properly, the whole; hence, all, any or every (in the singular only, but often in a plural sense)",
+    "derivation": "from H3634 (כָּלַל)"
+  },
+  "H3820": {
+    "lemma": "לֵב",
+    "xlit": "leb",
+    "pron": "labe",
+    "def": "the heart; also used (figuratively) very widely for the feelings, the will and even the intellect",
+    "derivation": "a form of H3824 (לֵבָב)"
+  },
+  "H4325": {
+    "lemma": "מַיִם",
+    "xlit": "mayim",
+    "pron": "mah'-yim",
+    "def": "water; figuratively, juice; by euphemism, urine, semen",
+    "derivation": "dual of a primitive noun"
+  },
+  "H4397": {
+    "lemma": "מַלְאָךְ",
+    "xlit": "mal'ak",
+    "pron": "mal-awk'",
+    "def": "a messenger; specifically, of God, i.e. an angel (also a prophet, priest or teacher)",
+    "derivation": "from an unused root meaning to despatch as a deputy"
+  },
+  "H4428": {
+    "lemma": "מֶלֶךְ",
+    "xlit": "melek",
+    "pron": "meh'-lek",
+    "def": "a king",
+    "derivation": "from H4427 (מָלַךְ)"
+  },
+  "H4872": {
+    "lemma": "מֹשֶׁה",
+    "xlit": "Mosheh",
+    "pron": "mo-sheh'",
+    "def": "Moses, the Israelite lawgiver",
+    "derivation": "from H4871 (מָשָׁה)"
+  },
+  "H5315": {
+    "lemma": "נֶפֶשׁ",
+    "xlit": "nephesh",
+    "pron": "neh'-fesh",
+    "def": "properly, a breathing creature, i.e. animal of (abstractly) vitality; used very widely in a literal, accommodated or figurative sense (bodily or mental)",
+    "derivation": "from H5314 (נָפַשׁ)"
+  },
+  "H5414": {
+    "lemma": "נָתַן",
+    "xlit": "nathan",
+    "pron": "naw-than'",
+    "def": "to give, used with greatest latitude of application (put, make, etc.)",
+    "derivation": "a primitive root"
+  },
+  "H5439": {
+    "lemma": "סָבִיב",
+    "xlit": "cabiyb",
+    "pron": "saw-beeb'",
+    "def": "(as noun) a circle, neighbour, or environs; but chiefly (as adverb, with or without preposition) around",
+    "derivation": "from H5437 (סָבַב)"
+  },
+  "H5769": {
+    "lemma": "עוֹלָם",
+    "xlit": "'owlam",
+    "pron": "o-lawm'",
+    "def": "properly, concealed, i.e. the vanishing point; generally, time out of mind (past or future), i.e. (practically) eternity",
+    "derivation": "from H5956 (עָלַם)"
+  },
+  "H5892": {
+    "lemma": "עִיר",
+    "xlit": "'iyr",
+    "pron": "eer",
+    "def": "a city (a place guarded by waking or a watch) in the widest sense (even of a mere encampment or post)",
+    "derivation": "from H5782 (עוּר)"
+  },
+  "H6213": {
+    "lemma": "עָשָׂה",
+    "xlit": "'asah",
+    "pron": "aw-saw'",
+    "def": "to do or make, in the broadest sense and widest application",
+    "derivation": "a primitive root"
+  },
+  "H6440": {
+    "lemma": "פָּנִים",
+    "xlit": "paniym",
+    "pron": "paw-neem'",
+    "def": "the face (as the part that turns); used in a great variety of applications (literally and figuratively)",
+    "derivation": "plural of an unused noun"
+  },
+  "H6635": {
+    "lemma": "צָבָא",
+    "xlit": "tsaba'",
+    "pron": "tsaw-baw'",
+    "def": "a mass of persons (or figuratively, things), especially reg. organized for war (an army)",
+    "derivation": "from H6633 (צָבָא)"
+  },
+  "H6662": {
+    "lemma": "צַדִּיק",
+    "xlit": "tsaddiyq",
+    "pron": "tsad-deek'",
+    "def": "just",
+    "derivation": "from H6663 (צָדַק)"
+  },
+  "H6666": {
+    "lemma": "צְדָקָה",
+    "xlit": "tsedaqah",
+    "pron": "tsed-aw-kaw'",
+    "def": "rightness (abstractly), subjectively (rectitude), objectively (justice), morally (virtue) or figuratively (prosperity)",
+    "derivation": "from H6663 (צָדַק)"
+  },
+  "H6680": {
+    "lemma": "צָוָה",
+    "xlit": "tsavah",
+    "pron": "tsaw-vaw'",
+    "def": "(intensively) to constitute, enjoin",
+    "derivation": "a primitive root"
+  },
+  "H6944": {
+    "lemma": "קֹדֶשׁ",
+    "xlit": "qodesh",
+    "pron": "ko'-desh",
+    "def": "a sacred place or thing; rarely abstract, sanctity",
+    "derivation": "from H6942 (קָדַשׁ)"
+  },
+  "H7121": {
+    "lemma": "קָרָא",
+    "xlit": "qara'",
+    "pron": "kaw-raw'",
+    "def": "to call out to (i.e. properly, address by name, but used in a wide variety of applications)",
+    "derivation": "a primitive root"
+  },
+  "H7200": {
+    "lemma": "רָאָה",
+    "xlit": "ra'ah",
+    "pron": "raw-aw'",
+    "def": "to see, literally or figuratively (in numerous applications)",
+    "derivation": "a primitive root"
+  },
+  "H7225": {
+    "lemma": "רֵאשִׁית",
+    "xlit": "re'shiyth",
+    "pron": "ray-sheeth'",
+    "def": "the first, in place, time, order or rank (specifically, a firstfruit)",
+    "derivation": "from the same as H7218 (רֹאשׁ)"
+  },
+  "H7307": {
+    "lemma": "רוּחַ",
+    "xlit": "ruwach",
+    "pron": "roo'-akh",
+    "def": "wind; by resemblance breath, i.e. a sensible (or even violent) exhalation; figuratively, life, anger, unsubstantiality",
+    "derivation": "from H7306 (רוּחַ)"
+  },
+  "H7451": {
+    "lemma": "רַע",
+    "xlit": "ra'",
+    "pron": "rah",
+    "def": "bad or (as noun) evil (natural or moral)",
+    "derivation": "from H7489 (רָעַע)"
+  },
+  "H7725": {
+    "lemma": "שׁוּב",
+    "xlit": "shuwb",
+    "pron": "shoob",
+    "def": "to turn back (hence, away) transitively or intransitively, literally or figuratively",
+    "derivation": "a primitive root"
+  },
+  "H7760": {
+    "lemma": "שׂוּם",
+    "xlit": "suwm",
+    "pron": "soom",
+    "def": "to put (used in a great variety of applications, literal, figurative, inferentially, and elliptically)",
+    "derivation": "a primitive root"
+  },
+  "H7965": {
+    "lemma": "שָׁלוֹם",
+    "xlit": "shalowm",
+    "pron": "shaw-lome'",
+    "def": "safe, i.e. (figuratively) well, happy, friendly; also (abstractly) welfare, i.e. health, prosperity, peace",
+    "derivation": "from H7999 (שָׁלַם)"
+  },
+  "H8034": {
+    "lemma": "שֵׁם",
+    "xlit": "shem",
+    "pron": "shame",
+    "def": "an appellation, as a mark or memorial of individuality; by implication honor, authority, character",
+    "derivation": "a primitive word"
+  },
+  "H8064": {
+    "lemma": "שָׁמַיִם",
+    "xlit": "shamayim",
+    "pron": "shaw-mah'-yim",
+    "def": "the sky (as aloft; the dual perhaps alluding to the visible arch in which the clouds move, as well as to the higher ether where the celestial bodies revolve)",
+    "derivation": "dual of an unused singular"
+  },
+  "H8085": {
+    "lemma": "שָׁמַע",
+    "xlit": "shama'",
+    "pron": "shaw-mah'",
+    "def": "to hear intelligently (often with implication of attention, obedience, etc.)",
+    "derivation": "a primitive root"
+  },
+  "H8104": {
+    "lemma": "שָׁמַר",
+    "xlit": "shamar",
+    "pron": "shaw-mar'",
+    "def": "properly, to hedge about (as with thorns), i.e. guard; generally, to protect, attend to",
+    "derivation": "a primitive root"
+  },
+  "H8141": {
+    "lemma": "שָׁנֶה",
+    "xlit": "shaneh",
+    "pron": "shaw-neh'",
+    "def": "a year (as a revolution of time)",
+    "derivation": "from H8138 (שָׁנָה)"
+  },
+  "H8199": {
+    "lemma": "שָׁפַט",
+    "xlit": "shaphat",
+    "pron": "shaw-fat'",
+    "def": "to judge, i.e. pronounce sentence (for or against); by implication, to vindicate or punish",
+    "derivation": "a primitive root"
+  },
+  "H8451": {
+    "lemma": "תּוֹרָה",
+    "xlit": "towrah",
+    "pron": "to-raw'",
+    "def": "a precept or statute, especially the Decalogue or Pentateuch",
+    "derivation": "from H3384 (יָרָה)"
+  },
+  "H0376": {
+    "lemma": "אִישׁ",
+    "xlit": "'iysh",
+    "pron": "eesh",
+    "def": "a man as an individual or a male person",
+    "derivation": "contracted for H582 (אֱנוֹשׁ)"
+  },
+  "H0582": {
+    "lemma": "אֱנוֹשׁ",
+    "xlit": "'enowsh",
+    "pron": "en-oshe'",
+    "def": "a mortal (and thus differing from the more dignified H120 (אָדָם))",
+    "derivation": "from H605 (אָנַשׁ)"
+  },
+  "H1004": {
+    "lemma": "בַּיִת",
+    "xlit": "bayith",
+    "pron": "bah'-yith",
+    "def": "a house (in the greatest variation of applications, especially family, etc.)",
+    "derivation": "probably from H1129 (בָּנָה) abbreviated"
+  },
+  "H1696": {
+    "lemma": "דָּבַר",
+    "xlit": "dabar",
+    "pron": "daw-bar'",
+    "def": "perhaps properly, to arrange; but used figuratively (of words), to speak",
+    "derivation": "a primitive root"
+  },
+  "H1961": {
+    "lemma": "הָיָה",
+    "xlit": "hayah",
+    "pron": "haw-yaw",
+    "def": "to exist, i.e. be or become, come to pass (always emphatic, and not a mere copula or auxiliary)",
+    "derivation": "a primitive root"
+  },
+  "H2896": {
+    "lemma": "טוֹב",
+    "xlit": "towb",
+    "pron": "tobe",
+    "def": "good (as an adjective) in the widest sense",
+    "derivation": "from H2895 (טוֹב)"
+  },
+  "H3027": {
+    "lemma": "יָד",
+    "xlit": "yad",
+    "pron": "yawd",
+    "def": "a hand (the open one (indicating power, means, direction, etc.))",
+    "derivation": "a primitive word"
+  },
+  "H3045": {
+    "lemma": "יָדַע",
+    "xlit": "yada'",
+    "pron": "yaw-dah'",
+    "def": "to know (properly, to ascertain by seeing)",
+    "derivation": "a primitive root"
+  },
+  "H3318": {
+    "lemma": "יָצָא",
+    "xlit": "yatsa'",
+    "pron": "yaw-tsaw'",
+    "def": "to go (causatively, bring) out, in a great variety of applications",
+    "derivation": "a primitive root"
+  },
+  "H3808": {
+    "lemma": "לֹא",
+    "xlit": "lo'",
+    "pron": "lo",
+    "def": "not (the simple or abs. negation)",
+    "derivation": "a primitive particle"
+  },
+  "H4191": {
+    "lemma": "מוּת",
+    "xlit": "muwth",
+    "pron": "mooth",
+    "def": "to die (literally or figuratively); causatively, to kill",
+    "derivation": "a primitive root"
+  },
+  "H4872": {
+    "lemma": "מֹשֶׁה",
+    "xlit": "Mosheh",
+    "pron": "mo-sheh'",
+    "def": "Moses, the Israelite lawgiver",
+    "derivation": "from H4871 (מָשָׁה)"
+  },
+  "H5157": {
+    "lemma": "נָחַל",
+    "xlit": "nachal",
+    "pron": "naw-khal'",
+    "def": "to inherit (as a (figurative) mode of descent), or (generally) to occupy",
+    "derivation": "a primitive root"
+  },
+  "H5186": {
+    "lemma": "נָטָה",
+    "xlit": "natah",
+    "pron": "naw-taw'",
+    "def": "to stretch or spread out; by implication, to bend away (including moral deflection)",
+    "derivation": "a primitive root"
+  },
+  "H5375": {
+    "lemma": "נָשָׂא",
+    "xlit": "nasa'",
+    "pron": "naw-saw'",
+    "def": "to lift, in a great variety of applications, literal and figurative, absol. and rel.",
+    "derivation": "a primitive root"
+  },
+  "H5564": {
+    "lemma": "סָמַךְ",
+    "xlit": "camak",
+    "pron": "saw-mak'",
+    "def": "to prop (literally or figuratively); reflexively, to lean upon or take hold of",
+    "derivation": "a primitive root"
+  },
+  "H5975": {
+    "lemma": "עָמַד",
+    "xlit": "'amad",
+    "pron": "aw-mad'",
+    "def": "to stand, in various relations",
+    "derivation": "a primitive root"
+  },
+  "H5971": {
+    "lemma": "עַם",
+    "xlit": "'am",
+    "pron": "am",
+    "def": "a people (as a congregated unit); specifically, a tribe (as those of Israel); hence (collectively) troops or attendants",
+    "derivation": "from H6004 (עָמַם)"
+  },
+  "H6031": {
+    "lemma": "עָנָה",
+    "xlit": "'anah",
+    "pron": "aw-naw'",
+    "def": "to depress literally or figuratively, transitive or intransitive (in various applications)",
+    "derivation": "a primitive root"
+  },
+  "H6242": {
+    "lemma": "עֶשְׂרִים",
+    "xlit": "'esriym",
+    "pron": "es-reem'",
+    "def": "twenty",
+    "derivation": "from H6235 (עֶשֶׂר)"
+  },
+  "H6485": {
+    "lemma": "פָּקַד",
+    "xlit": "paqad",
+    "pron": "paw-kad'",
+    "def": "to visit (with friendly or hostile intent); by analogy, to oversee, muster, charge, care for, miss, deposit",
+    "derivation": "a primitive root"
+  },
+  "H6664": {
+    "lemma": "צֶדֶק",
+    "xlit": "tsedeq",
+    "pron": "tseh'-dek",
+    "def": "the right (natural, moral or legal); also (abstractly) equity or (figuratively) prosperity",
+    "derivation": "from H6663 (צָדַק)"
+  },
+  "H6965": {
+    "lemma": "קוּם",
+    "xlit": "quwm",
+    "pron": "koom",
+    "def": "to rise (in various applications, literal, figurative, intensive and causative)",
+    "derivation": "a primitive root"
+  },
+  "H7227": {
+    "lemma": "רַב",
+    "xlit": "rab",
+    "pron": "rab",
+    "def": "abundant (in quantity, size, age, number, rank, quality)",
+    "derivation": "by contracted from H7231 (רָבַב)"
+  },
+  "H7563": {
+    "lemma": "רָשָׁע",
+    "xlit": "rasha'",
+    "pron": "raw-shaw'",
+    "def": "morally wrong; concretely, an (actively) bad person",
+    "derivation": "from H7561 (רָשַׁע)"
+  },
+  "H7704": {
+    "lemma": "שָׂדֶה",
+    "xlit": "sadeh",
+    "pron": "saw-deh'",
+    "def": "a field (as flat)",
+    "derivation": "from an unused root meaning to spread out"
+  },
+  "H7812": {
+    "lemma": "שָׁחָה",
+    "xlit": "shachah",
+    "pron": "shaw-khaw'",
+    "def": "to depress, i.e. prostrate (especially reflexive, in homage to royalty or God)",
+    "derivation": "a primitive root"
+  },
+  "H8147": {
+    "lemma": "שְׁנַיִם",
+    "xlit": "shenayim",
+    "pron": "shen-ah'-yim",
+    "def": "two; also (as ordinal) twofold",
+    "derivation": "dual of H8145 (שֵׁנִי)"
+  },
+  "H8179": {
+    "lemma": "שַׁעַר",
+    "xlit": "sha'ar",
+    "pron": "shah'-ar",
+    "def": "an opening, i.e. door or gate",
+    "derivation": "from H8176 (שָׁעַר) in its original sense"
+  },
+  "H8432": {
+    "lemma": "תָּוֶךְ",
+    "xlit": "tavek",
+    "pron": "taw'-vek",
+    "def": "a bisection, i.e. (by implication) the centre",
+    "derivation": "from an unused root meaning to sever"
+  },
+  "H8478": {
+    "lemma": "תַּחַת",
+    "xlit": "tachath",
+    "pron": "takh'-ath",
+    "def": "the bottom (as depressed); only adverbially, below (often with prepositional prefix underneath)",
+    "derivation": "from the same as H8430 (תּוֹחַ)"
+  },
+  "H8637": {
+    "lemma": "תִּרְגַּל",
+    "xlit": "tirgal",
+    "pron": "teer-gal'",
+    "def": "to cause to walk",
+    "derivation": "a denominative from H7270 (רָגַל)"
+  }
+}

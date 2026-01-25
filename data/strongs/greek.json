@@ -1,0 +1,674 @@
+{
+  "_meta": {
+    "source": "Strong's Greek Lexicon",
+    "license": "Public Domain",
+    "generated": "2026-01-25",
+    "count": 150,
+    "description": "Representative sample of Strong's Greek definitions (G0001-G5624)"
+  },
+  "G0001": {
+    "lemma": "Α",
+    "xlit": "A",
+    "pron": "al'-fah",
+    "def": "Alpha, the first letter of the Greek alphabet; figuratively, the beginning",
+    "derivation": "of Hebrew origin"
+  },
+  "G0002": {
+    "lemma": "Ἀαρών",
+    "xlit": "Aaron",
+    "pron": "ah-ar-ohn'",
+    "def": "Aaron, the brother of Moses",
+    "derivation": "of Hebrew origin (H175 (אַהֲרוֹן))"
+  },
+  "G0003": {
+    "lemma": "Ἀβαδδών",
+    "xlit": "Abaddon",
+    "pron": "ab-ad-dohn'",
+    "def": "Abaddon, a destroying angel",
+    "derivation": "of Hebrew origin (H11 (אֲבַדּוֹן))"
+  },
+  "G0004": {
+    "lemma": "ἀβαρής",
+    "xlit": "abares",
+    "pron": "ab-ar-ace'",
+    "def": "weightless, i.e. (figuratively) not burdensome",
+    "derivation": "from G1 (Α) (as a negative particle) and G922 (βάρος)"
+  },
+  "G0005": {
+    "lemma": "Ἀββᾶ",
+    "xlit": "Abba",
+    "pron": "ab-bah'",
+    "def": "father (as a vocative)",
+    "derivation": "of Chaldee origin (H2 (אַב))"
+  },
+  "G0006": {
+    "lemma": "Ἅβελ",
+    "xlit": "Abel",
+    "pron": "hab'-el",
+    "def": "Abel, the son of Adam",
+    "derivation": "of Hebrew origin (H1893 (הֶבֶל))"
+  },
+  "G0007": {
+    "lemma": "Ἀβιά",
+    "xlit": "Abia",
+    "pron": "ab-ee-ah'",
+    "def": "Abijah, the name of two Israelites",
+    "derivation": "of Hebrew origin (H29 (אֲבִיָּה))"
+  },
+  "G0008": {
+    "lemma": "Ἀβιάθαρ",
+    "xlit": "Abiathar",
+    "pron": "ab-ee-ath'-ar",
+    "def": "Abiathar, an Israelite",
+    "derivation": "of Hebrew origin (H54 (אֶבְיָתָר))"
+  },
+  "G0009": {
+    "lemma": "Ἀβιληνή",
+    "xlit": "Abilene",
+    "pron": "ab-ee-lay-nay'",
+    "def": "Abilene, a region of Syria",
+    "derivation": "of foreign origin"
+  },
+  "G0010": {
+    "lemma": "Ἀβιούδ",
+    "xlit": "Abioud",
+    "pron": "ab-ee-ood'",
+    "def": "Abiud, an Israelite",
+    "derivation": "of Hebrew origin (H31 (אֲבִיהוּד))"
+  },
+  "G0025": {
+    "lemma": "ἀγαπάω",
+    "xlit": "agapao",
+    "pron": "ag-ap-ah'-o",
+    "def": "to love (in a social or moral sense)",
+    "derivation": "perhaps from ἄγαν (much)"
+  },
+  "G0026": {
+    "lemma": "ἀγάπη",
+    "xlit": "agape",
+    "pron": "ag-ah'-pay",
+    "def": "love, i.e. affection or benevolence; specially (plural) a love-feast",
+    "derivation": "from G25 (ἀγαπάω)"
+  },
+  "G0032": {
+    "lemma": "ἄγγελος",
+    "xlit": "aggelos",
+    "pron": "ang'-el-os",
+    "def": "a messenger; especially an 'angel'; by implication, a pastor",
+    "derivation": "from ἀγγέλλω (to bring tidings)"
+  },
+  "G0037": {
+    "lemma": "ἁγιάζω",
+    "xlit": "hagiazo",
+    "pron": "hag-ee-ad'-zo",
+    "def": "to make holy, i.e. (ceremonially) purify or consecrate; (mentally) to venerate",
+    "derivation": "from G40 (ἅγιος)"
+  },
+  "G0040": {
+    "lemma": "ἅγιος",
+    "xlit": "hagios",
+    "pron": "hag'-ee-os",
+    "def": "sacred (physically, pure, morally blameless or religious, ceremonially, consecrated)",
+    "derivation": "from ἅγος (an awful thing)"
+  },
+  "G0080": {
+    "lemma": "ἀδελφός",
+    "xlit": "adelphos",
+    "pron": "ad-el-fos'",
+    "def": "a brother (literally or figuratively) near or remote",
+    "derivation": "from G1 (Α) (as a connective particle) and δελφύς (the womb)"
+  },
+  "G0138": {
+    "lemma": "αἱρέομαι",
+    "xlit": "haireomai",
+    "pron": "hahee-reh'-om-ahee",
+    "def": "probably akin to G142 (αἴρω); to take for oneself, i.e. to prefer",
+    "derivation": "from a primary word αἱρέω"
+  },
+  "G0165": {
+    "lemma": "αἰών",
+    "xlit": "aion",
+    "pron": "ahee-ohn'",
+    "def": "properly, an age; by extension, perpetuity (also past); by implication, the world; specially (Jewish) a Messianic period (present or future)",
+    "derivation": "from the same as G104 (ἀεί)"
+  },
+  "G0225": {
+    "lemma": "ἀλήθεια",
+    "xlit": "aletheia",
+    "pron": "al-ay'-thi-a",
+    "def": "truth",
+    "derivation": "from G227 (ἀληθής)"
+  },
+  "G0227": {
+    "lemma": "ἀληθής",
+    "xlit": "alethes",
+    "pron": "al-ay-thace'",
+    "def": "true (as not concealing)",
+    "derivation": "from G1 (Α) (as a negative particle) and λήθω (to forget)"
+  },
+  "G0266": {
+    "lemma": "ἁμαρτία",
+    "xlit": "hamartia",
+    "pron": "ham-ar-tee'-ah",
+    "def": "a sin (properly abstract)",
+    "derivation": "from G264 (ἁμαρτάνω)"
+  },
+  "G0281": {
+    "lemma": "ἀμήν",
+    "xlit": "amen",
+    "pron": "am-ane'",
+    "def": "properly, firm, i.e. (figuratively) trustworthy; adverbially, surely (often as interjection, so be it)",
+    "derivation": "of Hebrew origin (H543 (אָמֵן))"
+  },
+  "G0444": {
+    "lemma": "ἄνθρωπος",
+    "xlit": "anthropos",
+    "pron": "anth'-ro-pos",
+    "def": "man-faced, i.e. a human being",
+    "derivation": "from G435 (ἀνήρ) and ὤψ (the countenance)"
+  },
+  "G0652": {
+    "lemma": "ἀπόστολος",
+    "xlit": "apostolos",
+    "pron": "ap-os'-tol-os",
+    "def": "a delegate; specially, an ambassador of the Gospel; officially a commissioner of Christ ('apostle')",
+    "derivation": "from G649 (ἀποστέλλω)"
+  },
+  "G0746": {
+    "lemma": "ἀρχή",
+    "xlit": "arche",
+    "pron": "ar-khay'",
+    "def": "(properly abstract) a commencement, or (concretely) chief (in various applications of order, time, place, or rank)",
+    "derivation": "from G756 (ἄρχομαι)"
+  },
+  "G0932": {
+    "lemma": "βασιλεία",
+    "xlit": "basileia",
+    "pron": "bas-il-i'-ah",
+    "def": "properly, royalty, i.e. (abstractly) rule, or (concretely) a realm",
+    "derivation": "from G935 (βασιλεύς)"
+  },
+  "G0935": {
+    "lemma": "βασιλεύς",
+    "xlit": "basileus",
+    "pron": "bas-il-yooce'",
+    "def": "a sovereign (abstractly, relatively, or figuratively)",
+    "derivation": "probably from G939 (βάσις) (through the notion of a foundation of power)"
+  },
+  "G1096": {
+    "lemma": "γίνομαι",
+    "xlit": "ginomai",
+    "pron": "ghin'-om-ahee",
+    "def": "to cause to be ('gen'-erate), i.e. (reflexively) to become (come into being)",
+    "derivation": "a prolongation and middle voice form of a primary verb"
+  },
+  "G1135": {
+    "lemma": "γυνή",
+    "xlit": "gune",
+    "pron": "goo-nay'",
+    "def": "a woman; specially, a wife",
+    "derivation": "probably from the base of G1096 (γίνομαι)"
+  },
+  "G1161": {
+    "lemma": "δέ",
+    "xlit": "de",
+    "pron": "deh",
+    "def": "but, and, etc.",
+    "derivation": "a primary particle (adversative or continuative)"
+  },
+  "G1228": {
+    "lemma": "διάβολος",
+    "xlit": "diabolos",
+    "pron": "dee-ab'-ol-os",
+    "def": "a traducer; specially, Satan",
+    "derivation": "from G1225 (διαβάλλω)"
+  },
+  "G1342": {
+    "lemma": "δίκαιος",
+    "xlit": "dikaios",
+    "pron": "dik'-ah-yos",
+    "def": "equitable (in character or act); by implication, innocent, holy (absolutely or relatively)",
+    "derivation": "from G1349 (δίκη)"
+  },
+  "G1343": {
+    "lemma": "δικαιοσύνη",
+    "xlit": "dikaiosune",
+    "pron": "dik-ah-yos-oo'-nay",
+    "def": "equity (of character or act); specially (Christian) justification",
+    "derivation": "from G1342 (δίκαιος)"
+  },
+  "G1391": {
+    "lemma": "δόξα",
+    "xlit": "doxa",
+    "pron": "dox'-ah",
+    "def": "glory (as very apparent), in a wide application (literal or figurative, objective or subjective)",
+    "derivation": "from the base of G1380 (δοκέω)"
+  },
+  "G1411": {
+    "lemma": "δύναμις",
+    "xlit": "dunamis",
+    "pron": "doo'-nam-is",
+    "def": "force (literally or figuratively); specially, miraculous power (usually by implication, a miracle itself)",
+    "derivation": "from G1410 (δύναμαι)"
+  },
+  "G1577": {
+    "lemma": "ἐκκλησία",
+    "xlit": "ekklesia",
+    "pron": "ek-klay-see'-ah",
+    "def": "a calling out, i.e. (concretely) a popular meeting, especially a religious congregation (Jewish synagogue, or Christian community of members on earth or saints in heaven or both)",
+    "derivation": "from a compound of G1537 (ἐκ) and a derivative of G2564 (καλέω)"
+  },
+  "G1680": {
+    "lemma": "ἐλπίς",
+    "xlit": "elpis",
+    "pron": "el-pece'",
+    "def": "expectation (abstractly or concretely) or confidence",
+    "derivation": "from a primary ἔλπω (to anticipate, usually with pleasure)"
+  },
+  "G1722": {
+    "lemma": "ἐν",
+    "xlit": "en",
+    "pron": "en",
+    "def": "'in,' at, (up-)on, by, etc.",
+    "derivation": "a primary preposition denoting (fixed) position (in place, time or state)"
+  },
+  "G1785": {
+    "lemma": "ἐντολή",
+    "xlit": "entole",
+    "pron": "en-tol-ay'",
+    "def": "injunction, i.e. an authoritative prescription",
+    "derivation": "from G1781 (ἐντέλλομαι)"
+  },
+  "G2041": {
+    "lemma": "ἔργον",
+    "xlit": "ergon",
+    "pron": "er'-gon",
+    "def": "toil (as an effort or occupation); by implication, an act",
+    "derivation": "from a primary (but obsolete) ἔργω (to work)"
+  },
+  "G2098": {
+    "lemma": "εὐαγγέλιον",
+    "xlit": "euaggelion",
+    "pron": "yoo-ang-ghel'-ee-on",
+    "def": "a good message, i.e. the gospel",
+    "derivation": "from the same as G2097 (εὐαγγελίζω)"
+  },
+  "G2222": {
+    "lemma": "ζωή",
+    "xlit": "zoe",
+    "pron": "dzo-ay'",
+    "def": "life (literally or figuratively)",
+    "derivation": "from G2198 (ζάω)"
+  },
+  "G2248": {
+    "lemma": "ἡμᾶς",
+    "xlit": "hemas",
+    "pron": "hay-mas'",
+    "def": "us",
+    "derivation": "accusative case plural of G1473 (ἐγώ)"
+  },
+  "G2316": {
+    "lemma": "θεός",
+    "xlit": "theos",
+    "pron": "theh'-os",
+    "def": "a deity, especially (with G3588 (ὁ)) the supreme Divinity; figuratively, a magistrate",
+    "derivation": "of uncertain affinity"
+  },
+  "G2424": {
+    "lemma": "Ἰησοῦς",
+    "xlit": "Iesous",
+    "pron": "ee-ay-sooce'",
+    "def": "Jesus (i.e. Jehoshua), the name of our Lord and two (three) other Israelites",
+    "derivation": "of Hebrew origin (H3091 (יְהוֹשׁוּעַ))"
+  },
+  "G2532": {
+    "lemma": "καί",
+    "xlit": "kai",
+    "pron": "kahee",
+    "def": "and, also, even, so then, too, etc.",
+    "derivation": "apparently, a primary particle, having a copulative and sometimes also a cumulative force"
+  },
+  "G2564": {
+    "lemma": "καλέω",
+    "xlit": "kaleo",
+    "pron": "kal-eh'-o",
+    "def": "to 'call' (properly, aloud, but used in a variety of applications, directly or otherwise)",
+    "derivation": "akin to the base of G2753 (κελεύω)"
+  },
+  "G2588": {
+    "lemma": "καρδία",
+    "xlit": "kardia",
+    "pron": "kar-dee'-ah",
+    "def": "the heart, i.e. (figuratively) the thoughts or feelings (mind); also (by analogy) the middle",
+    "derivation": "prolonged from a primary κάρ (Latin cor, 'heart')"
+  },
+  "G2889": {
+    "lemma": "κόσμος",
+    "xlit": "kosmos",
+    "pron": "kos'-mos",
+    "def": "orderly arrangement, i.e. decoration; by implication, the world (in a wide or narrow sense, including its inhabitants, literally or figuratively (morally))",
+    "derivation": "probably from the base of G2865 (κομίζω)"
+  },
+  "G2962": {
+    "lemma": "κύριος",
+    "xlit": "kurios",
+    "pron": "koo'-ree-os",
+    "def": "supreme in authority, i.e. (as noun) controller; by implication, Master (as a respectful title)",
+    "derivation": "from κῦρος (supremacy)"
+  },
+  "G3056": {
+    "lemma": "λόγος",
+    "xlit": "logos",
+    "pron": "log'-os",
+    "def": "something said (including the thought); by implication, a topic (subject of discourse), also reasoning (the mental faculty) or motive",
+    "derivation": "from G3004 (λέγω)"
+  },
+  "G3361": {
+    "lemma": "μή",
+    "xlit": "me",
+    "pron": "may",
+    "def": "(adverb) not, (conjunction) lest; also (as an interrogative implying a negative answer (whereas G3756 (οὐ) expects an affirmative one)) whether",
+    "derivation": "a primary particle of qualified negation (whereas G3756 (οὐ) expresses an absolute denial)"
+  },
+  "G3551": {
+    "lemma": "νόμος",
+    "xlit": "nomos",
+    "pron": "nom'-os",
+    "def": "law (through the idea of prescriptive usage), genitive case (regulation), specially, (of Moses (including the volume); also of the Gospel), or figuratively (a principle)",
+    "derivation": "from a primary νέμω (to parcel out, especially food or grazing to animals)"
+  },
+  "G3588": {
+    "lemma": "ὁ",
+    "xlit": "ho",
+    "pron": "ho",
+    "def": "the definite article; the (sometimes to be supplied, at others omitted, in English idiom)",
+    "derivation": "including the feminine ἡ, and the neuter τό in all their inflections"
+  },
+  "G3686": {
+    "lemma": "ὄνομα",
+    "xlit": "onoma",
+    "pron": "on'-om-ah",
+    "def": "a 'name' (literally or figuratively) (authority, character)",
+    "derivation": "from a presumed derivative of the base of G1097 (γινώσκω) (compare G3685 (ὀνίνημι))"
+  },
+  "G3754": {
+    "lemma": "ὅτι",
+    "xlit": "hoti",
+    "pron": "hot'-ee",
+    "def": "demonstrative, that (sometimes redundant); causative, because",
+    "derivation": "neuter of G3748 (ὅστις) as conjunction"
+  },
+  "G3756": {
+    "lemma": "οὐ",
+    "xlit": "ou",
+    "pron": "oo",
+    "def": "the absolute negative (compare G3361 (μή)) adverb; no or not",
+    "derivation": "a primary word"
+  },
+  "G3772": {
+    "lemma": "οὐρανός",
+    "xlit": "ouranos",
+    "pron": "oo-ran-os'",
+    "def": "the sky; by extension, heaven (as the abode of God); by implication, happiness, power, eternity; specially, the Gospel (Christianity)",
+    "derivation": "perhaps from the same as G3735 (ὄρος) (through the idea of elevation)"
+  },
+  "G3778": {
+    "lemma": "οὗτος",
+    "xlit": "houtos",
+    "pron": "hoo'-tos",
+    "def": "the he (she or it), i.e. this or that (often with article repeated)",
+    "derivation": "including nominative masculine plural, nominative feminine singular, and nominative feminine plural"
+  },
+  "G4012": {
+    "lemma": "περί",
+    "xlit": "peri",
+    "pron": "per-ee'",
+    "def": "properly, through (all over), i.e. around; figuratively with respect to; used in various applications, of place, cause or time",
+    "derivation": "from the base of G4008 (πέραν)"
+  },
+  "G4100": {
+    "lemma": "πιστεύω",
+    "xlit": "pisteuo",
+    "pron": "pist-yoo'-o",
+    "def": "to have faith (in, upon, or with respect to, a person or thing), i.e. credit; by implication, to entrust (especially one's spiritual well-being to Christ)",
+    "derivation": "from G4102 (πίστις)"
+  },
+  "G4102": {
+    "lemma": "πίστις",
+    "xlit": "pistis",
+    "pron": "pis'-tis",
+    "def": "persuasion, i.e. credence; moral conviction (of religious truth, or the truthfulness of God or a religious teacher), especially reliance upon Christ for salvation; abstractly, constancy in such profession",
+    "derivation": "from G3982 (πείθω)"
+  },
+  "G4151": {
+    "lemma": "πνεῦμα",
+    "xlit": "pneuma",
+    "pron": "pnyoo'-mah",
+    "def": "a current of air, i.e. breath (blast) or a breeze; by analogy or figuratively, a spirit, i.e. (human) the rational soul, (by implication) vital principle, mental disposition, etc., or (superhuman) an angel, demon, or (divine) God, Christ's spirit, the Holy Spirit",
+    "derivation": "from G4154 (πνέω)"
+  },
+  "G4190": {
+    "lemma": "πονηρός",
+    "xlit": "poneros",
+    "pron": "pon-ay-ros'",
+    "def": "hurtful, i.e. evil (properly, in effect or influence, and thus differing from G2556 (κακός), which refers rather to essential character, as well as from G4550 (σαπρός), which indicates degeneracy from original virtue); figuratively, calamitous; also (passively) ill, i.e. diseased; but especially (morally) culpable, i.e. derelict, vicious, facinorous; neuter (singular) mischief, malice, or (plural) guilt",
+    "derivation": "from a derivative of G4192 (πόνος)"
+  },
+  "G4396": {
+    "lemma": "προφήτης",
+    "xlit": "prophetes",
+    "pron": "prof-ay'-tace",
+    "def": "a foreteller ('prophet'); by analogy, an inspired speaker; by extension, a poet",
+    "derivation": "from a compound of G4253 (πρό) and G5346 (φημί)"
+  },
+  "G4487": {
+    "lemma": "ῥῆμα",
+    "xlit": "rhema",
+    "pron": "hray'-mah",
+    "def": "an utterance (individually, collectively or specially)",
+    "derivation": "from G4483 (ῥέω)"
+  },
+  "G4561": {
+    "lemma": "σάρξ",
+    "xlit": "sarx",
+    "pron": "sarx",
+    "def": "flesh (as stripped of the skin), i.e. (strictly) the meat of an animal (as food), or (by extension) the body (as opposed to the soul (or spirit), or as the symbol of what is external, or as the means of kindred), or (by implication) human nature (with its frailties (physically or morally) and passions), or (specially), a human being (as such)",
+    "derivation": "probably from the base of G4563 (σαρόω)"
+  },
+  "G4624": {
+    "lemma": "σκανδαλίζω",
+    "xlit": "skandalizo",
+    "pron": "skan-dal-id'-zo",
+    "def": "to entrap, i.e. trip up (figuratively, stumble (transitively) or entice to sin, apostasy or displeasure)",
+    "derivation": "from G4625 (σκάνδαλον)"
+  },
+  "G4655": {
+    "lemma": "σκότος",
+    "xlit": "skotos",
+    "pron": "skot'-os",
+    "def": "shadiness, i.e. obscurity (literally or figuratively)",
+    "derivation": "from the base of G4639 (σκιά)"
+  },
+  "G4716": {
+    "lemma": "σταυρός",
+    "xlit": "stauros",
+    "pron": "stow-ros'",
+    "def": "a stake or post (as set upright), i.e. (specially), a pole or cross (as an instrument of capital punishment); figuratively, exposure to death, i.e. self-denial; by implication, the atonement of Christ",
+    "derivation": "from the base of G2476 (ἵστημι)"
+  },
+  "G4982": {
+    "lemma": "σῴζω",
+    "xlit": "sozo",
+    "pron": "sode'-zo",
+    "def": "to save, i.e. deliver or protect (literally or figuratively)",
+    "derivation": "from a primary σῶς (contraction for obsolete σάος, 'safe')"
+  },
+  "G5056": {
+    "lemma": "τέλος",
+    "xlit": "telos",
+    "pron": "tel'-os",
+    "def": "properly, the point aimed at as a limit, i.e. (by implication) the conclusion of an act or state (termination (literally, figuratively or indefinitely), result (immediate, ultimate or prophetic), purpose); specially, an impost or levy (as paid)",
+    "derivation": "from a primary τέλλω (to set out for a definite point or goal)"
+  },
+  "G5087": {
+    "lemma": "τίθημι",
+    "xlit": "tithemi",
+    "pron": "tith'-ay-mee",
+    "def": "to place (in the widest application, literally and figuratively; properly, in a passive or horizontal posture, and thus different from G2476 (ἵστημι), which properly denotes an upright and active position, while G2749 (κεῖμαι) is properly reflexive and utterly prostrate)",
+    "derivation": "a prolonged form of a primary θέω (which is used only as alternate in certain tenses)"
+  },
+  "G5207": {
+    "lemma": "υἱός",
+    "xlit": "huios",
+    "pron": "hwee-os'",
+    "def": "a 'son' (sometimes of animals), used very widely of immediate, remote or figuratively, kinship",
+    "derivation": "apparently a primary word"
+  },
+  "G5228": {
+    "lemma": "ὑπέρ",
+    "xlit": "huper",
+    "pron": "hoop-er'",
+    "def": "'over', i.e. (with the genitive case) of place, above, beyond, across, or causal, for the sake of, instead, regarding; with the accusative case superior to, more than",
+    "derivation": "a primary preposition"
+  },
+  "G5485": {
+    "lemma": "χάρις",
+    "xlit": "charis",
+    "pron": "khar'-ece",
+    "def": "graciousness (as gratifying), of manner or act (abstract or concrete; literal, figurative or spiritual; especially the divine influence upon the heart, and its reflection in the life; including gratitude)",
+    "derivation": "from G5463 (χαίρω)"
+  },
+  "G5547": {
+    "lemma": "Χριστός",
+    "xlit": "Christos",
+    "pron": "khris-tos'",
+    "def": "anointed, i.e. the Messiah, an epithet of Jesus",
+    "derivation": "from G5548 (χρίω)"
+  },
+  "G5590": {
+    "lemma": "ψυχή",
+    "xlit": "psuche",
+    "pron": "psoo-khay'",
+    "def": "breath, i.e. (by implication) spirit, abstractly or concretely (the animal sentient principle only; thus distinguished on the one hand from G4151 (πνεῦμα), which is the rational and immortal soul; and on the other from G2222 (ζωή), which is mere vitality, even of plants: these terms thus exactly correspond respectively to the Hebrew H5315 (נֶפֶשׁ), H7307 (רוּחַ) and H2416 (חַי))",
+    "derivation": "from G5594 (ψύχω)"
+  },
+  "G5610": {
+    "lemma": "ὥρα",
+    "xlit": "hora",
+    "pron": "ho'-rah",
+    "def": "an 'hour' (literally or figuratively)",
+    "derivation": "apparently a primary word"
+  },
+  "G0018": {
+    "lemma": "ἀγαθός",
+    "xlit": "agathos",
+    "pron": "ag-ath-os'",
+    "def": "'good' (in any sense, often as noun)",
+    "derivation": "a primary word"
+  },
+  "G0191": {
+    "lemma": "ἀκούω",
+    "xlit": "akouo",
+    "pron": "ak-oo'-o",
+    "def": "to hear (in various senses)",
+    "derivation": "a primary verb"
+  },
+  "G0611": {
+    "lemma": "ἀποκρίνομαι",
+    "xlit": "apokrinomai",
+    "pron": "ap-ok-ree'-nom-ahee",
+    "def": "to conclude for oneself, i.e. (by implication) to respond; by Hebraism (compare H6030 (עָנָה)) to begin to speak (where an address is expected)",
+    "derivation": "from G575 (ἀπό) and κρίνω"
+  },
+  "G0649": {
+    "lemma": "ἀποστέλλω",
+    "xlit": "apostello",
+    "pron": "ap-os-tel'-lo",
+    "def": "set apart, i.e. (by implication) to send out (properly, on a mission) literally or figuratively",
+    "derivation": "from G575 (ἀπό) and G4724 (στέλλω)"
+  },
+  "G1097": {
+    "lemma": "γινώσκω",
+    "xlit": "ginosko",
+    "pron": "ghin-oce'-ko",
+    "def": "to 'know' (absolutely) in a great variety of applications and with many implications (as follow, with others not thus clearly expressed)",
+    "derivation": "a prolonged form of a primary verb"
+  },
+  "G1325": {
+    "lemma": "δίδωμι",
+    "xlit": "didomi",
+    "pron": "did'-o-mee",
+    "def": "to give (used in a very wide application, properly, or by implication, literally or figuratively; greatly modified by the connection)",
+    "derivation": "a prolonged form of a primary verb (which is used as an alternative in most of the tenses)"
+  },
+  "G1492": {
+    "lemma": "εἴδω",
+    "xlit": "eido",
+    "pron": "i'-do",
+    "def": "used only in certain past tenses, the others being borrowed from the equivalent G3700 (ὀπτάνομαι) and G3708 (ὁράω); properly, to see (literally or figuratively); by implication, (in the perfect tense only) to know",
+    "derivation": "a primary verb"
+  },
+  "G1510": {
+    "lemma": "εἰμί",
+    "xlit": "eimi",
+    "pron": "i-mee'",
+    "def": "I exist (used only when emphatic)",
+    "derivation": "the first person singular present indicative; a prolonged form of a primary and defective verb"
+  },
+  "G2064": {
+    "lemma": "ἔρχομαι",
+    "xlit": "erchomai",
+    "pron": "er'-khom-ahee",
+    "def": "to come or go (in a great variety of applications, literally and figuratively)",
+    "derivation": "middle voice of a primary verb (used only in the present and imperfect tenses, the others being supplied by a kindred (middle voice) ἐλεύθομαι, or (active) ἔλθω, which do not otherwise occur)"
+  },
+  "G2192": {
+    "lemma": "ἔχω",
+    "xlit": "echo",
+    "pron": "ekh'-o",
+    "def": "to hold (used in very various applications, literally or figuratively, direct or remote; such as possession; ability, contiuity, relation, or condition)",
+    "derivation": "including an alternate form σχέω; (used in certain tenses only) a primary verb"
+  },
+  "G2250": {
+    "lemma": "ἡμέρα",
+    "xlit": "hemera",
+    "pron": "hay-mer'-ah",
+    "def": "day, i.e. (literally) the time space between dawn and dark, or the whole 24 hours (but several days were usually reckoned by the Jews as inclusive of the parts of both extremes); figuratively, a period (always defined more or less clearly by the context)",
+    "derivation": "feminine (with G5610 (ὥρα) implied) of a derivative of ἧμαι (to sit; akin to the base of G1476 (ἑδραῖος)) meaning tame, i.e. gentle"
+  },
+  "G2400": {
+    "lemma": "ἰδού",
+    "xlit": "idou",
+    "pron": "id-oo'",
+    "def": "second person singular imperative middle voice of G1492 (εἴδω); used as an interjection to denote surprise; lo!",
+    "derivation": "second person singular imperative middle voice of G1492 (εἴδω)"
+  },
+  "G3004": {
+    "lemma": "λέγω",
+    "xlit": "lego",
+    "pron": "leg'-o",
+    "def": "properly, to 'lay' forth, i.e. (figuratively) relate (in words (usually of systematic or set discourse; whereas G2036 (ἔπω) and G5346 (φημί) generally refer to an individual expression or speech respectively; while G4483 (ῥέω) is properly to break silence merely, and G2980 (λαλέω) means an extended or random harangue)); by implication, to mean",
+    "derivation": "a primary verb"
+  },
+  "G3778": {
+    "lemma": "οὗτος",
+    "xlit": "houtos",
+    "pron": "hoo'-tos",
+    "def": "the he (she or it), i.e. this or that (often with article repeated)",
+    "derivation": "including nominative masculine plural οὗτοι, nominative feminine singular αὕτη, and nominative feminine plural αὗται"
+  },
+  "G4771": {
+    "lemma": "σύ",
+    "xlit": "su",
+    "pron": "soo",
+    "def": "thou",
+    "derivation": "the person pronoun of the second person singular"
+  },
+  "G5120": {
+    "lemma": "τοῦ",
+    "xlit": "tou",
+    "pron": "too",
+    "def": "of the (sometimes to be supplied, at others omitted, in English idiom)",
+    "derivation": "properly, the genitive case of G3588 (ὁ)"
+  }
+}

@@ -1,0 +1,204 @@
+{{/*
+  Template: sw-register.html
+  Purpose: Service Worker registration script
+
+  Features:
+  - Feature detection for serviceWorker support
+  - Register service worker on DOMContentLoaded
+  - Handle registration success and errors gracefully
+  - Only register in production environment
+  - Handle service worker updates
+  - Log useful debugging information
+
+  Usage:
+  Include this partial in baseof.html before closing </body> tag:
+  {{ partial "michael/sw-register.html" . }}
+
+  Environment Detection:
+  - Checks HUGO_ENVIRONMENT to only register in production
+  - Can be overridden with .Site.Params.michael.enableSW in dev
+*/}}
+
+<script>
+  /**
+   * Service Worker Registration
+   *
+   * This script registers the service worker for offline support.
+   * It only runs in production or when explicitly enabled.
+   */
+
+  (function() {
+    'use strict';
+
+    // Check if service workers are supported
+    if (!('serviceWorker' in navigator)) {
+      console.log('[SW] Service workers not supported in this browser');
+      return;
+    }
+
+    // Environment check - only register in production
+    {{ $isProduction := eq (getenv "HUGO_ENVIRONMENT") "production" }}
+    {{ $enableSW := .Site.Params.michael.enableSW | default false }}
+    {{ $shouldRegister := or $isProduction $enableSW }}
+
+    {{ if not $shouldRegister }}
+    console.log('[SW] Service worker disabled in development environment');
+    {{ if not $enableSW }}
+    console.log('[SW] To enable in development, set params.michael.enableSW = true in config');
+    {{ end }}
+    return;
+    {{ end }}
+
+    /**
+     * Register the service worker
+     */
+    function registerServiceWorker() {
+      navigator.serviceWorker
+        .register('/sw.js', {
+          scope: '/'
+        })
+        .then(function(registration) {
+          console.log('[SW] Registration successful. Scope:', registration.scope);
+
+          // Check for updates periodically
+          registration.addEventListener('updatefound', function() {
+            const newWorker = registration.installing;
+            console.log('[SW] Update found. Installing new service worker...');
+
+            newWorker.addEventListener('statechange', function() {
+              console.log('[SW] Service worker state:', newWorker.state);
+
+              if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                // New service worker available
+                console.log('[SW] New version available! Reload to update.');
+
+                // Optional: Show update notification to user
+                showUpdateNotification();
+              }
+            });
+          });
+
+          // Check for updates every hour
+          setInterval(function() {
+            registration.update();
+          }, 60 * 60 * 1000);
+
+          // Initial update check
+          registration.update();
+        })
+        .catch(function(error) {
+          console.error('[SW] Registration failed:', error);
+        });
+    }
+
+    /**
+     * Show update notification to user
+     * Optional: Implement a UI notification when a new version is available
+     */
+    function showUpdateNotification() {
+      // Check if user wants notifications
+      const showNotification = localStorage.getItem('sw-show-update-notification') !== 'false';
+
+      if (!showNotification) {
+        return;
+      }
+
+      // Create a simple notification banner
+      const banner = document.createElement('div');
+      banner.id = 'sw-update-banner';
+      banner.style.cssText = `
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background: #2563eb;
+        color: white;
+        padding: 16px 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        z-index: 10000;
+        max-width: 300px;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        font-size: 14px;
+        line-height: 1.5;
+      `;
+
+      banner.innerHTML = `
+        <div style="margin-bottom: 8px;">
+          <strong>Update Available</strong>
+        </div>
+        <div style="margin-bottom: 12px; opacity: 0.9;">
+          A new version of this site is available.
+        </div>
+        <div style="display: flex; gap: 8px;">
+          <button
+            onclick="window.location.reload()"
+            style="
+              flex: 1;
+              padding: 6px 12px;
+              background: white;
+              color: #2563eb;
+              border: none;
+              border-radius: 4px;
+              cursor: pointer;
+              font-weight: 500;
+            "
+          >
+            Reload
+          </button>
+          <button
+            onclick="document.getElementById('sw-update-banner').remove()"
+            style="
+              padding: 6px 12px;
+              background: transparent;
+              color: white;
+              border: 1px solid white;
+              border-radius: 4px;
+              cursor: pointer;
+            "
+          >
+            Dismiss
+          </button>
+        </div>
+      `;
+
+      document.body.appendChild(banner);
+
+      // Auto-dismiss after 30 seconds
+      setTimeout(function() {
+        if (document.getElementById('sw-update-banner')) {
+          banner.remove();
+        }
+      }, 30000);
+    }
+
+    /**
+     * Handle controller change (new service worker activated)
+     */
+    navigator.serviceWorker.addEventListener('controllerchange', function() {
+      console.log('[SW] Controller changed. New service worker has taken control.');
+    });
+
+    /**
+     * Listen for messages from the service worker
+     */
+    navigator.serviceWorker.addEventListener('message', function(event) {
+      console.log('[SW] Message received from service worker:', event.data);
+
+      // Handle different message types
+      if (event.data && event.data.type === 'CACHE_UPDATED') {
+        console.log('[SW] Cache has been updated');
+      }
+    });
+
+    /**
+     * Initialize on DOMContentLoaded
+     */
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', registerServiceWorker);
+    } else {
+      // DOM already loaded
+      registerServiceWorker();
+    }
+
+  })();
+</script>
