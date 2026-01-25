@@ -14,6 +14,10 @@ Complete documentation for the Michael Hugo Bible Module.
 - **[VERSIFICATION.md](VERSIFICATION.md)** - Bible versification systems and canon differences
 - **[CODE_CLEANUP_CHARTER.md](CODE_CLEANUP_CHARTER.md)** - Code cleanup objectives and execution plan
 
+## Testing
+
+- **[TESTING.md](TESTING.md)** - Regression testing with Magellan E2E framework
+
 ## Technical Documentation
 
 - **[SERVICE-WORKER.md](SERVICE-WORKER.md)** - Offline capabilities and caching strategy
@@ -34,7 +38,7 @@ Complete documentation for the Michael Hugo Bible Module.
 
 **Last updated:** 2026-01-25
 
-### Available Documentation (18 files)
+### Available Documentation (19 files)
 
 All core documentation is complete:
 - ✅ Architecture and system design
@@ -52,10 +56,12 @@ All core documentation is complete:
 - ✅ Accessibility audit (WCAG 2.1 AA)
 - ✅ SBOM documentation (README, components, dependencies)
 - ✅ SBOM generation (4 formats)
+- ✅ Regression testing (Magellan E2E)
 - ✅ This index (README.md)
 
 ### Recently Added Documentation
 
+- ✅ `TESTING.md` - Regression testing with Magellan E2E framework (15 tests)
 - ✅ `CSP.md` - Content Security Policy implementation guide (37 innerHTML usages audited)
 - ✅ `ACCESSIBILITY-AUDIT-2026-01-25.md` - WCAG 2.1 AA compliance audit (0 violations)
 - ✅ `SBOM/` - Software Bill of Materials documentation (README, components, dependencies)
@@ -78,6 +84,7 @@ Note: Security information is currently documented in CSP.md, CHANGELOG.md, TODO
 | Bible canon differences | [VERSIFICATION.md](VERSIFICATION.md) |
 | Offline features | [SERVICE-WORKER.md](SERVICE-WORKER.md) |
 | Security policy (CSP) | [CSP.md](CSP.md) |
+| Regression testing | [TESTING.md](TESTING.md) |
 | Development tasks | [TODO.txt](TODO.txt) |
 | Release history | [CHANGELOG.md](CHANGELOG.md) |
 | Code cleanup plan | [CODE_CLEANUP_CHARTER.md](CODE_CLEANUP_CHARTER.md) |

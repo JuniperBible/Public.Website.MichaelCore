@@ -19,11 +19,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Documented 0 WCAG violations in core flows
   - All form controls properly labeled
   - Color contrast meets WCAG AA standards (4.5:1 minimum)
+- **Magellan E2E Testing Framework** - Browser automation for regression testing
+  - Added Magellan as git submodule (`tools/magellan`)
+  - New `pkg/e2e/` package with chromedp-based browser automation
+    - `browser.go` - Browser session management
+    - `element.go` - Element querying and properties
+    - `actions.go` - User interactions (click, type, keyboard)
+    - `wait.go` - Wait conditions
+    - `assertions.go` - Test assertions
+  - Merged Magellan development branch to main
+- **Regression Test Suite** (`tests/`)
+  - `tests/go.mod` - Go module with Magellan dependency
+  - `tests/Makefile` - Test runner with targets for each test suite
+  - `tests/helpers/helpers.go` - Shared test utilities
+  - 15 regression tests covering:
+    - Compare page (5 tests): translations, SSS mode, verse grid, colors, navigation
+    - Search page (2 tests): text query, Strong's number
+    - Single page (5 tests): navigation, tooltips, share menu
+    - Cross-cutting (3 tests): offline, mobile touch, keyboard navigation
 
 ### Changed
 - Updated `docs/README.md` to serve as comprehensive documentation index
 - Updated main `README.md` to reflect current documentation status
 - Marked documentation complete for accessibility and SBOM
+- Updated `docs/TODO.txt` with Phase 5 (Regression Testing) tasks
 
 ## [1.1.0] - 2026-01-25
 
@@ -127,9 +146,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added section separators to all main JavaScript files
 - Added documentation header to `list.html`
 - All JavaScript modules in `assets/js/michael/` have full JSDoc coverage
-
-### Pending
-- Complete WCAG 2.1 AA compliance testing
 
 ## [1.0.0] - 2026-01-24
 

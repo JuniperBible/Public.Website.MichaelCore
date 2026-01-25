@@ -1,3 +1,6 @@
 [submodule "tools/juniper"]
 	path = tools/juniper
 	url = git@github.com:FocuswithJustin/juniper.git
+[submodule "tools/magellan"]
+	path = tools/magellan
+	url = git@github.com:FocuswithJustin/magellan.git
