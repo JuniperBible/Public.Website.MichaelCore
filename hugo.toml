@@ -45,6 +45,12 @@ languageCode = "en"
     source = "data/example"
     target = "data"
 
+  # Mount SPDX license data (only JSON files)
+  [[module.mounts]]
+    source = "tools/juniper/vendor_external/spdx"
+    target = "data/spdx"
+    includeFiles = ["licenses.json"]
+
   [[module.mounts]]
     source = "content"
     target = "content"

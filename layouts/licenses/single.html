@@ -1,0 +1,56 @@
+{{ define "main" }}
+<main class="container" style="padding: var(--pad-3) var(--pad-2);">
+  <article class="panel">
+    <header class="page-header">
+      <h1>{{ .Title }}</h1>
+      <p>SPDX License Identifier: <code>{{ .Params.licenseId }}</code></p>
+    </header>
+
+    <div class="prose">
+      {{ if .Params.isOsiApproved }}
+      <p><span class="badge badge--success">OSI Approved</span></p>
+      {{ end }}
+
+      <h2>License Information</h2>
+      <p>This is an SPDX-recognized license. For the full license text and details, please visit the official SPDX page.</p>
+
+      <div class="actions" style="justify-content: flex-start;">
+        <a href="{{ .Params.spdxUrl }}" class="btn btn--primary" target="_blank" rel="noopener">
+          View on SPDX &rarr;
+        </a>
+      </div>
+
+      {{ with .Params.seeAlso }}
+      <h3>Additional Resources</h3>
+      <ul>
+        {{ range . }}
+        <li><a href="{{ . }}" target="_blank" rel="noopener">{{ . }}</a></li>
+        {{ end }}
+      </ul>
+      {{ end }}
+
+      <h2>Bible Translations Using This License</h2>
+      <div class="grid-2">
+        {{ $licenseId := .Params.licenseId }}
+        {{ range .Site.Data.bibles.bibles }}
+          {{ if eq .license $licenseId }}
+          <a href="{{ printf "/bibles/%s/" .id | relLangURL }}" class="card">
+            <h3 class="card__title">{{ .title }}</h3>
+            <p class="card__meta">{{ .abbrev }}</p>
+          </a>
+          {{ end }}
+        {{ end }}
+      </div>
+    </div>
+
+    <nav class="actions">
+      <a href="/licenses/" class="btn">
+        &larr; All Licenses
+      </a>
+      <a href="/bibles/" class="btn">
+        All Bibles
+      </a>
+    </nav>
+  </article>
+</main>
+{{ end }}

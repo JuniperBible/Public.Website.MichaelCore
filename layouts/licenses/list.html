@@ -1,0 +1,28 @@
+{{ define "main" }}
+<main class="container" style="padding: var(--pad-3) var(--pad-2);">
+  <div class="panel">
+    <header class="page-header">
+      <h1>{{ .Title }}</h1>
+      {{ with .Description }}<p>{{ . }}</p>{{ end }}
+    </header>
+
+    <section class="grid-2">
+      {{ range .Pages }}
+      <a href="{{ .RelPermalink }}" class="card">
+        <h2 class="card__title">{{ .Title }}</h2>
+        <p class="card__meta"><code>{{ .Params.licenseId }}</code></p>
+        {{ if .Params.isOsiApproved }}
+        <span class="badge badge--success">OSI Approved</span>
+        {{ end }}
+      </a>
+      {{ end }}
+    </section>
+
+    <nav class="actions">
+      <a href="/bibles/" class="btn">
+        &larr; All Bibles
+      </a>
+    </nav>
+  </div>
+</main>
+{{ end }}

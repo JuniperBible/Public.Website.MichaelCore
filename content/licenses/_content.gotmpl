@@ -1,0 +1,48 @@
+{{/*
+  License content generator
+  Generates pages for SPDX licenses used by Bible translations
+*/}}
+
+{{- $spdxLicenses := .Site.Data.spdx.licenses.licenses -}}
+
+{{/* Get unique licenses used by Bibles */}}
+{{- $usedLicenses := slice -}}
+{{- range .Site.Data.bibles.bibles -}}
+  {{- with .license -}}
+    {{- if not (in $usedLicenses .) -}}
+      {{- $usedLicenses = $usedLicenses | append . -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+
+{{/* Generate a page for each used license */}}
+{{- range $licenseId := $usedLicenses -}}
+  {{- $licenseData := dict -}}
+  {{- range $spdxLicenses -}}
+    {{- if eq (lower .licenseId) (lower $licenseId) -}}
+      {{- $licenseData = . -}}
+    {{- end -}}
+  {{- end -}}
+
+  {{- $slug := $licenseId | urlize -}}
+  {{- $path := $slug -}}
+
+  {{- $name := $licenseId -}}
+  {{- with $licenseData.name -}}
+    {{- $name = . -}}
+  {{- end -}}
+
+  {{- $content := dict
+    "path" $path
+    "kind" "page"
+    "title" $name
+    "params" (dict
+      "licenseId" $licenseId
+      "spdxUrl" (printf "https://spdx.org/licenses/%s.html" $licenseId)
+      "isOsiApproved" ($licenseData.isOsiApproved | default false)
+      "seeAlso" ($licenseData.seeAlso | default slice)
+    )
+  -}}
+
+  {{- $.AddPage $content -}}
+{{- end -}}
