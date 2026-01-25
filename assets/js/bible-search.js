@@ -24,6 +24,7 @@
   const wholeWordCheckbox = document.getElementById('whole-word');
   const statusEl = document.getElementById('search-status');
   const resultsEl = document.getElementById('search-results');
+  const announcer = document.getElementById('search-announcer');
 
   /**
    * Bible index data containing metadata for all available translations.
@@ -106,6 +107,24 @@
    */
   function escapeRegex(string) {
     return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  }
+
+  /**
+   * Announces a message to screen readers via the aria-live region.
+   * Updates the announcer element which has aria-live="polite" for accessibility.
+   *
+   * @private
+   * @param {string} message - The message to announce to screen reader users
+   *
+   * @example
+   * announce('Searching for "love"...')
+   * announce('Found 42 results')
+   * announce('No results found')
+   */
+  function announce(message) {
+    if (announcer) {
+      announcer.textContent = message;
+    }
   }
 
   // ============================================================================
@@ -453,13 +472,15 @@
     // Update URL for bookmarking/sharing
     updateUrl(query, bible, caseSensitive, wholeWord);
 
-    // Show searching status
+    // Show searching status and announce to screen readers
     statusEl.classList.remove('hidden');
     resultsEl.innerHTML = '';
+    announce(`Searching for "${query}" in ${bibleSelect.options[bibleSelect.selectedIndex]?.text || 'Bible'}...`);
 
     const bibleData = indexData.bibles?.[bible];
     if (!bibleData) {
       showMessage('Bible not found.');
+      announce('Error: Bible not found.');
       return;
     }
 
@@ -513,13 +534,20 @@
 
       if (results.length === 0) {
         const parsed = parseQuery(query);
+        let message = '';
         if (parsed.type === 'strongs') {
-          showMessage(`No verses containing Strong's number "${parsed.value}" found in ${bibleData.title}. Note: Strong's numbers require Bible translations with Strong's data.`);
+          message = `No verses containing Strong's number "${parsed.value}" found in ${bibleData.title}. Note: Strong's numbers require Bible translations with Strong's data.`;
         } else if (parsed.type === 'phrase') {
-          showMessage(`No results found for phrase "${parsed.value}" in ${bibleData.title}.`);
+          message = `No results found for phrase "${parsed.value}" in ${bibleData.title}.`;
         } else {
-          showMessage(`No results found for "${query}" in ${bibleData.title}.`);
+          message = `No results found for "${query}" in ${bibleData.title}.`;
         }
+        showMessage(message);
+        announce('No results found.');
+      } else {
+        // Announce result count to screen readers
+        const resultText = results.length === 1 ? 'result' : 'results';
+        announce(`Found ${results.length} ${resultText} for "${query}".`);
       }
 
     } catch (e) {

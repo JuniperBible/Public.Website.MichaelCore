@@ -1,0 +1,27 @@
+{{/*
+  Book and Chapter Select Dropdowns Partial
+
+  Generates paired book and chapter <select> elements.
+
+  Parameters (via dict):
+    - bookId (string, required): ID for book select
+    - chapterId (string, required): ID for chapter select
+
+  Usage:
+    {{ partial "michael/book-chapter-selects.html" (dict "bookId" "book-select" "chapterId" "chapter-select") }}
+*/}}
+{{- $bookId := .bookId -}}
+{{- $chapterId := .chapterId -}}
+{{- $firstBible := index $.Site.Data.bibles.bibles 0 -}}
+{{- $aux := index $.Site.Data.bibles_auxiliary $firstBible.id -}}
+<label for="{{ $bookId }}" class="sr-only">{{ i18n "selectBook" | default "Select Book" }}</label>
+<select id="{{ $bookId }}" class="select" style="width: auto;" aria-label="{{ i18n "selectBook" | default "Select Book" }}">
+  <option value="">Book...</option>
+  {{- range $aux.books -}}
+  <option value="{{ .id }}">{{ .name }}</option>
+  {{- end -}}
+</select>
+<label for="{{ $chapterId }}" class="sr-only">{{ i18n "selectChapter" | default "Select Chapter" }}</label>
+<select id="{{ $chapterId }}" class="select" style="width: auto;" disabled aria-label="{{ i18n "selectChapter" | default "Select Chapter" }}">
+  <option value="">Ch...</option>
+</select>

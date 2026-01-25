@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- Updated `docs/README.md` to serve as comprehensive documentation index
+- Updated main `README.md` to reflect current documentation status
+- Marked planned documentation files (SECURITY.md, CSP.md, ACCESSIBILITY.md, SBOM/) as pending
+
+### Pending
+- Complete WCAG 2.1 AA compliance testing
+- Create SECURITY.md with security model documentation
+- Create CSP.md with Content Security Policy guidance
+- Create ACCESSIBILITY.md with WCAG conformance notes
+- Create SBOM/ directory with Software Bill of Materials
+
+## [1.1.0] - 2026-01-25
+
 ### Added
 - **Code Cleanup Charter** — Comprehensive cleanup plan
   - `docs/CODE_CLEANUP_CHARTER.md` — Charter document

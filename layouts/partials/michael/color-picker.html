@@ -30,11 +30,11 @@
   (dict "value" "#aaa" "label" "Light")
 }}
 {{ $colors := .colors | default $defaultColors }}
-<button id="{{ $id }}-color-btn" class="btn btn--sm" style="background-color: #666; width: 24px; height: 24px; padding: 0;" title="Choose highlight color" aria-label="Choose highlight color"></button>
-<div id="{{ $id }}-color-picker" class="hidden" style="position: absolute; background: var(--surface-1); border: 1px solid var(--border); border-radius: var(--radius-1); padding: 8px; z-index: 10;">
-  <div class="row" style="gap: 4px;">
+<button id="{{ $id }}-color-btn" class="btn btn--sm color-picker-btn" title="Choose highlight color" aria-label="Choose highlight color"></button>
+<div id="{{ $id }}-color-picker" class="hidden color-picker-dropdown">
+  <div class="row color-picker-options">
     {{ range $colors }}
-    <button class="{{ $optionClass }} btn btn--sm" data-color="{{ .value }}" style="background:{{ .value }}; width:24px; height:24px; padding:0;" title="{{ .label }}" aria-label="{{ .label }}"></button>
+    <button class="{{ $optionClass }} btn btn--sm color-option-btn" data-color="{{ .value }}" title="{{ .label }}" aria-label="{{ .label }}"></button>
     {{ end }}
   </div>
 </div>

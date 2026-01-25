@@ -87,13 +87,16 @@
       {{ i18n "searching" | default "Searching..." }}
     </div>
 
-    <!-- Search Results -->
-    <div id="search-results" class="mt-3">
+    <!-- Search Results with aria-live for accessibility -->
+    <div id="search-results" class="mt-3" aria-live="polite" aria-atomic="false">
       <div class="center muted">
         <p>{{ i18n "searchPrompt" | default "Enter a search term to find verses across the Bible." }}</p>
         <p>{{ i18n "searchTypesHint" | default "Try: word, \"exact phrase\", or Strong's numbers (H430, G2316)" }}</p>
       </div>
     </div>
+
+    <!-- Screen reader announcements -->
+    <div id="search-announcer" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></div>
 
     <!-- Back Navigation -->
     <nav class="actions">

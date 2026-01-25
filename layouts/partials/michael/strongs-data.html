@@ -11,31 +11,21 @@
 {{- $hebrewData := "" -}}
 {{- $greekData := "" -}}
 
-{{- with resources.Get "data/strongs/hebrew.json" -}}
-  {{- $hebrewData = . | transform.Unmarshal -}}
-{{- else -}}
-  {{- with site.GetPage "/data/strongs/hebrew.json" -}}
-    {{- $hebrewData = .Resources.Get "hebrew.json" | transform.Unmarshal -}}
-  {{- else -}}
-    {{- /* Try loading from data directory */ -}}
-    {{- $hebrewFile := "data/strongs/hebrew.json" -}}
-    {{- if fileExists $hebrewFile -}}
-      {{- $hebrewData = getJSON $hebrewFile -}}
-    {{- end -}}
+{{- /* Try loading from Hugo's data directory first */ -}}
+{{- if isset site.Data "strongs" -}}
+  {{- if isset site.Data.strongs "hebrew" -}}
+    {{- $hebrewData = site.Data.strongs.hebrew -}}
   {{- end -}}
-{{- end -}}
-
-{{- with resources.Get "data/strongs/greek.json" -}}
-  {{- $greekData = . | transform.Unmarshal -}}
+  {{- if isset site.Data.strongs "greek" -}}
+    {{- $greekData = site.Data.strongs.greek -}}
+  {{- end -}}
 {{- else -}}
-  {{- with site.GetPage "/data/strongs/greek.json" -}}
-    {{- $greekData = .Resources.Get "greek.json" | transform.Unmarshal -}}
-  {{- else -}}
-    {{- /* Try loading from data directory */ -}}
-    {{- $greekFile := "data/strongs/greek.json" -}}
-    {{- if fileExists $greekFile -}}
-      {{- $greekData = getJSON $greekFile -}}
-    {{- end -}}
+  {{- /* Fallback to resources.Get */ -}}
+  {{- with resources.Get "data/strongs/hebrew.json" -}}
+    {{- $hebrewData = . | transform.Unmarshal -}}
+  {{- end -}}
+  {{- with resources.Get "data/strongs/greek.json" -}}
+    {{- $greekData = . | transform.Unmarshal -}}
   {{- end -}}
 {{- end -}}
 

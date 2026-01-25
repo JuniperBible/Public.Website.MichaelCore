@@ -1,6 +1,6 @@
 # Michael — Hugo Bible Extension
 
-Plug-and-play Hugo module that adds Bible reading functionality (reading, navigation, compare, search, Strong’s) to any Hugo site — and can also run as a standalone, offline-capable site.
+Plug-and-play Hugo module that adds Bible reading functionality (reading, navigation, compare, search, Strong's) to any Hugo site — and can also run as a standalone, offline-capable site.
 
 ---
 
@@ -13,19 +13,23 @@ Start here:
 - **Project TODO / work pipeline:** [`docs/TODO.txt`](docs/TODO.txt)
 - **Changelog:** [`docs/CHANGELOG.md`](docs/CHANGELOG.md)
 
-Core references (should exist in `docs/`):
+Core references:
 
-- **Architecture overview:** [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)
-- **Hugo module usage (embed vs standalone):** [`docs/HUGO-MODULE-USAGE.md`](docs/HUGO-MODULE-USAGE.md)
-- **Data formats and schemas:** [`docs/DATA-FORMATS.md`](docs/DATA-FORMATS.md)
-- **Versification notes (canon differences):** [`docs/VERSIFICATION.md`](docs/VERSIFICATION.md)
+- **Architecture overview:** [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) ✅
+- **Hugo module usage (embed vs standalone):** [`docs/HUGO-MODULE-USAGE.md`](docs/HUGO-MODULE-USAGE.md) ✅
+- **Data formats and schemas:** [`docs/DATA-FORMATS.md`](docs/DATA-FORMATS.md) ✅
+- **Versification notes (canon differences):** [`docs/VERSIFICATION.md`](docs/VERSIFICATION.md) ✅
+- **Service worker & offline behavior:** [`docs/SERVICE-WORKER.md`](docs/SERVICE-WORKER.md) ✅
+- **Baseline inventory & CSP audit:** [`docs/PHASE-0-BASELINE-INVENTORY.md`](docs/PHASE-0-BASELINE-INVENTORY.md) ✅
 
-Security / platform notes (should exist in `docs/`):
+Planned documentation (not yet created):
 
-- **Security model & hardening notes:** [`docs/SECURITY.md`](docs/SECURITY.md)
-- **Content Security Policy guidance:** [`docs/CSP.md`](docs/CSP.md)
-- **Offline and service worker behavior:** [`docs/OFFLINE.md`](docs/OFFLINE.md)
-- **Accessibility conformance notes:** [`docs/ACCESSIBILITY.md`](docs/ACCESSIBILITY.md)
+- **Security model & hardening notes:** `docs/SECURITY.md` ⏳
+- **Content Security Policy guidance:** `docs/CSP.md` ⏳
+- **Accessibility conformance notes:** `docs/ACCESSIBILITY.md` ⏳
+- **SBOM (Software Bill of Materials):** `docs/SBOM/` ⏳
+
+> These specialized documents will be created as needed based on user requirements and project maturity.
 
 ---
 
@@ -34,14 +38,3 @@ Security / platform notes (should exist in `docs/`):
 See: [`LICENSE`](LICENSE)
 
 ---
-
-## SBOM (Software Bill of Materials)
-
-This project performs automated SBOM generation for releases and/or builds.
-
-- **SBOM overview:** [`docs/SBOM/README.md`](docs/SBOM/README.md)
-- **Generation procedure:** [`docs/SBOM/GENERATE.md`](docs/SBOM/GENERATE.md)
-- **Verification & attestation (hashes/signing):** [`docs/SBOM/VERIFY.md`](docs/SBOM/VERIFY.md)
-- **Artifacts output directory (example):** [`docs/SBOM/artifacts/`](docs/SBOM/artifacts/)
-
-> Note: SBOM contents and exact tooling may vary by build environment. See the SBOM docs above for the authoritative process and expected outputs.

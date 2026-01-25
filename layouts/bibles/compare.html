@@ -20,152 +20,83 @@
 */}}
 
 {{ define "scripts" }}
-{{/* Inject Strong's definitions data for offline use */}}
 {{ partial "michael/strongs-data.html" . }}
-{{ $domUtils := resources.Get "js/michael/dom-utils.js" }}
-{{ if $domUtils }}<script src="{{ $domUtils.RelPermalink }}" defer></script>{{ end }}
-{{ $bibleApi := resources.Get "js/michael/bible-api.js" }}
-{{ if $bibleApi }}<script src="{{ $bibleApi.RelPermalink }}" defer></script>{{ end }}
-{{ $textCompare := resources.Get "js/text-compare.js" }}
-{{ if $textCompare }}<script src="{{ $textCompare.RelPermalink }}" defer></script>{{ end }}
-{{ $parallel := resources.Get "js/parallel.js" }}
-{{ if $parallel }}<script src="{{ $parallel.RelPermalink }}" defer></script>{{ end }}
+{{- range slice "js/michael/dom-utils.js" "js/michael/bible-api.js" "js/text-compare.js" "js/parallel.js" -}}
+{{- $script := resources.Get . -}}
+{{- if $script }}<script src="{{ $script.RelPermalink }}" defer></script>{{ end -}}
+{{- end -}}
 {{ end }}
 
 {{ define "main" }}
 {{ $basePath := .Site.Params.michael.basePath | default "/bibles" }}
-<main class="container" style="padding: var(--pad-3) var(--pad-2);">
+<main class="container pad-3-2">
   <div class="panel">
     <header class="page-header">
       <h1>{{ .Title }}</h1>
       <p>{{ .Description }}</p>
     </header>
-
     <!-- Unified Selector Panel (Normal Mode) -->
-    <div id="normal-mode" class="panel--inner" style="padding: var(--pad-2);">
-      <!-- All controls in one row -->
-      <div class="row" style="flex-wrap: wrap; gap: var(--pad-1);">
-        <!-- Translations -->
-        <div class="row" id="translation-checkboxes" style="gap: 8px;">
-          {{ range .Site.Data.bibles.bibles }}
-          <label class="chip" style="cursor: pointer;">
-            <input type="checkbox"
-                   class="translation-checkbox"
-                   value="{{ .id }}"
-                   data-abbrev="{{ .abbrev }}"
-                   data-title="{{ .title }}"
-                   style="margin-right: 4px;">
+    <div id="normal-mode" class="panel--inner pad-2">
+      <div class="row row--wrap">
+        <div class="row row--tight" id="translation-checkboxes" role="group" aria-label="{{ i18n "selectTranslations" | default "Select Translations" }}">
+          {{- range .Site.Data.bibles.bibles -}}
+          <label class="chip cursor-pointer">
+            <input type="checkbox" class="translation-checkbox mr-1" value="{{ .id }}" data-abbrev="{{ .abbrev }}" data-title="{{ .title }}" aria-label="{{ .abbrev }} - {{ .title }}">
             <span>{{ .abbrev }}</span>
           </label>
-          {{ end }}
+          {{- end -}}
         </div>
-        <span class="muted">|</span>
-        <!-- Passage selectors -->
-        <select id="book-select" class="select" style="width: auto;">
-          <option value="">Book...</option>
-          {{ $firstBible := index .Site.Data.bibles.bibles 0 }}
-          {{ $aux := index .Site.Data.bibles_auxiliary $firstBible.id }}
-          {{ range $aux.books }}
-          <option value="{{ .id }}">{{ .name }}</option>
-          {{ end }}
-        </select>
-        <select id="chapter-select" class="select" style="width: auto;" disabled>
-          <option value="">Ch...</option>
-        </select>
-        <!-- Compare Differences with toggle and color picker -->
-        <label class="chip" style="cursor: pointer;">
-          <input type="checkbox" id="highlight-toggle" style="margin-right: 4px;">
-          <span>Compare Differences</span>
-        </label>
-        {{ partial "michael/color-picker.html" (dict "id" "highlight" "optionClass" "color-option") }}
-        <!-- SSS Mode toggle -->
+        <span class="muted" aria-hidden="true">|</span>
+        {{ partial "michael/book-chapter-selects.html" (dict "bookId" "book-select" "chapterId" "chapter-select") }}
+        {{ partial "michael/compare-diff-control.html" (dict "toggleId" "highlight-toggle" "colorId" "highlight" "optionClass" "color-option") }}
         {{ partial "michael/sss-toggle.html" (dict "id" "sss-mode-btn" "statusId" "sss-mode-status" "defaultStatus" "OFF") }}
       </div>
-      <!-- Verse grid (shown when chapter is selected) -->
       {{ partial "michael/verse-grid.html" dict }}
     </div>
-
     <!-- SSS Mode (Side by Side Scripture) - Hidden by default -->
     <div id="sss-mode" class="hidden">
-      <!-- SSS Controls -->
-      <div class="panel--inner mt-2" style="padding: var(--pad-2);">
-        <div class="row" style="flex-wrap: wrap; gap: var(--pad-1);">
-          <button id="sss-back-btn" class="btn btn--sm" title="Back to Compare">&larr;</button>
-          <select id="sss-bible-left" class="select" style="width: auto;">
-            <option value="">Left Bible...</option>
-            {{ range .Site.Data.bibles.bibles }}
-            <option value="{{ .id }}">{{ .title }} ({{ .abbrev }})</option>
-            {{ end }}
-          </select>
-          <select id="sss-bible-right" class="select" style="width: auto;">
-            <option value="">Right Bible...</option>
-            {{ range .Site.Data.bibles.bibles }}
-            <option value="{{ .id }}">{{ .title }} ({{ .abbrev }})</option>
-            {{ end }}
-          </select>
-          <span class="muted">|</span>
-          <select id="sss-book-select" class="select" style="width: auto;">
-            <option value="">Book...</option>
-            {{ $firstBible := index .Site.Data.bibles.bibles 0 }}
-            {{ $aux := index .Site.Data.bibles_auxiliary $firstBible.id }}
-            {{ range $aux.books }}
-            <option value="{{ .id }}">{{ .name }}</option>
-            {{ end }}
-          </select>
-          <select id="sss-chapter-select" class="select" style="width: auto;" disabled>
-            <option value="">Ch...</option>
-          </select>
-          <!-- Compare Differences with toggle and color picker (SSS mode) -->
-          <label class="chip" style="cursor: pointer;">
-            <input type="checkbox" id="sss-highlight-toggle" checked style="margin-right: 4px;">
-            <span>Compare Differences</span>
-          </label>
-          {{ partial "michael/color-picker.html" (dict "id" "sss-highlight" "optionClass" "sss-color-option") }}
+      <div class="panel--inner mt-2 pad-2">
+        <div class="row row--wrap">
+          <button id="sss-back-btn" class="btn btn--sm" title="Back to Compare" aria-label="Back to Compare">&larr;</button>
+          {{ partial "michael/bible-select.html" (dict "id" "sss-bible-left" "label" "Left Bible...") }}
+          {{ partial "michael/bible-select.html" (dict "id" "sss-bible-right" "label" "Right Bible...") }}
+          <span class="muted" aria-hidden="true">|</span>
+          {{ partial "michael/book-chapter-selects.html" (dict "bookId" "sss-book-select" "chapterId" "sss-chapter-select") }}
+          {{ partial "michael/compare-diff-control.html" (dict "toggleId" "sss-highlight-toggle" "colorId" "sss-highlight" "optionClass" "sss-color-option" "checked" true) }}
           {{ partial "michael/sss-toggle.html" (dict "id" "sss-toggle-btn" "statusId" "sss-status" "defaultStatus" "ON") }}
         </div>
-        <!-- SSS Verse grid (shown when chapter is selected) -->
         {{ partial "michael/verse-grid.html" (dict "id" "sss") }}
       </div>
-
       <!-- Side by Side Panes -->
       <div class="grid-2 mt-2" id="sss-panes">
-        <div class="card" id="sss-left-pane">
-          <div class="center muted">Select a Bible</div>
-        </div>
-        <div class="card" id="sss-right-pane">
-          <div class="center muted">Select a Bible</div>
-        </div>
+        <div class="card" id="sss-left-pane"><div class="center muted">Select a Bible</div></div>
+        <div class="card" id="sss-right-pane"><div class="center muted">Select a Bible</div></div>
       </div>
     </div>
-
     <!-- Parallel Verse Display (Normal Mode) -->
-    <div id="parallel-content" class="mt-3">
-      <div class="center muted">
-        {{ i18n "selectPassagePrompt" | default "Select 2+ translations and a passage to compare." }}
-      </div>
+    <div id="parallel-content" class="mt-3" aria-live="polite" aria-atomic="false">
+      <div class="center muted">{{ i18n "selectPassagePrompt" | default "Select 2+ translations and a passage to compare." }}</div>
     </div>
-
+    <!-- Screen reader announcements for compare page -->
+    <div id="compare-announcer" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></div>
     <!-- Back Navigation -->
     <nav class="actions">
-      <a href="{{ printf "%s/" $basePath | relLangURL }}" class="btn">
-        &larr; {{ i18n "allBibles" | default "All Bibles" }}
-      </a>
+      <a href="{{ printf "%s/" $basePath | relLangURL }}" class="btn">&larr; {{ i18n "allBibles" | default "All Bibles" }}</a>
     </nav>
   </div>
 </main>
-
 <!-- Bible Data for JavaScript - book structure only, verses loaded on-demand -->
 <script id="bible-data" type="application/json">
-{{ $biblesMeta := slice }}
-{{ range .Site.Data.bibles.bibles }}
-  {{ $biblesMeta = $biblesMeta | append (dict "id" .id "title" .title "abbrev" .abbrev "description" .description "language" .language) }}
-{{ end }}
-{{ $firstBible := index .Site.Data.bibles.bibles 0 }}
-{{ $aux := index .Site.Data.bibles_auxiliary $firstBible.id }}
-{{ $booksList := slice }}
-{{ range $aux.books }}
-  {{ $booksList = $booksList | append (dict "id" .id "name" .name "chapters" (len .chapters)) }}
-{{ end }}
-{{ dict "bibles" $biblesMeta "books" $booksList "basePath" ($basePath | relLangURL) | jsonify | safeJS }}
+{{- $biblesMeta := slice -}}
+{{- range .Site.Data.bibles.bibles -}}
+{{- $biblesMeta = $biblesMeta | append (dict "id" .id "title" .title "abbrev" .abbrev "description" .description "language" .language) -}}
+{{- end -}}
+{{- $firstBible := index .Site.Data.bibles.bibles 0 -}}
+{{- $aux := index .Site.Data.bibles_auxiliary $firstBible.id -}}
+{{- $booksList := slice -}}
+{{- range $aux.books -}}
+{{- $booksList = $booksList | append (dict "id" .id "name" .name "chapters" (len .chapters)) -}}
+{{- end -}}
+{{- dict "bibles" $biblesMeta "books" $booksList "basePath" ($basePath | relLangURL) | jsonify | safeJS -}}
 </script>
 {{ end }}

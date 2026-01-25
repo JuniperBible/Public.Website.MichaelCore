@@ -106,55 +106,25 @@
       // Create a simple notification banner
       const banner = document.createElement('div');
       banner.id = 'sw-update-banner';
-      banner.style.cssText = `
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        background: #2563eb;
-        color: white;
-        padding: 16px 20px;
-        border-radius: 8px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        z-index: 10000;
-        max-width: 300px;
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-        font-size: 14px;
-        line-height: 1.5;
-      `;
+      banner.className = 'sw-update-banner';
 
       banner.innerHTML = `
-        <div style="margin-bottom: 8px;">
+        <div class="sw-update-banner__title">
           <strong>Update Available</strong>
         </div>
-        <div style="margin-bottom: 12px; opacity: 0.9;">
+        <div class="sw-update-banner__message">
           A new version of this site is available.
         </div>
-        <div style="display: flex; gap: 8px;">
+        <div class="sw-update-banner__actions">
           <button
             onclick="window.location.reload()"
-            style="
-              flex: 1;
-              padding: 6px 12px;
-              background: white;
-              color: #2563eb;
-              border: none;
-              border-radius: 4px;
-              cursor: pointer;
-              font-weight: 500;
-            "
+            class="sw-update-banner__reload-btn"
           >
             Reload
           </button>
           <button
             onclick="document.getElementById('sw-update-banner').remove()"
-            style="
-              padding: 6px 12px;
-              background: transparent;
-              color: white;
-              border: 1px solid white;
-              border-radius: 4px;
-              cursor: pointer;
-            "
+            class="sw-update-banner__dismiss-btn"
           >
             Dismiss
           </button>

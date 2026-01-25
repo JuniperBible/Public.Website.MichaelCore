@@ -27,8 +27,8 @@
 
   /* Text */
   --text-900: #1d1b1f;
-  --text-700: #504a53;
-  --text-500: #6b6570;
+  --text-700: #3d3841;  /* Improved contrast from #504a53 for WCAG AA compliance */
+  --text-500: #565056;  /* Improved contrast from #6b6570 for WCAG AA compliance (4.5:1 on #e7ddc4) */
   --link: var(--brand-500);
 
   /* Borders/shadows */

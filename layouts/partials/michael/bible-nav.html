@@ -75,12 +75,13 @@
   {{ $chapterCount = len $bookData.chapters }}
 {{ end }}
 
-<nav class="reader-bar row" aria-label="{{ i18n "bibleNavigation" | default "Bible Navigation" }}" style="margin-bottom: var(--pad-2);">
+<nav class="reader-bar row bible-nav" aria-label="{{ i18n "bibleNavigation" | default "Bible Navigation" }}">
   <!-- Bible selector (always shown when bible is set) -->
   {{ with $bible }}
+  <label for="bible-select" class="sr-only">{{ i18n "selectBibleTranslation" | default "Select Bible Translation" }}</label>
   <select id="bible-select"
-          class="select"
-          style="width: auto;"
+          class="select bible-nav__select"
+          aria-label="{{ i18n "selectBibleTranslation" | default "Select Bible Translation" }}"
           onchange="if(this.value) window.location.href=this.value">
     {{ range $page.Site.Data.bibles.bibles }}
       {{/* Only show bibles that have auxiliary data */}}
@@ -96,9 +97,10 @@
 
   <!-- Book selector (always shown - uses validBooks if available) -->
   {{ if $bible }}
+  <label for="book-select" class="sr-only">{{ i18n "selectBook" | default "Select Book" }}</label>
   <select id="book-select"
-          class="select"
-          style="width: auto;"
+          class="select bible-nav__select"
+          aria-label="{{ i18n "selectBook" | default "Select Book" }}"
           onchange="if(this.value) window.location.href=this.value">
     {{/* Show placeholder when no book selected */}}
     {{ if not $book }}
@@ -125,9 +127,10 @@
 
   <!-- Chapter selector (if viewing a chapter) -->
   {{ with $chapter }}
+  <label for="chapter-select" class="sr-only">{{ i18n "selectChapter" | default "Select Chapter" }}</label>
   <select id="chapter-select"
-          class="select"
-          style="width: auto;"
+          class="select bible-nav__select"
+          aria-label="{{ i18n "selectChapter" | default "Select Chapter" }}"
           onchange="if(this.value) window.location.href=this.value">
     {{ range $i := seq $chapterCount }}
     <option value="{{ printf "%s/%s/%s/%d/" $basePath $bible $book $i | relLangURL }}" {{ if eq $i $chapter }}selected{{ end }}>
@@ -140,21 +143,23 @@
   {{ if gt $chapter 1 }}
   <a href="{{ printf "%s/%s/%s/%d/" $basePath $bible $book (sub $chapter 1) | relLangURL }}"
      class="btn btn--sm"
+     aria-label="{{ i18n "previousChapter" | default "Previous Chapter" }}"
      title="{{ i18n "previousChapter" | default "Previous Chapter" }}">
     ←
   </a>
   {{ else }}
-  <span class="btn btn--sm is-disabled" aria-disabled="true">←</span>
+  <span class="btn btn--sm is-disabled" aria-disabled="true" aria-label="{{ i18n "previousChapter" | default "Previous Chapter" }} {{ i18n "disabled" | default "(disabled)" }}">←</span>
   {{ end }}
 
   {{ if lt $chapter $chapterCount }}
   <a href="{{ printf "%s/%s/%s/%d/" $basePath $bible $book (add $chapter 1) | relLangURL }}"
      class="btn btn--sm"
+     aria-label="{{ i18n "nextChapter" | default "Next Chapter" }}"
      title="{{ i18n "nextChapter" | default "Next Chapter" }}">
     →
   </a>
   {{ else }}
-  <span class="btn btn--sm is-disabled" aria-disabled="true">→</span>
+  <span class="btn btn--sm is-disabled" aria-disabled="true" aria-label="{{ i18n "nextChapter" | default "Next Chapter" }} {{ i18n "disabled" | default "(disabled)" }}">→</span>
   {{ end }}
   {{ end }}
 </nav>

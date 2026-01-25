@@ -47,7 +47,7 @@
 {{ $page := .page }}
 {{ $basePath := .basePath | default "/bibles" }}
 
-<section class="offline-settings panel--inner" style="margin-top: var(--pad-3);">
+<section class="offline-settings panel--inner offline-settings--spacing">
   <details class="offline-settings__details">
     <summary class="offline-settings__summary">
       <h2 class="offline-settings__title">
@@ -135,7 +135,7 @@
           </div>
 
           <!-- Action Buttons -->
-          <div class="offline-settings__actions actions" style="margin-top: var(--pad-2);">
+          <div class="offline-settings__actions actions">
             <button
               type="submit"
               id="download-offline-btn"
@@ -173,7 +173,7 @@
 
       <!-- No JavaScript Fallback -->
       <noscript>
-        <div class="notice" style="margin-top: var(--pad-2);">
+        <div class="notice noscript-notice">
           <strong>{{ i18n "javascriptRequired" | default "JavaScript Required" }}</strong>
           <p>{{ i18n "javascriptRequiredMessage" | default "Offline functionality requires JavaScript to be enabled. You can still read Bible content online without JavaScript." }}</p>
         </div>

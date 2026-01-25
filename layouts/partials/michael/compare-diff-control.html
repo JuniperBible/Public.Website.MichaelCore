@@ -1,0 +1,24 @@
+{{/*
+  Compare Differences Control Partial
+
+  Generates a checkbox toggle and color picker for highlighting text differences.
+
+  Parameters (via dict):
+    - toggleId (string, required): ID for checkbox toggle
+    - colorId (string, required): Prefix for color picker IDs
+    - optionClass (string, required): CSS class for color option buttons
+    - checked (bool, optional): Whether checkbox is checked by default
+
+  Usage:
+    {{ partial "michael/compare-diff-control.html" (dict "toggleId" "highlight-toggle" "colorId" "highlight" "optionClass" "color-option") }}
+    {{ partial "michael/compare-diff-control.html" (dict "toggleId" "sss-highlight-toggle" "colorId" "sss-highlight" "optionClass" "sss-color-option" "checked" true) }}
+*/}}
+{{- $toggleId := .toggleId -}}
+{{- $colorId := .colorId -}}
+{{- $optionClass := .optionClass -}}
+{{- $checked := .checked | default false -}}
+<label class="chip" style="cursor: pointer;">
+  <input type="checkbox" id="{{ $toggleId }}" style="margin-right: 4px;"{{ if $checked }} checked{{ end }}>
+  <span>Compare Differences</span>
+</label>
+{{ partial "michael/color-picker.html" (dict "id" $colorId "optionClass" $optionClass) }}

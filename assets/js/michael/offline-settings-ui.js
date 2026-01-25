@@ -54,8 +54,6 @@
 
       // Load initial cache status
       await updateCacheStatus(OfflineManager);
-
-      console.log('[Offline Settings] Initialized successfully');
     } catch (error) {
       console.error('[Offline Settings] Initialization failed:', error);
       showMessage('Failed to initialize offline functionality: ' + error.message, 'error');

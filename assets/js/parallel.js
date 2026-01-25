@@ -233,6 +233,12 @@
    */
   let sssAllVersesBtn;
 
+  /**
+   * Reference to screen reader announcer element
+   * @type {HTMLElement|null}
+   */
+  let announcer;
+
   /* ========================================================================
      INITIALIZATION
      ======================================================================== */
@@ -272,6 +278,7 @@
     verseGrid = document.getElementById('verse-grid');
     verseButtons = document.getElementById('verse-buttons');
     allVersesBtn = document.getElementById('all-verses-btn');
+    announcer = document.getElementById('compare-announcer');
 
     // SSS Mode elements
     normalModeEl = document.getElementById('normal-mode');
@@ -321,6 +328,24 @@
    */
   function getContrastColor(hexColor) {
     return window.Michael.DomUtils.getContrastColor(hexColor);
+  }
+
+  /**
+   * Announces a message to screen readers via the aria-live region.
+   * Updates the announcer element which has aria-live="polite" for accessibility.
+   *
+   * @private
+   * @param {string} message - The message to announce to screen reader users
+   *
+   * @example
+   * announce('Loading Genesis chapter 1')
+   * announce('Added King James Version')
+   * announce('Chapter loaded successfully')
+   */
+  function announce(message) {
+    if (announcer) {
+      announcer.textContent = message;
+    }
   }
 
   /**
@@ -523,16 +548,20 @@
   function handleTranslationChange(e) {
     const checkbox = e.target;
     const translationId = checkbox.value;
+    const translationTitle = checkbox.dataset.title || translationId;
 
     if (checkbox.checked) {
       if (selectedTranslations.length >= 11) {
         checkbox.checked = false;
         window.Michael.DomUtils.showMessage('Maximum 11 translations can be compared at once.', 'warning');
+        announce('Maximum 11 translations reached.');
         return;
       }
       selectedTranslations.push(translationId);
+      announce(`Added ${translationTitle} translation.`);
     } else {
       selectedTranslations = selectedTranslations.filter(t => t !== translationId);
+      announce(`Removed ${translationTitle} translation.`);
     }
 
     saveState();
@@ -564,6 +593,11 @@
     if (currentBook) {
       currentChapter = 1;
       chapterSelect.value = '1';
+
+      // Get book name from metadata and announce to screen readers
+      const bookInfo = bibleData.books.find(b => b.id === currentBook);
+      const bookName = bookInfo?.name || currentBook;
+      announce(`Selected ${bookName}. Loading chapter 1.`);
     } else {
       currentChapter = 0;
     }
@@ -623,6 +657,13 @@
     currentVerse = 0;
     saveState();
 
+    if (currentChapter > 0 && currentBook) {
+      // Get book name from metadata and announce to screen readers
+      const bookInfo = bibleData.books.find(b => b.id === currentBook);
+      const bookName = bookInfo?.name || currentBook;
+      announce(`Loading ${bookName} chapter ${currentChapter}.`);
+    }
+
     // Populate verse grid after loading
     if (canLoadComparison()) {
       loadComparison().then(() => {
@@ -677,6 +718,12 @@
     // Build comparison HTML
     const html = buildComparisonHTML(chaptersData);
     parallelContent.innerHTML = html;
+
+    // Announce completion to screen readers
+    const bookInfo = bibleData.books.find(b => b.id === currentBook);
+    const bookName = bookInfo?.name || currentBook;
+    const verseInfo = currentVerse > 0 ? ` verse ${currentVerse}` : '';
+    announce(`${bookName} chapter ${currentChapter}${verseInfo} loaded with ${selectedTranslations.length} translation${selectedTranslations.length !== 1 ? 's' : ''}.`);
   }
 
   /* ========================================================================
@@ -1056,8 +1103,20 @@
    * @private
    */
   function handleSSSBibleChange() {
+    const prevLeft = sssLeftBible;
+    const prevRight = sssRightBible;
     sssLeftBible = sssBibleLeft?.value || '';
     sssRightBible = sssBibleRight?.value || '';
+
+    // Announce which Bible was changed
+    if (sssLeftBible && sssLeftBible !== prevLeft) {
+      const leftBible = bibleData.bibles.find(b => b.id === sssLeftBible);
+      announce(`Left Bible changed to ${leftBible?.title || sssLeftBible}.`);
+    }
+    if (sssRightBible && sssRightBible !== prevRight) {
+      const rightBible = bibleData.bibles.find(b => b.id === sssRightBible);
+      announce(`Right Bible changed to ${rightBible?.title || sssRightBible}.`);
+    }
 
     if (canLoadSSSComparison()) {
       loadSSSComparison();
@@ -1078,6 +1137,11 @@
     if (sssBook) {
       sssChapter = 1;
       if (sssChapterSelect) sssChapterSelect.value = '1';
+
+      // Announce book change to screen readers
+      const bookInfo = bibleData.books.find(b => b.id === sssBook);
+      const bookName = bookInfo?.name || sssBook;
+      announce(`Selected ${bookName}. Loading chapter 1.`);
     } else {
       sssChapter = 0;
     }
@@ -1126,6 +1190,13 @@
   function handleSSSChapterChange() {
     sssChapter = parseInt(sssChapterSelect?.value) || 0;
     sssVerse = 0; // Reset verse selection
+
+    if (sssChapter > 0 && sssBook) {
+      // Announce chapter change to screen readers
+      const bookInfo = bibleData.books.find(b => b.id === sssBook);
+      const bookName = bookInfo?.name || sssBook;
+      announce(`Loading ${bookName} chapter ${sssChapter}.`);
+    }
 
     if (canLoadSSSComparison()) {
       loadSSSComparison();
