@@ -50,6 +50,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - Cross-cutting (3 tests): offline, mobile touch, keyboard navigation
 
 ### Changed
+- **Juniper Submodule Update** - Migrated to JuniperBible repository
+  - Changed submodule URL from `juniper.git` to `JuniperBible.git`
+  - Now tracking `development` branch for latest features
+  - JuniperBible includes capsule commands and versification system
+  - All 100+ JuniperBible tests passing
 - **Documentation Overhaul** - Comprehensive update to all documentation
   - `README.md` - Complete rewrite with features, quick start, and status table
   - `docs/README.md` - New quick links section and project metrics table
@@ -57,7 +62,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `docs/HUGO-MODULE-USAGE.md` - Updated offline support (was marked "Planned", now implemented)
   - `docs/TESTING.md` - Added test coverage checklist and Magellan package structure
   - All documents now have consistent cross-references and "See Also" sections
-- Updated `docs/TODO.txt` with Phase 5 (Regression Testing) tasks - all complete
+- Updated `docs/TODO.txt` with Phase 5-8 tasks - all complete
 
 ## [1.1.0] - 2026-01-25
 
