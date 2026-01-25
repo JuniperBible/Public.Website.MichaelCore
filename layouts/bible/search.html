@@ -43,7 +43,7 @@
     <!-- Search Form -->
     <form id="search-form" class="panel--inner">
       <div class="row">
-        <div class="field">
+        <div class="field" style="flex: 1;">
           <label for="search-query" class="label">
             {{ i18n "searchQuery" | default "Search for" }}:
           </label>
@@ -58,7 +58,7 @@
         </div>
         <div class="field">
           <label for="bible-select" class="label">
-            {{ i18n "selectBible" | default "Translation" }}:
+            {{ i18n "selectBible" | default "Select Bible" }}:
           </label>
           <select id="bible-select" name="bible" class="select">
             {{ range .Site.Data.bibles.bibles }}
