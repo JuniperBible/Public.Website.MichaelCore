@@ -562,18 +562,20 @@ FUTURE: UPSTREAM CONTRIBUTIONS & SUBMODULE MAINTENANCE
     - JuniperBible: development branch is tracked, can PR upstream
     - Commit history kept clean for cherry-picking
 
-[ ] F-003: zCom parser test in JuniperBible (UPSTREAM)
+[~] F-003: zCom parser test in JuniperBible (UPSTREAM - DOCUMENTED)
     - Location: contrib/tool/juniper/src/pkg/sword/zcom_test.go:294
     - Issue: zCom format has different index structure than zText
-    - Status: Test is skipped with documentation
-    - Action: Needs SWORD format documentation research
-    - Note: This is an upstream JuniperBible issue, not Michael
+    - Status: Test skipped with clear documentation in code
+    - Note: This is in contrib/ (legacy code), not main implementation
+    - Main zCom: internal/formats/swordpure/ - ALL TESTS PASSING
+    - Action: No action needed for Michael; tracked for JuniperBible cleanup
 
-[ ] F-004: SQLite implementation TODOs in JuniperBible (UPSTREAM)
+[~] F-004: SQLite implementation TODOs in JuniperBible (UPSTREAM - IN PROGRESS)
     - Location: core/sqlite/internal/driver/stmt.go
     - Location: core/sqlite/internal/engine/compiler.go
-    - Status: Partial implementation with TODOs
-    - Note: These are upstream JuniperBible issues, not Michael
+    - Status: Partial implementation - UPDATE/DELETE not yet implemented
+    - Note: Core SQLite functionality works; all tests pass
+    - Action: No action needed for Michael; tracked for JuniperBible roadmap
 
 ================================================================================
 ALL PHASES COMPLETE
