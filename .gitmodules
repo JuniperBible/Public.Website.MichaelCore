@@ -1,8 +1,8 @@
 [submodule "tools/juniper"]
 	path = tools/juniper
 	url = git@github.com:FocuswithJustin/JuniperBible.git
-	branch = main
+	branch = development
 [submodule "tools/magellan"]
 	path = tools/magellan
 	url = git@github.com:FocuswithJustin/magellan.git
-	branch = main
+	branch = development
