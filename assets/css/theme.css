@@ -476,7 +476,93 @@ a:focus-visible {
 }
 
 /* -----------------------------
-   13) Print styles
+   13) Bible content (generated from juniper)
+------------------------------ */
+
+/* Book and chapter grids */
+.book-grid,
+.chapter-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: var(--pad-2) 0;
+}
+
+.book-link,
+.chapter-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 12px;
+  min-width: 40px;
+  border-radius: var(--radius-1);
+  border: 1px solid var(--border-strong);
+  background: var(--surface-2);
+  color: var(--text-900);
+  text-decoration: none;
+  box-shadow: var(--shadow-0);
+}
+
+.book-link:hover,
+.chapter-link:hover {
+  background: var(--surface-1);
+  border-color: rgba(0,0,0,.55);
+  text-decoration: none;
+}
+
+.book-link:focus-visible,
+.chapter-link:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+/* Bible verse text */
+.prose p {
+  margin: 0 0 1em 0;
+}
+
+/* Strong's number markers */
+.prose w {
+  display: inline;
+}
+
+/* Notes and cross-references */
+.prose note {
+  display: inline;
+  font-size: 0.85em;
+  color: var(--text-500);
+  font-style: italic;
+}
+
+.prose note::before {
+  content: " [";
+}
+
+.prose note::after {
+  content: "] ";
+}
+
+.prose note catchWord {
+  font-weight: 600;
+  font-style: normal;
+}
+
+.prose note rdg {
+  font-style: italic;
+}
+
+/* Added text markers */
+.prose transChange[type="added"] {
+  font-style: italic;
+}
+
+/* Milestone markers (paragraphs in source) */
+.prose milestone {
+  display: none;
+}
+
+/* -----------------------------
+   14) Print styles
 ------------------------------ */
 @media print {
   .chrome, .reader-bar, .actions, .btn {
