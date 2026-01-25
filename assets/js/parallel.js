@@ -19,7 +19,7 @@
 
   // State
   let bibleData = null;
-  let basePath = '/religion/bibles'; // Default, can be overridden from bible-data JSON
+  let basePath = '/bibles'; // Default, can be overridden from bible-data JSON
   let selectedTranslations = [];
   let currentBook = '';
   let currentChapter = 0;

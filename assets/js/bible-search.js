@@ -24,7 +24,7 @@
   const indexData = JSON.parse(document.getElementById('bible-index')?.textContent || '{}');
 
   // Configurable base path (from index data or default)
-  const basePath = indexData.basePath || '/religion/bibles';
+  const basePath = indexData.basePath || '/bibles';
 
   // Strong's number pattern: H or G followed by 1-5 digits
   const STRONGS_PATTERN = /^[HG]\d{1,5}$/i;

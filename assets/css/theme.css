@@ -78,6 +78,7 @@ img { max-width: 100%; height: auto; }
   border-radius: var(--radius-2);
   box-shadow: var(--shadow-1);
   padding: var(--pad-3);
+  overflow-x: auto;
 }
 
 .panel--tight { padding: var(--pad-2); }
@@ -86,6 +87,7 @@ img { max-width: 100%; height: auto; }
   border: 1px solid var(--border);
   border-radius: var(--radius-2);
   box-shadow: var(--shadow-0);
+  overflow: hidden;
 }
 
 /* Optional "sketch" treatment: use on big cards/panels only if desired */
@@ -556,17 +558,15 @@ a:focus-visible {
   font-style: italic;
 }
 
-/* OSIS structural markers - hide paragraph/milestone divs */
+/* OSIS structural markers - hide paragraph/milestone divs in Bible text */
 .prose milestone,
 .prose div[type="x-milestone"],
 .prose div[type="x-p"],
+.prose div[subType],
+.prose div[sID],
+.prose div[eID],
 .prose chapter {
   display: none;
-}
-
-/* Ensure any remaining divs in verse text don't break flow */
-.prose div {
-  display: inline;
 }
 
 /* -----------------------------
