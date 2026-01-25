@@ -1,7 +1,7 @@
 # Michael - Hugo Bible Module
 # https://github.com/FocuswithJustin/michael
 
-.PHONY: dev dev-hugo dev-caddy build clean help vendor vendor-fetch vendor-convert vendor-package vendor-restore juniper caddy hugo sbom ensure-data test test-compare test-search test-single test-offline test-mobile test-keyboard check push sync-submodules fmt lint watch info
+.PHONY: dev dev-hugo dev-caddy kill-dev build clean help vendor vendor-fetch vendor-convert vendor-package vendor-restore juniper caddy hugo sbom ensure-data test test-compare test-search test-single test-offline test-mobile test-keyboard check push sync-submodules fmt lint info
 
 # Bible modules to vendor
 BIBLES := KJVA DRC Tyndale Coverdale Geneva1599 WEB Vulgate SBLGNT LXX ASV OSMHB
@@ -59,17 +59,21 @@ HUGO := $(shell test -x tools/hugo/hugo && echo ./tools/hugo/hugo || echo hugo)
 # Caddy binary - use local build if available, else system caddy
 CADDY := $(shell test -x tools/caddy/cmd/caddy/caddy && echo ./tools/caddy/cmd/caddy/caddy || echo caddy)
 
+# Kill any running dev servers on port 1313
+kill-dev:
+	@-lsof -ti:1313 | xargs -r kill 2>/dev/null || true
+
 # Default dev: alias to dev-caddy
 dev: dev-caddy
 
 # Caddy dev server: build site and serve with Caddy (production-like, HTTP only)
-dev-caddy: sync-submodules caddy build
+dev-caddy: kill-dev sync-submodules caddy build
 	@echo "Starting Caddy server on http://localhost:1313"
 	@echo "Press Ctrl+C to stop"
 	$(CADDY) run --config Caddyfile
 
 # Hugo's internal development server (live reload, drafts, etc.)
-dev-hugo: sync-submodules
+dev-hugo: kill-dev sync-submodules
 	$(HUGO) server --buildDrafts --buildFuture --disableFastRender
 
 # Build static site (regenerates SBOM and Bible data first)
