@@ -1,35 +1,35 @@
 {{ define "main" }}
-<main class="container">
-  <div class="michael-header">
-    <h1 class="font-hand">{{ .Site.Title }}</h1>
-    {{ with .Site.Params.description }}<p class="font-hand">{{ . }}</p>{{ end }}
-  </div>
+<main class="container" style="padding: var(--pad-3) var(--pad-2);">
+  <div class="panel">
+    <header class="page-header">
+      <h1>{{ .Site.Title }}</h1>
+      {{ with .Site.Params.description }}<p>{{ . }}</p>{{ end }}
+    </header>
 
-  {{/* Try /bibles first (standalone), then /religion/bibles (module) */}}
-  {{ $biblesPage := .Site.GetPage "/bibles" }}
-  {{ if not $biblesPage }}{{ $biblesPage = .Site.GetPage "/religion/bibles" }}{{ end }}
+    {{/* Try /bibles first (standalone), then /religion/bibles (module) */}}
+    {{ $biblesPage := .Site.GetPage "/bibles" }}
+    {{ if not $biblesPage }}{{ $biblesPage = .Site.GetPage "/religion/bibles" }}{{ end }}
 
-  {{ with $biblesPage }}
-  <section>
-    <h2 class="font-hand">Bible Translations</h2>
-    <div class="grid-2">
-      {{ $count := 0 }}
-      {{ range .Pages }}
-      {{ if and .Params.abbrev (lt $count 4) }}
-      <article class="card">
-        <a href="{{ .RelPermalink }}" class="bible-card">
-          <h3>{{ .Title }}</h3>
-          {{ with .Description }}<p>{{ . }}</p>{{ end }}
+    {{ with $biblesPage }}
+    <section>
+      <h2>Bible Translations</h2>
+      <div class="grid-2">
+        {{ $count := 0 }}
+        {{ range .Pages }}
+        {{ if and .Params.abbrev (lt $count 4) }}
+        <a href="{{ .RelPermalink }}" class="card">
+          <h3 class="card__title">{{ .Title }}</h3>
+          {{ with .Description }}<p class="card__meta">{{ . }}</p>{{ end }}
         </a>
-      </article>
-      {{ $count = add $count 1 }}
-      {{ end }}
-      {{ end }}
-    </div>
-    <div class="actions">
-      <a href="{{ .RelPermalink }}" class="btn">View All Bibles</a>
-    </div>
-  </section>
-  {{ end }}
+        {{ $count = add $count 1 }}
+        {{ end }}
+        {{ end }}
+      </div>
+      <nav class="actions">
+        <a href="{{ .RelPermalink }}" class="btn btn--primary">View All Bibles</a>
+      </nav>
+    </section>
+    {{ end }}
+  </div>
 </main>
 {{ end }}

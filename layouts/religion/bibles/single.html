@@ -15,88 +15,92 @@
 
 {{ define "main" }}
 {{ $basePath := .Site.Params.michael.basePath | default "/religion/bibles" }}
-<article class="bible-article">
-  <header class="bible-header">
-    <h1 class="bible-title">
-      {{ .Title }}
-    </h1>
-    {{ with .Params.description }}
-    <p class="bible-description">{{ . }}</p>
-    {{ end }}
+<main class="container" style="padding: var(--pad-3) var(--pad-2);">
+  <article class="panel">
+    <header class="page-header">
+      <h1>{{ .Title }}</h1>
+      {{ with .Params.description }}
+      <p>{{ . }}</p>
+      {{ end }}
 
-    <!-- Features/tags -->
-    <div class="bible-tags">
-      {{/* Look up language and license from bibles.json */}}
-      {{ $bibleId := .Params.bible | default .Params.abbrev | default .File.ContentBaseName }}
-      {{ range .Site.Data.bibles.bibles }}
-        {{ if eq .id $bibleId }}
-          {{ with .language }}
-          <span class="bible-tag bible-tag-language">{{ . }}</span>
-          {{ end }}
-          {{ with .license }}
-          <a href="{{ printf "/licenses/%s/" (. | urlize) | relLangURL }}" class="bible-tag bible-tag-license" title="SPDX License: {{ . }}">{{ . }}</a>
+      <!-- Features/tags -->
+      <div class="row mt-1" style="justify-content: center;">
+        {{/* Look up language and license from bibles.json */}}
+        {{ $bibleId := .Params.bible | default .Params.abbrev | default .File.ContentBaseName }}
+        {{ range .Site.Data.bibles.bibles }}
+          {{ if eq .id $bibleId }}
+            {{ with .language }}
+            <span class="badge">{{ . }}</span>
+            {{ end }}
+            {{ with .license }}
+            <a href="{{ printf "/licenses/%s/" (. | urlize) | relLangURL }}" class="badge" title="SPDX License: {{ . }}">{{ . }}</a>
+            {{ end }}
           {{ end }}
         {{ end }}
-      {{ end }}
-      {{/* Fallback to params if not in bibles.json */}}
-      {{ if not .Site.Data.bibles.bibles }}
-        {{ with .Params.language }}
-        <span class="bible-tag bible-tag-language">{{ . }}</span>
+        {{/* Fallback to params if not in bibles.json */}}
+        {{ if not .Site.Data.bibles.bibles }}
+          {{ with .Params.language }}
+          <span class="badge">{{ . }}</span>
+          {{ end }}
         {{ end }}
-      {{ end }}
-      {{ range .Params.features }}
-      <span class="bible-tag bible-tag-feature">{{ . }}</span>
-      {{ end }}
-    </div>
-  </header>
+        {{ range .Params.features }}
+        <span class="badge">{{ . }}</span>
+        {{ end }}
+      </div>
+    </header>
 
-  <!-- Bible chapter content or book navigation -->
-  {{ if .Params.chapter }}
-    <!-- Chapter view: show verses -->
-    <div class="bible-content">
-      <!-- Navigation with dropdowns -->
-      {{ partial "michael/bible-nav.html" (dict "page" . "bible" .Params.bible "book" .Params.book "chapter" .Params.chapter "basePath" $basePath) }}
+    <!-- Bible chapter content or book navigation -->
+    {{ if .Params.chapter }}
+      <!-- Chapter view: show verses -->
+      <section>
+        <!-- Navigation with dropdowns -->
+        {{ partial "michael/bible-nav.html" (dict "page" . "bible" .Params.bible "book" .Params.book "chapter" .Params.chapter "basePath" $basePath) }}
 
-      <div class="bible-text">
-        {{ .Content }}
+        <div class="prose">
+          {{ .Content }}
+        </div>
+
+        <!-- Bottom navigation for convenience -->
+        {{ partial "michael/bible-nav.html" (dict "page" . "bible" .Params.bible "book" .Params.book "chapter" .Params.chapter "basePath" $basePath) }}
+      </section>
+
+    {{ else if .Params.book }}
+      <!-- Book view: show chapter list -->
+      {{ partial "michael/bible-nav.html" (dict "page" . "bible" .Params.bible "book" .Params.book "chapter" 0 "basePath" $basePath) }}
+      <div class="prose">
+        {{ .Content | safeHTML }}
       </div>
 
-      <!-- Bottom navigation for convenience -->
-      {{ partial "michael/bible-nav.html" (dict "page" . "bible" .Params.bible "book" .Params.book "chapter" .Params.chapter "basePath" $basePath) }}
-    </div>
-
-  {{ else if .Params.book }}
-    <!-- Book view: show chapter list -->
-    {{ partial "michael/bible-nav.html" (dict "page" . "bible" .Params.bible "book" .Params.book "chapter" 0 "basePath" $basePath) }}
-    {{ partial "prose-content.html" .Content }}
-
-  {{ else }}
-    <!-- Bible overview: show book list -->
-    {{ partial "michael/bible-nav.html" (dict "page" . "bible" .Params.bible "book" "" "chapter" 0 "basePath" $basePath) }}
-    {{ partial "prose-content.html" .Content }}
-  {{ end }}
-
-  <!-- Navigation -->
-  <div class="bible-bottom-nav">
-    {{ if .Params.chapter }}
-      <a href="{{ printf "%s/%s/%s/" $basePath .Params.bible .Params.book | relLangURL }}" class="btn-paper">
-        &larr; {{ i18n "backToBook" | default "Back to Book" }}
-      </a>
-      <a href="{{ printf "%s/compare/?bibles=%s&ref=%s.%d" $basePath .Params.bible .Params.book .Params.chapter | relLangURL }}" class="btn-paper">
-        {{ i18n "compareTranslations" | default "Compare Translations" }}
-      </a>
-    {{ else if .Params.book }}
-      <a href="{{ printf "%s/%s/" $basePath .Params.bible | relLangURL }}" class="btn-paper">
-        &larr; {{ i18n "backToBible" | default "Back to Bible" }}
-      </a>
     {{ else }}
-      <a href="{{ printf "%s/" $basePath | relLangURL }}" class="btn-paper">
-        &larr; {{ i18n "allBibles" | default "All Bibles" }}
-      </a>
-      <a href="{{ printf "%s/compare/?bibles=%s" $basePath .Params.bible | relLangURL }}" class="btn-paper">
-        {{ i18n "compareTranslations" | default "Compare Translations" }}
-      </a>
+      <!-- Bible overview: show book list -->
+      {{ partial "michael/bible-nav.html" (dict "page" . "bible" .Params.bible "book" "" "chapter" 0 "basePath" $basePath) }}
+      <div class="prose">
+        {{ .Content | safeHTML }}
+      </div>
     {{ end }}
-  </div>
-</article>
+
+    <!-- Navigation -->
+    <nav class="actions">
+      {{ if .Params.chapter }}
+        <a href="{{ printf "%s/%s/%s/" $basePath .Params.bible .Params.book | relLangURL }}" class="btn">
+          &larr; {{ i18n "backToBook" | default "Back to Book" }}
+        </a>
+        <a href="{{ printf "%s/compare/?bibles=%s&ref=%s.%d" $basePath .Params.bible .Params.book .Params.chapter | relLangURL }}" class="btn btn--secondary">
+          {{ i18n "compareTranslations" | default "Compare Translations" }}
+        </a>
+      {{ else if .Params.book }}
+        <a href="{{ printf "%s/%s/" $basePath .Params.bible | relLangURL }}" class="btn">
+          &larr; {{ i18n "backToBible" | default "Back to Bible" }}
+        </a>
+      {{ else }}
+        <a href="{{ printf "%s/" $basePath | relLangURL }}" class="btn">
+          &larr; {{ i18n "allBibles" | default "All Bibles" }}
+        </a>
+        <a href="{{ printf "%s/compare/?bibles=%s" $basePath .Params.bible | relLangURL }}" class="btn btn--secondary">
+          {{ i18n "compareTranslations" | default "Compare Translations" }}
+        </a>
+      {{ end }}
+    </nav>
+  </article>
+</main>
 {{ end }}

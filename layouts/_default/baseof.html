@@ -10,65 +10,16 @@
   {{ template "_internal/opengraph.html" . }}
   {{ template "_internal/twitter_cards.html" . }}
 
-  {{/* Fonts */}}
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&display=swap" rel="stylesheet">
-
-  {{/* Custom CSS - No Frameworks */}}
-  {{ $baseCSS := resources.Get "css/base.css" }}
-  {{ $componentsCSS := resources.Get "css/components.css" }}
-  {{ $bibleCSS := resources.Get "css/bible.css" }}
-  {{ $styles := slice $baseCSS $componentsCSS $bibleCSS | resources.Concat "css/main.css" | minify | fingerprint }}
-  <link rel="stylesheet" href="{{ $styles.RelPermalink }}" integrity="{{ $styles.Data.Integrity }}">
-
-  {{/* Inline theme initialization to prevent flash */}}
-  <script>
-    (function() {
-      const saved = localStorage.getItem('theme');
-      if (saved) {
-        document.documentElement.setAttribute('data-theme', saved);
-      } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-        document.documentElement.setAttribute('data-theme', 'dark');
-      }
-    })();
-  </script>
+  {{/* Focus with Justin — Starter Theme */}}
+  {{ $theme := resources.Get "css/theme.css" | minify | fingerprint }}
+  <link rel="stylesheet" href="{{ $theme.RelPermalink }}" integrity="{{ $theme.Data.Integrity }}">
 </head>
-<body class="flex flex-col">
+<body>
   {{ partial "header.html" . }}
 
   {{ block "main" . }}{{ end }}
 
   {{ partial "footer.html" . }}
-
-  {{/* Theme toggle script */}}
-  <script>
-    (function() {
-      const toggle = document.getElementById('theme-toggle');
-      const lightIcon = document.getElementById('theme-icon-light');
-      const darkIcon = document.getElementById('theme-icon-dark');
-
-      function updateIcons() {
-        const theme = document.documentElement.getAttribute('data-theme');
-        const isDark = theme === 'dark' || (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches);
-        lightIcon.style.display = isDark ? 'block' : 'none';
-        darkIcon.style.display = isDark ? 'none' : 'block';
-      }
-
-      updateIcons();
-
-      if (toggle) {
-        toggle.addEventListener('click', function() {
-          const current = document.documentElement.getAttribute('data-theme');
-          const isDark = current === 'dark' || (!current && window.matchMedia('(prefers-color-scheme: dark)').matches);
-          const newTheme = isDark ? 'light' : 'dark';
-          document.documentElement.setAttribute('data-theme', newTheme);
-          localStorage.setItem('theme', newTheme);
-          updateIcons();
-        });
-      }
-    })();
-  </script>
 
   {{/* Page-specific scripts */}}
   {{ block "scripts" . }}{{ end }}

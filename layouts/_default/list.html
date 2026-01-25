@@ -1,26 +1,26 @@
 {{ define "main" }}
-<main class="container">
-  <div class="michael-header">
-    <h1 class="font-hand">{{ .Title }}</h1>
-    {{ with .Description }}<p class="font-hand">{{ . }}</p>{{ end }}
-  </div>
+<main class="container" style="padding: var(--pad-3) var(--pad-2);">
+  <div class="panel">
+    <header class="page-header">
+      <h1>{{ .Title }}</h1>
+      {{ with .Description }}<p>{{ . }}</p>{{ end }}
+    </header>
 
-  <div class="grid-2">
-    {{ range .Pages }}
-    <article class="card">
-      <a href="{{ .RelPermalink }}" class="bible-card">
-        <h2>{{ .Title }}</h2>
-        {{ with .Description }}<p>{{ . }}</p>{{ end }}
+    <section class="grid-2">
+      {{ range .Pages }}
+      <a href="{{ .RelPermalink }}" class="card">
+        <h2 class="card__title">{{ .Title }}</h2>
+        {{ with .Description }}<p class="card__meta">{{ . }}</p>{{ end }}
         {{ with .Params.tags }}
-        <div class="tags">
+        <div class="row mt-1">
           {{ range . }}
-          <span class="tag tag-accent">{{ . }}</span>
+          <span class="badge">{{ . }}</span>
           {{ end }}
         </div>
         {{ end }}
       </a>
-    </article>
-    {{ end }}
+      {{ end }}
+    </section>
   </div>
 </main>
 {{ end }}

@@ -1,14 +1,14 @@
 {{ define "main" }}
-<main class="container">
-  <article>
-    <header class="michael-header">
-      <h1 class="font-hand">{{ .Title }}</h1>
-      {{ with .Description }}<p class="font-hand">{{ . }}</p>{{ end }}
+<main class="container" style="padding: var(--pad-3) var(--pad-2);">
+  <article class="panel">
+    <header class="page-header">
+      <h1>{{ .Title }}</h1>
+      {{ with .Description }}<p>{{ . }}</p>{{ end }}
     </header>
 
-    <div class="prose">
+    <section class="prose">
       {{ .Content }}
-    </div>
+    </section>
   </article>
 </main>
 {{ end }}

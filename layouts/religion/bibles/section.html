@@ -10,102 +10,31 @@
 {{ if $share }}
 <script src="{{ $share.RelPermalink }}" defer></script>
 {{ end }}
-{{ else if not .Params.bible }}
-<!-- Bible list filtering -->
-<script>
-(function() {
-  'use strict';
-
-  function filterBibles(tag) {
-    var cards = document.querySelectorAll('.bible-card');
-    var buttons = document.querySelectorAll('.filter-group button');
-    var noResults = document.getElementById('no-results');
-    var visibleCount = 0;
-
-    // Update button states and aria-pressed
-    buttons.forEach(function(btn) {
-      var isActive = btn.dataset.tag === tag;
-      btn.setAttribute('aria-pressed', isActive ? 'true' : 'false');
-    });
-
-    // Filter cards - hide the parent article element
-    cards.forEach(function(card) {
-      var cardTags = card.dataset.tags.toLowerCase();
-      var article = card.closest('article');
-      if (tag === 'all' || cardTags.includes(tag.toLowerCase())) {
-        article.style.display = '';
-        visibleCount++;
-      } else {
-        article.style.display = 'none';
-      }
-    });
-
-    // Show/hide no results message
-    if (visibleCount === 0) {
-      noResults.classList.remove('hidden');
-    } else {
-      noResults.classList.add('hidden');
-    }
-  }
-
-  // Event delegation for filter buttons
-  var bibleFilters = document.getElementById('bible-filters');
-  if (bibleFilters) {
-    bibleFilters.addEventListener('click', function(e) {
-      var button = e.target.closest('button');
-      if (button && button.dataset.tag) {
-        filterBibles(button.dataset.tag);
-      }
-    });
-  }
-
-  // License badge clicks - navigate to license page
-  var biblesGrid = document.getElementById('bibles-grid');
-  if (biblesGrid) {
-    // Get the base URL from the page's language prefix
-    var basePath = document.documentElement.lang ? '/' + document.documentElement.lang : '';
-    biblesGrid.addEventListener('click', function(e) {
-      var badge = e.target.closest('.tag-license');
-      if (badge && badge.dataset.license) {
-        e.preventDefault();
-        e.stopPropagation();
-        // Convert license name to URL slug (lowercase, replace spaces/punctuation with hyphens)
-        var slug = badge.dataset.license.toLowerCase()
-          .replace(/[^a-z0-9]+/g, '-')
-          .replace(/^-|-$/g, '');
-        window.location.href = basePath + '/licenses/' + slug + '/';
-      }
-    });
-  }
-})();
-</script>
 {{ end }}
 {{ end }}
 
 {{ define "main" }}
 {{ $basePath := .Site.Params.michael.basePath | default "/religion/bibles" }}
-<main class="container">
-  <article>
-    <header class="michael-header">
-      <h1 class="font-hand">
-        {{ .Title }}
-      </h1>
+<main class="container" style="padding: var(--pad-3) var(--pad-2);">
+  <article class="panel">
+    <header class="page-header">
+      <h1>{{ .Title }}</h1>
       {{ with .Params.description }}
-      <p class="font-hand">{{ . }}</p>
+      <p>{{ . }}</p>
       {{ end }}
 
       <!-- Features/tags -->
-      <div class="actions">
+      <div class="row mt-1" style="justify-content: center;">
         {{/* Get language and license from Bible's _index.md (pre-computed) */}}
         {{ $bibleIndex := .Site.GetPage (printf "%s/%s" $basePath .Params.bible) }}
         {{ with $bibleIndex.Params.language }}
-        <span class="tag tag-primary font-hand">{{ . }}</span>
+        <span class="badge">{{ . }}</span>
         {{ end }}
         {{ with $bibleIndex.Params.license }}
-        <a href="{{ printf "/licenses/%s/" (. | urlize) | relLangURL }}" class="tag tag-license font-hand" title="SPDX License: {{ . }}">{{ . }}</a>
+        <a href="{{ printf "/licenses/%s/" (. | urlize) | relLangURL }}" class="badge" title="SPDX License: {{ . }}">{{ . }}</a>
         {{ end }}
         {{ range .Params.features }}
-        <span class="tag tag-accent font-hand">{{ . }}</span>
+        <span class="badge">{{ . }}</span>
         {{ end }}
       </div>
     </header>
@@ -122,7 +51,7 @@
         <!-- Navigation with dropdowns -->
         {{ $cachedNav }}
 
-        <div class="bible-text">
+        <div class="prose">
           {{ .Content }}
         </div>
 
@@ -134,21 +63,25 @@
       <!-- Book view: show chapter list -->
       <section>
         {{ partial "michael/bible-nav.html" (dict "page" . "bible" .Params.bible "book" .Params.book "chapter" 0 "basePath" $basePath) }}
-        {{ partial "prose-content.html" .Content }}
+        <div class="prose">
+          {{ .Content | safeHTML }}
+        </div>
       </section>
 
     {{ else if .Params.bible }}
       <!-- Bible overview: show book list -->
       <section>
         {{ partial "michael/bible-nav.html" (dict "page" . "bible" .Params.bible "book" "" "chapter" 0 "basePath" $basePath) }}
-        {{ partial "prose-content.html" .Content }}
+        <div class="prose">
+          {{ .Content | safeHTML }}
+        </div>
       </section>
     {{ else }}
       <!-- Bibles list page (no specific bible) - show data-driven bible cards -->
 
       <!-- Quick actions -->
       <nav class="actions">
-        <a href="{{ printf "%s/search/" $basePath | relLangURL }}" role="button">
+        <a href="{{ printf "%s/search/" $basePath | relLangURL }}" class="btn btn--primary">
           {{ i18n "searchBible" | default "Search Bible" }}
         </a>
       </nav>
@@ -163,9 +96,10 @@
       {{ end }}
       {{ $uniqueTags := $allTags | uniq | sort }}
 
-      <div class="filter-group" id="bible-filters" role="group" aria-label="{{ i18n "filterByTag" | default "Filter by Tag" }}">
+      <div class="row mt-2" id="bible-filters" role="group" aria-label="{{ i18n "filterByTag" | default "Filter by Tag" }}" style="justify-content: center;">
         <button
           type="button"
+          class="chip is-active"
           data-tag="all"
           aria-pressed="true">
           {{ i18n "all" | default "All" }}
@@ -173,6 +107,7 @@
         {{ range $uniqueTags }}
         <button
           type="button"
+          class="chip"
           data-tag="{{ . | urlize }}"
           aria-pressed="false">
           {{ . }}
@@ -181,68 +116,66 @@
       </div>
 
       <!-- Quick navigation dropdown -->
-      <nav class="bible-nav" aria-label="{{ i18n "bibleNavigation" | default "Bible Navigation" }}">
-        <div class="nav-controls">
-          <label class="sr-only" for="bible-select">{{ i18n "selectBible" | default "Select Bible" }}</label>
-          <select id="bible-select"
-                  onchange="if(this.value) window.location.href=this.value">
-            <option value="" selected disabled>{{ i18n "selectBible" | default "Select Bible" }}</option>
-            {{ range .Site.Data.bibles.bibles }}
-              {{/* Only show bibles that have auxiliary data */}}
-              {{ $hasAuxData := index $.Site.Data.bibles_auxiliary .id }}
-              {{ if $hasAuxData }}
-            <option value="{{ printf "%s/%s/" $basePath .id | relLangURL }}">
-              {{ .title }} ({{ .abbrev }})
-            </option>
-              {{ end }}
+      <div class="row mt-2" style="justify-content: center;">
+        <label class="sr-only" for="bible-select">{{ i18n "selectBible" | default "Select Bible" }}</label>
+        <select id="bible-select"
+                class="select"
+                style="width: auto;"
+                onchange="if(this.value) window.location.href=this.value">
+          <option value="" selected disabled>{{ i18n "selectBible" | default "Select Bible" }}</option>
+          {{ range .Site.Data.bibles.bibles }}
+            {{/* Only show bibles that have auxiliary data */}}
+            {{ $hasAuxData := index $.Site.Data.bibles_auxiliary .id }}
+            {{ if $hasAuxData }}
+          <option value="{{ printf "%s/%s/" $basePath .id | relLangURL }}">
+            {{ .title }} ({{ .abbrev }})
+          </option>
             {{ end }}
-          </select>
-        </div>
-      </nav>
+          {{ end }}
+        </select>
+      </div>
 
-      <section class="grid-2" id="bibles-grid">
+      <section class="grid-2 mt-3" id="bibles-grid">
         {{/* Generate cards from data, only for bibles with auxiliary data */}}
         {{ range .Site.Data.bibles.bibles }}
           {{ $hasAuxData := index $.Site.Data.bibles_auxiliary .id }}
           {{ if $hasAuxData }}
-        <article>
-          <a href="{{ printf "%s/%s/" $basePath .id | relLangURL }}" class="bible-card" data-tags="{{ delimit .tags "," | urlize }}">
-            <h2 class="font-hand">{{ .title }}</h2>
-            {{ with .description }}
-            <p class="font-hand">{{ . }}</p>
+        <a href="{{ printf "%s/%s/" $basePath .id | relLangURL }}" class="card" data-tags="{{ delimit .tags "," | urlize }}">
+          <h2 class="card__title">{{ .title }}</h2>
+          {{ with .description }}
+          <p class="card__meta">{{ . }}</p>
+          {{ end }}
+          <div class="row mt-1">
+            {{ with .language }}
+            <span class="badge">{{ . }}</span>
             {{ end }}
-            <div class="tags">
-              {{ with .language }}
-              <span class="tag tag-primary">{{ . }}</span>
-              {{ end }}
-              {{ with .license }}
-              <span class="tag tag-license" title="License: {{ . }}" data-license="{{ . }}">{{ . }}</span>
-              {{ end }}
-              {{ range .tags }}
-              <span class="tag tag-accent">{{ . }}</span>
-              {{ end }}
-            </div>
-          </a>
-        </article>
+            {{ with .license }}
+            <span class="badge" title="License: {{ . }}" data-license="{{ . }}">{{ . }}</span>
+            {{ end }}
+            {{ range .tags }}
+            <span class="badge">{{ . }}</span>
+            {{ end }}
+          </div>
+        </a>
           {{ end }}
         {{ end }}
       </section>
 
-      <p id="no-results" class="font-hand hidden">{{ i18n "noBiblesMatch" | default "No Bibles match this filter." }}</p>
+      <p id="no-results" class="hidden center mt-2">{{ i18n "noBiblesMatch" | default "No Bibles match this filter." }}</p>
     {{ end }}
 
     <!-- Navigation -->
     <nav class="actions">
       {{ if .Params.chapter }}
-        <a href="{{ printf "%s/%s/%s/" $basePath .Params.bible .Params.book | relLangURL }}" role="button">
+        <a href="{{ printf "%s/%s/%s/" $basePath .Params.bible .Params.book | relLangURL }}" class="btn">
           &larr; {{ i18n "backToBook" | default "Back to Book" }}
         </a>
       {{ else if .Params.book }}
-        <a href="{{ printf "%s/%s/" $basePath .Params.bible | relLangURL }}" role="button">
+        <a href="{{ printf "%s/%s/" $basePath .Params.bible | relLangURL }}" class="btn">
           &larr; {{ i18n "backToBible" | default "Back to Bible" }}
         </a>
       {{ else if .Params.bible }}
-        <a href="{{ printf "%s/" $basePath | relLangURL }}" role="button">
+        <a href="{{ printf "%s/" $basePath | relLangURL }}" class="btn">
           &larr; {{ i18n "allBibles" | default "All Bibles" }}
         </a>
       {{/* No navigation shown for the bibles list page itself */}}

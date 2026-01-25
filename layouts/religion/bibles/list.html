@@ -1,59 +1,58 @@
 {{ define "main" }}
-<main class="container">
-  <header class="michael-header">
-    <h1 class="font-hand">
-      {{ i18n "bibles" | default "Bibles" }}
-    </h1>
-    <p class="font-hand">
-      {{ i18n "biblesDescription" | default "Browse available Bible translations" }}
-    </p>
+<main class="container" style="padding: var(--pad-3) var(--pad-2);">
+  <div class="panel">
+    <header class="page-header">
+      <h1>{{ i18n "bibles" | default "Bibles" }}</h1>
+      <p>{{ i18n "biblesDescription" | default "Browse available Bible translations" }}</p>
 
-    <!-- Quick actions -->
-    <nav class="actions btn-group">
-      {{ $basePath := .Site.Params.michael.basePath | default "/religion/bibles" }}
-      <a href="{{ printf "%s/search/" $basePath | relLangURL }}" role="button">
-        {{ i18n "searchBible" | default "Search Bible" }}
-      </a>
-      <a href="{{ printf "%s/compare/" $basePath | relLangURL }}" role="button" class="secondary">
-        {{ i18n "compareTranslations" | default "Compare Translations" }}
-      </a>
-    </nav>
+      <!-- Quick actions -->
+      <nav class="actions">
+        {{ $basePath := .Site.Params.michael.basePath | default "/religion/bibles" }}
+        <a href="{{ printf "%s/search/" $basePath | relLangURL }}" class="btn btn--primary">
+          {{ i18n "searchBible" | default "Search Bible" }}
+        </a>
+        <a href="{{ printf "%s/compare/" $basePath | relLangURL }}" class="btn btn--secondary">
+          {{ i18n "compareTranslations" | default "Compare Translations" }}
+        </a>
+      </nav>
 
-    <!-- Filter by tag -->
-    {{/* Build unique tags from all bibles */}}
-    {{ $allTags := slice }}
-    {{ range .Site.Data.bibles.bibles }}
-      {{ range .tags }}
-        {{ $allTags = $allTags | append . }}
+      <!-- Filter by tag -->
+      {{/* Build unique tags from all bibles */}}
+      {{ $allTags := slice }}
+      {{ range .Site.Data.bibles.bibles }}
+        {{ range .tags }}
+          {{ $allTags = $allTags | append . }}
+        {{ end }}
       {{ end }}
-    {{ end }}
-    {{ $uniqueTags := $allTags | uniq | sort }}
+      {{ $uniqueTags := $allTags | uniq | sort }}
 
-    <div class="filter-group" id="bible-filters" role="group" aria-label="{{ i18n "filterByTag" | default "Filter by Tag" }}">
-      <button
-        type="button"
-        data-tag="all"
-        aria-pressed="true">
-        {{ i18n "all" | default "All" }}
-      </button>
-      {{ range $uniqueTags }}
-      <button
-        type="button"
-        data-tag="{{ . | urlize }}"
-        aria-pressed="false">
-        {{ . }}
-      </button>
-      {{ end }}
-    </div>
-  </header>
+      <div class="row mt-2" id="bible-filters" role="group" aria-label="{{ i18n "filterByTag" | default "Filter by Tag" }}" style="justify-content: center;">
+        <button
+          type="button"
+          class="chip is-active"
+          data-tag="all"
+          aria-pressed="true">
+          {{ i18n "all" | default "All" }}
+        </button>
+        {{ range $uniqueTags }}
+        <button
+          type="button"
+          class="chip"
+          data-tag="{{ . | urlize }}"
+          aria-pressed="false">
+          {{ . }}
+        </button>
+        {{ end }}
+      </div>
+    </header>
 
-  <!-- Quick navigation -->
-  {{ $basePath := .Site.Params.michael.basePath | default "/religion/bibles" }}
-  <nav class="bible-nav" aria-label="{{ i18n "bibleNavigation" | default "Bible Navigation" }}">
-    <div class="nav-controls">
-      <!-- Bible selector -->
+    <!-- Quick navigation -->
+    {{ $basePath := .Site.Params.michael.basePath | default "/religion/bibles" }}
+    <div class="row mt-2" style="justify-content: center;">
       <label class="sr-only" for="bible-select">{{ i18n "selectBible" | default "Select Bible" }}</label>
       <select id="bible-select"
+              class="select"
+              style="width: auto;"
               onchange="if(this.value) window.location.href=this.value">
         <option value="" selected disabled>{{ i18n "selectBible" | default "Select Bible" }}</option>
         {{ range .Site.Data.bibles.bibles }}
@@ -67,46 +66,44 @@
         {{ end }}
       </select>
     </div>
-  </nav>
 
-  <section class="grid-2" id="bibles-grid">
-    {{/* Generate cards from data, only for bibles with auxiliary data */}}
-    {{ range .Site.Data.bibles.bibles }}
-      {{ $hasAuxData := index $.Site.Data.bibles_auxiliary .id }}
-      {{ if $hasAuxData }}
-    <article>
-      <a href="{{ printf "%s/%s/" $basePath .id | relLangURL }}" class="bible-card" data-tags="{{ delimit .tags "," | urlize }}">
-        <h2 class="font-hand">{{ .title }}</h2>
+    <section class="grid-2 mt-3" id="bibles-grid">
+      {{/* Generate cards from data, only for bibles with auxiliary data */}}
+      {{ range .Site.Data.bibles.bibles }}
+        {{ $hasAuxData := index $.Site.Data.bibles_auxiliary .id }}
+        {{ if $hasAuxData }}
+      <a href="{{ printf "%s/%s/" $basePath .id | relLangURL }}" class="card" data-tags="{{ delimit .tags "," | urlize }}">
+        <h2 class="card__title">{{ .title }}</h2>
         {{ with .description }}
-        <p class="font-hand">{{ . }}</p>
+        <p class="card__meta">{{ . }}</p>
         {{ end }}
-        <div class="tags">
+        <div class="row mt-1">
           {{ with .language }}
-          <span class="tag tag-primary">{{ . }}</span>
+          <span class="badge">{{ . }}</span>
           {{ end }}
           {{ with .license }}
-          <span class="tag tag-license" title="License: {{ . }}" data-license="{{ . }}">{{ . }}</span>
+          <span class="badge" title="License: {{ . }}" data-license="{{ . }}">{{ . }}</span>
           {{ end }}
           {{ range .tags }}
-          <span class="tag tag-accent">{{ . }}</span>
+          <span class="badge">{{ . }}</span>
           {{ end }}
         </div>
       </a>
-    </article>
+        {{ end }}
       {{ end }}
-    {{ end }}
-  </section>
+    </section>
 
-  <p id="no-results" class="font-hand hidden">{{ i18n "noBiblesMatch" | default "No Bibles match this filter." }}</p>
+    <p id="no-results" class="hidden center mt-2">{{ i18n "noBiblesMatch" | default "No Bibles match this filter." }}</p>
 
-  <!-- Back navigation -->
-  <footer class="actions">
-    {{ with .Site.Params.michael.backLink }}
-    <a href="{{ . }}" role="button" class="secondary">
-      &larr; {{ i18n "backToReligion" | default "Back" }}
-    </a>
-    {{ end }}
-  </footer>
+    <!-- Back navigation -->
+    <footer class="actions">
+      {{ with .Site.Params.michael.backLink }}
+      <a href="{{ . }}" class="btn">
+        &larr; {{ i18n "backToReligion" | default "Back" }}
+      </a>
+      {{ end }}
+    </footer>
+  </div>
 </main>
 
 <script>
@@ -114,8 +111,8 @@
   'use strict';
 
   function filterBibles(tag) {
-    var cards = document.querySelectorAll('.bible-card');
-    var buttons = document.querySelectorAll('.filter-group button');
+    var cards = document.querySelectorAll('#bibles-grid .card');
+    var buttons = document.querySelectorAll('#bible-filters button');
     var noResults = document.getElementById('no-results');
     var visibleCount = 0;
 
@@ -123,17 +120,17 @@
     buttons.forEach(function(btn) {
       var isActive = btn.dataset.tag === tag;
       btn.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+      btn.classList.toggle('is-active', isActive);
     });
 
-    // Filter cards - hide the parent article element
+    // Filter cards
     cards.forEach(function(card) {
       var cardTags = card.dataset.tags.toLowerCase();
-      var article = card.closest('article');
       if (tag === 'all' || cardTags.includes(tag.toLowerCase())) {
-        article.style.display = '';
+        card.style.display = '';
         visibleCount++;
       } else {
-        article.style.display = 'none';
+        card.style.display = 'none';
       }
     });
 
@@ -162,19 +159,8 @@
     // Get the base URL from the page's language prefix
     var basePath = document.documentElement.lang ? '/' + document.documentElement.lang : '';
     biblesGrid.addEventListener('click', function(e) {
-      // Handle tag-accent clicks - filter by tag
-      var tagBadge = e.target.closest('.tag-accent');
-      if (tagBadge) {
-        e.preventDefault();
-        e.stopPropagation();
-        // Use the tag text content, convert to slug format for filter matching
-        var tagText = tagBadge.textContent.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-        filterBibles(tagText);
-        return;
-      }
-
       // Handle license badge clicks - navigate to license page
-      var badge = e.target.closest('.tag-license');
+      var badge = e.target.closest('[data-license]');
       if (badge && badge.dataset.license) {
         e.preventDefault();
         e.stopPropagation();

@@ -7,80 +7,76 @@
 
 {{ define "main" }}
 {{ $basePath := .Site.Params.michael.basePath | default "/religion/bibles" }}
-<div class="bible-search-container">
-  <header class="bible-search-header">
-    <h1 class="bible-search-title">
-      {{ .Title }}
-    </h1>
-    <p class="bible-search-description">
-      {{ .Description }}
-    </p>
-  </header>
+<main class="container" style="padding: var(--pad-3) var(--pad-2);">
+  <div class="panel">
+    <header class="page-header">
+      <h1>{{ .Title }}</h1>
+      <p>{{ .Description }}</p>
+    </header>
 
-  <!-- Search Form -->
-  <div class="bible-search-form-card card-paper">
-    <form id="search-form" class="bible-search-form">
-      <div class="bible-search-inputs">
-        <div class="bible-search-query-group">
-          <label for="search-query" class="bible-search-label">
+    <!-- Search Form -->
+    <form id="search-form" class="panel--inner" style="padding: var(--pad-2);">
+      <div class="row" style="margin-bottom: var(--pad-1);">
+        <div class="field" style="flex: 2;">
+          <label for="search-query" class="label">
             {{ i18n "searchQuery" | default "Search for" }}:
           </label>
           <input
             type="text"
             id="search-query"
             name="q"
-            class="input-paper"
+            class="input"
             placeholder="{{ i18n "searchPlaceholder" | default "word, \"exact phrase\", or H1234/G5678" }}"
             autocomplete="off"
           >
         </div>
-        <div class="bible-search-bible-group">
-          <label for="bible-select" class="bible-search-label">
+        <div class="field" style="flex: 1;">
+          <label for="bible-select" class="label">
             {{ i18n "selectBible" | default "Translation" }}:
           </label>
-          <select id="bible-select" name="bible" class="input-paper">
+          <select id="bible-select" name="bible" class="select">
             {{ range .Site.Data.bibles.bibles }}
             <option value="{{ .id }}">{{ .abbrev }} - {{ .title }}</option>
             {{ end }}
           </select>
         </div>
       </div>
-      <div class="bible-search-options">
-        <button type="submit" class="btn-paper-dark">
+      <div class="row" style="align-items: center;">
+        <button type="submit" class="btn btn--primary">
           {{ i18n "search" | default "Search" }}
         </button>
-        <label class="bible-search-checkbox-label">
-          <input type="checkbox" id="case-sensitive" class="bible-search-checkbox">
+        <label class="chip" style="cursor: pointer;">
+          <input type="checkbox" id="case-sensitive" style="margin-right: 6px;">
           {{ i18n "caseSensitive" | default "Case sensitive" }}
         </label>
-        <label class="bible-search-checkbox-label">
-          <input type="checkbox" id="whole-word" class="bible-search-checkbox">
+        <label class="chip" style="cursor: pointer;">
+          <input type="checkbox" id="whole-word" style="margin-right: 6px;">
           {{ i18n "wholeWord" | default "Whole word" }}
         </label>
       </div>
     </form>
-  </div>
 
-  <!-- Search Status -->
-  <div id="search-status" class="bible-search-status hidden">
-    {{ i18n "searching" | default "Searching..." }}
-  </div>
-
-  <!-- Search Results -->
-  <div id="search-results" class="bible-search-results">
-    <div class="bible-search-prompt">
-      <p class="bible-search-prompt-text">{{ i18n "searchPrompt" | default "Enter a search term to find verses across the Bible." }}</p>
-      <p class="bible-search-prompt-hint">{{ i18n "searchTypesHint" | default "Try: word, \"exact phrase\", or Strong's numbers (H430, G2316)" }}</p>
+    <!-- Search Status -->
+    <div id="search-status" class="notice mt-2 hidden">
+      {{ i18n "searching" | default "Searching..." }}
     </div>
-  </div>
 
-  <!-- Back Navigation -->
-  <div class="bible-back-nav">
-    <a href="{{ printf "%s/" $basePath | relLangURL }}" class="btn-paper">
-      &larr; {{ i18n "allBibles" | default "All Bibles" }}
-    </a>
+    <!-- Search Results -->
+    <div id="search-results" class="mt-3">
+      <div class="center muted">
+        <p>{{ i18n "searchPrompt" | default "Enter a search term to find verses across the Bible." }}</p>
+        <p style="font-size: 0.85rem;">{{ i18n "searchTypesHint" | default "Try: word, \"exact phrase\", or Strong's numbers (H430, G2316)" }}</p>
+      </div>
+    </div>
+
+    <!-- Back Navigation -->
+    <nav class="actions">
+      <a href="{{ printf "%s/" $basePath | relLangURL }}" class="btn">
+        &larr; {{ i18n "allBibles" | default "All Bibles" }}
+      </a>
+    </nav>
   </div>
-</div>
+</main>
 
 <!-- Bible Index Data for JavaScript - generated at build time -->
 {{- $bibleIndex := dict -}}

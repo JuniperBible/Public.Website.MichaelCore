@@ -323,7 +323,7 @@
     }
 
     let html = `
-      <p class="font-hand" style="color: var(--michael-gray); margin-bottom: 1rem;">
+      <p style="color: var(--michael-text-muted); margin-bottom: 1rem;">
         Found ${results.length} result${results.length !== 1 ? 's' : ''}${searchDesc} in ${bibleData.title}
         ${results.length > 100 ? ' (showing first 100)' : ''}
       </p>
@@ -340,7 +340,7 @@
               <a href="${url}">${result.book} ${result.chapter}:${result.verse}</a>
             </h3>
           </header>
-          <div class="verse-text font-hand">
+          <div class="verse-text">
             ${highlightedText}
           </div>
         </article>
@@ -354,7 +354,7 @@
   function showMessage(msg) {
     statusEl.classList.add('hidden');
     resultsEl.innerHTML = `
-      <p class="font-hand" style="text-align: center; color: var(--michael-gray); padding: 3rem 0;">
+      <p style="text-align: center; color: var(--michael-text-muted); padding: 3rem 0;">
         ${msg}
       </p>
     `;

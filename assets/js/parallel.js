@@ -33,7 +33,7 @@
   let sssChapter = 0;
   let sssVerse = 0; // 0 means all verses
   let sssHighlightEnabled = true;
-  let highlightColor = '#6b4c6b';
+  let highlightColor = '#666';
 
   // Normal mode highlighting state
   let normalHighlightEnabled = false;
@@ -414,7 +414,7 @@
         btn.className = 'verse-btn';
         btn.textContent = verse.number;
         btn.dataset.verse = verse.number;
-        btn.style.cssText = 'width: 1.75rem; height: 1.75rem; font-family: var(--michael-font-hand); font-size: 0.875rem; border-radius: var(--pico-border-radius); cursor: pointer;';
+        btn.style.cssText = 'width: 1.75rem; height: 1.75rem; font-size: 0.875rem; border-radius: 3px; cursor: pointer;';
         addTapListener(btn, () => handleVerseButtonClick(verse.number));
         verseButtons.appendChild(btn);
       });
@@ -596,7 +596,7 @@
     if (selectedTranslations.length === 0) {
       parallelContent.innerHTML = `
         <article>
-          <p style="text-align: center; color: var(--michael-gray); font-family: var(--michael-font-hand); padding: 2rem 0;">
+          <p style="text-align: center; color: var(--michael-text-muted);  padding: 2rem 0;">
             Select at least one translation to view.
           </p>
         </article>
@@ -609,7 +609,7 @@
 
     // Show loading state
     parallelContent.innerHTML = `
-      <article aria-busy="true" style="text-align: center; font-family: var(--michael-font-hand); padding: 2rem 0;">
+      <article aria-busy="true" style="text-align: center;  padding: 2rem 0;">
         Loading...
       </article>
     `;
@@ -636,7 +636,7 @@
     const firstVerses = chaptersData.find(verses => verses && verses.length > 0);
 
     if (!firstVerses) {
-      return '<article><p style="text-align: center; color: var(--michael-gray); font-family: var(--michael-font-hand); padding: 2rem 0;">No verses found for this chapter.</p></article>';
+      return '<article><p style="text-align: center; color: var(--michael-text-muted);  padding: 2rem 0;">No verses found for this chapter.</p></article>';
     }
 
     // Get book name (books is now an array)
@@ -646,8 +646,8 @@
     // Compact header showing current reference
     const verseRef = currentVerse > 0 ? `:${currentVerse}` : '';
     html += `<header style="text-align: center; margin-bottom: 1.5rem;">
-      <h2 style="font-family: var(--michael-font-hand); margin-bottom: 0.25rem;">${bookName} ${currentChapter}${verseRef}</h2>
-      <p style="color: var(--michael-gray); font-family: var(--michael-font-hand); font-size: 0.875rem; margin: 0;">${selectedTranslations.map(id => {
+      <h2 style=" margin-bottom: 0.25rem;">${bookName} ${currentChapter}${verseRef}</h2>
+      <p style="color: var(--michael-text-muted);  font-size: 0.875rem; margin: 0;">${selectedTranslations.map(id => {
         const bible = bibleData.bibles.find(b => b.id === id);
         return bible?.abbrev || id;
       }).join(', ')}</p>
@@ -664,7 +664,7 @@
 
       html += `<article class="parallel-verse" data-verse="${verseNum}">
         <header>
-          <h3 style="font-family: var(--michael-font-hand); font-weight: bold; color: var(--michael-accent); margin-bottom: 0.5rem; font-size: 1rem;">${bookName} ${currentChapter}:${verseNum}</h3>
+          <h3 style=" font-weight: bold; color: var(--michael-accent); margin-bottom: 0.5rem; font-size: 1rem;">${bookName} ${currentChapter}:${verseNum}</h3>
         </header>
         <div>`;
 
@@ -680,7 +680,7 @@
         const verses = chaptersData[idx] || [];
         const v = verses.find(v => v.number === verseNum);
 
-        let text = v?.text || '<em style="color: var(--michael-gray);">Verse not available</em>';
+        let text = v?.text || '<em style="color: var(--michael-text-muted);">Verse not available</em>';
 
         // Apply highlighting if enabled
         if (normalHighlightEnabled && v?.text) {
@@ -689,7 +689,7 @@
         }
 
         html += `<div class="translation-label" style="margin-top: 0.75rem;">
-          <strong style="color: var(--michael-accent); font-family: var(--michael-font-hand); font-size: 0.75rem;">${bible?.abbrev || translationId}</strong>
+          <strong style="color: var(--michael-accent);  font-size: 0.75rem;">${bible?.abbrev || translationId}</strong>
           <p style="margin: 0.25rem 0 0 0; line-height: 1.8;">${text}</p>
         </div>`;
       });
@@ -965,10 +965,10 @@
 
     // Show loading
     if (sssLeftPane) {
-      sssLeftPane.innerHTML = '<article aria-busy="true" style="text-align: center; font-family: var(--michael-font-hand); padding: 2rem 0;">Loading...</article>';
+      sssLeftPane.innerHTML = '<article aria-busy="true" style="text-align: center;  padding: 2rem 0;">Loading...</article>';
     }
     if (sssRightPane) {
-      sssRightPane.innerHTML = '<article aria-busy="true" style="text-align: center; font-family: var(--michael-font-hand); padding: 2rem 0;">Loading...</article>';
+      sssRightPane.innerHTML = '<article aria-busy="true" style="text-align: center;  padding: 2rem 0;">Loading...</article>';
     }
 
     // Fetch both chapters
@@ -1019,7 +1019,7 @@
         btn.className = 'sss-verse-btn';
         btn.textContent = verse.number;
         btn.dataset.verse = verse.number;
-        btn.style.cssText = 'width: 1.75rem; height: 1.75rem; font-family: var(--michael-font-hand); font-size: 0.875rem; border-radius: var(--pico-border-radius); cursor: pointer;';
+        btn.style.cssText = 'width: 1.75rem; height: 1.75rem; font-size: 0.875rem; border-radius: 3px; cursor: pointer;';
         addTapListener(btn, () => handleSSSVerseButtonClick(verse.number));
         sssVerseButtons.appendChild(btn);
       });
@@ -1067,13 +1067,13 @@
    */
   function buildSSSPaneHTML(verses, bible, bookName, compareVerses, compareBible) {
     if (!verses || verses.length === 0) {
-      return '<article><p style="text-align: center; color: var(--michael-gray); font-family: var(--michael-font-hand); padding: 2rem 0;">No verses found</p></article>';
+      return '<article><p style="text-align: center; color: var(--michael-text-muted);  padding: 2rem 0;">No verses found</p></article>';
     }
 
     // Check for versification mismatch
     const versificationWarning = (compareBible && bible?.versification && compareBible?.versification &&
       bible.versification !== compareBible.versification)
-      ? `<small style="color: var(--michael-gray); display: block; font-size: 0.7rem;">${bible.versification} versification</small>`
+      ? `<small style="color: var(--michael-text-muted); display: block; font-size: 0.7rem;">${bible.versification} versification</small>`
       : '';
 
     let html = `<header class="translation-label" style="text-align: center; padding-bottom: 0.5rem;">

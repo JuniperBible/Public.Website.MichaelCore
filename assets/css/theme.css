@@ -1,0 +1,495 @@
+/* ==========================================================================
+   Focus with Justin — Starter Theme
+   Drop-in CSS: tokens + shared components
+   Goal: unify header/footer, panels, buttons, chips, badges, cards, forms,
+         chapter grid, and reading controls across all pages.
+   ========================================================================== */
+
+/* -----------------------------
+   0) Design Tokens
+------------------------------ */
+:root {
+  /* Brand */
+  --brand-500: #7a00b0;
+  --brand-600: #64008f;
+  --brand-100: #f2e6fa;
+
+  /* Semantic */
+  --success-500: #36b000;
+
+  /* Neutrals / parchment */
+  --chrome-900: #3f3f3f;
+  --chrome-800: #4a4a4a;
+  --bg-0: #b6a58f;        /* outer background */
+  --surface-0: #e7ddc4;   /* main panel */
+  --surface-1: #f1ead6;   /* inner cards */
+  --surface-2: #ffffff;   /* inputs */
+
+  /* Text */
+  --text-900: #1d1b1f;
+  --text-700: #504a53;
+  --text-500: #6b6570;
+  --link: var(--brand-500);
+
+  /* Borders/shadows */
+  --border: rgba(0, 0, 0, 0.18);
+  --border-strong: rgba(0, 0, 0, 0.35);
+  --shadow-1: 0 1px 0 rgba(0,0,0,.18), 0 3px 10px rgba(0,0,0,.10);
+  --shadow-0: 0 1px 0 rgba(0,0,0,.14);
+
+  /* Shape + spacing */
+  --radius-1: 8px;
+  --radius-2: 14px;
+  --pad-1: 10px;
+  --pad-2: 16px;
+  --pad-3: 24px;
+
+  /* Focus ring */
+  --focus-ring: 0 0 0 3px rgba(122, 0, 176, 0.35);
+}
+
+/* -----------------------------
+   1) Base / Layout Helpers
+------------------------------ */
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  color: var(--text-900);
+  background: var(--bg-0);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  line-height: 1.5;
+}
+
+img { max-width: 100%; height: auto; }
+
+/* Give content a consistent feel */
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 var(--pad-2);
+}
+
+/* Main page "panel" (the centered parchment block) */
+.panel {
+  background: var(--surface-0);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-2);
+  box-shadow: var(--shadow-1);
+  padding: var(--pad-3);
+}
+
+.panel--tight { padding: var(--pad-2); }
+.panel--inner {
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-2);
+  box-shadow: var(--shadow-0);
+}
+
+/* Optional "sketch" treatment: use on big cards/panels only if desired */
+.sketch {
+  border-radius: var(--radius-2);
+  border: 2px solid rgba(0,0,0,.55);
+  box-shadow: 3px 3px 0 rgba(0,0,0,.35);
+}
+
+/* -----------------------------
+   2) Links (consistent everywhere)
+------------------------------ */
+a {
+  color: var(--link);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+}
+
+a:hover {
+  color: var(--brand-600);
+  text-decoration-thickness: 2px;
+}
+
+a:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+  border-radius: 6px;
+}
+
+/* -----------------------------
+   3) Header/Footer "Chrome"
+   Apply to your existing header/footer wrappers
+------------------------------ */
+.chrome {
+  background: var(--chrome-900);
+  color: rgba(255,255,255,.92);
+}
+
+.chrome a {
+  color: rgba(255,255,255,.92);
+  text-decoration: none;
+}
+
+.chrome a:hover { color: #fff; }
+
+.nav {
+  display: flex;
+  gap: 18px;
+  align-items: center;
+}
+
+.nav a {
+  display: inline-block;
+  padding: 10px 6px;
+  border-bottom: 2px solid transparent;
+}
+
+.nav a.is-active,
+.nav a[aria-current="page"] {
+  border-bottom-color: var(--brand-500);
+}
+
+/* -----------------------------
+   4) Buttons (ONLY TWO TIERS)
+   .btn, .btn--primary, .btn--secondary
+------------------------------ */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  padding: 10px 14px;
+  border-radius: var(--radius-1);
+  border: 1px solid var(--border-strong);
+  background: var(--surface-2);
+  color: var(--text-900);
+
+  box-shadow: var(--shadow-0);
+  cursor: pointer;
+  user-select: none;
+  text-decoration: none;
+  font: inherit;
+  line-height: 1;
+}
+
+.btn:hover { transform: translateY(-1px); }
+.btn:active { transform: translateY(0); box-shadow: none; }
+
+.btn:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+.btn[disabled],
+.btn.is-disabled {
+  opacity: .55;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Primary */
+.btn--primary {
+  background: var(--brand-500);
+  border-color: rgba(0,0,0,.2);
+  color: #fff;
+}
+
+.btn--primary:hover { background: var(--brand-600); }
+
+/* Secondary */
+.btn--secondary {
+  background: var(--surface-1);
+  border-color: var(--brand-500);
+  color: var(--brand-500);
+}
+
+.btn--secondary:hover {
+  background: var(--brand-100);
+  border-color: var(--brand-600);
+  color: var(--brand-600);
+}
+
+/* Compact button (arrows, small controls) */
+.btn--sm { padding: 8px 10px; border-radius: 7px; }
+
+/* -----------------------------
+   5) Chips vs Badges
+   Chips = controls (filters/tags)
+   Badges = metadata (labels)
+------------------------------ */
+
+/* Chips (clickable) */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+
+  padding: 7px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--border-strong);
+  background: var(--surface-2);
+  color: var(--text-900);
+  font-size: 0.92rem;
+  line-height: 1;
+  text-decoration: none;
+  cursor: pointer;
+  user-select: none;
+}
+
+.chip:hover {
+  background: var(--surface-1);
+  border-color: rgba(0,0,0,.55);
+}
+
+.chip:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+/* Chip "active/selected" */
+.chip.is-active,
+.chip[aria-pressed="true"],
+.chip[aria-selected="true"] {
+  background: var(--brand-500);
+  border-color: rgba(0,0,0,.25);
+  color: #fff;
+}
+
+/* Softer active (optional): use instead of purple fill if you prefer */
+.chip.is-active--soft {
+  background: var(--brand-100);
+  border-color: var(--brand-500);
+  color: var(--brand-600);
+}
+
+/* Badge (metadata) */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+
+  padding: 4px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,.55);
+  color: var(--text-700);
+  font-size: 0.82rem;
+  line-height: 1;
+}
+
+/* Semantic badge variants */
+.badge--success {
+  border-color: rgba(54,176,0,.45);
+  color: #1d3a0a;
+  background: rgba(54,176,0,.12);
+}
+
+/* -----------------------------
+   6) Cards (Bible translations, etc.)
+------------------------------ */
+.card {
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-2);
+  box-shadow: var(--shadow-1);
+  padding: var(--pad-2);
+}
+
+.card--sketch { /* if you want the hand-drawn look */
+  border: 2px solid rgba(0,0,0,.55);
+  box-shadow: 3px 3px 0 rgba(0,0,0,.35);
+}
+
+.card__title {
+  margin: 0 0 8px 0;
+  font-size: 1.15rem;
+  color: var(--text-900);
+}
+
+.card__meta {
+  color: var(--text-500);
+  font-size: 0.92rem;
+}
+
+/* -----------------------------
+   7) Forms (Contact page)
+------------------------------ */
+.field { display: grid; gap: 6px; }
+
+.label {
+  font-size: 0.92rem;
+  color: var(--text-700);
+}
+
+.input, .select, .textarea {
+  width: 100%;
+  padding: 10px 12px;
+
+  border-radius: var(--radius-1);
+  border: 1px solid var(--border-strong);
+  background: var(--surface-2);
+  color: var(--text-900);
+
+  box-shadow: inset 0 1px 0 rgba(0,0,0,.08);
+  font: inherit;
+}
+
+.textarea { min-height: 120px; resize: vertical; }
+
+.input:focus, .select:focus, .textarea:focus {
+  outline: none;
+  border-color: var(--brand-500);
+  box-shadow: var(--focus-ring);
+}
+
+/* Simple notice blocks */
+.notice {
+  border-radius: var(--radius-1);
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,.55);
+  padding: 10px 12px;
+  color: var(--text-700);
+}
+
+.notice--success {
+  border-color: rgba(54,176,0,.45);
+  background: rgba(54,176,0,.12);
+  color: #1d3a0a;
+}
+
+/* -----------------------------
+   8) Bible: chapter grid tiles (the numbered squares)
+------------------------------ */
+.tile {
+  width: 40px;
+  height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 10px;
+  border: 1px solid var(--border-strong);
+  background: var(--surface-2);
+  color: var(--text-900);
+
+  text-decoration: none;
+  box-shadow: var(--shadow-0);
+}
+
+.tile:hover {
+  background: var(--surface-1);
+  border-color: rgba(0,0,0,.55);
+}
+
+.tile:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+.tile.is-active,
+.tile[aria-current="page"] {
+  background: var(--brand-100);
+  border-color: var(--brand-500);
+  color: var(--brand-600);
+}
+
+/* -----------------------------
+   9) Reading view: verse numbers + control bars
+------------------------------ */
+.reader-bar {
+  background: rgba(0,0,0,.08);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-1);
+  padding: 10px;
+}
+
+.verse-num {
+  color: var(--brand-500);
+  font-weight: 700;
+  margin-right: 6px;
+}
+
+/* Make long reading text comfortable */
+.prose {
+  max-width: 72ch;
+  margin: 0 auto;
+  color: var(--text-900);
+  line-height: 1.65;
+}
+
+/* -----------------------------
+   10) Small utility classes
+------------------------------ */
+.row { display: flex; gap: 10px; flex-wrap: wrap; }
+.center { display: grid; place-items: center; }
+.muted { color: var(--text-500); }
+.mt-1 { margin-top: 8px; }
+.mt-2 { margin-top: 16px; }
+.mt-3 { margin-top: 24px; }
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+.hidden { display: none !important; }
+
+/* -----------------------------
+   11) Grid layouts
+------------------------------ */
+.grid-2 {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--pad-2);
+}
+
+/* -----------------------------
+   12) Page sections
+------------------------------ */
+.page-header {
+  text-align: center;
+  margin-bottom: var(--pad-3);
+}
+
+.page-header h1 {
+  margin: 0 0 8px 0;
+}
+
+.page-header p {
+  color: var(--text-500);
+  margin: 0;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--pad-1);
+  margin-top: var(--pad-2);
+}
+
+/* -----------------------------
+   13) Print styles
+------------------------------ */
+@media print {
+  .chrome, .reader-bar, .actions, .btn {
+    display: none !important;
+  }
+
+  body {
+    background: white;
+    color: black;
+  }
+
+  .panel {
+    box-shadow: none;
+    border: none;
+  }
+}
