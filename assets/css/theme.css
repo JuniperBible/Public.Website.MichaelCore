@@ -436,6 +436,15 @@ a:focus-visible {
   line-height: 1.65;
 }
 
+/* Add spacing between reader-bar and prose content */
+.reader-bar + .prose {
+  margin-top: 16px;
+}
+
+.prose + .reader-bar {
+  margin-top: 16px;
+}
+
 /* -----------------------------
    10) Small utility classes
 ------------------------------ */
