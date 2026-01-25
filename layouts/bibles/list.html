@@ -1,0 +1,39 @@
+{{ define "main" }}
+{{ $basePath := .Site.Params.michael.basePath | default "/bibles" }}
+<main class="container" style="padding: var(--pad-3) var(--pad-2);">
+  <div class="panel">
+    <header class="page-header">
+      <h1>{{ .Title }}</h1>
+      {{ with .Description }}<p>{{ . }}</p>{{ end }}
+    </header>
+
+    <!-- Quick links -->
+    <nav class="actions" style="margin-bottom: var(--pad-2);">
+      <a href="{{ printf "%s/compare/" $basePath | relLangURL }}" class="btn btn--secondary">
+        {{ i18n "compareTranslations" | default "Compare Translations" }}
+      </a>
+      <a href="{{ printf "%s/search/" $basePath | relLangURL }}" class="btn btn--secondary">
+        {{ i18n "searchBible" | default "Search Bible" }}
+      </a>
+    </nav>
+
+    <!-- Bible translation cards -->
+    <section class="grid-2">
+      {{ range .Site.Data.bibles.bibles }}
+      <a href="{{ printf "%s/%s/" $basePath .id | relLangURL }}" class="card">
+        <h2 class="card__title">{{ .title }}</h2>
+        <p class="card__meta">{{ .abbrev }}</p>
+        <div class="row mt-1">
+          {{ with .language }}
+          <span class="badge">{{ . }}</span>
+          {{ end }}
+          {{ with .license }}
+          <span class="badge">{{ . }}</span>
+          {{ end }}
+        </div>
+      </a>
+      {{ end }}
+    </section>
+  </div>
+</main>
+{{ end }}
