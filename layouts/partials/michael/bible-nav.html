@@ -81,8 +81,7 @@
   <label for="bible-select" class="sr-only">{{ i18n "selectBibleTranslation" | default "Select Bible Translation" }}</label>
   <select id="bible-select"
           class="select bible-nav__select"
-          aria-label="{{ i18n "selectBibleTranslation" | default "Select Bible Translation" }}"
-          onchange="if(this.value) window.location.href=this.value">
+          aria-label="{{ i18n "selectBibleTranslation" | default "Select Bible Translation" }}">
     {{ range $page.Site.Data.bibles.bibles }}
       {{/* Only show bibles that have auxiliary data */}}
       {{ $hasAuxData := index $page.Site.Data.bibles_auxiliary .id }}
@@ -100,8 +99,7 @@
   <label for="book-select" class="sr-only">{{ i18n "selectBook" | default "Select Book" }}</label>
   <select id="book-select"
           class="select bible-nav__select"
-          aria-label="{{ i18n "selectBook" | default "Select Book" }}"
-          onchange="if(this.value) window.location.href=this.value">
+          aria-label="{{ i18n "selectBook" | default "Select Book" }}">
     {{/* Show placeholder when no book selected */}}
     {{ if not $book }}
     <option value="" selected disabled>{{ i18n "selectBook" | default "Select Book" }}</option>
@@ -130,8 +128,7 @@
   <label for="chapter-select" class="sr-only">{{ i18n "selectChapter" | default "Select Chapter" }}</label>
   <select id="chapter-select"
           class="select bible-nav__select"
-          aria-label="{{ i18n "selectChapter" | default "Select Chapter" }}"
-          onchange="if(this.value) window.location.href=this.value">
+          aria-label="{{ i18n "selectChapter" | default "Select Chapter" }}">
     {{ range $i := seq $chapterCount }}
     <option value="{{ printf "%s/%s/%s/%d/" $basePath $bible $book $i | relLangURL }}" {{ if eq $i $chapter }}selected{{ end }}>
       {{ i18n "chapter" | default "Ch" }} {{ $i }}

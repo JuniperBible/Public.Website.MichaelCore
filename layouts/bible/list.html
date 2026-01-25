@@ -103,18 +103,20 @@ These are loaded with defer to avoid blocking page rendering.
     */}}
     <section class="grid-2">
       {{ range .Site.Data.bibles.bibles }}
-      <a href="{{ printf "%s/%s/" $basePath .id | relLangURL }}" class="card">
-        <h2 class="card__title">{{ .title }}</h2>
+      <div class="card">
+        <h2 class="card__title">
+          <a href="{{ printf "%s/%s/" $basePath .id | relLangURL }}">{{ .title }}</a>
+        </h2>
         <p class="card__meta">{{ .abbrev }}</p>
         <div class="row mt-1">
           {{ with .language }}
           <span class="badge">{{ . }}</span>
           {{ end }}
           {{ with .license }}
-          <span class="badge">{{ . }}</span>
+          <a href="{{ printf "/license/%s/" (. | lower) | relLangURL }}" class="badge">{{ . }}</a>
           {{ end }}
         </div>
-      </a>
+      </div>
       {{ end }}
     </section>
 
