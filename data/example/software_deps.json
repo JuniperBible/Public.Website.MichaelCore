@@ -14,8 +14,17 @@
       "version": "1.0.0",
       "license": "MIT",
       "supplier": "ORGANIZATION: Focus with Justin",
-      "downloadLocation": "https://github.com/FocuswithJustin/juniper",
+      "downloadLocation": "https://github.com/FocuswithJustin/JuniperBible",
       "description": "Bible module processing and data extraction tool",
+      "purpose": "APPLICATION"
+    },
+    {
+      "name": "Magellan",
+      "version": "1.0.0",
+      "license": "MIT",
+      "supplier": "ORGANIZATION: Focus with Justin",
+      "downloadLocation": "https://github.com/FocuswithJustin/magellan",
+      "description": "E2E testing framework with chromedp browser automation",
       "purpose": "APPLICATION"
     }
   ],
@@ -46,6 +55,15 @@
       "supplier": "ORGANIZATION: CrossWire Bible Society",
       "downloadLocation": "https://crosswire.org/sword/modules/",
       "description": "Bible modules from the SWORD Project",
+      "purpose": "DATA"
+    },
+    {
+      "name": "FocuswithJustin Data",
+      "version": "1.0.0",
+      "license": "Proprietary",
+      "supplier": "PERSON: Justin",
+      "downloadLocation": "NOASSERTION",
+      "description": "Book mappings and Bible data structures",
       "purpose": "DATA"
     }
   ]
