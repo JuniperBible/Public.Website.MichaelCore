@@ -46,20 +46,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Standalone development mode with example data
 
 ### Changed
+- **JavaScript Refactoring**
+  - `parallel.js` refactored to use shared modules (`dom-utils.js`, `bible-api.js`, `verse-grid.js`, `chapter-dropdown.js`)
+  - `bible-search.js` refactored to use `bible-api.js` for chapter fetching
+  - `share.js` refactored to use `ShareMenu` component with accessibility improvements
+  - All inline styles removed from JavaScript files (replaced with CSS classes)
+- **Template Improvements**
+  - `compare.html` refactored to use partials (color-picker, verse-grid, sss-toggle)
+  - All templates now have documentation headers explaining purpose and dependencies
+  - All inline styles removed from HTML templates
+  - Added section comments to complex template blocks
+- **Accessibility Enhancements**
+  - `strongs.js` updated with ARIA tooltip pattern (role="tooltip", aria-describedby, aria-expanded)
+  - Strong's tooltips now support keyboard activation and Escape key to close
+  - ShareMenu component includes full keyboard navigation and focus management
 - Updated `hugo.toml` to support both module and standalone modes
 - Updated `shell.nix` with streamlined dependencies and make commands
 - Homepage layout now works with both `/bibles` and `/religion/bibles` paths
 
 ### Security
-- CSP audit completed (21 innerHTML usages documented)
-- HIGH risk issue identified in `highlightMatches()` (bible-search.js)
+- **CSP Implementation**
+  - CSP meta tag added to `baseof.html`
+  - CSP audit completed (21 innerHTML usages documented)
+  - XSS vulnerability patched in `bible-search.js` `highlightMatches()` function
+  - User search terms now properly escaped to prevent code injection
 
 ### Pending (Code Cleanup Charter)
-- Refactor parallel.js to use new modules
-- Refactor bible-search.js to use bible-api.js
 - Bundle Strong's definitions locally
 - Add service worker for offline support
-- Complete WCAG 2.1 AA compliance
+- Enhance print stylesheet
+- Complete WCAG 2.1 AA compliance testing
 
 ## [1.0.0] - 2026-01-24
 

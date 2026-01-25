@@ -59,9 +59,9 @@ SPRINT 1: FOUNDATION (DRY + SECURITY CORE)
     - Source: parallel.js (color picker logic)
 [x] S1-012: Extract showMessage() utility
 [x] S1-013: Add focus management helpers
-[ ] S1-014: Update parallel.js to use dom-utils.js
-[ ] S1-015: Update share.js to use dom-utils.js
-[ ] S1-016: Update bible-search.js to use dom-utils.js
+[x] S1-014: Update parallel.js to use dom-utils.js
+[x] S1-015: Update share.js to use dom-utils.js
+[x] S1-016: Update bible-search.js to use dom-utils.js
 
 ## 1.3 Extract bible-api.js
 
@@ -72,9 +72,9 @@ SPRINT 1: FOUNDATION (DRY + SECURITY CORE)
 [x] S1-022: Consolidate chapter caching logic
 [x] S1-023: Remove duplicate fetchChapter from bible-search.js
     - Source: bible-search.js lines 69-140
-[ ] S1-024: Update parallel.js to use bible-api.js
-[ ] S1-025: Update bible-search.js to use bible-api.js
-[ ] S1-026: Verify no behavior changes (run regression checklist)
+[x] S1-024: Update parallel.js to use bible-api.js
+[x] S1-025: Update bible-search.js to use bible-api.js
+[x] S1-026: Verify no behavior changes (run regression checklist)
 
 ## 1.4 CSP Preparation
 
@@ -82,12 +82,13 @@ SPRINT 1: FOUNDATION (DRY + SECURITY CORE)
     - Target: highlightMatches() lines 204-212
     - HIGH RISK: User search terms need HTML escaping
     See: CSP Audit Report in docs/PHASE-0-BASELINE-INVENTORY.md
-[ ] S1-031: Refactor highlightMatches() to use DOM APIs
+[x] S1-031: Refactor highlightMatches() to use DOM APIs
+    - XSS vulnerability patched with proper escaping
 [x] S1-032: Audit innerHTML usage in parallel.js
     - 13 instances, MEDIUM risk (trusted data)
 [x] S1-033: Audit innerHTML usage in share.js
     - 7 instances, LOW risk (static SVG/templates)
-[ ] S1-034: Add CSP meta tag to baseof.html
+[x] S1-034: Add CSP meta tag to baseof.html
 [x] S1-035: Document CSP requirements in charter
 
 ================================================================================
@@ -103,17 +104,17 @@ SPRINT 2: UI COMPONENTS + ACCESSIBILITY
     - Created: assets/js/michael/verse-grid.js
 [x] S2-002: Add aria-pressed state to verse buttons
 [x] S2-003: Add keyboard navigation (arrow keys)
-[ ] S2-004: Update parallel.js to use VerseGrid
-[ ] S2-005: Verify both normal and SSS modes work
+[x] S2-004: Update parallel.js to use VerseGrid
+[x] S2-005: Verify both normal and SSS modes work
 
 ## 2.2 ChapterDropdown Component
 
 [x] S2-010: Create chapter-dropdown.js with ChapterDropdown class
     - Consolidate: populateChapterDropdown() and populateSSSChapterDropdown()
     - Created: assets/js/michael/chapter-dropdown.js
-[ ] S2-011: Add proper labeling (sr-only or visible)
-[ ] S2-012: Update parallel.js to use ChapterDropdown
-[ ] S2-013: Verify chapter navigation works in both modes
+[x] S2-011: Add proper labeling (sr-only or visible)
+[x] S2-012: Update parallel.js to use ChapterDropdown
+[x] S2-013: Verify chapter navigation works in both modes
 
 ## 2.3 ShareMenu Component
 
@@ -123,16 +124,16 @@ SPRINT 2: UI COMPONENTS + ACCESSIBILITY
 [x] S2-022: Add focus trapping within menu
 [x] S2-023: Add arrow key navigation
 [x] S2-024: Add Escape to close, return focus to trigger
-[ ] S2-025: Refactor share.js to use ShareMenu
-[ ] S2-026: Test keyboard-only share menu operation
+[x] S2-025: Refactor share.js to use ShareMenu
+[x] S2-026: Test keyboard-only share menu operation
 
 ## 2.4 Strong's Tooltip Accessibility
 
-[ ] S2-030: Add role="tooltip" to tooltip element
-[ ] S2-031: Add aria-describedby linking trigger to tooltip
-[ ] S2-032: Add aria-expanded state to trigger
-[ ] S2-033: Add Escape to close tooltip
-[ ] S2-034: Add keyboard parity for tooltip activation
+[x] S2-030: Add role="tooltip" to tooltip element
+[x] S2-031: Add aria-describedby linking trigger to tooltip
+[x] S2-032: Add aria-expanded state to trigger
+[x] S2-033: Add Escape to close tooltip
+[x] S2-034: Add keyboard parity for tooltip activation
 
 ## 2.5 Hugo Partial Extraction
 
@@ -142,8 +143,8 @@ SPRINT 2: UI COMPONENTS + ACCESSIBILITY
     - Source: compare.html verse grid markup
 [x] S2-042: Create layouts/partials/michael/sss-toggle.html
     - Source: compare.html SSS toggle button
-[ ] S2-043: Update compare.html to use new partials
-[ ] S2-044: Verify compare page renders correctly
+[x] S2-043: Update compare.html to use new partials
+[x] S2-044: Verify compare page renders correctly
 
 ## 2.6 Contrast and Focus Fixes
 
@@ -217,13 +218,13 @@ SPRINT 4: CSS + DOCUMENTATION
 
 ## 4.2 Remove Inline Styles
 
-[ ] S4-010: Remove inline styles from compare.html
-[ ] S4-011: Remove inline styles from search.html
-[ ] S4-012: Remove inline styles from single.html
-[ ] S4-013: Remove inline styles from bible-nav.html
-[ ] S4-014: Replace style.cssText in parallel.js with class toggles
-[ ] S4-015: Replace style.cssText in share.js with class toggles
-[ ] S4-016: Verify all styling via CSS classes
+[x] S4-010: Remove inline styles from compare.html
+[x] S4-011: Remove inline styles from search.html
+[x] S4-012: Remove inline styles from single.html
+[x] S4-013: Remove inline styles from bible-nav.html
+[x] S4-014: Replace style.cssText in parallel.js with class toggles
+[x] S4-015: Replace style.cssText in share.js with class toggles
+[x] S4-016: Verify all styling via CSS classes
 
 ## 4.3 JavaScript Documentation
 
@@ -261,11 +262,11 @@ SPRINT 4: CSS + DOCUMENTATION
 
 ## 4.5 Template Documentation
 
-[ ] S4-040: Add file header to compare.html
-[ ] S4-041: Add file header to search.html
-[ ] S4-042: Add file header to single.html
-[ ] S4-043: Add file header to bible-nav.html
-[ ] S4-044: Add section comments to complex template blocks
+[x] S4-040: Add file header to compare.html
+[x] S4-041: Add file header to search.html
+[x] S4-042: Add file header to single.html
+[x] S4-043: Add file header to bible-nav.html
+[x] S4-044: Add section comments to complex template blocks
 [x] S4-045: Document partial parameters
     - All new partials have comprehensive headers
 
@@ -299,10 +300,17 @@ Last updated: 2026-01-25
 Charter reference: docs/CODE_CLEANUP_CHARTER.md
 Changelog: docs/CHANGELOG.md
 
-Sprint 1 Progress (2026-01-25):
-- Created 5 new JS modules in assets/js/michael/
-- Created 3 new Hugo partials
-- Added CSS components to theme.css
-- Completed CSP audit
-- Phase 0 baseline inventory completed
-- Architecture documentation created
+Sprint 1 & 2 Progress (2026-01-25):
+- ✓ Created 5 new JS modules in assets/js/michael/
+- ✓ Refactored parallel.js to use shared modules
+- ✓ Refactored bible-search.js to use bible-api.js (CSP XSS fix)
+- ✓ Refactored share.js to use ShareMenu component
+- ✓ Created 3 new Hugo partials
+- ✓ Updated compare.html to use partials
+- ✓ Added CSS components to theme.css
+- ✓ Removed all inline styles from templates and JS
+- ✓ Completed CSP audit and added meta tag
+- ✓ Improved Strong's tooltip accessibility (ARIA pattern)
+- ✓ Added template documentation headers
+- ✓ Phase 0 baseline inventory completed
+- ✓ Architecture documentation created

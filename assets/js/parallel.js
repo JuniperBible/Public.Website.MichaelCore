@@ -38,8 +38,7 @@
   // Normal mode highlighting state
   let normalHighlightEnabled = false;
 
-  // Cache for fetched chapter data
-  const chapterCache = new Map();
+  // Note: Chapter cache now managed by window.Michael.BibleAPI
 
   // DOM Elements
   let bookSelect, chapterSelect, parallelContent;
@@ -56,6 +55,12 @@
    * Initialize the parallel view controller
    */
   function init() {
+    // Verify that shared modules are loaded
+    if (!window.Michael || !window.Michael.DomUtils || !window.Michael.BibleAPI) {
+      console.error('Required modules not loaded. Please ensure michael/dom-utils.js and michael/bible-api.js are included before parallel.js');
+      return;
+    }
+
     // Parse embedded Bible data (metadata only, no verses)
     const dataEl = document.getElementById('bible-data');
     if (dataEl) {
@@ -105,35 +110,14 @@
   }
 
   /**
-   * Add click and touch event listeners for mobile compatibility
-   * Prevents double-firing by tracking touch events
+   * Helper to access shared utilities from DomUtils module
    */
   function addTapListener(element, handler) {
-    if (!element) return;
+    return window.Michael.DomUtils.addTapListener(element, handler);
+  }
 
-    let touchMoved = false;
-
-    element.addEventListener('touchstart', () => {
-      touchMoved = false;
-    }, { passive: true });
-
-    element.addEventListener('touchmove', () => {
-      touchMoved = true;
-    }, { passive: true });
-
-    element.addEventListener('touchend', (e) => {
-      if (!touchMoved) {
-        e.preventDefault();
-        handler(e);
-      }
-    });
-
-    element.addEventListener('click', (e) => {
-      // Only fire click if not from touch (touch already handled above)
-      if (e.pointerType !== 'touch') {
-        handler(e);
-      }
-    });
+  function getContrastColor(hexColor) {
+    return window.Michael.DomUtils.getContrastColor(hexColor);
   }
 
   /**
@@ -296,7 +280,7 @@
     if (checkbox.checked) {
       if (selectedTranslations.length >= 11) {
         checkbox.checked = false;
-        showMessage('Maximum 11 translations can be compared at once.', 'warning');
+        window.Michael.DomUtils.showMessage('Maximum 11 translations can be compared at once.', 'warning');
         return;
       }
       selectedTranslations.push(translationId);
@@ -388,15 +372,15 @@
   /**
    * Populate verse grid based on loaded chapter data
    */
-  function populateVerseGrid() {
+  async function populateVerseGrid() {
     // Find first translation with valid data for this chapter
     let verses = null;
     for (const translationId of selectedTranslations) {
-      const cacheKey = `${translationId}/${currentBook}/${currentChapter}`;
-      const cached = chapterCache.get(cacheKey);
-      if (cached && cached.length > 0) {
-        verses = cached;
-        break;
+      if (window.Michael.BibleAPI.hasInCache(translationId, currentBook, currentChapter)) {
+        verses = await window.Michael.BibleAPI.fetchChapter(basePath, translationId, currentBook, currentChapter);
+        if (verses && verses.length > 0) {
+          break;
+        }
       }
     }
 
@@ -414,7 +398,7 @@
         btn.className = 'verse-btn';
         btn.textContent = verse.number;
         btn.dataset.verse = verse.number;
-        btn.style.cssText = 'width: 1.75rem; height: 1.75rem; font-size: 0.875rem; border-radius: 3px; cursor: pointer;';
+        btn.setAttribute('aria-pressed', 'false');
         addTapListener(btn, () => handleVerseButtonClick(verse.number));
         verseButtons.appendChild(btn);
       });
@@ -450,11 +434,11 @@
     buttons.forEach(btn => {
       const verseNum = parseInt(btn.dataset.verse);
       if (verseNum === currentVerse) {
-        btn.style.background = 'var(--michael-accent)';
-        btn.style.color = 'white';
+        btn.classList.add('is-active');
+        btn.setAttribute('aria-pressed', 'true');
       } else {
-        btn.style.background = '';
-        btn.style.color = '';
+        btn.classList.remove('is-active');
+        btn.setAttribute('aria-pressed', 'false');
       }
     });
   }
@@ -486,103 +470,8 @@
            currentChapter > 0;
   }
 
-  /**
-   * Fetch chapter data from a Bible translation page
-   */
-  async function fetchChapter(bibleId, bookId, chapterNum) {
-    const cacheKey = `${bibleId}/${bookId}/${chapterNum}`;
-    if (chapterCache.has(cacheKey)) {
-      return chapterCache.get(cacheKey);
-    }
-
-    const url = `${basePath}/${bibleId}/${bookId.toLowerCase()}/${chapterNum}/`;
-
-    try {
-      const response = await fetch(url);
-      if (!response.ok) {
-        console.warn(`Failed to fetch ${url}: ${response.status}`);
-        return null;
-      }
-
-      const html = await response.text();
-      const verses = parseVersesFromHTML(html);
-
-      chapterCache.set(cacheKey, verses);
-      return verses;
-    } catch (err) {
-      console.error(`Error fetching ${url}:`, err);
-      return null;
-    }
-  }
-
-  /**
-   * Parse verses from chapter HTML page
-   */
-  function parseVersesFromHTML(html) {
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(html, 'text/html');
-    const bibleText = doc.querySelector('.bible-text');
-
-    if (!bibleText) return [];
-
-    const verses = [];
-
-    // Try parsing .verse spans first (new format)
-    const verseSpans = bibleText.querySelectorAll('.verse[data-verse]');
-    if (verseSpans.length > 0) {
-      verseSpans.forEach(span => {
-        const num = parseInt(span.dataset.verse);
-        if (isNaN(num)) return;
-
-        // Get text content excluding the sup element
-        let text = '';
-        span.childNodes.forEach(node => {
-          if (node.nodeType === Node.TEXT_NODE) {
-            text += node.textContent;
-          } else if (node.nodeType === Node.ELEMENT_NODE && node.tagName !== 'SUP') {
-            text += node.textContent;
-          }
-        });
-
-        verses.push({
-          number: num,
-          text: text.trim()
-        });
-      });
-      return verses;
-    }
-
-    // Fallback: try strong elements (old format)
-    const strongElements = bibleText.querySelectorAll('strong');
-    strongElements.forEach(strong => {
-      const num = strong.textContent.trim();
-      if (!/^\d+$/.test(num)) return;
-
-      // Extract text until next verse number
-      let text = '';
-      let node = strong.nextSibling;
-      while (node) {
-        if (node.nodeType === Node.TEXT_NODE) {
-          text += node.textContent;
-        } else if (node.nodeName === 'STRONG') {
-          break;
-        } else if (node.nodeType === Node.ELEMENT_NODE) {
-          // Skip share buttons
-          if (!node.classList?.contains('verse-share-btn')) {
-            text += node.textContent;
-          }
-        }
-        node = node.nextSibling;
-      }
-
-      verses.push({
-        number: parseInt(num),
-        text: text.trim()
-      });
-    });
-
-    return verses;
-  }
+  // Use shared fetchChapter and parseVersesFromHTML from BibleAPI module
+  // These functions are now accessed via window.Michael.BibleAPI
 
   /**
    * Load and display the comparison
@@ -616,7 +505,7 @@
 
     // Fetch chapter data for all selected translations in parallel
     const chapterDataPromises = selectedTranslations.map(bibleId =>
-      fetchChapter(bibleId, currentBook, currentChapter)
+      window.Michael.BibleAPI.fetchChapter(basePath, bibleId, currentBook, currentChapter)
     );
 
     const chaptersData = await Promise.all(chapterDataPromises);
@@ -803,13 +692,8 @@
 
   }
 
-  /**
-   * Show a message to the user
-   */
-  function showMessage(text, type = 'info') {
-    // Simple alert for now, could be enhanced with toast notifications
-    alert(text);
-  }
+  // Use shared showMessage from DomUtils module
+  // Accessed via window.Michael.DomUtils.showMessage
 
   // ==================== SSS MODE FUNCTIONS ====================
 
@@ -973,8 +857,8 @@
 
     // Fetch both chapters
     const [leftVerses, rightVerses] = await Promise.all([
-      fetchChapter(sssLeftBible, sssBook, sssChapter),
-      fetchChapter(sssRightBible, sssBook, sssChapter)
+      window.Michael.BibleAPI.fetchChapter(basePath, sssLeftBible, sssBook, sssChapter),
+      window.Michael.BibleAPI.fetchChapter(basePath, sssRightBible, sssBook, sssChapter)
     ]);
 
     // Populate verse grid
@@ -1016,10 +900,10 @@
       verses.forEach(verse => {
         const btn = document.createElement('button');
         btn.type = 'button';
-        btn.className = 'sss-verse-btn';
+        btn.className = 'sss-verse-btn verse-btn';
         btn.textContent = verse.number;
         btn.dataset.verse = verse.number;
-        btn.style.cssText = 'width: 1.75rem; height: 1.75rem; font-size: 0.875rem; border-radius: 3px; cursor: pointer;';
+        btn.setAttribute('aria-pressed', 'false');
         addTapListener(btn, () => handleSSSVerseButtonClick(verse.number));
         sssVerseButtons.appendChild(btn);
       });
@@ -1053,11 +937,11 @@
     buttons.forEach(btn => {
       const verseNum = parseInt(btn.dataset.verse);
       if (verseNum === sssVerse) {
-        btn.style.background = 'var(--michael-accent)';
-        btn.style.color = 'white';
+        btn.classList.add('is-active');
+        btn.setAttribute('aria-pressed', 'true');
       } else {
-        btn.style.background = '';
-        btn.style.color = '';
+        btn.classList.remove('is-active');
+        btn.setAttribute('aria-pressed', 'false');
       }
     });
   }
@@ -1234,17 +1118,6 @@
       }
       return html;
     }
-  }
-
-  /**
-   * Get contrasting text color (black or white) based on background
-   */
-  function getContrastColor(hexColor) {
-    const r = parseInt(hexColor.slice(1, 3), 16);
-    const g = parseInt(hexColor.slice(3, 5), 16);
-    const b = parseInt(hexColor.slice(5, 7), 16);
-    const brightness = (r * 299 + g * 587 + b * 114) / 1000;
-    return brightness > 128 ? '#1a1a1a' : '#f5f5eb';
   }
 
   // Initialize on DOM ready

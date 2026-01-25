@@ -1,3 +1,17 @@
+{{/*
+  Template: baseof.html
+  Purpose: Base HTML template for all pages
+
+  Blocks:
+  - "main": Page content
+  - "scripts": Page-specific JavaScript
+
+  Security:
+  - CSP meta tag restricts resource loading
+  - unsafe-inline required for Hugo's style fingerprinting
+
+  Note: For production with custom domains, consider moving CSP to HTTP headers
+*/}}
 <!doctype html>
 <html lang="{{ .Site.Language.Lang | default "en" }}">
 <head>
@@ -5,6 +19,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{{- if .IsHome -}}{{ .Site.Title }}{{- else -}}{{ .Title }} | {{ .Site.Title }}{{- end -}}</title>
   <meta name="description" content="{{ with .Description }}{{ . }}{{ else }}{{ with .Summary }}{{ . | plainify }}{{ else }}{{ .Site.Params.description }}{{ end }}{{ end }}">
+  {{/* Content Security Policy - restrictive by default */}}
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; font-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self';">
   {{ with .Permalink }}<link rel="canonical" href="{{ . }}">{{ end }}
   {{ with .OutputFormats.Get "rss" }}<link rel="alternate" type="application/rss+xml" title="{{ $.Site.Title }}" href="{{ .Permalink }}">{{ end }}
   {{ template "_internal/opengraph.html" . }}

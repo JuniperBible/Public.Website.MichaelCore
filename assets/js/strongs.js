@@ -24,6 +24,9 @@
 
     tooltip = document.createElement('div');
     tooltip.className = 'strongs-tooltip';
+    tooltip.setAttribute('role', 'tooltip');
+    tooltip.id = 'strongs-tooltip';
+    tooltip.setAttribute('aria-hidden', 'true');
     tooltip.innerHTML = `
       <h4 class="strongs-number"></h4>
       <p class="strongs-definition"></p>
@@ -34,6 +37,13 @@
     // Close tooltip when clicking outside
     document.addEventListener('click', (e) => {
       if (!tooltip.contains(e.target) && !e.target.classList.contains('strongs-ref')) {
+        hideTooltip();
+      }
+    });
+
+    // Close tooltip with Escape key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
         hideTooltip();
       }
     });
@@ -61,6 +71,11 @@
     tip.style.left = Math.max(10, left) + 'px';
     tip.style.display = 'block';
 
+    // Set aria-expanded on trigger
+    element.setAttribute('aria-expanded', 'true');
+    element.setAttribute('aria-describedby', 'strongs-tooltip');
+    tip.setAttribute('aria-hidden', 'false');
+
     // Update header
     const typeName = type === 'H' ? 'Hebrew' : 'Greek';
     tip.querySelector('.strongs-number').textContent = `${typeName} ${number}`;
@@ -73,7 +88,13 @@
   }
 
   function hideTooltip() {
+    // Remove aria attributes from all triggers
+    document.querySelectorAll('.strongs-ref[aria-expanded="true"]').forEach(el => {
+      el.setAttribute('aria-expanded', 'false');
+      el.removeAttribute('aria-describedby');
+    });
     if (tooltip) {
+      tooltip.setAttribute('aria-hidden', 'true');
       tooltip.style.display = 'none';
     }
   }

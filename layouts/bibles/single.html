@@ -1,16 +1,36 @@
+{{/*
+  Template: single.html
+  Purpose: Bible chapter display page
+
+  Features:
+  - Chapter text with verse numbers
+  - Strong's number tooltips (for translations with Strong's data)
+  - Verse sharing buttons
+  - Previous/Next chapter navigation
+  - Book/Chapter navigation dropdown
+
+  Data Sources:
+  - .Params: Page front matter (bible, book, chapter)
+  - .Site.Data.bibles.bibles: Bible metadata
+  - .Site.Data.bibles_auxiliary: Book/chapter structure
+  - .Content: Rendered verse content
+
+  JavaScript Dependencies:
+  - strongs.js: Strong's number tooltips
+  - share.js: Verse sharing
+  - michael/share-menu.js: Share menu component
+
+  URL Parameters:
+  - v: Verse number (scroll to and highlight)
+*/}}
+
 {{ define "scripts" }}
-{{ if .Params.chapter }}
-<!-- Strong's number tooltips for Bible text -->
-{{ $strongs := resources.Get "js/strongs.js" }}
-{{ if $strongs }}
-<script src="{{ $strongs.RelPermalink }}" defer></script>
-{{ end }}
-<!-- Verse sharing functionality -->
+{{ $shareMenu := resources.Get "js/michael/share-menu.js" }}
+{{ if $shareMenu }}<script src="{{ $shareMenu.RelPermalink }}" defer></script>{{ end }}
 {{ $share := resources.Get "js/share.js" }}
-{{ if $share }}
-<script src="{{ $share.RelPermalink }}" defer></script>
-{{ end }}
-{{ end }}
+{{ if $share }}<script src="{{ $share.RelPermalink }}" defer></script>{{ end }}
+{{ $strongs := resources.Get "js/strongs.js" }}
+{{ if $strongs }}<script src="{{ $strongs.RelPermalink }}" defer></script>{{ end }}
 {{ end }}
 
 {{ define "main" }}

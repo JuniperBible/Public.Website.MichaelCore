@@ -13,6 +13,13 @@
 (function() {
   'use strict';
 
+  // HTML escaping function to prevent XSS
+  function escapeHtml(str) {
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
   // Elements
   const form = document.getElementById('search-form');
   const queryInput = document.getElementById('search-query');
@@ -33,7 +40,6 @@
 
   // Search state
   let searchAbortController = null;
-  let searchCache = new Map(); // Cache fetched chapter data
 
   // Initialize from URL params
   function initFromUrl() {
@@ -65,78 +71,18 @@
     window.history.replaceState({}, '', newUrl);
   }
 
-  // Fetch chapter content
+  // Fetch chapter content using shared BibleAPI module
   async function fetchChapter(bible, bookId, chapterNum, signal) {
-    const cacheKey = `${bible}/${bookId}/${chapterNum}`;
+    const verses = await window.Michael.BibleAPI.fetchChapter(basePath, bible, bookId, chapterNum, signal);
 
-    if (searchCache.has(cacheKey)) {
-      return searchCache.get(cacheKey);
-    }
+    // Convert from BibleAPI format { number: int, text: string }
+    // to search format { num: string, text: string }
+    if (!verses) return null;
 
-    const url = `${basePath}/${bible}/${bookId.toLowerCase()}/${chapterNum}/`;
-
-    try {
-      const response = await fetch(url, { signal });
-      if (!response.ok) return null;
-
-      const html = await response.text();
-      const parser = new DOMParser();
-      const doc = parser.parseFromString(html, 'text/html');
-
-      // Extract verses from the page
-      const verses = [];
-      const verseElements = doc.querySelectorAll('.verse, [data-verse]');
-
-      verseElements.forEach(el => {
-        const verseNum = el.dataset.verse || el.querySelector('.verse-num')?.textContent?.trim();
-        const text = el.textContent?.replace(/^\d+\s*/, '').trim();
-
-        if (verseNum && text) {
-          verses.push({ num: verseNum, text });
-        }
-      });
-
-      // Fallback: try to parse verse spans directly
-      if (verses.length === 0) {
-        const spans = doc.querySelectorAll('span[id^="v"]');
-        spans.forEach(span => {
-          const id = span.id;
-          const match = id.match(/v(\d+)/);
-          if (match) {
-            verses.push({ num: match[1], text: span.textContent?.trim() || '' });
-          }
-        });
-      }
-
-      // Another fallback: parse the prose content
-      if (verses.length === 0) {
-        const prose = doc.querySelector('.bible-text, .prose, article');
-        if (prose) {
-          // Look for verse numbers in superscript or as prefixes
-          const text = prose.innerHTML;
-          let versePattern = /<sup[^>]*>(\d+)<\/sup>\s*([^<]+)/g;
-          let match;
-          while ((match = versePattern.exec(text)) !== null) {
-            verses.push({ num: match[1], text: match[2].trim() });
-          }
-
-          // Also try strong tags (Hugo renders **1** as <strong>1</strong>)
-          if (verses.length === 0) {
-            versePattern = /<strong>(\d+)<\/strong>\s*([^<]+)/g;
-            while ((match = versePattern.exec(text)) !== null) {
-              verses.push({ num: match[1], text: match[2].trim() });
-            }
-          }
-        }
-      }
-
-      searchCache.set(cacheKey, verses);
-      return verses;
-    } catch (e) {
-      if (e.name === 'AbortError') throw e;
-      console.warn(`Failed to fetch ${url}:`, e);
-      return null;
-    }
+    return verses.map(v => ({
+      num: String(v.number),
+      text: v.text
+    }));
   }
 
   // Parse query to determine search type
@@ -205,10 +151,14 @@
     const parsed = parseQuery(query);
     let searchTerm = parsed.value;
 
+    // ESCAPE HTML to prevent XSS
+    const escapedText = escapeHtml(text);
+    const escapedTerm = escapeHtml(searchTerm);
+
     // For Strong's numbers, use case-insensitive matching
     const flags = (parsed.type === 'strongs') ? 'gi' : (caseSensitive ? 'g' : 'gi');
-    const regex = new RegExp(`(${escapeRegex(searchTerm)})`, flags);
-    return text.replace(regex, '<mark>$1</mark>');
+    const regex = new RegExp(`(${escapeRegex(escapedTerm)})`, flags);
+    return escapedText.replace(regex, '<mark>$1</mark>');
   }
 
   // Perform search

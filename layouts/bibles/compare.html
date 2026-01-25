@@ -1,12 +1,33 @@
+{{/*
+  Template: compare.html
+  Purpose: Bible translation comparison page with Normal and SSS modes
+
+  Features:
+  - Multi-translation parallel view (up to 11)
+  - Side-by-side Scripture (SSS) mode for 2 translations
+  - Verse-level selection and comparison
+  - Text diff highlighting
+
+  Data Sources:
+  - .Site.Data.bibles.bibles: Bible metadata
+  - .Site.Data.bibles_auxiliary: Book/chapter structure
+
+  JavaScript Dependencies:
+  - text-compare.js: Diff algorithm
+  - parallel.js: Page controller
+  - michael/dom-utils.js: DOM utilities
+  - michael/bible-api.js: Data fetching
+*/}}
+
 {{ define "scripts" }}
+{{ $domUtils := resources.Get "js/michael/dom-utils.js" }}
+{{ if $domUtils }}<script src="{{ $domUtils.RelPermalink }}" defer></script>{{ end }}
+{{ $bibleApi := resources.Get "js/michael/bible-api.js" }}
+{{ if $bibleApi }}<script src="{{ $bibleApi.RelPermalink }}" defer></script>{{ end }}
 {{ $textCompare := resources.Get "js/text-compare.js" }}
-{{ if $textCompare }}
-<script src="{{ $textCompare.RelPermalink }}" defer></script>
-{{ end }}
+{{ if $textCompare }}<script src="{{ $textCompare.RelPermalink }}" defer></script>{{ end }}
 {{ $parallel := resources.Get "js/parallel.js" }}
-{{ if $parallel }}
-<script src="{{ $parallel.RelPermalink }}" defer></script>
-{{ end }}
+{{ if $parallel }}<script src="{{ $parallel.RelPermalink }}" defer></script>{{ end }}
 {{ end }}
 
 {{ define "main" }}
@@ -54,34 +75,12 @@
           <input type="checkbox" id="highlight-toggle" style="margin-right: 4px;">
           <span>Compare Differences</span>
         </label>
-        <button id="highlight-color-btn" class="btn btn--sm" style="background-color: #666; width: 24px; height: 24px; padding: 0;" title="Choose highlight color"></button>
-        <div id="highlight-color-picker" class="hidden" style="position: absolute; background: var(--surface-1); border: 1px solid var(--border); border-radius: var(--radius-1); padding: 8px; z-index: 10;">
-          <div class="row" style="gap: 4px;">
-            <button class="color-option btn btn--sm" data-color="#222" style="background:#222; width:24px; height:24px; padding:0;" title="Dark"></button>
-            <button class="color-option btn btn--sm" data-color="#444" style="background:#444; width:24px; height:24px; padding:0;" title="Medium Dark"></button>
-            <button class="color-option btn btn--sm" data-color="#666" style="background:#666; width:24px; height:24px; padding:0;" title="Medium"></button>
-            <button class="color-option btn btn--sm" data-color="#888" style="background:#888; width:24px; height:24px; padding:0;" title="Medium Light"></button>
-            <button class="color-option btn btn--sm" data-color="#aaa" style="background:#aaa; width:24px; height:24px; padding:0;" title="Light"></button>
-          </div>
-        </div>
+        {{ partial "michael/color-picker.html" (dict "id" "highlight" "optionClass" "color-option") }}
         <!-- SSS Mode toggle -->
-        <button id="sss-mode-btn" class="btn btn--secondary">
-          <svg style="width: 16px; height: 16px;" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-            <polygon points="12,2 22,20 2,20" stroke-width="2" stroke-linejoin="round"/>
-            <circle cx="12" cy="14" r="5" stroke-width="2"/>
-            <circle cx="12" cy="14" r="1.5" fill="currentColor" stroke="none"/>
-          </svg>
-          <span>SSS <span id="sss-mode-status">OFF</span></span>
-        </button>
+        {{ partial "michael/sss-toggle.html" (dict "id" "sss-mode-btn" "statusId" "sss-mode-status" "defaultStatus" "OFF") }}
       </div>
       <!-- Verse grid (shown when chapter is selected) -->
-      <div id="verse-grid" class="hidden mt-2">
-        <div class="row" style="align-items: center; gap: 8px;">
-          <span class="muted">v:</span>
-          <button id="all-verses-btn" class="chip is-active">All</button>
-          <div class="row" id="verse-buttons" style="gap: 4px;"></div>
-        </div>
-      </div>
+      {{ partial "michael/verse-grid.html" dict }}
     </div>
 
     <!-- SSS Mode (Side by Side Scripture) - Hidden by default -->
@@ -119,33 +118,11 @@
             <input type="checkbox" id="sss-highlight-toggle" checked style="margin-right: 4px;">
             <span>Compare Differences</span>
           </label>
-          <button id="sss-highlight-color-btn" class="btn btn--sm" style="background-color: #666; width: 24px; height: 24px; padding: 0;" title="Choose highlight color"></button>
-          <div id="sss-highlight-color-picker" class="hidden" style="position: absolute; background: var(--surface-1); border: 1px solid var(--border); border-radius: var(--radius-1); padding: 8px; z-index: 10;">
-            <div class="row" style="gap: 4px;">
-              <button class="sss-color-option btn btn--sm" data-color="#222" style="background:#222; width:24px; height:24px; padding:0;" title="Dark"></button>
-              <button class="sss-color-option btn btn--sm" data-color="#444" style="background:#444; width:24px; height:24px; padding:0;" title="Medium Dark"></button>
-              <button class="sss-color-option btn btn--sm" data-color="#666" style="background:#666; width:24px; height:24px; padding:0;" title="Medium"></button>
-              <button class="sss-color-option btn btn--sm" data-color="#888" style="background:#888; width:24px; height:24px; padding:0;" title="Medium Light"></button>
-              <button class="sss-color-option btn btn--sm" data-color="#aaa" style="background:#aaa; width:24px; height:24px; padding:0;" title="Light"></button>
-            </div>
-          </div>
-          <button id="sss-toggle-btn" class="btn btn--secondary">
-            <svg style="width: 16px; height: 16px;" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-              <polygon points="12,2 22,20 2,20" stroke-width="2" stroke-linejoin="round"/>
-              <circle cx="12" cy="14" r="5" stroke-width="2"/>
-              <circle cx="12" cy="14" r="1.5" fill="currentColor" stroke="none"/>
-            </svg>
-            <span>SSS <span id="sss-status">ON</span></span>
-          </button>
+          {{ partial "michael/color-picker.html" (dict "id" "sss-highlight" "optionClass" "sss-color-option") }}
+          {{ partial "michael/sss-toggle.html" (dict "id" "sss-toggle-btn" "statusId" "sss-status" "defaultStatus" "ON") }}
         </div>
         <!-- SSS Verse grid (shown when chapter is selected) -->
-        <div id="sss-verse-grid" class="hidden mt-2">
-          <div class="row" style="align-items: center; gap: 8px;">
-            <span class="muted">v:</span>
-            <button id="sss-all-verses-btn" class="chip is-active">All</button>
-            <div class="row" id="sss-verse-buttons" style="gap: 4px;"></div>
-          </div>
-        </div>
+        {{ partial "michael/verse-grid.html" (dict "id" "sss") }}
       </div>
 
       <!-- Side by Side Panes -->

@@ -1,5 +1,56 @@
-{{/* Bible navigation component with dropdowns */}}
-{{/* Usage: {{ partial "michael/bible-nav.html" (dict "page" . "bible" .Params.bible "book" .Params.book "chapter" .Params.chapter "basePath" $basePath) }} */}}
+{{/*
+  Partial: bible-nav.html
+  Purpose: Bible navigation component with book/chapter dropdowns and prev/next links
+
+  Description:
+    This partial provides a complete navigation interface for browsing Bible translations,
+    books, and chapters. It renders dropdown selectors for Bible translation and book
+    selection, as well as chapter navigation with previous/next buttons. The component
+    adapts based on the current context (Bible overview, book list, or chapter view).
+
+  Parameters (via dict):
+    - page: Current page context (required) - provides access to site data and params
+    - bible: Bible ID string (required) - identifies which translation to display (e.g., "kjv", "web")
+    - book: Current book ID (optional) - lowercase book identifier (e.g., "gen", "matt")
+    - chapter: Current chapter number (optional) - integer chapter number
+    - basePath: Base URL path for Bible content (optional, defaults to "/bibles")
+
+  Data Sources:
+    - .Site.Data.bibles.bibles: Bible metadata including ID, abbreviation, and display name
+    - .Site.Data.bibles_auxiliary: Book/chapter structure for each Bible translation
+    - .Params.validBooks: Optional page param to restrict visible books (used on overview pages)
+
+  Usage Examples:
+
+    # On a Bible overview page (shows Bible selector and book dropdown):
+    {{ partial "michael/bible-nav.html" (dict "page" . "bible" .Params.bible) }}
+
+    # On a book overview page (adds book context):
+    {{ partial "michael/bible-nav.html" (dict "page" . "bible" .Params.bible "book" .Params.book) }}
+
+    # On a chapter page (full navigation with chapter selector and prev/next):
+    {{ partial "michael/bible-nav.html" (dict "page" . "bible" .Params.bible "book" .Params.book "chapter" .Params.chapter) }}
+
+    # With custom base path:
+    {{ partial "michael/bible-nav.html" (dict "page" . "bible" .Params.bible "book" .Params.book "chapter" .Params.chapter "basePath" "/custom/path") }}
+
+  Features:
+    - Bible translation selector: Dropdown of all available Bible translations with auxiliary data
+    - Book dropdown: Lists all available books (respects validBooks param if provided)
+    - Chapter selector: Dynamically populated based on selected book's chapter count
+    - Previous/Next navigation: Arrow buttons for sequential chapter navigation
+    - Accessible: Includes ARIA labels and proper semantic HTML
+    - i18n support: Uses internationalization keys for labels
+    - Handles versification differences: Chapter counts vary between translations
+    - Responsive: Adapts display based on available context (Bible/book/chapter)
+
+  Notes:
+    - Only Bibles with auxiliary data (book/chapter structure) are shown in the selector
+    - Book IDs are normalized to lowercase for consistency
+    - Navigation buttons are disabled (not hidden) at boundaries for better UX
+    - URLs are generated using relLangURL for multi-language support
+    - The component uses the .reader-bar and .select CSS classes for styling
+*/}}
 
 {{ $page := .page }}
 {{ $bible := .bible }}
