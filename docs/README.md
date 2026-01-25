@@ -67,6 +67,7 @@ Complete documentation for the Michael Hugo Bible Module.
 | External Dependencies | 0 |
 | Code Cleanup | 100% Complete |
 | Phases Complete | 9/9 |
+| Branch Structure | main / development / attic |
 
 ### All Documentation Complete
 

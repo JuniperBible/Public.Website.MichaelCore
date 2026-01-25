@@ -69,19 +69,36 @@ make dev
 | [SBOM/](docs/SBOM/) | Software Bill of Materials |
 | [CHANGELOG.md](docs/CHANGELOG.md) | Version history |
 
-## Testing
+## Development
+
+### Branch Structure
+
+| Branch | Purpose | Submodules Track |
+|--------|---------|------------------|
+| `main` | Production releases | main |
+| `development` | Active development | development |
+| `attic` | Historical archives | — |
+
+### Commands
 
 ```bash
-# Run all regression tests
-make test
+make dev              # Start Hugo development server
+make build            # Build static site
+make check            # Run all quality checks
+make push             # Push after checks (main requires 'RELEASE' confirmation)
+make sync-submodules  # Sync submodules to match current branch
+```
 
-# Run specific test suites
-make test-compare   # Compare page tests
-make test-search    # Search page tests
-make test-single    # Single chapter tests
-make test-offline   # Offline/PWA tests
-make test-mobile    # Mobile touch tests
-make test-keyboard  # Keyboard navigation tests
+### Testing
+
+```bash
+make test             # Run all regression tests
+make test-compare     # Compare page tests
+make test-search      # Search page tests
+make test-single      # Single chapter tests
+make test-offline     # Offline/PWA tests
+make test-mobile      # Mobile touch tests
+make test-keyboard    # Keyboard navigation tests
 ```
 
 ## Project Status
@@ -91,7 +108,7 @@ make test-keyboard  # Keyboard navigation tests
 | Code Cleanup Charter | ✅ 100% Complete |
 | WCAG 2.1 AA | ✅ 0 Violations |
 | Regression Tests | ✅ 15 Tests |
-| Documentation | ✅ 21 Files |
+| Documentation | ✅ 14 Files |
 | External Dependencies | ✅ Zero |
 
 ## Build Checks

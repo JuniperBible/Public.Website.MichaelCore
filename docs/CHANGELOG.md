@@ -58,11 +58,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - `make check` - Run all checks and update README status
     - `make push` - Verify all checks pass, then push to remote
     - Aborts with "It's not nice to ship bad code" on failure
+- **Branch-Aware Workflow** - Makefile adapts to current branch
+  - `make push` on main requires typing `RELEASE` to confirm (production protection)
+  - `make push` on development pushes freely after checks pass
+  - `make sync-submodules` syncs tools/juniper and tools/magellan to match branch
+  - `make help` displays current branch
+- **Branch Consolidation** - Simplified branch structure
+  - Archived old/production branches to `attic/branches/`
+  - Final structure: main (production), development (active), attic (archives)
+  - Each branch tracks matching submodule branches (main→main, development→development)
 
 ### Changed
 - **Juniper Submodule Update** - Migrated to JuniperBible repository
   - Changed submodule URL from `juniper.git` to `JuniperBible.git`
-  - Now tracking `development` branch for latest features
+  - Submodules track matching branches (main→main, development→development)
   - JuniperBible includes capsule commands and versification system
   - All 100+ JuniperBible tests passing
 - **Code Cleanup** - Security and quality improvements from code review
