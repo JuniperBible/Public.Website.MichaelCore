@@ -49,8 +49,8 @@ help:
 	@echo "  make juniper   Build the juniper tool"
 	@echo ""
 
-# Start Hugo development server
-dev:
+# Start Hugo development server (syncs submodules to current branch first)
+dev: sync-submodules
 	hugo server --buildDrafts --buildFuture --disableFastRender
 
 # Build static site (regenerates SBOM and Bible data first)
