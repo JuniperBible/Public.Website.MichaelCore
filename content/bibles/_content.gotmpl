@@ -5,7 +5,7 @@
 {{/* Build basePath with language prefix for proper localization */}}
 {{- $langPrefix := "" -}}
 {{- with .Site.LanguagePrefix -}}{{- $langPrefix = . -}}{{- end -}}
-{{- $basePath := .Site.Params.michael.basePath | default (printf "%s/religion/bibles" $langPrefix) -}}
+{{- $basePath := .Site.Params.michael.basePath | default (printf "%s/bibles" $langPrefix) -}}
 
 {{- if not $bibleData -}}
   {{- warnf "No bibles.json data found. Run juniper to generate Bible data." -}}

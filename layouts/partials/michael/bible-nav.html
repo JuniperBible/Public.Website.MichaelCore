@@ -5,7 +5,7 @@
 {{ $bible := .bible }}
 {{ $book := .book }}
 {{ $chapter := .chapter }}
-{{ $basePath := .basePath | default "/religion/bibles" }}
+{{ $basePath := .basePath | default "/bibles" }}
 
 {{ $bibleData := index $page.Site.Data.bibles_auxiliary $bible }}
 
