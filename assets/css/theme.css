@@ -556,9 +556,17 @@ a:focus-visible {
   font-style: italic;
 }
 
-/* Milestone markers (paragraphs in source) */
-.prose milestone {
+/* OSIS structural markers - hide paragraph/milestone divs */
+.prose milestone,
+.prose div[type="x-milestone"],
+.prose div[type="x-p"],
+.prose chapter {
   display: none;
+}
+
+/* Ensure any remaining divs in verse text don't break flow */
+.prose div {
+  display: inline;
 }
 
 /* -----------------------------
