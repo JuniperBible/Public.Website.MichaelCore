@@ -55,7 +55,7 @@
             <span class="badge">{{ . }}</span>
             {{ end }}
             {{ with .license }}
-            <a href="{{ printf "/licenses/%s/" (. | urlize) | relLangURL }}" class="badge" title="SPDX License: {{ . }}">{{ . }}</a>
+            <a href="{{ printf "/license/%s/" (. | lower) | relLangURL }}" class="badge" title="SPDX License: {{ . }}">{{ . }}</a>
             {{ end }}
           {{ end }}
         {{ end }}

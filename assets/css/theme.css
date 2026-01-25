@@ -419,7 +419,11 @@ a:focus-visible {
   background: rgba(0,0,0,.08);
   border: 1px solid var(--border);
   border-radius: var(--radius-1);
-  padding: 10px;
+  padding: 6px;
+}
+.reader-bar .select {
+  width: auto;
+  padding: 6px 10px;
 }
 
 /* Spacing between reader-bar and adjacent prose content */
@@ -436,7 +440,7 @@ a:focus-visible {
 
 /* Make long reading text comfortable */
 .prose {
-  max-width: 72ch;
+  max-width: 90ch;
   margin: 0 auto;
   color: var(--text-900);
   line-height: 1.65;
