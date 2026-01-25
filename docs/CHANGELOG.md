@@ -48,6 +48,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - Search page (2 tests): text query, Strong's number
     - Single page (5 tests): navigation, tooltips, share menu
     - Cross-cutting (3 tests): offline, mobile touch, keyboard navigation
+- **Build Verification System** - Automated quality gates
+  - `README.md` - Auto-generated Build Checks status table
+  - `scripts/check-all.sh` - Build verification script
+    - Runs Hugo build, SBOM generation, JuniperBible tests, E2E tests
+    - Updates README.md status table automatically
+    - Color-coded pass/fail/skip output
+  - `Makefile` - New quality commands
+    - `make check` - Run all checks and update README status
+    - `make push` - Verify all checks pass, then push to remote
+    - Aborts with "It's not nice to ship bad code" on failure
 
 ### Changed
 - **Juniper Submodule Update** - Migrated to JuniperBible repository
