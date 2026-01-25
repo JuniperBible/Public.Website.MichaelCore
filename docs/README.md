@@ -21,11 +21,13 @@ Complete documentation for the Michael Hugo Bible Module.
 ## Technical Documentation
 
 - **[SERVICE-WORKER.md](SERVICE-WORKER.md)** - Offline capabilities and caching strategy
+- **[SECURITY.md](SECURITY.md)** - Comprehensive security model documentation
 - **[CSP.md](CSP.md)** - Content Security Policy implementation and guidance
+- **[ACCESSIBILITY.md](ACCESSIBILITY.md)** - WCAG 2.1 AA conformance and accessibility features
+- **[ACCESSIBILITY-AUDIT-2026-01-25.md](ACCESSIBILITY-AUDIT-2026-01-25.md)** - WCAG 2.1 AA compliance audit
 - **[PHASE-0-BASELINE-INVENTORY.md](PHASE-0-BASELINE-INVENTORY.md)** - Initial codebase inventory and CSP audit
 - **[THIRD-PARTY-LICENSES.md](THIRD-PARTY-LICENSES.md)** - Third-party license tracking
 - **[ZERO-DEPENDENCIES-VERIFICATION.md](ZERO-DEPENDENCIES-VERIFICATION.md)** - External dependency audit
-- **[ACCESSIBILITY-AUDIT-2026-01-25.md](ACCESSIBILITY-AUDIT-2026-01-25.md)** - WCAG 2.1 AA compliance audit
 - **[SBOM Documentation](SBOM/)** - Software Bill of Materials (components, dependencies, generation)
 - **[SBOM Files](../assets/downloads/sbom/)** - Generated SBOM files (SPDX, CycloneDX, Syft)
 
@@ -38,7 +40,7 @@ Complete documentation for the Michael Hugo Bible Module.
 
 **Last updated:** 2026-01-25
 
-### Available Documentation (19 files)
+### Available Documentation (21 files)
 
 All core documentation is complete:
 - ✅ Architecture and system design
@@ -46,14 +48,16 @@ All core documentation is complete:
 - ✅ Hugo module usage guide
 - ✅ Versification guide
 - ✅ Service worker documentation
+- ✅ Security model documentation
 - ✅ Content Security Policy guide
+- ✅ Accessibility documentation (WCAG 2.1 AA conformance)
+- ✅ Accessibility audit (WCAG 2.1 AA)
 - ✅ Code cleanup charter
 - ✅ Task tracking (TODO.txt)
 - ✅ Changelog
 - ✅ Baseline inventory
 - ✅ Third-party licenses
 - ✅ Zero dependencies verification
-- ✅ Accessibility audit (WCAG 2.1 AA)
 - ✅ SBOM documentation (README, components, dependencies)
 - ✅ SBOM generation (4 formats)
 - ✅ Regression testing (Magellan E2E)
@@ -62,17 +66,12 @@ All core documentation is complete:
 ### Recently Added Documentation
 
 - ✅ `TESTING.md` - Regression testing with Magellan E2E framework (15 tests)
+- ✅ `SECURITY.md` - Comprehensive security model documentation
+- ✅ `ACCESSIBILITY.md` - WCAG 2.1 AA conformance and accessibility features
 - ✅ `CSP.md` - Content Security Policy implementation guide (37 innerHTML usages audited)
 - ✅ `ACCESSIBILITY-AUDIT-2026-01-25.md` - WCAG 2.1 AA compliance audit (0 violations)
 - ✅ `SBOM/` - Software Bill of Materials documentation (README, components, dependencies)
 - ✅ `assets/downloads/sbom/` - Generated SBOM files (SPDX, CycloneDX, Syft formats)
-
-### Planned Documentation
-
-The following specialized documents may be created in the future if needed:
-- ⏳ `SECURITY.md` - Comprehensive security model documentation
-
-Note: Security information is currently documented in CSP.md, CHANGELOG.md, TODO.txt, and code comments.
 
 ## Quick Reference
 
@@ -83,13 +82,15 @@ Note: Security information is currently documented in CSP.md, CHANGELOG.md, TODO
 | System architecture | [ARCHITECTURE.md](ARCHITECTURE.md) |
 | Bible canon differences | [VERSIFICATION.md](VERSIFICATION.md) |
 | Offline features | [SERVICE-WORKER.md](SERVICE-WORKER.md) |
-| Security policy (CSP) | [CSP.md](CSP.md) |
+| Security model | [SECURITY.md](SECURITY.md) |
+| Content Security Policy | [CSP.md](CSP.md) |
+| Accessibility guide | [ACCESSIBILITY.md](ACCESSIBILITY.md) |
+| Accessibility audit | [ACCESSIBILITY-AUDIT-2026-01-25.md](ACCESSIBILITY-AUDIT-2026-01-25.md) |
 | Regression testing | [TESTING.md](TESTING.md) |
 | Development tasks | [TODO.txt](TODO.txt) |
 | Release history | [CHANGELOG.md](CHANGELOG.md) |
 | Code cleanup plan | [CODE_CLEANUP_CHARTER.md](CODE_CLEANUP_CHARTER.md) |
 | License tracking | [THIRD-PARTY-LICENSES.md](THIRD-PARTY-LICENSES.md) |
-| Accessibility audit | [ACCESSIBILITY-AUDIT-2026-01-25.md](ACCESSIBILITY-AUDIT-2026-01-25.md) |
 | SBOM documentation | [SBOM/](SBOM/) |
 | SBOM files | [assets/downloads/sbom/](../assets/downloads/sbom/) |
 
