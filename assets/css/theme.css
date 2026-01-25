@@ -422,6 +422,12 @@ a:focus-visible {
   padding: 10px;
 }
 
+/* Spacing between reader-bar and adjacent prose content */
+.prose + .reader-bar,
+.reader-bar + .prose {
+  margin-top: 16px;
+}
+
 .verse-num {
   color: var(--brand-500);
   font-weight: 700;
@@ -434,15 +440,6 @@ a:focus-visible {
   margin: 0 auto;
   color: var(--text-900);
   line-height: 1.65;
-}
-
-/* Add spacing between reader-bar and prose content */
-.reader-bar + .prose {
-  margin-top: 16px;
-}
-
-.prose + .reader-bar {
-  margin-top: 16px;
 }
 
 /* -----------------------------
