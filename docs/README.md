@@ -29,7 +29,6 @@ Complete documentation for the Michael Hugo Bible Module.
 
 - **[ARCHITECTURE.md](ARCHITECTURE.md)** - System overview, data flow, component relationships
 - **[VERSIFICATION.md](VERSIFICATION.md)** - Bible versification systems and canon differences
-- **[CODE_CLEANUP_CHARTER.md](CODE_CLEANUP_CHARTER.md)** - Code cleanup objectives (100% complete)
 
 ## Testing
 
@@ -40,12 +39,10 @@ Complete documentation for the Michael Hugo Bible Module.
 - **[SECURITY.md](SECURITY.md)** - Comprehensive security model documentation
 - **[CSP.md](CSP.md)** - Content Security Policy implementation guide
 - **[ACCESSIBILITY.md](ACCESSIBILITY.md)** - WCAG 2.1 AA conformance and features
-- **[ACCESSIBILITY-AUDIT-2026-01-25.md](ACCESSIBILITY-AUDIT-2026-01-25.md)** - Full WCAG 2.1 AA audit (0 violations)
 
 ## Technical Documentation
 
 - **[SERVICE-WORKER.md](SERVICE-WORKER.md)** - Offline capabilities and caching strategy
-- **[PHASE-0-BASELINE-INVENTORY.md](PHASE-0-BASELINE-INVENTORY.md)** - Initial codebase inventory
 - **[THIRD-PARTY-LICENSES.md](THIRD-PARTY-LICENSES.md)** - Third-party license tracking
 - **[ZERO-DEPENDENCIES-VERIFICATION.md](ZERO-DEPENDENCIES-VERIFICATION.md)** - External dependency audit
 - **[SBOM Documentation](SBOM/)** - Software Bill of Materials
@@ -53,7 +50,6 @@ Complete documentation for the Michael Hugo Bible Module.
 
 ## Project Management
 
-- **[TODO.txt](TODO.txt)** - Task tracking with phases and completion status
 - **[CHANGELOG.md](CHANGELOG.md)** - Version history and release notes
 
 ---
@@ -64,13 +60,12 @@ Complete documentation for the Michael Hugo Bible Module.
 
 | Metric | Value |
 |--------|-------|
-| Documentation Files | 21 |
+| Documentation Files | 14 |
 | Regression Tests | 15 |
 | JuniperBible Tests | 100+ passing |
 | WCAG Violations | 0 |
 | External Dependencies | 0 |
-| Code Cleanup Charter | 100% Complete |
-| Code Review Issues Fixed | 7 |
+| Code Cleanup | 100% Complete |
 | Phases Complete | 9/9 |
 
 ### All Documentation Complete
@@ -78,12 +73,12 @@ Complete documentation for the Michael Hugo Bible Module.
 | Category | Documents | Status |
 |----------|-----------|--------|
 | Getting Started | 3 | ✅ Complete |
-| Architecture | 3 | ✅ Complete |
+| Architecture | 2 | ✅ Complete |
 | Testing | 1 | ✅ Complete |
 | Security | 2 | ✅ Complete |
-| Accessibility | 2 | ✅ Complete |
-| Technical | 6 | ✅ Complete |
-| Project Management | 2 | ✅ Complete |
+| Accessibility | 1 | ✅ Complete |
+| Technical | 4 | ✅ Complete |
+| Project Management | 1 | ✅ Complete |
 | SBOM | 4 formats | ✅ Complete |
 
 ---
@@ -92,7 +87,7 @@ Complete documentation for the Michael Hugo Bible Module.
 
 | Document | Lines | Description |
 |----------|-------|-------------|
-| [README.md](README.md) | ~120 | This documentation index |
+| [README.md](README.md) | ~100 | This documentation index |
 | [ARCHITECTURE.md](ARCHITECTURE.md) | 300+ | System design and component structure |
 | [HUGO-MODULE-USAGE.md](HUGO-MODULE-USAGE.md) | 280+ | Installation and configuration |
 | [DATA-FORMATS.md](DATA-FORMATS.md) | 180+ | JSON schemas and data requirements |
@@ -102,14 +97,22 @@ Complete documentation for the Michael Hugo Bible Module.
 | [SECURITY.md](SECURITY.md) | 500+ | Security model documentation |
 | [CSP.md](CSP.md) | 800+ | Content Security Policy guide |
 | [ACCESSIBILITY.md](ACCESSIBILITY.md) | 600+ | WCAG 2.1 AA conformance |
-| [ACCESSIBILITY-AUDIT-2026-01-25.md](ACCESSIBILITY-AUDIT-2026-01-25.md) | 170+ | Full WCAG audit report |
-| [CODE_CLEANUP_CHARTER.md](CODE_CLEANUP_CHARTER.md) | 400+ | Cleanup plan (complete) |
-| [TODO.txt](TODO.txt) | 590+ | Task tracking (all phases complete) |
-| [CHANGELOG.md](CHANGELOG.md) | 220+ | Version history |
-| [PHASE-0-BASELINE-INVENTORY.md](PHASE-0-BASELINE-INVENTORY.md) | 700+ | Codebase inventory |
+| [CHANGELOG.md](CHANGELOG.md) | 250+ | Version history |
 | [THIRD-PARTY-LICENSES.md](THIRD-PARTY-LICENSES.md) | 280+ | License tracking |
 | [ZERO-DEPENDENCIES-VERIFICATION.md](ZERO-DEPENDENCIES-VERIFICATION.md) | 280+ | Dependency audit |
 | [SBOM/README.md](SBOM/README.md) | 100+ | SBOM documentation |
+
+---
+
+## Archive
+
+Historical documentation from the code cleanup project (completed 2026-01-25):
+
+| Document | Description |
+|----------|-------------|
+| [archive/CODE_CLEANUP_CHARTER.md](archive/CODE_CLEANUP_CHARTER.md) | Original cleanup plan and objectives |
+| [archive/TODO.txt](archive/TODO.txt) | Task tracking for all 9 phases |
+| [archive/PHASE-0-BASELINE-INVENTORY.md](archive/PHASE-0-BASELINE-INVENTORY.md) | Initial codebase inventory |
 
 ---
 
