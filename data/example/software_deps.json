@@ -2,11 +2,20 @@
   "tools": [
     {
       "name": "Hugo",
-      "version": "0.152.2",
+      "version": "0.154.1",
       "license": "Apache-2.0",
       "supplier": "ORGANIZATION: Hugo Authors",
       "downloadLocation": "https://github.com/gohugoio/hugo",
       "description": "The world's fastest framework for building websites",
+      "purpose": "APPLICATION"
+    },
+    {
+      "name": "Caddy",
+      "version": "2.11.0",
+      "license": "Apache-2.0",
+      "supplier": "ORGANIZATION: Caddy Authors",
+      "downloadLocation": "https://github.com/caddyserver/caddy",
+      "description": "Fast and extensible multi-platform HTTP/1-2-3 web server with automatic HTTPS",
       "purpose": "APPLICATION"
     },
     {
