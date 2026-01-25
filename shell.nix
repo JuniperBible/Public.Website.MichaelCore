@@ -2,12 +2,23 @@
 
 pkgs.mkShell {
   buildInputs = with pkgs; [
-    hugo
+    # Build tools
     gnumake
     go
+
+    # Dev servers (optional - built from submodules if not present)
+    # hugo
+    # caddy
+
+    # SBOM generation
+    syft
+    jq
+
+    # Utilities
     xz
     curl
-    syft  # SBOM generator
+    lsof  # for kill-dev target
+    git
   ];
 
   shellHook = ''
@@ -15,9 +26,11 @@ pkgs.mkShell {
     echo "==========================="
     echo ""
     echo "Commands:"
-    echo "  make dev     Start development server"
-    echo "  make build   Build static site"
-    echo "  make clean   Remove generated files"
+    echo "  make dev       Start Caddy dev server (production-like)"
+    echo "  make dev-hugo  Start Hugo dev server (live reload)"
+    echo "  make build     Build static site"
+    echo "  make clean     Remove generated files"
+    echo "  make help      Show all commands"
     echo ""
   '';
 }
