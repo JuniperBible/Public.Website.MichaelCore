@@ -106,7 +106,13 @@ window.Michael.BibleAPI = (function() {
   function parseVersesFromHTML(html) {
     const parser = new DOMParser();
     const doc = parser.parseFromString(html, 'text/html');
-    const bibleText = doc.querySelector('.bible-text');
+
+    // Try multiple selectors for the verse container
+    // Prefer specific .bible-text, fall back to common content containers
+    const bibleText = doc.querySelector('.bible-text') ||
+                      doc.querySelector('.prose') ||
+                      doc.querySelector('article .content') ||
+                      doc.querySelector('main');
 
     if (!bibleText) return [];
 
