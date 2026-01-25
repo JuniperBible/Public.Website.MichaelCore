@@ -114,11 +114,8 @@ merge_spdx_json() {
                 primaryPackagePurpose: .purpose
             };
 
-        # Get all manual packages
-        ($manual[0].tools + $manual[0].data_sources + $manual[0].libraries) | map(to_spdx_package) as $manual_pkgs |
-
-        # Merge into packages array
-        .packages = (.packages + $manual_pkgs)
+        # Merge manual packages into packages array
+        .packages += (($manual[0].tools + $manual[0].data_sources + $manual[0].libraries) | map(to_spdx_package))
     ' "$syft_file" > "$output_file"
 }
 
@@ -144,11 +141,8 @@ merge_cdx_json() {
                 ]
             };
 
-        # Get all manual components
-        ($manual[0].tools + $manual[0].data_sources + $manual[0].libraries) | map(to_cdx_component) as $manual_comps |
-
-        # Merge into components array
-        .components = (.components + $manual_comps)
+        # Merge manual components into components array
+        .components += (($manual[0].tools + $manual[0].data_sources + $manual[0].libraries) | map(to_cdx_component))
     ' "$syft_file" > "$output_file"
 }
 
@@ -179,11 +173,8 @@ merge_syft_json() {
                 }
             };
 
-        # Get all manual artifacts
-        ($manual[0].tools + $manual[0].data_sources + $manual[0].libraries) | map(to_syft_artifact) as $manual_artifacts |
-
-        # Merge into artifacts array
-        .artifacts = (.artifacts + $manual_artifacts)
+        # Merge manual artifacts into artifacts array
+        .artifacts += (($manual[0].tools + $manual[0].data_sources + $manual[0].libraries) | map(to_syft_artifact))
     ' "$syft_file" > "$output_file"
 }
 
