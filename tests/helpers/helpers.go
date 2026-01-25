@@ -191,7 +191,10 @@ func ExpectOptionCount(t *testing.T, b *e2e.Browser, selector string, minCount i
 	}
 	// Count options by selecting the options within the select
 	optionSelector := selector + " option"
-	options := b.FindAll(optionSelector)
+	options, err := b.FindAll(optionSelector)
+	if err != nil {
+		t.Fatalf("Failed to find options in %s: %v", selector, err)
+	}
 	count := options.Count()
 	if count < minCount {
 		t.Errorf("Expected %s to have at least %d options, but found %d", selector, minCount, count)
