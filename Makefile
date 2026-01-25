@@ -1,7 +1,7 @@
 # Michael - Hugo Bible Module
 # https://github.com/FocuswithJustin/michael
 
-.PHONY: dev build clean help vendor vendor-fetch vendor-convert vendor-package vendor-restore juniper
+.PHONY: dev build clean help vendor vendor-fetch vendor-convert vendor-package vendor-restore juniper sbom ensure-data
 
 # Bible modules to vendor
 BIBLES := KJVA DRC Tyndale Coverdale Geneva1599 WEB Vulgate SBLGNT LXX ASV OSMHB
@@ -20,6 +20,7 @@ help:
 	@echo "  make dev       Start Hugo development server"
 	@echo "  make build     Build static site to public/"
 	@echo "  make clean     Remove generated files"
+	@echo "  make sbom      Generate SBOM in all formats"
 	@echo ""
 	@echo "Vendor commands:"
 	@echo "  make vendor    Full vendor workflow (fetch + convert + package)"
@@ -31,9 +32,36 @@ help:
 dev:
 	hugo server --buildDrafts --buildFuture --disableFastRender
 
-# Build static site
-build:
+# Build static site (regenerates SBOM and Bible data first)
+build: sbom ensure-data vendor-package
 	hugo --minify
+
+# Ensure Bible data exists, prompt for conversion if needed
+ensure-data:
+	@if [ -f "$(DATA_DIR)/bibles.json" ]; then \
+		echo "Bible data found in $(DATA_DIR)"; \
+	elif [ -d "$(SWORD_DIR)/mods.d" ] && [ -n "$$(ls -A $(SWORD_DIR)/mods.d 2>/dev/null)" ]; then \
+		echo ""; \
+		echo "Bible JSON data not found, but SWORD modules exist in $(SWORD_DIR)"; \
+		echo "Would you like to convert them? [y/N]"; \
+		read -r answer; \
+		if [ "$$answer" = "y" ] || [ "$$answer" = "Y" ]; then \
+			$(MAKE) juniper vendor-convert; \
+		else \
+			echo "Skipping conversion. Build will continue without Bible data."; \
+		fi; \
+	else \
+		echo ""; \
+		echo "No Bible data found."; \
+		echo ""; \
+		echo "To fetch Bible modules, first build juniper then use:"; \
+		echo "  make juniper"; \
+		echo "  ./tools/juniper/bin/juniper repo install CrossWire <MODULE>"; \
+		echo ""; \
+		echo "Available modules: KJVA, DRC, Tyndale, WEB, ASV, etc."; \
+		echo "Or run 'make vendor' to fetch and convert all default modules."; \
+		echo ""; \
+	fi
 
 # Clean generated files
 clean:
@@ -93,3 +121,7 @@ vendor-restore:
 		fi; \
 	done
 	@echo "Restore complete!"
+
+# Generate SBOM in all formats (SPDX, CycloneDX, Syft)
+sbom:
+	./scripts/generate-sbom.sh

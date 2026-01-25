@@ -74,12 +74,3 @@ Bible text data is extracted from SWORD modules. The extraction tool
 Strong's number tooltips link to Blue Letter Bible for Hebrew and Greek
 lexicon definitions.
 
----
-
-## Tailwind CSS
-
-**Project:** Tailwind CSS
-**Source:** https://tailwindcss.com/
-**License:** MIT License
-
-CSS framework classes are used throughout the templates.

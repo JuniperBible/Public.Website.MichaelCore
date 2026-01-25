@@ -20,6 +20,17 @@ languageCode = "en"
 [markup.goldmark.renderer]
   unsafe = true
 
+# Output formats for SBOM
+[outputFormats.JSON]
+  mediaType = "application/json"
+  baseName = "sbom"
+  isPlainText = true
+
+[outputs]
+  home = ["HTML", "RSS"]
+  section = ["HTML", "RSS"]
+  page = ["HTML"]
+
 [module]
   # Default mount configuration for the module
   # These can be overridden by the consuming site
@@ -50,6 +61,12 @@ languageCode = "en"
     source = "tools/juniper/vendor_external/spdx"
     target = "data/spdx"
     includeFiles = ["licenses.json"]
+
+  # Mount choosealicense.com data for license rights
+  [[module.mounts]]
+    source = "tools/juniper/vendor_external/choosealicense"
+    target = "data/choosealicense"
+    includeFiles = ["licenses.json", "rules.json"]
 
   [[module.mounts]]
     source = "content"

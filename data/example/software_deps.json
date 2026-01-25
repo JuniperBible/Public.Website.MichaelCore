@@ -1,0 +1,52 @@
+{
+  "tools": [
+    {
+      "name": "Hugo",
+      "version": "0.152.2",
+      "license": "Apache-2.0",
+      "supplier": "ORGANIZATION: Hugo Authors",
+      "downloadLocation": "https://github.com/gohugoio/hugo",
+      "description": "The world's fastest framework for building websites",
+      "purpose": "APPLICATION"
+    },
+    {
+      "name": "Juniper",
+      "version": "1.0.0",
+      "license": "MIT",
+      "supplier": "ORGANIZATION: Focus with Justin",
+      "downloadLocation": "https://github.com/FocuswithJustin/juniper",
+      "description": "Bible module processing and data extraction tool",
+      "purpose": "APPLICATION"
+    }
+  ],
+  "libraries": [],
+  "data_sources": [
+    {
+      "name": "SPDX License List",
+      "version": "3.23",
+      "license": "CC0-1.0",
+      "supplier": "ORGANIZATION: SPDX Workgroup",
+      "downloadLocation": "https://github.com/spdx/license-list-data",
+      "description": "SPDX License List in various data formats",
+      "purpose": "DATA"
+    },
+    {
+      "name": "choosealicense.com",
+      "version": "2024",
+      "license": "CC-BY-3.0",
+      "supplier": "ORGANIZATION: GitHub Inc",
+      "downloadLocation": "https://github.com/github/choosealicense.com",
+      "description": "License rights and conditions data",
+      "purpose": "DATA"
+    },
+    {
+      "name": "SWORD Project Modules",
+      "version": "varies",
+      "license": "varies",
+      "supplier": "ORGANIZATION: CrossWire Bible Society",
+      "downloadLocation": "https://crosswire.org/sword/modules/",
+      "description": "Bible modules from the SWORD Project",
+      "purpose": "DATA"
+    }
+  ]
+}

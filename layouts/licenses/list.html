@@ -1,21 +1,204 @@
 {{ define "main" }}
+{{- $softwareDeps := .Site.Data.software_deps -}}
 <main class="container" style="padding: var(--pad-3) var(--pad-2);">
   <div class="panel">
     <header class="page-header">
       <h1>{{ .Title }}</h1>
-      {{ with .Description }}<p>{{ . }}</p>{{ end }}
+      <p>Software Bill of Materials (SBOM) for Bible translations and software dependencies</p>
     </header>
 
-    <section class="grid-2">
-      {{ range .Pages }}
-      <a href="{{ .RelPermalink }}" class="card">
-        <h2 class="card__title">{{ .Title }}</h2>
-        <p class="card__meta"><code>{{ .Params.licenseId }}</code></p>
-        {{ if .Params.isOsiApproved }}
-        <span class="badge badge--success">OSI Approved</span>
+    <!-- SBOM Summary -->
+    <section class="panel--inner" style="padding: var(--pad-2); margin-bottom: var(--pad-2);">
+      <h2 style="margin-top: 0;">SBOM Summary</h2>
+      <div class="row" style="gap: var(--pad-2); flex-wrap: wrap;">
+        <div>
+          <strong>{{ len .Site.Data.bibles.bibles }}</strong> Bible Translations
+        </div>
+        <div>
+          <strong>{{ len .Pages }}</strong> Unique Licenses
+        </div>
+        {{ with $softwareDeps }}
+        <div>
+          <strong>{{ len .tools }}</strong> Build Tools
+        </div>
+        <div>
+          <strong>{{ len .libraries }}</strong> Libraries
+        </div>
+        <div>
+          <strong>{{ len .data_sources }}</strong> Data Sources
+        </div>
         {{ end }}
-      </a>
+        <div>
+          Generated: <code>{{ now.Format "2006-01-02" }}</code>
+        </div>
+      </div>
+    </section>
+
+    <!-- Software Dependencies Section -->
+    {{ with $softwareDeps }}
+    <section class="panel--inner" style="padding: var(--pad-2); margin-bottom: var(--pad-2);">
+      <h2 style="margin-top: 0;">Software Dependencies</h2>
+
+      {{ with .tools }}
+      <h3>Build Tools</h3>
+      <table style="width: 100%; border-collapse: collapse; margin-bottom: var(--pad-2);">
+        <thead>
+          <tr style="border-bottom: 1px solid var(--border);">
+            <th style="text-align: left; padding: 8px 12px;">Name</th>
+            <th style="text-align: left; padding: 8px 12px;">Version</th>
+            <th style="text-align: left; padding: 8px 12px;">License</th>
+            <th style="text-align: left; padding: 8px 12px;">Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{ range . }}
+          <tr style="border-bottom: 1px solid var(--border);">
+            <td style="padding: 8px 12px;">
+              <a href="{{ .downloadLocation }}" target="_blank" rel="noopener">{{ .name }}</a>
+            </td>
+            <td style="padding: 8px 12px;"><code>{{ .version }}</code></td>
+            <td style="padding: 8px 12px;"><span class="badge">{{ .license }}</span></td>
+            <td style="padding: 8px 12px;">{{ .description }}</td>
+          </tr>
+          {{ end }}
+        </tbody>
+      </table>
       {{ end }}
+
+      {{ with .libraries }}
+      <h3>Libraries</h3>
+      <table style="width: 100%; border-collapse: collapse; margin-bottom: var(--pad-2);">
+        <thead>
+          <tr style="border-bottom: 1px solid var(--border);">
+            <th style="text-align: left; padding: 8px 12px;">Name</th>
+            <th style="text-align: left; padding: 8px 12px;">Version</th>
+            <th style="text-align: left; padding: 8px 12px;">License</th>
+            <th style="text-align: left; padding: 8px 12px;">Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{ range . }}
+          <tr style="border-bottom: 1px solid var(--border);">
+            <td style="padding: 8px 12px;">
+              <a href="{{ .downloadLocation }}" target="_blank" rel="noopener">{{ .name }}</a>
+            </td>
+            <td style="padding: 8px 12px;"><code>{{ .version }}</code></td>
+            <td style="padding: 8px 12px;"><span class="badge">{{ .license }}</span></td>
+            <td style="padding: 8px 12px;">{{ .description }}</td>
+          </tr>
+          {{ end }}
+        </tbody>
+      </table>
+      {{ end }}
+
+      {{ with .data_sources }}
+      <h3>Data Sources</h3>
+      <table style="width: 100%; border-collapse: collapse;">
+        <thead>
+          <tr style="border-bottom: 1px solid var(--border);">
+            <th style="text-align: left; padding: 8px 12px;">Name</th>
+            <th style="text-align: left; padding: 8px 12px;">Version</th>
+            <th style="text-align: left; padding: 8px 12px;">License</th>
+            <th style="text-align: left; padding: 8px 12px;">Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{ range . }}
+          <tr style="border-bottom: 1px solid var(--border);">
+            <td style="padding: 8px 12px;">
+              <a href="{{ .downloadLocation }}" target="_blank" rel="noopener">{{ .name }}</a>
+            </td>
+            <td style="padding: 8px 12px;"><code>{{ .version }}</code></td>
+            <td style="padding: 8px 12px;"><span class="badge">{{ .license }}</span></td>
+            <td style="padding: 8px 12px;">{{ .description }}</td>
+          </tr>
+          {{ end }}
+        </tbody>
+      </table>
+      {{ end }}
+    </section>
+    {{ end }}
+
+    <!-- Bible License breakdown -->
+    <h2>Bible Translation Licenses</h2>
+    {{ range .Pages }}
+    {{ $licenseId := .Params.licenseId }}
+    {{ $bibles := slice }}
+    {{ range $.Site.Data.bibles.bibles }}
+      {{ if eq .license $licenseId }}
+        {{ $bibles = $bibles | append . }}
+      {{ end }}
+    {{ end }}
+
+    <section class="panel--inner" style="padding: var(--pad-2); margin-bottom: var(--pad-2);">
+      <div class="row" style="justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: var(--pad-1);">
+        <div>
+          <h3 style="margin: 0;">
+            <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+          </h3>
+          <p class="muted" style="margin: 4px 0 0 0;">
+            SPDX: <code>{{ .Params.licenseId }}</code>
+            {{ if .Params.isOsiApproved }}
+            <span class="badge badge--success" style="margin-left: 8px;">OSI Approved</span>
+            {{ end }}
+          </p>
+        </div>
+        <div>
+          <a href="{{ .RelPermalink }}" class="btn btn--sm">
+            View Details
+          </a>
+        </div>
+      </div>
+
+      {{ if $bibles }}
+      <div style="margin-top: var(--pad-1);">
+        <table style="width: 100%; border-collapse: collapse;">
+          <thead>
+            <tr style="border-bottom: 1px solid var(--border);">
+              <th style="text-align: left; padding: 8px 12px;">Translation</th>
+              <th style="text-align: left; padding: 8px 12px;">Abbreviation</th>
+              <th style="text-align: left; padding: 8px 12px;">Language</th>
+            </tr>
+          </thead>
+          <tbody>
+            {{ range $bibles }}
+            <tr style="border-bottom: 1px solid var(--border);">
+              <td style="padding: 8px 12px;">
+                <a href="{{ printf "/bibles/%s/" .id | relLangURL }}">{{ .title }}</a>
+              </td>
+              <td style="padding: 8px 12px;"><code>{{ .abbrev }}</code></td>
+              <td style="padding: 8px 12px;"><span class="badge">{{ .language }}</span></td>
+            </tr>
+            {{ end }}
+          </tbody>
+        </table>
+      </div>
+      {{ end }}
+    </section>
+    {{ end }}
+
+    <!-- Export options -->
+    <section class="panel--inner" style="padding: var(--pad-2);">
+      <h3 style="margin-top: 0;">Export SBOM</h3>
+      <p class="muted">Download the full Software Bill of Materials in standard formats:</p>
+      <div class="row" style="flex-wrap: wrap; gap: var(--pad-1);">
+        <a href="/downloads/sbom/sbom.spdx.json" class="btn btn--secondary" download>
+          SPDX JSON
+        </a>
+        <a href="/downloads/sbom/sbom.cdx.json" class="btn btn--secondary" download>
+          CycloneDX JSON
+        </a>
+        <a href="/downloads/sbom/sbom.cdx.xml" class="btn btn--secondary" download>
+          CycloneDX XML
+        </a>
+        <a href="/downloads/sbom/sbom.syft.json" class="btn btn--secondary" download>
+          Syft JSON
+        </a>
+      </div>
+      <p class="muted" style="margin-top: var(--pad-1); font-size: 0.85rem;">
+        Generated with <a href="https://github.com/anchore/syft" target="_blank" rel="noopener">Syft</a> -
+        run <code>make sbom</code> to regenerate
+      </p>
     </section>
 
     <nav class="actions">

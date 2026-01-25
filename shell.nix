@@ -7,6 +7,7 @@ pkgs.mkShell {
     go
     xz
     curl
+    syft  # SBOM generator
   ];
 
   shellHook = ''
