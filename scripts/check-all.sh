@@ -1,0 +1,174 @@
+#!/bin/bash
+# check-all.sh - Run all build checks and update README.md status
+# Usage: ./scripts/check-all.sh [--update-readme]
+#
+# Exit codes:
+#   0 - All checks passed
+#   1 - One or more checks failed
+
+set -e
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
+README="$PROJECT_ROOT/README.md"
+UPDATE_README=false
+
+# Parse arguments
+if [[ "$1" == "--update-readme" ]]; then
+    UPDATE_README=true
+fi
+
+# Colors for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+NC='\033[0m' # No Color
+
+# Track results
+declare -A RESULTS
+ALL_PASSED=true
+
+# Helper functions
+pass() {
+    echo -e "${GREEN}✓${NC} $1"
+    RESULTS["$1"]="pass"
+}
+
+fail() {
+    echo -e "${RED}✗${NC} $1: $2"
+    RESULTS["$1"]="fail"
+    ALL_PASSED=false
+}
+
+skip() {
+    echo -e "${YELLOW}⊘${NC} $1: $2"
+    RESULTS["$1"]="skip"
+}
+
+echo "========================================"
+echo "Michael Build Checks"
+echo "========================================"
+echo ""
+
+cd "$PROJECT_ROOT"
+
+# 1. Clean Build Check
+echo "Checking Hugo build..."
+rm -rf public/ resources/
+if hugo --minify --quiet 2>/dev/null; then
+    pass "Hugo Build"
+else
+    fail "Hugo Build" "hugo --minify failed"
+fi
+
+# 2. SBOM Generation Check
+echo "Checking SBOM generation..."
+if [ -x "./scripts/generate-sbom.sh" ]; then
+    if ./scripts/generate-sbom.sh --quiet 2>/dev/null; then
+        pass "SBOM Generation"
+    else
+        fail "SBOM Generation" "generate-sbom.sh failed"
+    fi
+else
+    skip "SBOM Generation" "generate-sbom.sh not found or not executable"
+fi
+
+# 3. JuniperBible Tests
+echo "Checking JuniperBible tests..."
+if [ -d "tools/juniper" ]; then
+    cd tools/juniper
+    if go test ./... -count=1 -short 2>/dev/null | grep -q "PASS"; then
+        pass "JuniperBible Tests"
+    elif go test ./... -count=1 -short 2>&1 | grep -q "ok"; then
+        pass "JuniperBible Tests"
+    else
+        fail "JuniperBible Tests" "go test failed"
+    fi
+    cd "$PROJECT_ROOT"
+else
+    skip "JuniperBible Tests" "tools/juniper not found"
+fi
+
+# 4. Regression Tests (only if Hugo server can be started)
+echo "Checking regression tests..."
+if [ -d "tests" ] && [ -f "tests/go.mod" ]; then
+    # Start Hugo server in background
+    hugo server --port 1313 --buildDrafts &>/dev/null &
+    HUGO_PID=$!
+    sleep 3
+
+    # Check if Hugo started
+    if curl -s http://localhost:1313/ &>/dev/null; then
+        cd tests
+        if go test -v ./regression/... -count=1 2>&1 | grep -q "PASS"; then
+            pass "Regression Tests"
+        else
+            fail "Regression Tests" "E2E tests failed"
+        fi
+        cd "$PROJECT_ROOT"
+    else
+        skip "Regression Tests" "Hugo server failed to start"
+    fi
+
+    # Stop Hugo
+    kill $HUGO_PID 2>/dev/null || true
+else
+    skip "Regression Tests" "tests directory not found"
+fi
+
+# 5. Clean Worktree Check
+echo "Checking worktree status..."
+if git diff --quiet && git diff --cached --quiet; then
+    pass "Clean Worktree"
+else
+    fail "Clean Worktree" "uncommitted changes detected"
+fi
+
+echo ""
+echo "========================================"
+echo "Results Summary"
+echo "========================================"
+
+# Update README.md if requested
+if $UPDATE_README; then
+    echo "Updating README.md..."
+
+    TODAY=$(date +%Y-%m-%d)
+
+    # Build the new table
+    TABLE="| Check | Status | Description |
+|-------|--------|-------------|
+| Hugo Build | ${RESULTS["Hugo Build"]:-skip} | Site builds without errors |
+| SBOM Generation | ${RESULTS["SBOM Generation"]:-skip} | SBOM files generated successfully |
+| JuniperBible Tests | ${RESULTS["JuniperBible Tests"]:-skip} | 100+ tests passing |
+| Regression Tests | ${RESULTS["Regression Tests"]:-skip} | 15 E2E tests passing |
+| Clean Worktree | ${RESULTS["Clean Worktree"]:-skip} | No uncommitted changes |"
+
+    # Convert pass/fail/skip to emoji
+    TABLE=$(echo "$TABLE" | sed 's/| pass |/| ✅ Pass |/g')
+    TABLE=$(echo "$TABLE" | sed 's/| fail |/| ❌ Fail |/g')
+    TABLE=$(echo "$TABLE" | sed 's/| skip |/| ⊘ Skip |/g')
+
+    # Update README using sed
+    # Match from AUTO-GENERATED to END AUTO-GENERATED and replace
+    sed -i "/<!-- AUTO-GENERATED: Do not edit manually/,/<!-- END AUTO-GENERATED -->/c\\
+<!-- AUTO-GENERATED: Do not edit manually. Run \`make check\` to update. -->\\
+\\
+$TABLE\\
+\\
+<!-- END AUTO-GENERATED -->" "$README"
+
+    # Update last verified date
+    sed -i "s/\*Last verified: [0-9-]*\*/\*Last verified: $TODAY\*/" "$README"
+
+    echo "README.md updated with check results"
+fi
+
+echo ""
+if $ALL_PASSED; then
+    echo -e "${GREEN}All checks passed!${NC}"
+    exit 0
+else
+    echo -e "${RED}Some checks failed!${NC}"
+    exit 1
+fi

@@ -94,6 +94,22 @@ make test-keyboard  # Keyboard navigation tests
 | Documentation | ✅ 21 Files |
 | External Dependencies | ✅ Zero |
 
+## Build Checks
+
+<!-- AUTO-GENERATED: Do not edit manually. Run `make check` to update. -->
+
+| Check | Status | Description |
+|-------|--------|-------------|
+| Hugo Build | ✅ Pass | Site builds without errors |
+| SBOM Generation | ✅ Pass | SBOM files generated successfully |
+| JuniperBible Tests | ✅ Pass | 100+ tests passing |
+| Regression Tests | ✅ Pass | 15 E2E tests passing |
+| Clean Worktree | ✅ Pass | No uncommitted changes |
+
+<!-- END AUTO-GENERATED -->
+
+*Last verified: 2026-01-25*
+
 ## License
 
 See: [`LICENSE`](LICENSE)

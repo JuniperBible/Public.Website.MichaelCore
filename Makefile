@@ -1,7 +1,7 @@
 # Michael - Hugo Bible Module
 # https://github.com/FocuswithJustin/michael
 
-.PHONY: dev build clean help vendor vendor-fetch vendor-convert vendor-package vendor-restore juniper sbom ensure-data test test-compare test-search test-single test-offline test-mobile test-keyboard
+.PHONY: dev build clean help vendor vendor-fetch vendor-convert vendor-package vendor-restore juniper sbom ensure-data test test-compare test-search test-single test-offline test-mobile test-keyboard check push
 
 # Bible modules to vendor
 BIBLES := KJVA DRC Tyndale Coverdale Geneva1599 WEB Vulgate SBLGNT LXX ASV OSMHB
@@ -21,6 +21,10 @@ help:
 	@echo "  make build     Build static site to public/"
 	@echo "  make clean     Remove generated files"
 	@echo "  make sbom      Generate SBOM in all formats"
+	@echo ""
+	@echo "Quality:"
+	@echo "  make check     Run all build checks (updates README.md status)"
+	@echo "  make push      Verify all checks pass, then push to remote"
 	@echo ""
 	@echo "Testing:"
 	@echo "  make test          Run all regression tests"
@@ -167,3 +171,47 @@ test-mobile:
 
 test-keyboard:
 	cd tests && go test -v ./regression/ -run TestKeyboard
+
+# ============================================================================
+# Quality Checks
+# ============================================================================
+
+# Run all checks and update README.md status table
+check:
+	@./scripts/check-all.sh --update-readme
+
+# Verify all checks pass, then push to remote
+# Aborts with error if any check fails
+push: clean
+	@echo ""
+	@echo "========================================"
+	@echo "Make Push - Pre-flight Checks"
+	@echo "========================================"
+	@echo ""
+	@echo "Running complete build verification..."
+	@echo ""
+	@# Run all checks (will update README.md)
+	@if ./scripts/check-all.sh --update-readme; then \
+		echo ""; \
+		echo "========================================"; \
+		echo "All checks passed! Pushing to remote..."; \
+		echo "========================================"; \
+		echo ""; \
+		git add -A; \
+		if ! git diff --cached --quiet; then \
+			git commit -m "Update build status in README.md"; \
+		fi; \
+		git push; \
+		echo ""; \
+		echo "Push complete!"; \
+	else \
+		echo ""; \
+		echo "========================================"; \
+		echo "PUSH ABORTED"; \
+		echo "========================================"; \
+		echo ""; \
+		echo "It's not nice to ship bad code."; \
+		echo "Please fix the failing checks above and try again."; \
+		echo ""; \
+		exit 1; \
+	fi
