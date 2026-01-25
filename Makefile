@@ -1,7 +1,7 @@
 # Michael - Hugo Bible Module
 # https://github.com/FocuswithJustin/michael
 
-.PHONY: dev build clean help vendor vendor-fetch vendor-convert vendor-package vendor-restore juniper sbom ensure-data test test-compare test-search test-single test-offline test-mobile test-keyboard check push
+.PHONY: dev build clean help vendor vendor-fetch vendor-convert vendor-package vendor-restore juniper sbom ensure-data test test-compare test-search test-single test-offline test-mobile test-keyboard check push sync-submodules
 
 # Bible modules to vendor
 BIBLES := KJVA DRC Tyndale Coverdale Geneva1599 WEB Vulgate SBLGNT LXX ASV OSMHB
@@ -12,9 +12,13 @@ SWORD_DIR := $(HOME)/.sword
 DATA_DIR := data/example
 ASSETS_DIR := assets/downloads
 
+# Detect current branch
+BRANCH := $(shell git rev-parse --abbrev-ref HEAD)
+
 # Default target
 help:
 	@echo "Michael - Hugo Bible Module"
+	@echo "Current branch: $(BRANCH)"
 	@echo ""
 	@echo "Usage:"
 	@echo "  make dev       Start Hugo development server"
@@ -24,7 +28,11 @@ help:
 	@echo ""
 	@echo "Quality:"
 	@echo "  make check     Run all build checks (updates README.md status)"
-	@echo "  make push      Verify all checks pass, then push to remote"
+	@echo "  make push      Verify checks, then push (main requires 'RELEASE' confirmation)"
+	@echo ""
+	@echo "Branch Management:"
+	@echo "  make sync-submodules  Sync submodules to match current branch"
+	@echo "                        main -> main, development -> development"
 	@echo ""
 	@echo "Testing:"
 	@echo "  make test          Run all regression tests"
@@ -182,12 +190,29 @@ check:
 
 # Verify all checks pass, then push to remote
 # Aborts with error if any check fails
+# On main branch: requires explicit confirmation for production release
 push: clean
 	@echo ""
 	@echo "========================================"
 	@echo "Make Push - Pre-flight Checks"
 	@echo "========================================"
+	@echo "Branch: $(BRANCH)"
 	@echo ""
+	@# Block direct push to main without confirmation
+	@if [ "$(BRANCH)" = "main" ]; then \
+		echo "WARNING: You are on the main (production) branch."; \
+		echo "Direct pushes to main should be releases only."; \
+		echo ""; \
+		echo "Consider: git checkout development && make push"; \
+		echo "Then merge to main when ready for release."; \
+		echo ""; \
+		echo "To proceed anyway, type 'RELEASE' and press Enter:"; \
+		read -r confirm; \
+		if [ "$$confirm" != "RELEASE" ]; then \
+			echo "Push cancelled."; \
+			exit 1; \
+		fi; \
+	fi
 	@echo "Running complete build verification..."
 	@echo ""
 	@# Run all checks (will update README.md)
@@ -214,4 +239,20 @@ push: clean
 		echo "Please fix the failing checks above and try again."; \
 		echo ""; \
 		exit 1; \
+	fi
+
+# Sync submodules to match current branch
+# main -> tracks main branches, development -> tracks development branches
+sync-submodules:
+	@echo "Syncing submodules for branch: $(BRANCH)"
+	@if [ "$(BRANCH)" = "main" ]; then \
+		cd tools/juniper && git checkout main && git pull origin main; \
+		cd ../magellan && git checkout main && git pull origin main; \
+		echo "Submodules synced to main branches"; \
+	elif [ "$(BRANCH)" = "development" ]; then \
+		cd tools/juniper && git checkout development && git pull origin development; \
+		cd ../magellan && git checkout development && git pull origin development; \
+		echo "Submodules synced to development branches"; \
+	else \
+		echo "Unknown branch $(BRANCH) - skipping submodule sync"; \
 	fi
