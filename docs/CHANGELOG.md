@@ -22,16 +22,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Magellan E2E Testing Framework** - Browser automation for regression testing
   - Added Magellan as git submodule (`tools/magellan`)
   - New `pkg/e2e/` package with chromedp-based browser automation
-    - `browser.go` - Browser session management
-    - `element.go` - Element querying and properties
-    - `actions.go` - User interactions (click, type, keyboard)
-    - `wait.go` - Wait conditions
-    - `assertions.go` - Test assertions
+    - `browser.go` - Browser session management (258 lines)
+    - `element.go` - Element querying and properties (262 lines)
+    - `actions.go` - User interactions (321 lines)
+    - `wait.go` - Wait conditions (232 lines)
+    - `assertions.go` - Test assertions (336 lines)
   - Merged Magellan development branch to main
 - **Regression Test Suite** (`tests/`)
   - `tests/go.mod` - Go module with Magellan dependency
   - `tests/Makefile` - Test runner with targets for each test suite
-  - `tests/helpers/helpers.go` - Shared test utilities
+  - `tests/helpers/helpers.go` - Shared test utilities (169 lines)
   - 15 regression tests covering:
     - Compare page (5 tests): translations, SSS mode, verse grid, colors, navigation
     - Search page (2 tests): text query, Strong's number
@@ -39,10 +39,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - Cross-cutting (3 tests): offline, mobile touch, keyboard navigation
 
 ### Changed
-- Updated `docs/README.md` to serve as comprehensive documentation index
-- Updated main `README.md` to reflect current documentation status
-- Marked documentation complete for accessibility and SBOM
-- Updated `docs/TODO.txt` with Phase 5 (Regression Testing) tasks
+- **Documentation Overhaul** - Comprehensive update to all documentation
+  - `README.md` - Complete rewrite with features, quick start, and status table
+  - `docs/README.md` - New quick links section and project metrics table
+  - `docs/ARCHITECTURE.md` - Added testing infrastructure and service worker sections
+  - `docs/HUGO-MODULE-USAGE.md` - Updated offline support (was marked "Planned", now implemented)
+  - `docs/TESTING.md` - Added test coverage checklist and Magellan package structure
+  - All documents now have consistent cross-references and "See Also" sections
+- Updated `docs/TODO.txt` with Phase 5 (Regression Testing) tasks - all complete
 
 ## [1.1.0] - 2026-01-25
 

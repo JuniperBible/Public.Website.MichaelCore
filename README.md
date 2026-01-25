@@ -2,39 +2,98 @@
 
 Plug-and-play Hugo module that adds Bible reading functionality (reading, navigation, compare, search, Strong's) to any Hugo site — and can also run as a standalone, offline-capable site.
 
----
+## Features
+
+- **Bible Reading** — Single chapter view with verse navigation
+- **Parallel Comparison** — Compare multiple translations side-by-side
+- **SSS Mode** — Side-by-Side Scripture for detailed comparison
+- **Strong's Concordance** — Inline Hebrew/Greek definitions with tooltips
+- **Full-Text Search** — Search across all loaded translations
+- **Offline Support** — Service worker caching for offline reading
+- **Accessibility** — WCAG 2.1 AA compliant with keyboard navigation
+- **Internationalization** — 43 language translations included
+- **Zero Dependencies** — Pure JavaScript, no external runtime dependencies
+
+## Quick Start
+
+### As Hugo Module
+
+```toml
+# hugo.toml
+[module]
+  [[module.imports]]
+    path = "github.com/FocuswithJustin/michael"
+```
+
+```bash
+hugo mod init github.com/yourusername/yoursite
+hugo mod get -u
+```
+
+### Standalone
+
+```bash
+git clone https://github.com/FocuswithJustin/michael.git
+cd michael
+make dev
+```
 
 ## Documentation
 
-Start here:
+**Full documentation:** [`docs/README.md`](docs/README.md)
 
-- **Documentation index:** [`docs/README.md`](docs/README.md)
-- **Code Cleanup Charter:** [`docs/CODE_CLEANUP_CHARTER.md`](docs/CODE_CLEANUP_CHARTER.md)
-- **Project TODO / work pipeline:** [`docs/TODO.txt`](docs/TODO.txt)
-- **Changelog:** [`docs/CHANGELOG.md`](docs/CHANGELOG.md)
+### Getting Started
 
-Core references:
+| Document | Description |
+|----------|-------------|
+| [HUGO-MODULE-USAGE.md](docs/HUGO-MODULE-USAGE.md) | Installation and configuration guide |
+| [DATA-FORMATS.md](docs/DATA-FORMATS.md) | JSON schemas and data requirements |
+| [ARCHITECTURE.md](docs/ARCHITECTURE.md) | System overview and component design |
 
-- **Architecture overview:** [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) ✅
-- **Hugo module usage (embed vs standalone):** [`docs/HUGO-MODULE-USAGE.md`](docs/HUGO-MODULE-USAGE.md) ✅
-- **Data formats and schemas:** [`docs/DATA-FORMATS.md`](docs/DATA-FORMATS.md) ✅
-- **Versification notes (canon differences):** [`docs/VERSIFICATION.md`](docs/VERSIFICATION.md) ✅
-- **Service worker & offline behavior:** [`docs/SERVICE-WORKER.md`](docs/SERVICE-WORKER.md) ✅
-- **Baseline inventory & CSP audit:** [`docs/PHASE-0-BASELINE-INVENTORY.md`](docs/PHASE-0-BASELINE-INVENTORY.md) ✅
-- **WCAG accessibility audit:** [`docs/ACCESSIBILITY-AUDIT-2026-01-25.md`](docs/ACCESSIBILITY-AUDIT-2026-01-25.md) ✅
-- **SBOM (Software Bill of Materials):** [`docs/SBOM/`](docs/SBOM/) ✅
+### Technical Documentation
 
-Security & CSP documentation:
+| Document | Description |
+|----------|-------------|
+| [TESTING.md](docs/TESTING.md) | Regression testing with Magellan E2E |
+| [SERVICE-WORKER.md](docs/SERVICE-WORKER.md) | Offline caching strategy |
+| [SECURITY.md](docs/SECURITY.md) | Security model documentation |
+| [CSP.md](docs/CSP.md) | Content Security Policy guide |
+| [ACCESSIBILITY.md](docs/ACCESSIBILITY.md) | WCAG 2.1 AA conformance |
 
-- **CSP implementation:** Documented in [`docs/CHANGELOG.md`](docs/CHANGELOG.md) (Security section) ✅
-- **XSS vulnerability fixes:** See CHANGELOG.md v1.1.0 Security section ✅
+### Reference
 
-> Additional specialized security documentation (SECURITY.md, CSP.md) may be created in the future if needed.
+| Document | Description |
+|----------|-------------|
+| [VERSIFICATION.md](docs/VERSIFICATION.md) | Bible canon differences |
+| [THIRD-PARTY-LICENSES.md](docs/THIRD-PARTY-LICENSES.md) | License tracking |
+| [SBOM/](docs/SBOM/) | Software Bill of Materials |
+| [CHANGELOG.md](docs/CHANGELOG.md) | Version history |
 
----
+## Testing
+
+```bash
+# Run all regression tests
+make test
+
+# Run specific test suites
+make test-compare   # Compare page tests
+make test-search    # Search page tests
+make test-single    # Single chapter tests
+make test-offline   # Offline/PWA tests
+make test-mobile    # Mobile touch tests
+make test-keyboard  # Keyboard navigation tests
+```
+
+## Project Status
+
+| Metric | Status |
+|--------|--------|
+| Code Cleanup Charter | ✅ 100% Complete |
+| WCAG 2.1 AA | ✅ 0 Violations |
+| Regression Tests | ✅ 15 Tests |
+| Documentation | ✅ 21 Files |
+| External Dependencies | ✅ Zero |
 
 ## License
 
 See: [`LICENSE`](LICENSE)
-
----

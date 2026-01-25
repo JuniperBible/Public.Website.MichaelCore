@@ -258,15 +258,30 @@ Michael uses relative URLs by default. For CDN deployment:
   cdnURL = "https://cdn.example.com"
 ```
 
-## Offline Support (Planned)
+## Offline Support
 
-Future versions will include service worker support:
+Michael includes a service worker for offline reading capabilities:
 
-```toml
-[params.michael]
-  enableOffline = true
-  offlinePreCache = ["kjv", "drc"]
-```
+### Features
+
+- **Shell Pre-caching** - CSS, JS, and fonts cached on first visit
+- **Chapter Caching** - Bible chapters cached as you browse
+- **Default Pre-cache** - KJV Genesis, Psalms, Matthew, John pre-cached
+- **Offline Fallback** - Graceful fallback page when content not cached
+- **Cache Management** - UI for clearing offline cache
+
+### Configuration
+
+The service worker is automatically registered when the site loads. No additional configuration required.
+
+### Cache Management
+
+Users can manage their offline cache through the settings panel:
+- View cached content
+- Clear offline cache
+- See cache size
+
+See [SERVICE-WORKER.md](SERVICE-WORKER.md) for technical details.
 
 ## Support
 
@@ -279,4 +294,7 @@ Future versions will include service worker support:
 - [ARCHITECTURE.md](ARCHITECTURE.md) - System architecture
 - [DATA-FORMATS.md](DATA-FORMATS.md) - Data structure details
 - [VERSIFICATION.md](VERSIFICATION.md) - Bible versification
-- [README.md](README.md) - Quick reference
+- [SERVICE-WORKER.md](SERVICE-WORKER.md) - Offline capabilities
+- [TESTING.md](TESTING.md) - Regression testing
+- [SECURITY.md](SECURITY.md) - Security model
+- [README.md](README.md) - Documentation index

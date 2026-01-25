@@ -226,9 +226,82 @@ michael/
 - `michael/verse-grid.html` - Verse selection grid
 - `michael/sss-toggle.html` - SSS mode toggle
 
+## Testing Infrastructure
+
+```
+michael/
+├── tests/                        # Regression test suite
+│   ├── go.mod                    # Test module (requires Go 1.22+)
+│   ├── Makefile                  # Test runner commands
+│   ├── helpers/
+│   │   └── helpers.go            # Shared test utilities
+│   └── regression/
+│       ├── compare_test.go       # Compare page tests (5)
+│       ├── search_test.go        # Search page tests (2)
+│       ├── single_test.go        # Single chapter tests (5)
+│       ├── offline_test.go       # Offline/PWA tests (1)
+│       ├── mobile_test.go        # Mobile touch tests (1)
+│       └── keyboard_test.go      # Keyboard navigation tests (1)
+└── tools/
+    └── magellan/                 # E2E testing framework (submodule)
+        └── pkg/e2e/              # Browser automation package
+```
+
+### Test Commands
+
+```bash
+make test           # Run all 15 regression tests
+make test-compare   # Compare page tests
+make test-search    # Search page tests
+make test-single    # Single chapter tests
+make test-offline   # Offline/PWA tests
+make test-mobile    # Mobile touch tests
+make test-keyboard  # Keyboard navigation tests
+```
+
+## Service Worker Architecture
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│                        SERVICE WORKER (sw.js)                        │
+├─────────────────────────────────────────────────────────────────────┤
+│                                                                      │
+│  Install Event                                                       │
+│  ┌──────────────────────────────────────────────────────────────┐  │
+│  │ Pre-cache: CSS, JS, fonts, default chapters (KJV Gen/Ps/Mt/Jn)│  │
+│  └──────────────────────────────────────────────────────────────┘  │
+│                                                                      │
+│  Fetch Event                                                         │
+│  ┌──────────────────────────────────────────────────────────────┐  │
+│  │ Cache-first for shell assets                                  │  │
+│  │ Network-first for Bible chapters (cache on success)           │  │
+│  │ Offline fallback for uncached pages                           │  │
+│  └──────────────────────────────────────────────────────────────┘  │
+│                                                                      │
+│  Activate Event                                                      │
+│  ┌──────────────────────────────────────────────────────────────┐  │
+│  │ Clean up old cache versions                                   │  │
+│  └──────────────────────────────────────────────────────────────┘  │
+│                                                                      │
+└─────────────────────────────────────────────────────────────────────┘
+```
+
+## Security Model
+
+- **Zero external runtime dependencies** - All JavaScript is self-contained
+- **Content Security Policy** - CSP meta tag in baseof.html
+- **XSS Prevention** - User input properly escaped
+- **No eval()** - No dynamic code execution
+- **No inline handlers** - All event handlers attached via JavaScript
+
+See [SECURITY.md](SECURITY.md) for comprehensive security documentation.
+
 ## See Also
 
 - [DATA-FORMATS.md](DATA-FORMATS.md) - JSON schemas and data structures
 - [VERSIFICATION.md](VERSIFICATION.md) - Bible versification systems
 - [HUGO-MODULE-USAGE.md](HUGO-MODULE-USAGE.md) - Installation guide
+- [TESTING.md](TESTING.md) - Regression testing guide
+- [SERVICE-WORKER.md](SERVICE-WORKER.md) - Offline capabilities
+- [SECURITY.md](SECURITY.md) - Security model
 - [CODE_CLEANUP_CHARTER.md](CODE_CLEANUP_CHARTER.md) - Cleanup objectives

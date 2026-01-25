@@ -248,8 +248,53 @@ Example GitHub Actions step:
     cd tests && go test -v ./regression/...
 ```
 
+## Test Coverage
+
+The regression test suite covers all items from the manual QA checklist:
+
+### Compare Page Coverage (5 tests)
+- ✅ Select 2+ translations, see parallel display
+- ✅ Toggle SSS mode, see side-by-side panes
+- ✅ Use verse grid to select specific verse
+- ✅ Change highlight color, see diff highlighting
+- ✅ Navigate to different chapter
+
+### Search Page Coverage (2 tests)
+- ✅ Enter text query, see results
+- ✅ Enter Strong's number (H430), see results
+
+### Single Page Coverage (5 tests)
+- ✅ Navigate between chapters with arrows
+- ✅ Click Strong's number, see tooltip
+- ✅ Click share button, see menu
+- ✅ Copy link from share menu
+- ✅ Click verse share button
+
+### Cross-Cutting Coverage (3 tests)
+- ✅ Load cached page when offline
+- ✅ All controls usable on touch device
+- ✅ Navigate all controls with Tab/Enter/Escape/Arrows
+
+## Magellan E2E Package Structure
+
+```
+tools/magellan/pkg/e2e/
+├── browser.go      # Browser session management (258 lines)
+├── element.go      # Element queries and properties (262 lines)
+├── actions.go      # User interactions - click, type, keyboard (321 lines)
+├── wait.go         # Wait conditions - visible, hidden, text, URL (232 lines)
+├── assertions.go   # Test assertions - exist, visible, text, class (336 lines)
+└── e2e_test.go     # Unit tests for the package
+```
+
 ## References
 
 - [Magellan Repository](https://github.com/FocuswithJustin/magellan)
 - [chromedp Documentation](https://pkg.go.dev/github.com/chromedp/chromedp)
 - [Hugo Documentation](https://gohugo.io/documentation/)
+
+## See Also
+
+- [ARCHITECTURE.md](ARCHITECTURE.md) - System architecture including test structure
+- [CODE_CLEANUP_CHARTER.md](CODE_CLEANUP_CHARTER.md) - Phase 5 testing tasks
+- [TODO.txt](TODO.txt) - Task tracking with test implementation status
