@@ -525,14 +525,19 @@
     });
 
     // Close picker when clicking/touching outside
-    document.addEventListener('click', () => {
-      picker.classList.add('hidden');
-    });
-    document.addEventListener('touchend', (e) => {
-      if (!picker.contains(e.target) && e.target !== btn) {
-        picker.classList.add('hidden');
+    // Use a single handler that works for both mouse and touch
+    const closePicker = (e) => {
+      // Ignore if clicking inside picker or on button
+      if (picker.contains(e.target) || e.target === btn || btn.contains(e.target)) {
+        return;
       }
-    });
+      picker.classList.add('hidden');
+    };
+
+    // Use click for mouse, touchstart for touch (touchend may fire after click)
+    document.addEventListener('click', closePicker);
+    // For touch devices, use touchstart to close before the click fires
+    document.addEventListener('touchstart', closePicker, { passive: true });
   }
 
   /* ========================================================================
