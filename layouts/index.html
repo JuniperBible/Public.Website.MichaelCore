@@ -5,7 +5,11 @@
     {{ with .Site.Params.description }}<p class="font-hand">{{ . }}</p>{{ end }}
   </div>
 
-  {{ with .Site.GetPage "/religion/bibles" }}
+  {{/* Try /bibles first (standalone), then /religion/bibles (module) */}}
+  {{ $biblesPage := .Site.GetPage "/bibles" }}
+  {{ if not $biblesPage }}{{ $biblesPage = .Site.GetPage "/religion/bibles" }}{{ end }}
+
+  {{ with $biblesPage }}
   <section>
     <h2 class="font-hand">Bible Translations</h2>
     <div class="grid-2">

@@ -1,5 +1,20 @@
 # Michael - Hugo Bible Module
 # A plug-and-play Bible reading and comparison module for Hugo sites
+#
+# This module works in two modes:
+# 1. As a Hugo module: imported by consuming sites via go.mod
+# 2. Standalone: run `make dev` to start a local development server
+
+baseURL = "http://localhost:1313/"
+title = "Michael Bible Module"
+languageCode = "en"
+
+[params]
+  description = "A Hugo module for Bible reading, comparison, and search"
+
+[params.michael]
+  basePath = "/bibles"
+  backLink = "/"
 
 # Enable raw HTML in markdown (required for Bible verse formatting)
 [markup.goldmark.renderer]
@@ -25,6 +40,11 @@
     source = "static"
     target = "static"
 
+  # Mount example data for standalone development
   [[module.mounts]]
-    source = "data"
+    source = "data/example"
     target = "data"
+
+  [[module.mounts]]
+    source = "content"
+    target = "content"
