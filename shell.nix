@@ -4,6 +4,9 @@ pkgs.mkShell {
   buildInputs = with pkgs; [
     hugo
     gnumake
+    go
+    xz
+    curl
   ];
 
   shellHook = ''
