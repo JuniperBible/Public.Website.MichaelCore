@@ -250,6 +250,7 @@ push: clean
 sync-submodules:
 	@echo "Syncing submodules for branch: $(BRANCH)"
 	@cd tools/hugo && git checkout master && git pull origin master
+	@cd tools/caddy && git checkout master && git pull origin master
 	@if [ "$(BRANCH)" = "main" ]; then \
 		cd tools/juniper && git checkout main && git pull origin main; \
 		cd ../magellan && git checkout main && git pull origin main; \

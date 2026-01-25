@@ -10,3 +10,7 @@
 	path = tools/hugo
 	url = https://github.com/FocuswithJustin/hugo.git
 	branch = master
+[submodule "tools/caddy"]
+	path = tools/caddy
+	url = git@github.com:FocuswithJustin/caddy.git
+	branch = master
