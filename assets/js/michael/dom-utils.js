@@ -11,6 +11,35 @@ window.Michael = window.Michael || {};
 window.Michael.DomUtils = (function() {
   'use strict';
 
+  // ============================================================================
+  // TOAST NOTIFICATION CONFIGURATION
+  // ============================================================================
+
+  /**
+   * Default toast notification options
+   * @type {Object}
+   */
+  const TOAST_DEFAULTS = {
+    duration: 3000,        // Display duration in milliseconds
+    position: 'bottom',    // 'top' or 'bottom'
+    animationMs: 300       // CSS transition duration
+  };
+
+  /**
+   * Toast type to CSS modifier mapping
+   * @type {Object.<string, string>}
+   */
+  const TOAST_MODIFIERS = {
+    info: '',
+    success: 'toast--success',
+    warning: 'toast--warning',
+    error: 'toast--error'
+  };
+
+  // ============================================================================
+  // TAP LISTENER
+  // ============================================================================
+
   /**
    * Add unified tap listener for mobile and desktop compatibility
    *
@@ -64,6 +93,10 @@ window.Michael.DomUtils = (function() {
     });
   }
 
+  // ============================================================================
+  // COLOR UTILITIES
+  // ============================================================================
+
   /**
    * Calculate contrasting text color for a given background color
    *
@@ -99,15 +132,23 @@ window.Michael.DomUtils = (function() {
     return brightness > 128 ? '#1a1a1a' : '#f5f5eb';
   }
 
+  // ============================================================================
+  // TOAST NOTIFICATIONS
+  // ============================================================================
+
   /**
-   * Display a message notification to the user
+   * Display a toast notification to the user
    *
-   * Currently uses native browser alert dialog. Can be enhanced with
-   * custom toast notifications or modal dialogs in the future.
+   * Creates an accessible, animated toast notification that auto-dismisses.
+   * Supports multiple message types with distinct visual styling.
+   * Uses ARIA live regions for screen reader accessibility.
    *
    * @param {string} text - The message text to display
-   * @param {string} [type='info'] - Message type ('info', 'warning', 'error', 'success')
-   * @returns {void}
+   * @param {string} [type='info'] - Message type: 'info', 'success', 'warning', 'error'
+   * @param {Object} [options] - Optional configuration
+   * @param {number} [options.duration=3000] - Display duration in milliseconds
+   * @param {string} [options.position='bottom'] - Position: 'top' or 'bottom'
+   * @returns {HTMLElement} The toast element (for programmatic dismissal)
    *
    * @example
    * showMessage('Chapter loaded successfully', 'success');
@@ -116,18 +157,97 @@ window.Michael.DomUtils = (function() {
    * showMessage('Maximum 11 translations can be compared at once.', 'warning');
    *
    * @example
-   * showMessage('Failed to load chapter data', 'error');
+   * showMessage('Failed to load chapter data', 'error', { duration: 5000 });
+   *
+   * @example
+   * // Programmatic dismissal
+   * const toast = showMessage('Processing...', 'info', { duration: 0 });
+   * // Later: dismissToast(toast);
    */
-  function showMessage(text, type = 'info') {
-    // TODO: Replace with custom toast notification system
-    // For now, use simple alert dialog
-    alert(text);
+  function showMessage(text, type = 'info', options = {}) {
+    const config = { ...TOAST_DEFAULTS, ...options };
+
+    // Remove any existing toast
+    const existingToast = document.querySelector('.toast');
+    if (existingToast) {
+      existingToast.remove();
+    }
+
+    // Create toast element
+    const toast = document.createElement('div');
+    toast.className = 'toast';
+
+    // Add type-specific modifier class
+    const modifier = TOAST_MODIFIERS[type] || '';
+    if (modifier) {
+      toast.classList.add(modifier);
+    }
+
+    // Add position modifier
+    if (config.position === 'top') {
+      toast.classList.add('toast--top');
+    }
+
+    // Set content
+    toast.textContent = text;
+
+    // Accessibility: Use ARIA live region for screen readers
+    toast.setAttribute('role', 'status');
+    toast.setAttribute('aria-live', type === 'error' ? 'assertive' : 'polite');
+    toast.setAttribute('aria-atomic', 'true');
+
+    // Append to document
+    document.body.appendChild(toast);
+
+    // Trigger animation after DOM insertion (allows CSS transition)
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        toast.classList.add('toast--visible');
+      });
+    });
+
+    // Auto-dismiss after duration (unless duration is 0 for persistent toasts)
+    if (config.duration > 0) {
+      setTimeout(() => {
+        dismissToast(toast, config.animationMs);
+      }, config.duration);
+    }
+
+    return toast;
   }
 
-  // Public API
+  /**
+   * Dismiss a toast notification with animation
+   *
+   * @param {HTMLElement} toast - The toast element to dismiss
+   * @param {number} [animationMs=300] - Animation duration in milliseconds
+   * @returns {void}
+   *
+   * @example
+   * const toast = showMessage('Loading...', 'info', { duration: 0 });
+   * // When done loading:
+   * dismissToast(toast);
+   */
+  function dismissToast(toast, animationMs = TOAST_DEFAULTS.animationMs) {
+    if (!toast || !toast.parentNode) return;
+
+    toast.classList.remove('toast--visible');
+
+    setTimeout(() => {
+      if (toast.parentNode) {
+        toast.remove();
+      }
+    }, animationMs);
+  }
+
+  // ============================================================================
+  // PUBLIC API
+  // ============================================================================
+
   return {
     addTapListener,
     getContrastColor,
-    showMessage
+    showMessage,
+    dismissToast
   };
 })();

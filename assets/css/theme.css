@@ -760,7 +760,66 @@ a:focus-visible {
   opacity: 0.5;
 }
 
-/* Toast notifications */
+/* Toast notifications - Generic component */
+.toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(100px);
+  z-index: 9999;
+
+  max-width: 90%;
+  width: auto;
+  min-width: 280px;
+
+  padding: 12px 20px;
+  background: var(--chrome-900);
+  color: rgba(255, 255, 255, 0.95);
+  border-radius: var(--radius-1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+
+  font-size: 0.92rem;
+  line-height: 1.4;
+  text-align: center;
+
+  opacity: 0;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+              opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.toast--visible {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+}
+
+/* Toast positioned at top of screen */
+.toast--top {
+  bottom: auto;
+  top: 24px;
+  transform: translateX(-50%) translateY(-100px);
+}
+
+.toast--top.toast--visible {
+  transform: translateX(-50%) translateY(0);
+}
+
+/* Toast type variants */
+.toast--success {
+  background: #1d3a0a;
+  border-left: 4px solid var(--success-500);
+}
+
+.toast--warning {
+  background: #5c4100;
+  border-left: 4px solid #ffc107;
+}
+
+.toast--error {
+  background: #5c1a1a;
+  border-left: 4px solid var(--state-error);
+}
+
+/* Legacy share-toast alias (for backwards compatibility) */
 .share-toast {
   position: fixed;
   bottom: 24px;
@@ -794,10 +853,16 @@ a:focus-visible {
 
 /* Responsive toast positioning */
 @media (max-width: 480px) {
+  .toast,
   .share-toast {
     min-width: 260px;
     bottom: 16px;
     font-size: 0.88rem;
+  }
+
+  .toast--top {
+    bottom: auto;
+    top: 16px;
   }
 }
 

@@ -8,6 +8,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Unified Toast Notification System** - Generic notification component
+  - `assets/js/michael/dom-utils.js` - `showMessage()` with type variants
+    - Supports `info`, `success`, `warning`, `error` types
+    - Configurable duration and position (top/bottom)
+    - `dismissToast()` for programmatic dismissal
+    - ARIA live regions for screen reader accessibility
+  - `assets/css/theme.css` - Toast CSS components
+    - `.toast` base class with CSS transitions
+    - `.toast--success`, `.toast--warning`, `.toast--error` variants
+    - `.toast--top` position modifier
+    - Backwards compatible with `.share-toast`
 - **SBOM (Software Bill of Materials)** - Multiple SBOM formats generated
   - `assets/downloads/sbom/sbom.spdx.json` - SPDX 2.3 format
   - `assets/downloads/sbom/sbom.cdx.json` - CycloneDX JSON format
