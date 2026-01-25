@@ -1,0 +1,259 @@
+# Michael TODO
+
+This file tracks detailed tasks for the Michael submodule.
+For the project charter, see [docs/PROJECT-CHARTER.md](docs/PROJECT-CHARTER.md).
+
+---
+
+## Project Overview
+Extract Bible functionality from FocuswithJustin.com into a standalone Hugo module.
+Repository: git@github.com:FocuswithJustin/michael.git
+
+## COMPLETED TASKS
+
+### 1. Repository Setup
+[x] Initialize empty git repository on GitHub
+[x] Add michael as git submodule to parent project
+[x] Create go.mod for Hugo module identification
+[x] Create hugo.toml with module mount configuration
+
+### 2. Layouts Extracted
+[x] layouts/michael/bibles/list.html - Bible translations list with filtering
+[x] layouts/michael/bibles/single.html - Bible/book/chapter page layout
+[x] layouts/michael/compare.html - Side-by-side translation comparison (SSS mode)
+[x] layouts/michael/search.html - Full-text Bible search interface
+
+### 3. Partials Extracted
+[x] layouts/partials/michael/bible-nav.html - Bible/book/chapter dropdown navigation
+[x] layouts/partials/michael/canonical-comparison.html - Canonical traditions comparison table
+[ ] layouts/partials/michael/translation-selector.html - Multi-select checkboxes (pending)
+
+## IN PROGRESS TASKS
+
+### 4. JavaScript Assets (assets/js/)
+[ ] parallel.js - Parallel translation view controller (1220 lines)
+    - Multi-translation comparison (up to 11 at once)
+    - SSS (Side by Side Scripture) mode
+    - Text highlighting/diff functionality
+    - Chapter caching system
+    - URL state management & localStorage persistence
+    - Touch/mobile support
+
+[ ] share.js - Verse sharing functionality (400 lines)
+    - Copy to clipboard
+    - Social media sharing (Twitter/X, Facebook)
+    - Verse URL generation with ?v= parameter
+
+[ ] strongs.js - Strong's number processing (248 lines)
+    - Detects H#### (Hebrew) and G#### (Greek) patterns
+    - Creates clickable tooltips
+    - Links to Blue Letter Bible definitions
+    - DOM mutation observer for dynamic content
+
+[ ] text-compare.js - Text diff/comparison engine (665 lines)
+    - Token-level diff (words, punctuation, whitespace)
+    - Myers diff algorithm for optimal alignment
+    - Difference classification (typo, punctuation, spelling, substantive)
+    - Offset-preserving rendering
+
+[ ] bible-search.js - Client-side Bible search (370 lines)
+    - Text search
+    - Phrase search (quoted)
+    - Strong's number search
+    - On-demand chapter loading
+    - URL parameter handling
+
+## PENDING TASKS
+
+### 5. Content Templates
+[ ] content/bibles/_content.gotmpl - Page generator template
+    - Reads data/bibles.json and data/bibles_auxiliary/
+    - Generates pages via $.AddPage:
+      - Bible overview pages
+      - Book list pages
+      - Chapter pages
+    - Filters out empty content
+
+[ ] content/bibles/_index.md - Section mount point
+[ ] content/bibles/compare.md - Compare page frontmatter
+[ ] content/bibles/search.md - Search page frontmatter
+
+### 6. Internationalization (i18n/)
+[ ] i18n/en.toml - English Bible UI strings
+    - bibleNavigation, bibles, biblesDescription
+    - selectBible, selectBook, selectChapter
+    - compareTranslations, searchBible
+    - previousChapter, nextChapter
+    - caseSensitive, wholeWord
+    - searchResults, noResults
+
+### 7. Data Structure
+[ ] data/example/bibles.json - Example metadata structure
+[ ] data/example/bibles_auxiliary/ - Example per-translation structure
+[ ] static/schemas/bibles.schema.json - JSON Schema for validation
+[ ] static/schemas/bibles-auxiliary.schema.json - Per-Bible file schema
+[ ] data/book_mappings.json - Canonical traditions data (optional)
+
+### 8. Juniper Submodule
+[ ] Add juniper as git submodule (tools/juniper/)
+[ ] Document juniper usage for generating Bible data
+
+### 9. Documentation
+[ ] README.md - Module overview
+    - Features list
+    - Installation instructions (Hugo module import)
+    - Configuration options
+    - Data requirements
+    - Customization guide
+
+[ ] docs/installation.md - Detailed setup guide
+[ ] docs/configuration.md - All configuration options
+[ ] docs/data-format.md - Bible data JSON structure
+[ ] docs/customization.md - Theming and styling
+[ ] docs/api.md - JavaScript API reference
+
+### 10. Testing
+[ ] Test module import in clean Hugo site
+[ ] Verify all layouts render correctly
+[ ] Test JavaScript functionality
+[ ] Verify i18n fallbacks work
+[ ] Test with minimal data (single Bible)
+
+## CONFIGURATION OPTIONS (for consuming sites)
+
+```toml
+# hugo.toml
+[params.michael]
+  basePath = "/religion/bibles"  # URL path for Bible section
+  backLink = "/religion/"        # Back navigation link
+
+# Module imports
+[module]
+  [[module.imports]]
+    path = "github.com/FocuswithJustin/michael"
+
+  # Override content mount if needed
+  [[module.mounts]]
+    source = "node_modules/michael/content/bibles"
+    target = "content/my-custom-path/bibles"
+```
+
+## DATA REQUIREMENTS
+
+Consuming sites must provide:
+1. data/bibles.json - Bible metadata
+2. data/bibles_auxiliary/{id}.json - Per-translation verse data
+
+Structure:
+```json
+// data/bibles.json
+{
+  "bibles": [
+    {
+      "id": "kjv",
+      "title": "King James Version",
+      "abbrev": "KJV",
+      "description": "1769 edition",
+      "language": "English",
+      "license": "public-domain",
+      "features": ["Strong's Numbers"],
+      "tags": ["Historic", "Protestant"],
+      "weight": 1
+    }
+  ]
+}
+
+// data/bibles_auxiliary/kjv.json
+{
+  "books": [
+    {
+      "id": "Gen",
+      "name": "Genesis",
+      "abbrev": "Gen",
+      "testament": "OT",
+      "chapters": [
+        {
+          "number": 1,
+          "verses": [
+            { "number": 1, "text": "In the beginning..." }
+          ]
+        }
+      ]
+    }
+  ]
+}
+```
+
+## CSS/STYLING DEPENDENCIES
+
+The module assumes these CSS classes exist:
+- btn-paper, btn-paper-dark - Button styles
+- card-paper - Card container
+- input-paper - Form inputs
+- font-hand - Handwriting font
+- text-paper-black, text-paper-gray, text-accent - Text colors
+- bg-paper-*, bg-accent - Background colors
+
+Tailwind CSS classes are used throughout.
+
+## EXTERNAL SERVICE INTEGRATIONS
+
+- Blue Letter Bible - Strong's number definitions
+- Twitter/X - Share dialogs
+- Facebook - Share dialogs
+
+## FILES TO COPY FROM SOURCE PROJECT
+
+Source: Website.Public.FocuswithJustin.com
+
+### Layouts
+- themes/airfold/layouts/religion/bibles/list.html → layouts/michael/bibles/list.html
+- themes/airfold/layouts/religion/bibles/single.html → layouts/michael/bibles/single.html
+- layouts/religion/compare.html → layouts/michael/compare.html
+- layouts/religion/search.html → layouts/michael/search.html
+
+### Partials
+- themes/airfold/layouts/partials/bible-nav.html → layouts/partials/michael/bible-nav.html
+- themes/airfold/layouts/partials/canonical-comparison.html → layouts/partials/michael/canonical-comparison.html
+- themes/airfold/layouts/partials/translation-selector.html → layouts/partials/michael/translation-selector.html
+
+### JavaScript
+- themes/airfold/assets/js/parallel.js → assets/js/parallel.js
+- themes/airfold/assets/js/share.js → assets/js/share.js
+- themes/airfold/assets/js/strongs.js → assets/js/strongs.js
+- themes/airfold/assets/js/text-compare.js → assets/js/text-compare.js
+- assets/js/bible-search.js → assets/js/bible-search.js
+
+### Content
+- themes/airfold/extensions/religion/content/bibles/_content.gotmpl → content/bibles/_content.gotmpl
+- themes/airfold/extensions/religion/content/bibles/_index.md → content/bibles/_index.md
+
+### i18n (Bible-related strings only)
+- i18n/en.toml (lines 167-267) → i18n/en.toml
+
+### Schemas
+- static/schemas/bibles.schema.json → static/schemas/bibles.schema.json
+- static/schemas/bibles-auxiliary.schema.json → static/schemas/bibles-auxiliary.schema.json
+
+## MODIFICATIONS FOR MODULE
+
+1. Change hardcoded /religion/bibles/ paths to use $basePath variable
+2. Add .Site.Params.michael.basePath configuration support
+3. Namespace partials under michael/ to avoid conflicts
+4. Create module-specific layout lookup paths (layouts/michael/)
+5. Document all configuration options
+6. Create example data files for testing
+7. Update JavaScript to use configurable base paths
+
+## COMMIT PLAN
+
+1. ADD hugo module configuration files (go.mod, hugo.toml)
+2. ADD layouts for Bible pages (list, single, compare, search)
+3. ADD partials for Bible navigation and components
+4. ADD JavaScript assets for Bible functionality
+5. ADD content templates for page generation
+6. ADD i18n strings for Bible UI
+7. ADD example data and schemas
+8. ADD juniper as submodule for data generation
+9. ADD documentation (README, docs/)
+10. TEST module integration with clean Hugo site

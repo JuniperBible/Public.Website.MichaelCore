@@ -1,0 +1,100 @@
+{{ define "scripts" }}
+{{ $search := resources.Get "js/bible-search.js" }}
+{{ if $search }}
+<script src="{{ $search.RelPermalink }}" defer></script>
+{{ end }}
+{{ end }}
+
+{{ define "main" }}
+{{ $basePath := .Site.Params.michael.basePath | default "/religion/bibles" }}
+<div class="max-w-4xl mx-auto px-4 py-8">
+  <header class="text-center mb-8">
+    <h1 class="text-3xl md:text-4xl font-hand font-bold text-paper-black mb-2">
+      {{ .Title }}
+    </h1>
+    <p class="text-lg font-hand text-paper-gray">
+      {{ .Description }}
+    </p>
+  </header>
+
+  <!-- Search Form -->
+  <div class="card-paper p-6 mb-6">
+    <form id="search-form" class="space-y-4">
+      <div class="flex flex-col md:flex-row gap-4">
+        <div class="flex-1">
+          <label for="search-query" class="block font-hand text-paper-black mb-2">
+            {{ i18n "searchQuery" | default "Search for" }}:
+          </label>
+          <input
+            type="text"
+            id="search-query"
+            name="q"
+            class="input-paper rounded"
+            placeholder="{{ i18n "searchPlaceholder" | default "word, \"exact phrase\", or H1234/G5678" }}"
+            autocomplete="off"
+          >
+        </div>
+        <div>
+          <label for="bible-select" class="block font-hand text-paper-black mb-2">
+            {{ i18n "selectBible" | default "Translation" }}:
+          </label>
+          <select id="bible-select" name="bible" class="input-paper rounded appearance-none cursor-pointer">
+            {{ range .Site.Data.bibles.bibles }}
+            <option value="{{ .id }}">{{ .abbrev }} - {{ .title }}</option>
+            {{ end }}
+          </select>
+        </div>
+      </div>
+      <div class="flex items-center gap-4">
+        <button type="submit" class="btn-paper-dark">
+          {{ i18n "search" | default "Search" }}
+        </button>
+        <label class="flex items-center gap-2 font-hand text-paper-gray cursor-pointer">
+          <input type="checkbox" id="case-sensitive" class="rounded">
+          {{ i18n "caseSensitive" | default "Case sensitive" }}
+        </label>
+        <label class="flex items-center gap-2 font-hand text-paper-gray cursor-pointer">
+          <input type="checkbox" id="whole-word" class="rounded">
+          {{ i18n "wholeWord" | default "Whole word" }}
+        </label>
+      </div>
+    </form>
+  </div>
+
+  <!-- Search Status -->
+  <div id="search-status" class="text-center font-hand text-paper-gray mb-4 hidden">
+    {{ i18n "searching" | default "Searching..." }}
+  </div>
+
+  <!-- Search Results -->
+  <div id="search-results" class="space-y-4">
+    <div class="text-center text-paper-gray font-hand py-12">
+      <p class="mb-2">{{ i18n "searchPrompt" | default "Enter a search term to find verses across the Bible." }}</p>
+      <p class="text-sm">{{ i18n "searchTypesHint" | default "Try: word, \"exact phrase\", or Strong's numbers (H430, G2316)" }}</p>
+    </div>
+  </div>
+
+  <!-- Back Navigation -->
+  <div class="text-center mt-8">
+    <a href="{{ $basePath }}/" class="btn-paper">
+      &larr; {{ i18n "allBibles" | default "All Bibles" }}
+    </a>
+  </div>
+</div>
+
+<!-- Bible Index Data for JavaScript - generated at build time -->
+{{- $bibleIndex := dict -}}
+{{- range $bible := .Site.Data.bibles.bibles -}}
+  {{- $aux := index $.Site.Data.bibles_auxiliary $bible.id -}}
+  {{- $books := slice -}}
+  {{- with $aux -}}
+    {{- range .books -}}
+      {{- $books = $books | append (dict "id" .id "name" .name "chapters" (len .chapters)) -}}
+    {{- end -}}
+  {{- end -}}
+  {{- $bibleIndex = $bibleIndex | merge (dict $bible.id (dict "title" $bible.title "abbrev" $bible.abbrev "books" $books)) -}}
+{{- end -}}
+<script id="bible-index" type="application/json">
+{{ dict "bibles" $bibleIndex "basePath" $basePath | jsonify | safeJS }}
+</script>
+{{ end }}

@@ -1,0 +1,28 @@
+{
+  "bibles": [
+    {
+      "id": "kjv",
+      "title": "King James Version",
+      "abbrev": "KJV",
+      "description": "1769 Edition of the Authorized Version",
+      "language": "English",
+      "license": "public-domain",
+      "versification": "kjv",
+      "features": ["Strong's Numbers"],
+      "tags": ["Historic", "Protestant"],
+      "weight": 1
+    },
+    {
+      "id": "drc",
+      "title": "Douay-Rheims Catholic Bible",
+      "abbrev": "DRC",
+      "description": "Douay-Rheims Challoner Revision 1752",
+      "language": "English",
+      "license": "public-domain",
+      "versification": "catholic",
+      "features": [],
+      "tags": ["Historic", "Catholic"],
+      "weight": 2
+    }
+  ]
+}

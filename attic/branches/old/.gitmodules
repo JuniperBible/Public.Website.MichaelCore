@@ -1,0 +1,3 @@
+[submodule "tools/juniper"]
+	path = tools/juniper
+	url = git@github.com:FocuswithJustin/juniper.git

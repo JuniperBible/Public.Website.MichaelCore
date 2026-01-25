@@ -1,0 +1,114 @@
+# Michael - Hugo Bible Module
+# Italian UI Strings
+
+# Navigation
+[bibleNavigation]
+other = "Navigazione Bibbia"
+
+[bibles]
+other = "Traduzioni della Bibbia"
+
+[biblesDescription]
+other = "Sfoglia le traduzioni storiche della Bibbia"
+
+[backToReligion]
+other = "Indietro"
+
+[backToBook]
+other = "Torna al libro"
+
+[backToBible]
+other = "Torna alla Bibbia"
+
+[allBibles]
+other = "Tutte le Bibbie"
+
+[allChapters]
+other = "Tutti i capitoli"
+
+[selectBible]
+other = "Seleziona Bibbia"
+
+[selectBook]
+other = "Seleziona libro"
+
+[selectChapter]
+other = "Seleziona capitolo"
+
+[chapter]
+other = "Cap"
+
+[previousChapter]
+other = "Capitolo precedente"
+
+[nextChapter]
+other = "Capitolo successivo"
+
+[unavailable]
+other = "non disponibile"
+
+# Filtering
+[filterByTag]
+other = "Filtra per tag"
+
+[all]
+other = "Tutti"
+
+[noBiblesMatch]
+other = "Nessuna Bibbia corrisponde a questo filtro."
+
+# Compare translations
+[compareTranslations]
+other = "Confronta traduzioni"
+
+[selectTranslations]
+other = "Seleziona traduzioni"
+
+[selectTranslationsHint]
+other = "Seleziona 2-4 traduzioni da confrontare fianco a fianco."
+
+[selectPassage]
+other = "Seleziona passaggio"
+
+[compare]
+other = "Confronta"
+
+[selectPassagePrompt]
+other = "Seleziona traduzioni e un passaggio per iniziare il confronto."
+
+[maxTranslationsWarning]
+other = "È possibile confrontare al massimo 4 traduzioni alla volta."
+
+# Bible search
+[searchBible]
+other = "Cerca nella Bibbia"
+
+[searchQuery]
+other = "Cerca"
+
+[searchPlaceholder]
+other = "parola, \"frase esatta\", o H1234/G5678"
+
+[search]
+other = "Cerca"
+
+[caseSensitive]
+other = "Maiuscole/minuscole"
+
+[wholeWord]
+other = "Parola intera"
+
+[searching]
+other = "Ricerca..."
+
+[searchPrompt]
+other = "Inserisci un termine di ricerca per trovare versetti nella Bibbia."
+
+[searchTypesHint]
+other = "Prova: parola, \"frase esatta\", o numeri Strong (H430, G2316)"
+
+[searchResults]
+other = "Risultati della ricerca"
+
+[noResults]
+other = "Nessun risultato trovato"

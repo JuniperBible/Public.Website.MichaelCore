@@ -1,0 +1,114 @@
+# Michael - Hugo Bible Module
+# English UI Strings
+
+# Navigation
+[bibleNavigation]
+other = "Bible Navigation"
+
+[bibles]
+other = "Bible Translations"
+
+[biblesDescription]
+other = "Browse historic Bible translations"
+
+[backToReligion]
+other = "Back"
+
+[backToBook]
+other = "Back to Book"
+
+[backToBible]
+other = "Back to Bible"
+
+[allBibles]
+other = "All Bibles"
+
+[allChapters]
+other = "All Chapters"
+
+[selectBible]
+other = "Select Bible"
+
+[selectBook]
+other = "Select Book"
+
+[selectChapter]
+other = "Select Chapter"
+
+[chapter]
+other = "Ch"
+
+[previousChapter]
+other = "Previous Chapter"
+
+[nextChapter]
+other = "Next Chapter"
+
+[unavailable]
+other = "unavailable"
+
+# Filtering
+[filterByTag]
+other = "Filter by Tag"
+
+[all]
+other = "All"
+
+[noBiblesMatch]
+other = "No Bibles match this filter."
+
+# Compare translations
+[compareTranslations]
+other = "Compare Translations"
+
+[selectTranslations]
+other = "Select Translations"
+
+[selectTranslationsHint]
+other = "Select 2-4 translations to compare side-by-side."
+
+[selectPassage]
+other = "Select Passage"
+
+[compare]
+other = "Compare"
+
+[selectPassagePrompt]
+other = "Select translations and a passage to begin comparing."
+
+[maxTranslationsWarning]
+other = "Maximum 4 translations can be compared at once."
+
+# Bible search
+[searchBible]
+other = "Search Bible"
+
+[searchQuery]
+other = "Search for"
+
+[searchPlaceholder]
+other = "word, \"exact phrase\", or H1234/G5678"
+
+[search]
+other = "Search"
+
+[caseSensitive]
+other = "Case sensitive"
+
+[wholeWord]
+other = "Whole word"
+
+[searching]
+other = "Searching..."
+
+[searchPrompt]
+other = "Enter a search term to find verses across the Bible."
+
+[searchTypesHint]
+other = "Try: word, \"exact phrase\", or Strong's numbers (H430, G2316)"
+
+[searchResults]
+other = "Search Results"
+
+[noResults]
+other = "No results found"

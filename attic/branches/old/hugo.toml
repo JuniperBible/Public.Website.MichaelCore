@@ -1,0 +1,31 @@
+# Michael - Hugo Bible Module
+# A plug-and-play Bible reading and comparison module for Hugo sites
+
+[module]
+  # Default mount configuration for the module
+  # These can be overridden by the consuming site
+
+  [[module.mounts]]
+    source = "layouts"
+    target = "layouts"
+
+  [[module.mounts]]
+    source = "assets"
+    target = "assets"
+
+  [[module.mounts]]
+    source = "i18n"
+    target = "i18n"
+
+  [[module.mounts]]
+    source = "static"
+    target = "static"
+
+  [[module.mounts]]
+    source = "data"
+    target = "data"
+
+  # Content mount - consuming site configures target path
+  [[module.mounts]]
+    source = "content/bibles"
+    target = "content/religion/bibles"

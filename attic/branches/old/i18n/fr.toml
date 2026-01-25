@@ -1,0 +1,114 @@
+# Michael - Hugo Bible Module
+# French UI Strings
+
+# Navigation
+[bibleNavigation]
+other = "Navigation biblique"
+
+[bibles]
+other = "Traductions de la Bible"
+
+[biblesDescription]
+other = "Parcourir les traductions historiques de la Bible"
+
+[backToReligion]
+other = "Retour"
+
+[backToBook]
+other = "Retour au livre"
+
+[backToBible]
+other = "Retour à la Bible"
+
+[allBibles]
+other = "Toutes les Bibles"
+
+[allChapters]
+other = "Tous les chapitres"
+
+[selectBible]
+other = "Sélectionner une Bible"
+
+[selectBook]
+other = "Sélectionner un livre"
+
+[selectChapter]
+other = "Sélectionner un chapitre"
+
+[chapter]
+other = "Ch"
+
+[previousChapter]
+other = "Chapitre précédent"
+
+[nextChapter]
+other = "Chapitre suivant"
+
+[unavailable]
+other = "indisponible"
+
+# Filtering
+[filterByTag]
+other = "Filtrer par étiquette"
+
+[all]
+other = "Tous"
+
+[noBiblesMatch]
+other = "Aucune Bible ne correspond à ce filtre."
+
+# Compare translations
+[compareTranslations]
+other = "Comparer les traductions"
+
+[selectTranslations]
+other = "Sélectionner les traductions"
+
+[selectTranslationsHint]
+other = "Sélectionnez 2 à 4 traductions pour les comparer côte à côte."
+
+[selectPassage]
+other = "Sélectionner un passage"
+
+[compare]
+other = "Comparer"
+
+[selectPassagePrompt]
+other = "Sélectionnez des traductions et un passage pour commencer la comparaison."
+
+[maxTranslationsWarning]
+other = "Maximum 4 traductions peuvent être comparées à la fois."
+
+# Bible search
+[searchBible]
+other = "Rechercher dans la Bible"
+
+[searchQuery]
+other = "Rechercher"
+
+[searchPlaceholder]
+other = "mot, \"phrase exacte\", ou H1234/G5678"
+
+[search]
+other = "Rechercher"
+
+[caseSensitive]
+other = "Sensible à la casse"
+
+[wholeWord]
+other = "Mot entier"
+
+[searching]
+other = "Recherche..."
+
+[searchPrompt]
+other = "Entrez un terme de recherche pour trouver des versets dans la Bible."
+
+[searchTypesHint]
+other = "Essayez : mot, \"phrase exacte\", ou numéros Strong (H430, G2316)"
+
+[searchResults]
+other = "Résultats de recherche"
+
+[noResults]
+other = "Aucun résultat trouvé"
