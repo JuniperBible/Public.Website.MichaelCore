@@ -109,7 +109,7 @@ Create: `layouts/partials/michael/`
 ### 5.3 Key Refactors (Expected Impact Targets)
 
 - `assets/js/parallel.js`: ~1264 → **< 900** lines by moving reusable code to modules
-- `layouts/bibles/compare.html`: ~192 → **< 150** lines by partial extraction and style cleanup
+- `layouts/bible/compare.html`: ~192 → **< 150** lines by partial extraction and style cleanup
 - Duplicated functions: 10+ → **0**
 
 ---
@@ -294,7 +294,7 @@ DoD:
 | `assets/js/share.js` | move into ShareMenu component, offline fallback, ARIA | HIGH |
 | `assets/js/strongs.js` | local defs, tooltip ARIA, keyboard parity | HIGH |
 | `assets/js/bible-search.js` | CSP-safe highlighting, use bible-api | HIGH |
-| `layouts/bibles/compare.html` | partial extraction, remove inline styles, labels | HIGH |
+| `layouts/bible/compare.html` | partial extraction, remove inline styles, labels | HIGH |
 | `assets/css/theme.css` | new components, contrast fixes, focus-visible | MEDIUM |
 | `layouts/_default/baseof.html` | CSP meta, SW registration (guarded) | MEDIUM |
 

@@ -1,0 +1,218 @@
+{{ define "main" }}
+{{- $licenseId := .Params.licenseId -}}
+
+{{- /* Collect Bibles using this license */ -}}
+{{- $bibles := slice -}}
+{{- range .Site.Data.bibles.bibles -}}
+  {{- if eq .license $licenseId -}}
+    {{- $bibles = $bibles | append . -}}
+  {{- end -}}
+{{- end -}}
+
+{{- /* Get SPDX license metadata */ -}}
+{{- $spdxLicenses := .Site.Data.spdx.licenses.licenses -}}
+{{- $spdxInfo := dict -}}
+{{- range $spdxLicenses -}}
+  {{- if eq (lower .licenseId) (lower $licenseId) -}}
+    {{- $spdxInfo = . -}}
+  {{- end -}}
+{{- end -}}
+
+{{- /* Get choosealicense.com license data */ -}}
+{{- $choosealicenseLicenses := .Site.Data.choosealicense.licenses.licenses -}}
+{{- $choosealicenseRules := .Site.Data.choosealicense.rules -}}
+{{- $licenseRights := dict -}}
+
+{{- /* Try exact match first, then case-insensitive, then base license ID */ -}}
+{{- /* Strip -or-later, -only suffixes for base matching */ -}}
+{{- $baseLicenseId := replaceRE "-or-later$|-only$" "" $licenseId -}}
+{{- range $id, $data := $choosealicenseLicenses -}}
+  {{- if eq $id $licenseId -}}
+    {{- $licenseRights = $data -}}
+  {{- else if eq (lower $id) (lower $licenseId) -}}
+    {{- $licenseRights = $data -}}
+  {{- else if eq (lower $id) (lower $baseLicenseId) -}}
+    {{- $licenseRights = $data -}}
+  {{- end -}}
+{{- end -}}
+
+{{- /* Build lookup maps for rules */ -}}
+{{- $permissionRules := dict -}}
+{{- range $choosealicenseRules.permissions -}}
+  {{- $permissionRules = $permissionRules | merge (dict .tag .) -}}
+{{- end -}}
+{{- $conditionRules := dict -}}
+{{- range $choosealicenseRules.conditions -}}
+  {{- $conditionRules = $conditionRules | merge (dict .tag .) -}}
+{{- end -}}
+{{- $limitationRules := dict -}}
+{{- range $choosealicenseRules.limitations -}}
+  {{- $limitationRules = $limitationRules | merge (dict .tag .) -}}
+{{- end -}}
+
+<main class="container" style="padding: var(--pad-3) var(--pad-2);">
+  <article class="panel">
+    <header class="page-header">
+      <h1>{{ .Title }}</h1>
+      <p>SPDX License Identifier: <code>{{ $licenseId }}</code></p>
+    </header>
+
+    <div class="prose">
+      {{- /* License badges */ -}}
+      <div class="row" style="gap: var(--pad-1); margin-bottom: var(--pad-2);">
+        {{ if .Params.isOsiApproved }}
+        <span class="badge badge--success">OSI Approved</span>
+        {{ end }}
+        {{ if $spdxInfo }}
+        <span class="badge">SPDX Standard License</span>
+        {{ else if strings.HasPrefix $licenseId "LicenseRef-" }}
+        <span class="badge badge--warning">Custom License</span>
+        {{ end }}
+      </div>
+
+      {{- /* License description from choosealicense */ -}}
+      {{ with $licenseRights.description }}
+      <section class="panel--inner" style="padding: var(--pad-2); margin-bottom: var(--pad-2);">
+        <h2 style="margin-top: 0;">About This License</h2>
+        <p>{{ . }}</p>
+        {{ with $licenseRights.how }}
+        <h3>How to Apply</h3>
+        <p>{{ . }}</p>
+        {{ end }}
+        {{ with $licenseRights.note }}
+        <p><strong>Note:</strong> {{ . }}</p>
+        {{ end }}
+      </section>
+      {{ end }}
+
+      {{- /* Rights table - using choosealicense data */ -}}
+      {{ if or $licenseRights.permissions $licenseRights.conditions $licenseRights.limitations }}
+      <section class="panel--inner" style="padding: var(--pad-2); margin-bottom: var(--pad-2);">
+        <h2 style="margin-top: 0;">Your Rights</h2>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: var(--pad-2);">
+          {{- /* Permissions */ -}}
+          {{ with $licenseRights.permissions }}
+          <div>
+            <h3 style="color: var(--color-success, #22c55e); margin-top: 0; display: flex; align-items: center; gap: 8px;">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/>
+                <path d="m9 12 2 2 4-4"/>
+              </svg>
+              Permissions
+            </h3>
+            <ul style="list-style: none; padding: 0; margin: 0;">
+              {{ range . }}
+              {{- $rule := index $permissionRules . -}}
+              <li style="padding: 4px 0; border-bottom: 1px solid var(--border);" title="{{ with $rule }}{{ .description }}{{ end }}">
+                {{ with $rule }}{{ .label }}{{ else }}{{ . }}{{ end }}
+              </li>
+              {{ end }}
+            </ul>
+          </div>
+          {{ end }}
+
+          {{- /* Conditions */ -}}
+          {{ with $licenseRights.conditions }}
+          <div>
+            <h3 style="color: var(--color-warning, #eab308); margin-top: 0; display: flex; align-items: center; gap: 8px;">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/>
+                <path d="M12 8v4M12 16h.01"/>
+              </svg>
+              Conditions
+            </h3>
+            <ul style="list-style: none; padding: 0; margin: 0;">
+              {{ range . }}
+              {{- $rule := index $conditionRules . -}}
+              <li style="padding: 4px 0; border-bottom: 1px solid var(--border);" title="{{ with $rule }}{{ .description }}{{ end }}">
+                {{ with $rule }}{{ .label }}{{ else }}{{ . }}{{ end }}
+              </li>
+              {{ end }}
+            </ul>
+          </div>
+          {{ end }}
+
+          {{- /* Limitations */ -}}
+          {{ with $licenseRights.limitations }}
+          <div>
+            <h3 style="color: var(--color-error, #ef4444); margin-top: 0; display: flex; align-items: center; gap: 8px;">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/>
+                <path d="m15 9-6 6M9 9l6 6"/>
+              </svg>
+              Limitations
+            </h3>
+            <ul style="list-style: none; padding: 0; margin: 0;">
+              {{ range . }}
+              {{- $rule := index $limitationRules . -}}
+              <li style="padding: 4px 0; border-bottom: 1px solid var(--border);" title="{{ with $rule }}{{ .description }}{{ end }}">
+                {{ with $rule }}{{ .label }}{{ else }}{{ . }}{{ end }}
+              </li>
+              {{ end }}
+            </ul>
+          </div>
+          {{ end }}
+        </div>
+      </section>
+      {{ end }}
+
+      {{- /* Bible-specific license texts */ -}}
+      {{ if $bibles }}
+      <section class="panel--inner" style="padding: var(--pad-2); margin-bottom: var(--pad-2);">
+        <h2 style="margin-top: 0;">License Statements from Bible Modules</h2>
+        <p class="muted" style="margin-bottom: var(--pad-2);">Each Bible module includes its own license statement from the publisher:</p>
+
+        {{ range $bible := $bibles }}
+        {{ with $bible.licenseText }}
+        <details style="margin-bottom: var(--pad-1);">
+          <summary style="cursor: pointer; font-weight: 600; padding: 8px 0;">
+            {{ $bible.title }} ({{ $bible.abbrev }})
+          </summary>
+          <div style="background: var(--bg-alt); padding: var(--pad-2); border-radius: var(--radius); font-size: 0.875rem; white-space: pre-wrap; margin-top: 8px;">{{ . }}</div>
+        </details>
+        {{ end }}
+        {{ end }}
+      </section>
+      {{ end }}
+
+      {{- /* Additional resources from SPDX */ -}}
+      {{ with $spdxInfo.seeAlso }}
+      <section class="panel--inner" style="padding: var(--pad-2); margin-bottom: var(--pad-2);">
+        <h3 style="margin-top: 0;">Additional Resources</h3>
+        <ul style="margin-bottom: 0;">
+          {{ range . }}
+          <li><a href="{{ . }}" target="_blank" rel="noopener">{{ . }}</a></li>
+          {{ end }}
+        </ul>
+      </section>
+      {{ end }}
+
+      {{- /* Bible translations using this license */ -}}
+      <h2>Bible Translations Using This License</h2>
+      {{ if $bibles }}
+      <div class="grid-2">
+        {{ range $bibles }}
+        <a href="{{ printf "/bible/%s/" .id | relLangURL }}" class="card">
+          <h3 class="card__title">{{ .title }}</h3>
+          <p class="card__meta">{{ .abbrev }}</p>
+          {{ with .language }}<span class="badge">{{ . }}</span>{{ end }}
+        </a>
+        {{ end }}
+      </div>
+      {{ else }}
+      <p class="muted">No Bible translations currently use this license.</p>
+      {{ end }}
+    </div>
+
+    <nav class="actions">
+      <a href="/licenses/" class="btn">
+        &larr; All Licenses
+      </a>
+      <a href="/bible/" class="btn">
+        All Bibles
+      </a>
+    </nav>
+  </article>
+</main>
+{{ end }}

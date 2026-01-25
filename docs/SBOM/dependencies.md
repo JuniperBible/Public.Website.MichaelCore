@@ -100,7 +100,7 @@ make build  # Runs hugo --minify
 Hugo is configured via `hugo.toml`:
 - `baseURL` - Site base URL
 - `languageCode` - Site language (en)
-- `params.michael.basePath` - Bible content path (`/bibles`)
+- `params.michael.basePath` - Bible content path (`/bible`)
 - `module.mounts` - Data and asset mounting
 
 See: [hugo.toml](../../hugo.toml) for full configuration
@@ -301,7 +301,7 @@ yum install xz          # RHEL/CentOS
 make vendor-package
 
 # Manually package a single Bible
-tar -cJf assets/downloads/kjva.tar.xz -C data/example/bibles_auxiliary kjva.json
+tar -cJf assets/downloads/kjva.tar.xz -C data/example/bible_auxiliary kjva.json
 ```
 
 ---

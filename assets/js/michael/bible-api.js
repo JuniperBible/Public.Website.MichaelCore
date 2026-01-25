@@ -27,7 +27,7 @@ window.Michael.BibleAPI = (function() {
    * and caches the result for subsequent calls. The cache key is constructed from
    * the bibleId, bookId, and chapterNum parameters.
    *
-   * @param {string} basePath - Base path for Bible URLs (e.g., "/bibles")
+   * @param {string} basePath - Base path for Bible URLs (e.g., "/bible")
    * @param {string} bibleId - Bible translation ID (e.g., "kjv", "asv", "drc")
    * @param {string} bookId - Book identifier (e.g., "Gen", "Isa", "Matt")
    * @param {number} chapterNum - Chapter number (1-based)
@@ -37,13 +37,13 @@ window.Michael.BibleAPI = (function() {
    *
    * @example
    * // Fetch Genesis chapter 1 from KJV
-   * const verses = await fetchChapter('/bibles', 'kjv', 'Gen', 1);
+   * const verses = await fetchChapter('/bible', 'kjv', 'Gen', 1);
    * console.log(verses[0]); // { number: 1, text: "In the beginning..." }
    *
    * @example
    * // Fetch with AbortController for cancellation
    * const controller = new AbortController();
-   * const verses = await fetchChapter('/bibles', 'kjv', 'Gen', 1, controller.signal);
+   * const verses = await fetchChapter('/bible', 'kjv', 'Gen', 1, controller.signal);
    * // Later: controller.abort();
    */
   async function fetchChapter(basePath, bibleId, bookId, chapterNum, signal) {

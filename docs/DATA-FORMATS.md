@@ -11,7 +11,7 @@ Michael requires two types of data files:
 
 ## bibles.json
 
-Location: `data/bibles.json` (or `data/example/bibles.json` for standalone)
+Location: `data/bible.json` (or `data/example/bible.json` for standalone)
 
 ### Schema
 
@@ -60,7 +60,7 @@ Location: `data/bibles.json` (or `data/example/bibles.json` for standalone)
 
 ## bibles_auxiliary/{id}.json
 
-Location: `data/bibles_auxiliary/{id}.json`
+Location: `data/bible_auxiliary/{id}.json`
 
 ### Schema
 
@@ -122,10 +122,10 @@ Bel, 1Macc, 2Macc, 3Macc, 4Macc, 1Esd, 2Esd, PrMan
 
 Chapter content is generated as static HTML pages at:
 ```
-/bibles/{bible-id}/{book-id}/{chapter}/
+/bible/{bible-id}/{book-id}/{chapter}/
 ```
 
-Example: `/bibles/kjv/john/3/`
+Example: `/bible/kjv/john/3/`
 
 ### Verse HTML Structure
 
@@ -247,7 +247,7 @@ juniper list
 juniper extract --module=KJV --output=data/
 
 # Generate Hugo content
-juniper hugo --input=data/kjv/ --output=content/bibles/kjv/
+juniper hugo --input=data/kjv/ --output=content/bible/kjv/
 ```
 
 See [tools/juniper/README.md](../tools/juniper/README.md) for details.

@@ -12,7 +12,7 @@ This document describes the architecture of the Michael Hugo Bible Module.
 │  ┌─────────────────────────────────────────────────────────────────────┐   │
 │  │                        BUILD TIME (Hugo)                             │   │
 │  │  ┌───────────────┐   ┌───────────────┐   ┌───────────────┐         │   │
-│  │  │ data/bibles/  │   │   layouts/    │   │   assets/     │         │   │
+│  │  │ data/bible/  │   │   layouts/    │   │   assets/     │         │   │
 │  │  │   *.json      │──▶│   *.html      │──▶│   css/js      │         │   │
 │  │  └───────────────┘   └───────────────┘   └───────────────┘         │   │
 │  │                              │                                       │   │
@@ -128,7 +128,7 @@ michael/
 
 ### Build-Time Flow
 
-1. **Data Sources** → Hugo processes `data/bibles.json` and `data/bibles_auxiliary/*.json`
+1. **Data Sources** → Hugo processes `data/bible.json` and `data/bible_auxiliary/*.json`
 2. **Templates** → Layouts merge data with HTML templates
 3. **Content Generation** → `_content.gotmpl` generates book/chapter pages
 4. **Asset Pipeline** → CSS and JS are processed and fingerprinted

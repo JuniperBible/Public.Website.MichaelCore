@@ -36,10 +36,10 @@ const SHELL_ASSETS = [
 // Default chapters to pre-cache for offline reading
 // These are commonly read passages that provide value when offline
 const DEFAULT_CHAPTERS = [
-  '/bibles/kjva/gen/1/',      // Genesis 1 - Creation
-  '/bibles/kjva/ps/23/',      // Psalm 23 - The Lord is my shepherd
-  '/bibles/kjva/matt/1/',     // Matthew 1 - Genealogy of Jesus
-  '/bibles/kjva/john/1/',     // John 1 - In the beginning was the Word
+  '/bible/kjva/gen/1/',      // Genesis 1 - Creation
+  '/bible/kjva/ps/23/',      // Psalm 23 - The Lord is my shepherd
+  '/bible/kjva/matt/1/',     // Matthew 1 - Genealogy of Jesus
+  '/bible/kjva/john/1/',     // John 1 - In the beginning was the Word
 ];
 
 /**
@@ -275,8 +275,8 @@ function isStaticAsset(url) {
  * Helper: Check if URL is a Bible chapter page
  */
 function isChapterPage(url) {
-  // Pattern: /bibles/{bible}/{book}/{chapter}/
-  const chapterPattern = /^\/bibles\/[^/]+\/[^/]+\/\d+\/?$/;
+  // Pattern: /bible/{bible}/{book}/{chapter}/
+  const chapterPattern = /^\/bible\/[^/]+\/[^/]+\/\d+\/?$/;
   return chapterPattern.test(url.pathname);
 }
 

@@ -1,0 +1,125 @@
+{{/*
+  Template: search.html
+  Purpose: Bible search interface with text, phrase, and Strong's number search
+
+  Features:
+  - Full-text search across Bible translations
+  - Strong's number search (H####/G####)
+  - Phrase search ("exact phrase")
+  - Case-sensitive and whole-word options
+  - Incremental result display
+
+  Data Sources:
+  - .Site.Data.bibles.bibles: Available translations
+  - .Site.Data.bibles_auxiliary: Book/chapter structure for search index
+
+  JavaScript Dependencies:
+  - bible-search.js: Search controller
+  - michael/bible-api.js: Chapter fetching (optional, can work standalone)
+
+  URL Parameters:
+  - q: Search query
+  - bible: Translation ID
+  - case: Case-sensitive (1)
+  - word: Whole word (1)
+*/}}
+
+{{ define "scripts" }}
+{{ $bibleApi := resources.Get "js/michael/bible-api.js" }}
+{{ if $bibleApi }}<script src="{{ $bibleApi.RelPermalink }}" defer></script>{{ end }}
+{{ $search := resources.Get "js/bible-search.js" }}
+{{ if $search }}<script src="{{ $search.RelPermalink }}" defer></script>{{ end }}
+{{ end }}
+
+{{ define "main" }}
+{{ $basePath := .Site.Params.michael.basePath | default "/bible" }}
+<main class="container">
+  <div class="panel">
+    <header class="page-header">
+      <h1>{{ .Title }}</h1>
+      <p>{{ .Description }}</p>
+    </header>
+
+    <!-- Search Form -->
+    <form id="search-form" class="panel--inner">
+      <div class="row">
+        <div class="field">
+          <label for="search-query" class="label">
+            {{ i18n "searchQuery" | default "Search for" }}:
+          </label>
+          <input
+            type="text"
+            id="search-query"
+            name="q"
+            class="input"
+            placeholder="{{ i18n "searchPlaceholder" | default "word, \"exact phrase\", or H1234/G5678" }}"
+            autocomplete="off"
+          >
+        </div>
+        <div class="field">
+          <label for="bible-select" class="label">
+            {{ i18n "selectBible" | default "Translation" }}:
+          </label>
+          <select id="bible-select" name="bible" class="select">
+            {{ range .Site.Data.bibles.bibles }}
+            <option value="{{ .id }}">{{ .abbrev }} - {{ .title }}</option>
+            {{ end }}
+          </select>
+        </div>
+      </div>
+      <div class="row">
+        <button type="submit" class="btn btn--primary">
+          {{ i18n "search" | default "Search" }}
+        </button>
+        <label class="chip">
+          <input type="checkbox" id="case-sensitive">
+          {{ i18n "caseSensitive" | default "Case sensitive" }}
+        </label>
+        <label class="chip">
+          <input type="checkbox" id="whole-word">
+          {{ i18n "wholeWord" | default "Whole word" }}
+        </label>
+      </div>
+    </form>
+
+    <!-- Search Status -->
+    <div id="search-status" class="notice mt-2 hidden">
+      {{ i18n "searching" | default "Searching..." }}
+    </div>
+
+    <!-- Search Results with aria-live for accessibility -->
+    <div id="search-results" class="mt-3" aria-live="polite" aria-atomic="false">
+      <div class="center muted">
+        <p>{{ i18n "searchPrompt" | default "Enter a search term to find verses across the Bible." }}</p>
+        <p>{{ i18n "searchTypesHint" | default "Try: word, \"exact phrase\", or Strong's numbers (H430, G2316)" }}</p>
+      </div>
+    </div>
+
+    <!-- Screen reader announcements -->
+    <div id="search-announcer" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></div>
+
+    <!-- Back Navigation -->
+    <nav class="actions">
+      <a href="{{ printf "%s/" $basePath | relLangURL }}" class="btn">
+        &larr; {{ i18n "allBibles" | default "All Bibles" }}
+      </a>
+    </nav>
+  </div>
+</main>
+
+<!-- Bible Index Data for JavaScript - generated at build time -->
+{{- $bibleIndex := dict -}}
+{{- range $bible := .Site.Data.bibles.bibles -}}
+  {{- $aux := index $.Site.Data.bibles_auxiliary $bible.id -}}
+  {{- $books := slice -}}
+  {{- with $aux -}}
+    {{- range .books -}}
+      {{- $books = $books | append (dict "id" .id "name" .name "chapters" (len .chapters)) -}}
+    {{- end -}}
+  {{- end -}}
+  {{- $bibleIndex = $bibleIndex | merge (dict $bible.id (dict "title" $bible.title "abbrev" $bible.abbrev "books" $books)) -}}
+{{- end -}}
+<script id="bible-index" type="application/json">
+{{ dict "bibles" $bibleIndex "basePath" ($basePath | relLangURL) | jsonify | safeJS }}
+</script>
+{{ end }}

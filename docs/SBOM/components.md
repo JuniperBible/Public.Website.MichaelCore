@@ -225,7 +225,7 @@ Michael includes extensive JSON data files for Bible texts and metadata.
 
 ### Bible Texts
 
-**Location:** `data/example/bibles_auxiliary/*.json`
+**Location:** `data/example/bible_auxiliary/*.json`
 
 | File | Translation | Testament | Verses | Size (JSON) | Size (Compressed) |
 |------|-------------|-----------|--------|-------------|-------------------|
@@ -244,7 +244,7 @@ Michael includes extensive JSON data files for Bible texts and metadata.
 
 ### Bible Metadata
 
-**File:** `data/example/bibles.json`
+**File:** `data/example/bible.json`
 **Purpose:** Index of all available Bible translations
 **Size:** ~15 KB
 
@@ -497,7 +497,7 @@ ls -1 assets/js/michael/*.js
 ls -lh assets/css/theme.css
 
 # List Bible data files
-ls -1 data/example/bibles_auxiliary/*.json
+ls -1 data/example/bible_auxiliary/*.json
 
 # View SBOM
 cat assets/downloads/sbom/sbom.syft.json | jq '.artifacts[] | .name'

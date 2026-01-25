@@ -117,8 +117,8 @@
 
     // Get base path from the page
     const basePath = window.location.pathname.split('/')[1] === 'bibles'
-      ? '/bibles'
-      : '/bibles'; // fallback
+      ? '/bible'
+      : '/bible'; // fallback
 
     // Disable controls during download
     setDownloadControlsEnabled(false);

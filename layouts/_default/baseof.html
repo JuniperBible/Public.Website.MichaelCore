@@ -13,7 +13,7 @@
   Note: For production with custom domains, consider moving CSP to HTTP headers
 */}}
 <!doctype html>
-<html lang="{{ .Site.Language.Lang | default "en" }}">
+<html lang="{{ .Site.Language.Lang | default "en" }}" data-hugo-env="{{ hugo.Environment }}">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">

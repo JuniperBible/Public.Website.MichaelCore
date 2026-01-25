@@ -70,8 +70,8 @@ All interactive elements are fully accessible via keyboard:
    - `aria-label` on container for context
 
 4. **Live Regions** (dynamic updates)
-   - `aria-live="polite"` on search results (`/layouts/bibles/search.html`)
-   - `aria-live="polite"` on comparison content (`/layouts/bibles/compare.html`)
+   - `aria-live="polite"` on search results (`/layouts/bible/search.html`)
+   - `aria-live="polite"` on comparison content (`/layouts/bible/compare.html`)
    - `role="status"` for status announcements
    - `aria-atomic="true"` for complete message reading
 
@@ -271,7 +271,7 @@ Comprehensive print stylesheet for Bible study and sharing (`/assets/css/theme.c
 
 ### Live Region Announcements
 
-**Files**: `/layouts/bibles/search.html`, `/layouts/bibles/compare.html`
+**Files**: `/layouts/bible/search.html`, `/layouts/bible/compare.html`
 
 **Search Results**:
 ```html
@@ -543,12 +543,12 @@ State changes are indicated through multiple channels, not color alone:
 npm install -g @axe-core/cli
 
 # Test local pages
-axe http://localhost:1313/bibles/compare/
-axe http://localhost:1313/bibles/search/
-axe http://localhost:1313/bibles/kjv/john/3/
+axe http://localhost:1313/bible/compare/
+axe http://localhost:1313/bible/search/
+axe http://localhost:1313/bible/kjv/john/3/
 
 # Test production
-axe https://yourdomain.com/bibles/compare/
+axe https://yourdomain.com/bible/compare/
 ```
 
 **WAVE (Web Accessibility Evaluation Tool)**:
@@ -572,8 +572,8 @@ axe https://yourdomain.com/bibles/compare/
 npm install -g pa11y
 
 # Run tests
-pa11y http://localhost:1313/bibles/compare/
-pa11y http://localhost:1313/bibles/search/
+pa11y http://localhost:1313/bible/compare/
+pa11y http://localhost:1313/bible/search/
 
 # Generate reports
 pa11y --reporter html http://localhost:1313/ > report.html
@@ -721,27 +721,27 @@ pa11y --reporter html http://localhost:1313/ > report.html
 
 All core user flows have been audited and achieve 0 WCAG violations:
 
-1. ✅ **Bible Search** (`/bibles/search/`)
+1. ✅ **Bible Search** (`/bible/search/`)
    - Search form fully labeled
    - Results announced via `aria-live`
    - Keyboard navigation supported
 
-2. ✅ **Bible Comparison** (`/bibles/compare/`)
+2. ✅ **Bible Comparison** (`/bible/compare/`)
    - All form controls labeled
    - Dynamic content updates announced
    - SSS mode fully accessible
 
-3. ✅ **Chapter Reading** (`/bibles/{translation}/{book}/{chapter}/`)
+3. ✅ **Chapter Reading** (`/bible/{translation}/{book}/{chapter}/`)
    - Navigation controls fully accessible
    - Strong's numbers keyboard-accessible
    - Verse navigation with `aria-pressed`
 
-4. ✅ **Bible List** (`/bibles/`)
+4. ✅ **Bible List** (`/bible/`)
    - Proper heading hierarchy
    - Card grid accessible
    - Search and filter controls labeled
 
-5. ✅ **Offline Settings** (`/bibles/compare/#offline-settings`)
+5. ✅ **Offline Settings** (`/bible/compare/#offline-settings`)
    - Checkboxes properly labeled
    - Progress updates via `aria-live`
    - Download status announced

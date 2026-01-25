@@ -10,7 +10,7 @@ import (
 // TestSingleChapterArrowNavigation tests navigating between chapters with arrows.
 func TestSingleChapterArrowNavigation(t *testing.T) {
 	b := helpers.NewTestBrowser(t)
-	helpers.NavigateToSingle(t, b, "kjv", "gen", 1)
+	helpers.NavigateToSingle(t, b, "asv", "Gen", 1)
 
 	// Look for next chapter navigation
 	nextBtn := b.Find(".chapter-nav-next")
@@ -34,7 +34,7 @@ func TestSingleChapterArrowNavigation(t *testing.T) {
 	time.Sleep(500 * time.Millisecond)
 
 	// Verify we navigated (URL should contain chapter 2)
-	helpers.ExpectURL(t, b, "/gen/2")
+	helpers.ExpectURL(t, b, "/Gen/2")
 
 	// Look for previous button
 	prevBtn := b.Find(".chapter-nav-prev")
@@ -54,14 +54,14 @@ func TestSingleChapterArrowNavigation(t *testing.T) {
 		time.Sleep(500 * time.Millisecond)
 
 		// Verify we're back at chapter 1
-		helpers.ExpectURL(t, b, "/gen/1")
+		helpers.ExpectURL(t, b, "/Gen/1")
 	}
 }
 
 // TestSingleStrongsTooltip tests clicking a Strong's number and seeing the tooltip.
 func TestSingleStrongsTooltip(t *testing.T) {
 	b := helpers.NewTestBrowser(t)
-	helpers.NavigateToSingle(t, b, "kjv", "gen", 1) // KJV has Strong's numbers
+	helpers.NavigateToSingle(t, b, "asv", "Gen", 1) // ASV has Strong's numbers
 
 	// Look for Strong's number link
 	strongsLink := b.Find(".strongs-number")
@@ -115,7 +115,7 @@ func TestSingleStrongsTooltip(t *testing.T) {
 // TestSingleShareMenu tests clicking the share button and seeing the menu.
 func TestSingleShareMenu(t *testing.T) {
 	b := helpers.NewTestBrowser(t)
-	helpers.NavigateToSingle(t, b, "kjv", "gen", 1)
+	helpers.NavigateToSingle(t, b, "asv", "Gen", 1)
 
 	// Look for share button
 	shareBtn := b.Find(".share-button")
@@ -161,7 +161,7 @@ func TestSingleShareMenu(t *testing.T) {
 // TestSingleShareCopyLink tests copying a link from the share menu.
 func TestSingleShareCopyLink(t *testing.T) {
 	b := helpers.NewTestBrowser(t)
-	helpers.NavigateToSingle(t, b, "kjv", "gen", 1)
+	helpers.NavigateToSingle(t, b, "asv", "Gen", 1)
 
 	// Open share menu
 	shareBtn := b.Find(".share-button")
@@ -215,7 +215,7 @@ func TestSingleShareCopyLink(t *testing.T) {
 // TestSingleVerseShare tests clicking a verse share button.
 func TestSingleVerseShare(t *testing.T) {
 	b := helpers.NewTestBrowser(t)
-	helpers.NavigateToSingle(t, b, "kjv", "gen", 1)
+	helpers.NavigateToSingle(t, b, "asv", "Gen", 1)
 
 	// Find first verse
 	verse := b.Find(".verse[data-verse='1']")

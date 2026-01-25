@@ -51,7 +51,7 @@ make dev
 # hugo.toml
 
 [params.michael]
-  basePath = "/bibles"        # URL path for Bible section
+  basePath = "/bible"        # URL path for Bible section
   backLink = "/"              # Back navigation link
   defaultBible = "kjv"        # Default translation
   enableSearch = true         # Enable search functionality
@@ -66,7 +66,7 @@ Add a Bible link to your site menu:
 ```toml
 [[menus.main]]
   name = "Bible"
-  url = "/bibles/"
+  url = "/bible/"
   weight = 50
 ```
 
@@ -217,7 +217,7 @@ Error: module "github.com/FocuswithJustin/michael" not found
 Error: .Site.Data.bibles is nil
 ```
 
-**Solution:** Ensure `data/bibles.json` exists with valid content.
+**Solution:** Ensure `data/bible.json` exists with valid content.
 
 ### Styling Conflicts
 

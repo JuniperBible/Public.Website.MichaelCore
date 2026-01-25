@@ -6,3 +6,7 @@
 	path = tools/magellan
 	url = git@github.com:FocuswithJustin/magellan.git
 	branch = development
+[submodule "tools/hugo"]
+	path = tools/hugo
+	url = https://github.com/FocuswithJustin/hugo.git
+	branch = master

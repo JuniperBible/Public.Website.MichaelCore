@@ -13,7 +13,7 @@
     - bible: Bible ID string (required) - identifies which translation to display (e.g., "kjv", "web")
     - book: Current book ID (optional) - lowercase book identifier (e.g., "gen", "matt")
     - chapter: Current chapter number (optional) - integer chapter number
-    - basePath: Base URL path for Bible content (optional, defaults to "/bibles")
+    - basePath: Base URL path for Bible content (optional, defaults to "/bible")
 
   Data Sources:
     - .Site.Data.bibles.bibles: Bible metadata including ID, abbreviation, and display name
@@ -56,7 +56,7 @@
 {{ $bible := .bible }}
 {{ $book := .book }}
 {{ $chapter := .chapter }}
-{{ $basePath := .basePath | default "/bibles" }}
+{{ $basePath := .basePath | default "/bible" }}
 
 {{ $bibleData := index $page.Site.Data.bibles_auxiliary $bible }}
 

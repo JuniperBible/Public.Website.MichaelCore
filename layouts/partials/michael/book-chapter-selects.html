@@ -6,14 +6,16 @@
   Parameters (via dict):
     - bookId (string, required): ID for book select
     - chapterId (string, required): ID for chapter select
+    - site (object, required): Site object for data access
 
   Usage:
-    {{ partial "michael/book-chapter-selects.html" (dict "bookId" "book-select" "chapterId" "chapter-select") }}
+    {{ partial "michael/book-chapter-selects.html" (dict "site" $.Site "bookId" "book-select" "chapterId" "chapter-select") }}
 */}}
 {{- $bookId := .bookId -}}
 {{- $chapterId := .chapterId -}}
-{{- $firstBible := index $.Site.Data.bibles.bibles 0 -}}
-{{- $aux := index $.Site.Data.bibles_auxiliary $firstBible.id -}}
+{{- $site := .site -}}
+{{- $firstBible := index $site.Data.bibles.bibles 0 -}}
+{{- $aux := index $site.Data.bibles_auxiliary $firstBible.id -}}
 <label for="{{ $bookId }}" class="sr-only">{{ i18n "selectBook" | default "Select Book" }}</label>
 <select id="{{ $bookId }}" class="select w-auto" aria-label="{{ i18n "selectBook" | default "Select Book" }}">
   <option value="">Book...</option>

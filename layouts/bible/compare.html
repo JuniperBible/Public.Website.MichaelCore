@@ -1,0 +1,102 @@
+{{/*
+  Template: compare.html
+  Purpose: Bible translation comparison page with Normal and SSS modes
+
+  Features:
+  - Multi-translation parallel view (up to 11)
+  - Side-by-side Scripture (SSS) mode for 2 translations
+  - Verse-level selection and comparison
+  - Text diff highlighting
+
+  Data Sources:
+  - .Site.Data.bibles.bibles: Bible metadata
+  - .Site.Data.bibles_auxiliary: Book/chapter structure
+
+  JavaScript Dependencies:
+  - text-compare.js: Diff algorithm
+  - parallel.js: Page controller
+  - michael/dom-utils.js: DOM utilities
+  - michael/bible-api.js: Data fetching
+*/}}
+
+{{ define "scripts" }}
+{{ partial "michael/strongs-data.html" . }}
+{{- range slice "js/michael/dom-utils.js" "js/michael/bible-api.js" "js/text-compare.js" "js/parallel.js" -}}
+{{- $script := resources.Get . -}}
+{{- if $script }}<script src="{{ $script.RelPermalink }}" defer></script>{{ end -}}
+{{- end -}}
+{{ end }}
+
+{{ define "main" }}
+{{ $basePath := .Site.Params.michael.basePath | default "/bible" }}
+<main class="container pad-3-2">
+  <div class="panel">
+    <header class="page-header">
+      <h1>{{ .Title }}</h1>
+      <p>{{ .Description }}</p>
+    </header>
+    <!-- Unified Selector Panel (Normal Mode) -->
+    <div id="normal-mode" class="panel--inner pad-2">
+      <div class="row row--wrap">
+        <div class="row row--tight" id="translation-checkboxes" role="group" aria-label="{{ i18n "selectTranslations" | default "Select Translations" }}">
+          {{- range .Site.Data.bibles.bibles -}}
+          <label class="chip cursor-pointer">
+            <input type="checkbox" class="translation-checkbox mr-1" value="{{ .id }}" data-abbrev="{{ .abbrev }}" data-title="{{ .title }}" aria-label="{{ .abbrev }} - {{ .title }}">
+            <span>{{ .abbrev }}</span>
+          </label>
+          {{- end -}}
+        </div>
+        <span class="muted" aria-hidden="true">|</span>
+        {{ partial "michael/book-chapter-selects.html" (dict "site" $.Site "bookId" "book-select" "chapterId" "chapter-select") }}
+        {{ partial "michael/compare-diff-control.html" (dict "toggleId" "highlight-toggle" "colorId" "highlight" "optionClass" "color-option") }}
+        {{ partial "michael/sss-toggle.html" (dict "id" "sss-mode-btn" "statusId" "sss-mode-status" "defaultStatus" "OFF") }}
+      </div>
+      {{ partial "michael/verse-grid.html" dict }}
+    </div>
+    <!-- SSS Mode (Side by Side Scripture) - Hidden by default -->
+    <div id="sss-mode" class="hidden">
+      <div class="panel--inner mt-2 pad-2">
+        <div class="row row--wrap">
+          <button id="sss-back-btn" class="btn btn--sm" title="Back to Compare" aria-label="Back to Compare">&larr;</button>
+          {{ partial "michael/bible-select.html" (dict "site" $.Site "id" "sss-bible-left" "label" "Left Bible...") }}
+          {{ partial "michael/bible-select.html" (dict "site" $.Site "id" "sss-bible-right" "label" "Right Bible...") }}
+          <span class="muted" aria-hidden="true">|</span>
+          {{ partial "michael/book-chapter-selects.html" (dict "site" $.Site "bookId" "sss-book-select" "chapterId" "sss-chapter-select") }}
+          {{ partial "michael/compare-diff-control.html" (dict "toggleId" "sss-highlight-toggle" "colorId" "sss-highlight" "optionClass" "sss-color-option" "checked" true) }}
+          {{ partial "michael/sss-toggle.html" (dict "id" "sss-toggle-btn" "statusId" "sss-status" "defaultStatus" "ON") }}
+        </div>
+        {{ partial "michael/verse-grid.html" (dict "id" "sss") }}
+      </div>
+      <!-- Side by Side Panes -->
+      <div class="grid-2 mt-2" id="sss-panes">
+        <div class="card" id="sss-left-pane"><div class="center muted">Select a Bible</div></div>
+        <div class="card" id="sss-right-pane"><div class="center muted">Select a Bible</div></div>
+      </div>
+    </div>
+    <!-- Parallel Verse Display (Normal Mode) -->
+    <div id="parallel-content" class="mt-3" aria-live="polite" aria-atomic="false">
+      <div class="center muted">{{ i18n "selectPassagePrompt" | default "Select 2+ translations and a passage to compare." }}</div>
+    </div>
+    <!-- Screen reader announcements for compare page -->
+    <div id="compare-announcer" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></div>
+    <!-- Back Navigation -->
+    <nav class="actions">
+      <a href="{{ printf "%s/" $basePath | relLangURL }}" class="btn">&larr; {{ i18n "allBibles" | default "All Bibles" }}</a>
+    </nav>
+  </div>
+</main>
+<!-- Bible Data for JavaScript - book structure only, verses loaded on-demand -->
+<script id="bible-data" type="application/json">
+{{- $biblesMeta := slice -}}
+{{- range .Site.Data.bibles.bibles -}}
+{{- $biblesMeta = $biblesMeta | append (dict "id" .id "title" .title "abbrev" .abbrev "description" .description "language" .language) -}}
+{{- end -}}
+{{- $firstBible := index .Site.Data.bibles.bibles 0 -}}
+{{- $aux := index .Site.Data.bibles_auxiliary $firstBible.id -}}
+{{- $booksList := slice -}}
+{{- range $aux.books -}}
+{{- $booksList = $booksList | append (dict "id" .id "name" .name "chapters" (len .chapters)) -}}
+{{- end -}}
+{{- dict "bibles" $biblesMeta "books" $booksList "basePath" ($basePath | relLangURL) | jsonify | safeJS -}}
+</script>
+{{ end }}

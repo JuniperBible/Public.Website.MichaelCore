@@ -278,7 +278,7 @@ window.Michael.OfflineManager = (function() {
    * Bible translation. Progress updates are fired as events that the UI can listen to.
    *
    * @param {string} bibleId - Bible translation ID (e.g., "kjv", "asv", "web")
-   * @param {string} basePath - Base path for Bible URLs (e.g., "/bibles")
+   * @param {string} basePath - Base path for Bible URLs (e.g., "/bible")
    * @returns {Promise<void>}
    *
    * @fires download-progress - Fired periodically during download with progress info
@@ -291,13 +291,13 @@ window.Michael.OfflineManager = (function() {
    *   OfflineManager.addEventListener('download-progress', (e) => {
    *     console.log(`Progress: ${e.detail.progress}%`);
    *   });
-   *   await OfflineManager.downloadBible('kjv', '/bibles');
+   *   await OfflineManager.downloadBible('kjv', '/bible');
    *   console.log('Bible downloaded successfully');
    * } catch (error) {
    *   console.error('Download failed:', error);
    * }
    */
-  async function downloadBible(bibleId, basePath = '/bibles') {
+  async function downloadBible(bibleId, basePath = '/bible') {
     if (downloadState.inProgress) {
       throw new Error('Download already in progress');
     }

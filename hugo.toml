@@ -13,7 +13,7 @@ languageCode = "en"
   description = "A Hugo module for Bible reading, comparison, and search"
 
 [params.michael]
-  basePath = "/bibles"
+  basePath = "/bible"
   backLink = "/"
 
 # Enable raw HTML in markdown (required for Bible verse formatting)

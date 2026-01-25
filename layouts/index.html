@@ -6,9 +6,9 @@
       {{ with .Site.Params.description }}<p>{{ . }}</p>{{ end }}
     </header>
 
-    {{/* Try /bibles first (standalone), then /religion/bibles (module) */}}
-    {{ $biblesPage := .Site.GetPage "/bibles" }}
-    {{ if not $biblesPage }}{{ $biblesPage = .Site.GetPage "/religion/bibles" }}{{ end }}
+    {{/* Try /bible first (standalone), then /religion/bible (module) */}}
+    {{ $biblesPage := .Site.GetPage "/bible" }}
+    {{ if not $biblesPage }}{{ $biblesPage = .Site.GetPage "/religion/bible" }}{{ end }}
 
     {{ with $biblesPage }}
     <section>

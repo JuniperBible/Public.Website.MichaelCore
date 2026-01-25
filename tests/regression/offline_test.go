@@ -12,7 +12,7 @@ func TestOfflineCachedPage(t *testing.T) {
 	b := helpers.NewTestBrowser(t)
 
 	// First visit to cache the page
-	helpers.NavigateToSingle(t, b, "kjv", "gen", 1)
+	helpers.NavigateToSingle(t, b, "asv", "Gen", 1)
 
 	// Wait for page to fully load and service worker to cache
 	if err := b.WaitFor(".verse"); err != nil {

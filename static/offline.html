@@ -216,10 +216,10 @@
           These chapters have been cached and are available to read offline:
         </p>
         <ul id="cached-list">
-          <li><a href="/bibles/kjva/gen/1/">Genesis 1 (KJVA)</a></li>
-          <li><a href="/bibles/kjva/ps/23/">Psalm 23 (KJVA)</a></li>
-          <li><a href="/bibles/kjva/matt/1/">Matthew 1 (KJVA)</a></li>
-          <li><a href="/bibles/kjva/john/1/">John 1 (KJVA)</a></li>
+          <li><a href="/bible/kjva/gen/1/">Genesis 1 (KJVA)</a></li>
+          <li><a href="/bible/kjva/ps/23/">Psalm 23 (KJVA)</a></li>
+          <li><a href="/bible/kjva/matt/1/">Matthew 1 (KJVA)</a></li>
+          <li><a href="/bible/kjva/john/1/">John 1 (KJVA)</a></li>
         </ul>
       </div>
 
@@ -304,7 +304,7 @@
         const chapterUrls = requests
           .map(req => new URL(req.url))
           .filter(url => {
-            const pattern = /^\/bibles\/[^/]+\/[^/]+\/\d+\/?$/;
+            const pattern = /^\/bible\/[^/]+\/[^/]+\/\d+\/?$/;
             return pattern.test(url.pathname);
           })
           .map(url => url.pathname);

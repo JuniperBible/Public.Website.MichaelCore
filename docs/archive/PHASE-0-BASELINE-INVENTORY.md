@@ -16,12 +16,12 @@
   - Provides `scripts` block for page-specific JavaScript
 
 #### Bible Page Templates
-- **`layouts/bibles/list.html`** - Bible translations list page
+- **`layouts/bible/list.html`** - Bible translations list page
   - Displays all available Bible translations as cards
   - Quick links to Compare and Search
-  - Uses `data/bibles.json` for translation metadata
+  - Uses `data/bible.json` for translation metadata
 
-- **`layouts/bibles/single.html`** - Single Bible page (Bible/Book/Chapter views)
+- **`layouts/bible/single.html`** - Single Bible page (Bible/Book/Chapter views)
   - Three view modes based on params:
     - Bible overview: Shows book list
     - Book view: Shows chapter grid
@@ -29,7 +29,7 @@
   - Conditionally loads `strongs.js` and `share.js` for chapter views
   - Uses `bible-nav.html` partial for navigation
 
-- **`layouts/bibles/compare.html`** - Translation comparison page (dual mode)
+- **`layouts/bible/compare.html`** - Translation comparison page (dual mode)
   - **Normal Mode:** Multi-translation verse-by-verse comparison
     - Translation checkboxes (max 11)
     - Book/chapter selectors
@@ -44,7 +44,7 @@
   - Loads `text-compare.js` and `parallel.js`
   - Default state: KJV, Vulgate, DRC, Geneva1599 at Isaiah 42:16 in SSS mode
 
-- **`layouts/bibles/search.html`** - Bible search page
+- **`layouts/bible/search.html`** - Bible search page
   - Search form with query input
   - Bible translation selector
   - Case-sensitive and whole-word options
@@ -130,15 +130,15 @@
 ### 1.3 Data Paths
 
 #### Primary Data Sources
-- **`data/example/bibles.json`** - Bible metadata
-  - Schema: `/static/schemas/bibles.schema.json`
+- **`data/example/bible.json`** - Bible metadata
+  - Schema: `/static/schemas/bible.schema.json`
   - Contains: id, title, abbrev, description, language, license, versification, features, tags, weight
   - 10 translations: ASV, DRC, Geneva1599, KJVA, LXX, OSMHB, SBLGNT, Tyndale, Vulgate, WEB
   - Granularity: chapter-level
   - Generated: 2026-01-24T23:39:10
 
-- **`data/example/bibles_auxiliary/*.json`** - Bible content (one file per translation)
-  - Schema: `/static/schemas/bibles-auxiliary.schema.json`
+- **`data/example/bible_auxiliary/*.json`** - Bible content (one file per translation)
+  - Schema: `/static/schemas/bible-auxiliary.schema.json`
   - Contains: books array with chapters and verses
   - Structure: `{ books: [{ id, name, chapters: [{ number, verses: [{ number, text }] }] }] }`
   - Books use OSIS identifiers (Gen, Matt, Rev, etc.)
@@ -154,8 +154,8 @@
   - rules.json
 
 #### JSON Schemas
-- **`static/schemas/bibles.schema.json`** - Metadata schema
-- **`static/schemas/bibles-auxiliary.schema.json`** - Content schema
+- **`static/schemas/bible.schema.json`** - Metadata schema
+- **`static/schemas/bible-auxiliary.schema.json`** - Content schema
 
 ### 1.4 Mount Points (hugo.toml)
 
@@ -197,7 +197,7 @@
 ```
 
 #### Configuration
-- **basePath:** `/bibles` (configurable via `params.michael.basePath`)
+- **basePath:** `/bible` (configurable via `params.michael.basePath`)
 - **backLink:** `/` (configurable via `params.michael.backLink`)
 
 ---
@@ -206,7 +206,7 @@
 
 ### 2.1 Compare Page - Normal Mode
 
-**Entry:** `/bibles/compare/`
+**Entry:** `/bible/compare/`
 
 **Flow:**
 1. **Initial Load**
@@ -307,7 +307,7 @@
 
 ### 2.3 Search Page
 
-**Entry:** `/bibles/search/`
+**Entry:** `/bible/search/`
 
 **Flow:**
 1. **Initial Load**
@@ -342,7 +342,7 @@
 4. **Results Display**
    - Header: "Found N results for [query] in [Bible]"
    - Each result:
-     - Link to verse: `/bibles/{bible}/{book}/{chapter}/?v={verse}`
+     - Link to verse: `/bible/{bible}/{book}/{chapter}/?v={verse}`
      - Highlighted text (matches wrapped in `<mark>`)
    - Limit: First 100 results shown
    - No results: Helpful message based on search type
@@ -354,7 +354,7 @@
 
 ### 2.4 Single Page - Chapter Display
 
-**Entry:** `/bibles/{bible}/{book}/{chapter}/`
+**Entry:** `/bible/{bible}/{book}/{chapter}/`
 
 **Flow:**
 1. **Initial Load**
@@ -686,28 +686,28 @@
 ```
 Build Time:
   tools/juniper (Go) → SWORD modules → JSON
-    ├── data/bibles.json (metadata)
-    └── data/bibles_auxiliary/*.json (content)
+    ├── data/bible.json (metadata)
+    └── data/bible_auxiliary/*.json (content)
 
-  content/bibles/_content.gotmpl → Hugo → Static pages
-    ├── /bibles/ (list)
-    ├── /bibles/{bible}/ (overview)
-    ├── /bibles/{bible}/{book}/ (chapter grid)
-    └── /bibles/{bible}/{book}/{chapter}/ (verses)
+  content/bible/_content.gotmpl → Hugo → Static pages
+    ├── /bible/ (list)
+    ├── /bible/{bible}/ (overview)
+    ├── /bible/{bible}/{book}/ (chapter grid)
+    └── /bible/{bible}/{book}/{chapter}/ (verses)
 
 Runtime:
-  User → /bibles/compare/
+  User → /bible/compare/
     → parallel.js loads → Bible data JSON embedded
-    → User selects → Fetch HTML (/bibles/{bible}/{book}/{chapter}/)
+    → User selects → Fetch HTML (/bible/{bible}/{book}/{chapter}/)
     → Parse verses → Display comparison
     → Optional: text-compare.js → Diff highlighting
 
-  User → /bibles/search/
+  User → /bible/search/
     → bible-search.js loads → Bible index JSON embedded
     → User searches → Sequential chapter fetching
     → Parse verses → Filter matches → Display results
 
-  User → /bibles/{bible}/{book}/{chapter}/
+  User → /bible/{bible}/{book}/{chapter}/
     → Page loads → Markdown rendered
     → strongs.js → Detect patterns → Add tooltips
     → share.js → Add share buttons → Clipboard/social

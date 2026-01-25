@@ -179,7 +179,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - ShareMenu component includes full keyboard navigation and focus management
 - Updated `hugo.toml` to support both module and standalone modes
 - Updated `shell.nix` with streamlined dependencies and make commands
-- Homepage layout now works with both `/bibles` and `/religion/bibles` paths
+- Homepage layout now works with both `/bible` and `/religion/bible` paths
 
 ### Security
 - **CSP Implementation**
@@ -222,7 +222,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Refactored from Tailwind CSS to PicoCSS with semantic HTML5
 - CSS architecture uses CSS variables for AirFold paper theme integration
 - Templates use semantic CSS classes instead of utility classes
-- Layouts namespaced under `religion/bibles/` for Hugo module compatibility
+- Layouts namespaced under `religion/bible/` for Hugo module compatibility
 - Partials namespaced under `michael/` to avoid conflicts with consuming sites
 - Content mount removed - consuming sites provide their own content
 
@@ -259,8 +259,8 @@ Michael is a standalone Hugo module that provides Bible reading, comparison, and
 ### Data Requirements
 
 Consuming sites must provide:
-1. `data/bibles.json` - Bible metadata
-2. `data/bibles_auxiliary/{id}.json` - Per-translation verse data
+1. `data/bible.json` - Bible metadata
+2. `data/bible_auxiliary/{id}.json` - Per-translation verse data
 
 See the `docs/` directory for full documentation:
 - [ARCHITECTURE.md](ARCHITECTURE.md) — System overview

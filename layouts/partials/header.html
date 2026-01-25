@@ -3,8 +3,7 @@
     <nav class="nav" aria-label="Primary">
       <a href="{{ "/" | relLangURL }}"><strong>{{ .Site.Title }}</strong></a>
       {{- range .Site.Menus.main }}
-      {{- $menuURL := cond .Page .Page.RelPermalink (.URL | relLangURL) }}
-      <a href="{{ $menuURL }}"{{ if $.IsMenuCurrent "main" . }} aria-current="page"{{ end }}>{{ .Name }}</a>
+      <a href="{{ with .Page }}{{ .RelPermalink }}{{ else }}{{ .URL | relLangURL }}{{ end }}"{{ if $.IsMenuCurrent "main" . }} aria-current="page"{{ end }}>{{ .Name }}</a>
       {{- end }}
     </nav>
   </div>

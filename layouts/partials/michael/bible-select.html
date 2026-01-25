@@ -4,20 +4,22 @@
   Generates a <select> element populated with Bible translations.
 
   Parameters (via dict):
+    - site (object, required): Site object for data access
     - id (string, required): Element ID for the select
     - label (string, optional): Placeholder text (default: "Bible...")
     - class (string, optional): Additional CSS classes
 
   Usage:
-    {{ partial "michael/bible-select.html" (dict "id" "sss-bible-left" "label" "Left Bible...") }}
+    {{ partial "michael/bible-select.html" (dict "site" $.Site "id" "sss-bible-left" "label" "Left Bible...") }}
 */}}
+{{- $site := .site -}}
 {{- $id := .id -}}
 {{- $label := .label | default "Bible..." -}}
 {{- $class := .class | default "select w-auto" -}}
 <label for="{{ $id }}" class="sr-only">{{ i18n "selectBible" | default "Select Bible" }}</label>
 <select id="{{ $id }}" class="{{ $class }}" aria-label="{{ i18n "selectBible" | default "Select Bible" }}">
   <option value="">{{ $label }}</option>
-  {{- range $.Site.Data.bibles.bibles -}}
+  {{- range $site.Data.bibles.bibles -}}
   <option value="{{ .id }}">{{ .title }} ({{ .abbrev }})</option>
   {{- end -}}
 </select>

@@ -9,7 +9,7 @@
 
   Parameters (via dict):
     - page: Current page context (required) - provides access to site data
-    - basePath: Base URL path for Bible content (optional, defaults to "/bibles")
+    - basePath: Base URL path for Bible content (optional, defaults to "/bible")
 
   Data Sources:
     - .Site.Data.bibles.bibles: Bible metadata including ID, abbreviation, and display name
@@ -45,7 +45,7 @@
 */}}
 
 {{ $page := .page }}
-{{ $basePath := .basePath | default "/bibles" }}
+{{ $basePath := .basePath | default "/bible" }}
 
 <section class="offline-settings panel--inner offline-settings--spacing">
   <details class="offline-settings__details">

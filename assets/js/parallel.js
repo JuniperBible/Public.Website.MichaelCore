@@ -41,9 +41,9 @@
   /**
    * Base URL path for fetching Bible chapter data
    * @type {string}
-   * @default '/bibles'
+   * @default '/bible'
    */
-  let basePath = '/bibles'; // Default, can be overridden from bible-data JSON
+  let basePath = '/bible'; // Default, can be overridden from bible-data JSON
 
   /**
    * Array of currently selected translation IDs for comparison

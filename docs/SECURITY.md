@@ -426,8 +426,8 @@ if (isStaticAsset(url)) {
 **Cache validation:**
 ```javascript
 function isChapterPage(url) {
-  // Pattern: /bibles/{bible}/{book}/{chapter}/
-  const chapterPattern = /^\/bibles\/[^/]+\/[^/]+\/\d+\/?$/;
+  // Pattern: /bible/{bible}/{book}/{chapter}/
+  const chapterPattern = /^\/bible\/[^/]+\/[^/]+\/\d+\/?$/;
   return chapterPattern.test(url.pathname);
 }
 ```

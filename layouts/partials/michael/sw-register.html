@@ -37,13 +37,9 @@
     }
 
     // Environment check - only register in production
-    {{ $isProduction := eq (getenv "HUGO_ENVIRONMENT") "production" }}
-    {{ $enableSW := .Site.Params.michael.enableSW | default false }}
-    {{ $shouldRegister := or $isProduction $enableSW }}
-
-    {{ if not $shouldRegister }}
+    {{ if not (or (eq (getenv "HUGO_ENVIRONMENT") "production") (.Site.Params.michael.enableSW | default false)) }}
     console.log('[SW] Service worker disabled in development environment');
-    {{ if not $enableSW }}
+    {{ if not (.Site.Params.michael.enableSW | default false) }}
     console.log('[SW] To enable in development, set params.michael.enableSW = true in config');
     {{ end }}
     return;

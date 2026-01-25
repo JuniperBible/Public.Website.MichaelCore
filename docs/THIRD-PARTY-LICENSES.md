@@ -16,13 +16,13 @@ The following Bible translations are extracted from SWORD Project modules using 
 
 | Translation | Source | License | Files |
 |-------------|--------|---------|-------|
-| American Standard Version (1901) | SWORD: ASV | Public Domain (CC-PDDC) | `data/example/bibles_auxiliary/asv.json`, `assets/downloads/asv.tar.xz` |
-| Douay-Rheims Bible, Challoner Revision | SWORD: DRC | Public Domain (CC-PDDC) | `data/example/bibles_auxiliary/drc.json`, `assets/downloads/drc.tar.xz` |
-| Geneva Bible (1599) | SWORD: Geneva1599 | Public Domain (CC-PDDC) | `data/example/bibles_auxiliary/geneva1599.json`, `assets/downloads/geneva1599.tar.xz` |
-| William Tyndale Bible (1525/1530) | SWORD: Tyndale | Public Domain (CC-PDDC) | `data/example/bibles_auxiliary/tyndale.json`, `assets/downloads/tyndale.tar.xz` |
-| Latin Vulgate | SWORD: Vulgate | Public Domain (CC-PDDC) | `data/example/bibles_auxiliary/vulgate.json`, `assets/downloads/vulgate.tar.xz` |
-| World English Bible | SWORD: WEB | Public Domain (CC-PDDC) | `data/example/bibles_auxiliary/web.json`, `assets/downloads/web.tar.xz` |
-| Open Scriptures Morphological Hebrew Bible | SWORD: OSMHB | Public Domain (CC-PDDC) | `data/example/bibles_auxiliary/osmhb.json`, `assets/downloads/osmhb.tar.xz` |
+| American Standard Version (1901) | SWORD: ASV | Public Domain (CC-PDDC) | `data/example/bible_auxiliary/asv.json`, `assets/downloads/asv.tar.xz` |
+| Douay-Rheims Bible, Challoner Revision | SWORD: DRC | Public Domain (CC-PDDC) | `data/example/bible_auxiliary/drc.json`, `assets/downloads/drc.tar.xz` |
+| Geneva Bible (1599) | SWORD: Geneva1599 | Public Domain (CC-PDDC) | `data/example/bible_auxiliary/geneva1599.json`, `assets/downloads/geneva1599.tar.xz` |
+| William Tyndale Bible (1525/1530) | SWORD: Tyndale | Public Domain (CC-PDDC) | `data/example/bible_auxiliary/tyndale.json`, `assets/downloads/tyndale.tar.xz` |
+| Latin Vulgate | SWORD: Vulgate | Public Domain (CC-PDDC) | `data/example/bible_auxiliary/vulgate.json`, `assets/downloads/vulgate.tar.xz` |
+| World English Bible | SWORD: WEB | Public Domain (CC-PDDC) | `data/example/bible_auxiliary/web.json`, `assets/downloads/web.tar.xz` |
+| Open Scriptures Morphological Hebrew Bible | SWORD: OSMHB | Public Domain (CC-PDDC) | `data/example/bible_auxiliary/osmhb.json`, `assets/downloads/osmhb.tar.xz` |
 
 **Notes:**
 - CC-PDDC = Creative Commons Public Domain Dedication and Certification
@@ -32,9 +32,9 @@ The following Bible translations are extracted from SWORD Project modules using 
 
 | Translation | Source | License | Files |
 |-------------|--------|---------|-------|
-| King James Version (1769) with Strong's Numbers and Apocrypha | SWORD: KJVA (CrossWire) | GPL-3.0-or-later | `data/example/bibles_auxiliary/kjva.json`, `assets/downloads/kjva.tar.xz` |
-| Septuagint, Morphologically Tagged Rahlfs' | SWORD: LXX (CCAT, University of Pennsylvania) | Copyrighted-Free | `data/example/bibles_auxiliary/lxx.json`, `assets/downloads/lxx.tar.xz` |
-| The Greek New Testament: SBL Edition | SWORD: SBLGNT | Copyrighted-Free | `data/example/bibles_auxiliary/sblgnt.json`, `assets/downloads/sblgnt.tar.xz` |
+| King James Version (1769) with Strong's Numbers and Apocrypha | SWORD: KJVA (CrossWire) | GPL-3.0-or-later | `data/example/bible_auxiliary/kjva.json`, `assets/downloads/kjva.tar.xz` |
+| Septuagint, Morphologically Tagged Rahlfs' | SWORD: LXX (CCAT, University of Pennsylvania) | Copyrighted-Free | `data/example/bible_auxiliary/lxx.json`, `assets/downloads/lxx.tar.xz` |
+| The Greek New Testament: SBL Edition | SWORD: SBLGNT | Copyrighted-Free | `data/example/bible_auxiliary/sblgnt.json`, `assets/downloads/sblgnt.tar.xz` |
 
 **Notes:**
 - KJVA Strong's numbers derived from The Bible Foundation (Hebrew) and KJV2003 Project at CrossWire (Greek)
@@ -234,7 +234,7 @@ When redistributing Bible texts from this project:
 ## Verification
 
 All Bible text licenses can be verified by:
-1. Checking `data/example/bibles.json` for license fields
+1. Checking `data/example/bible.json` for license fields
 2. Reading full license texts in `data/example/license_rights.json`
 3. Consulting original SWORD module .conf files
 4. Visiting source websites listed in attributions above

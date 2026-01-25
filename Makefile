@@ -49,13 +49,16 @@ help:
 	@echo "  make juniper   Build the juniper tool"
 	@echo ""
 
+# Hugo binary - use local build if available, else system hugo
+HUGO := $(shell test -x tools/hugo/hugo && echo ./tools/hugo/hugo || echo hugo)
+
 # Start Hugo development server (syncs submodules to current branch first)
 dev: sync-submodules
-	hugo server --buildDrafts --buildFuture --disableFastRender
+	$(HUGO) server --buildDrafts --buildFuture --disableFastRender
 
 # Build static site (regenerates SBOM and Bible data first)
 build: sbom ensure-data vendor-package
-	hugo --minify
+	$(HUGO) --minify
 
 # Ensure Bible data exists, prompt for conversion if needed
 ensure-data:
@@ -243,8 +246,10 @@ push: clean
 
 # Sync submodules to match current branch
 # main -> tracks main branches, development -> tracks development branches
+# hugo only has master branch, so always syncs to master
 sync-submodules:
 	@echo "Syncing submodules for branch: $(BRANCH)"
+	@cd tools/hugo && git checkout master && git pull origin master
 	@if [ "$(BRANCH)" = "main" ]; then \
 		cd tools/juniper && git checkout main && git pull origin main; \
 		cd ../magellan && git checkout main && git pull origin main; \

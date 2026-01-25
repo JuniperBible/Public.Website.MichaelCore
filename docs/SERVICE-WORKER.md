@@ -63,7 +63,7 @@ Static resources that rarely change:
 **Strategy:** Check cache first, fall back to network if not found, then cache the response.
 
 ### Chapter Pages (Network-First)
-Bible chapter pages (`/bibles/{bible}/{book}/{chapter}/`):
+Bible chapter pages (`/bible/{bible}/{book}/{chapter}/`):
 - Try network first for fresh content
 - Fall back to cache if network fails
 - Cache successful responses for offline use
@@ -80,10 +80,10 @@ When both network and cache fail for navigation requests:
 
 The service worker pre-caches these chapters for offline reading:
 
-1. **Genesis 1** (`/bibles/kjva/gen/1/`) - Creation account
-2. **Psalm 23** (`/bibles/kjva/ps/23/`) - The Lord is my shepherd
-3. **Matthew 1** (`/bibles/kjva/matt/1/`) - Genealogy of Jesus
-4. **John 1** (`/bibles/kjva/john/1/`) - In the beginning was the Word
+1. **Genesis 1** (`/bible/kjva/gen/1/`) - Creation account
+2. **Psalm 23** (`/bible/kjva/ps/23/`) - The Lord is my shepherd
+3. **Matthew 1** (`/bible/kjva/matt/1/`) - Genealogy of Jesus
+4. **John 1** (`/bible/kjva/john/1/`) - In the beginning was the Word
 
 These were chosen as commonly read passages that provide value when offline.
 
@@ -143,7 +143,7 @@ hugo server
    - `michael-chapters-v1` with default chapters
 5. **Test offline mode:**
    - Go to Network tab → Throttling → Offline
-   - Navigate to `/bibles/kjva/gen/1/` - should load from cache
+   - Navigate to `/bible/kjva/gen/1/` - should load from cache
    - Navigate to an uncached page - should show offline.html
 
 ### 4. Test Update Detection
@@ -164,7 +164,7 @@ The service worker provides detailed console logging:
 [Service Worker] Cached: /
 [Service Worker] Cached: /offline.html
 [Service Worker] Caching default chapters
-[Service Worker] Cached: /bibles/kjva/gen/1/
+[Service Worker] Cached: /bible/kjva/gen/1/
 [Service Worker] Installation complete
 [Service Worker] Activating...
 [Service Worker] Activation complete
@@ -210,12 +210,12 @@ Edit `/static/sw.js`:
 
 ```javascript
 const DEFAULT_CHAPTERS = [
-  '/bibles/kjva/gen/1/',
-  '/bibles/kjva/ps/23/',
-  '/bibles/kjva/matt/1/',
-  '/bibles/kjva/john/1/',
-  '/bibles/kjva/john/3/',      // Add new chapters here
-  '/bibles/kjva/rom/8/',
+  '/bible/kjva/gen/1/',
+  '/bible/kjva/ps/23/',
+  '/bible/kjva/matt/1/',
+  '/bible/kjva/john/1/',
+  '/bible/kjva/john/3/',      // Add new chapters here
+  '/bible/kjva/rom/8/',
 ];
 ```
 

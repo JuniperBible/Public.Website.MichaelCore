@@ -36,11 +36,11 @@
 
   /**
    * Base URL path for Bible data endpoints.
-   * Defaults to '/bibles' if not specified in index data.
+   * Defaults to '/bible' if not specified in index data.
    * @private
    * @type {string}
    */
-  const basePath = indexData.basePath || '/bibles';
+  const basePath = indexData.basePath || '/bible';
 
   /**
    * Regular expression pattern for Strong's Concordance numbers.
@@ -619,7 +619,7 @@
     `;
 
     for (const result of limitedResults) {
-      // Build URL: /bibles/{bible}/{book}/{chapter}/?v={verse}
+      // Build URL: /bible/{bible}/{book}/{chapter}/?v={verse}
       // The ?v= parameter triggers auto-scroll to verse in reader view
       const url = `${basePath}/${bible}/${result.bookId.toLowerCase()}/${result.chapter}/?v=${result.verse}`;
       const highlightedText = highlightMatches(result.text, query, caseSensitive);

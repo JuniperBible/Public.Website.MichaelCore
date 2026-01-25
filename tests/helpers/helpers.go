@@ -44,29 +44,29 @@ func NewMobileBrowser(t *testing.T) *e2e.Browser {
 
 // NavigateToCompare navigates to the Bible comparison page.
 func NavigateToCompare(t *testing.T, b *e2e.Browser) {
-	if err := b.Navigate(BaseURL + "/bibles/compare/"); err != nil {
+	if err := b.Navigate(BaseURL + "/bible/compare/"); err != nil {
 		t.Fatalf("Failed to navigate to compare page: %v", err)
 	}
-	// Wait for page to be ready
-	if err := b.WaitFor("#bible-select-1"); err != nil {
+	// Wait for page to be ready - check for book-select which should have options
+	if err := b.WaitFor("#book-select"); err != nil {
 		t.Fatalf("Compare page did not load: %v", err)
 	}
 }
 
 // NavigateToSearch navigates to the Bible search page.
 func NavigateToSearch(t *testing.T, b *e2e.Browser) {
-	if err := b.Navigate(BaseURL + "/bibles/search/"); err != nil {
+	if err := b.Navigate(BaseURL + "/bible/search/"); err != nil {
 		t.Fatalf("Failed to navigate to search page: %v", err)
 	}
 	// Wait for search input
-	if err := b.WaitFor("#search-input"); err != nil {
+	if err := b.WaitFor("#search-query"); err != nil {
 		t.Fatalf("Search page did not load: %v", err)
 	}
 }
 
 // NavigateToSingle navigates to a single Bible chapter page.
 func NavigateToSingle(t *testing.T, b *e2e.Browser, bible, book string, chapter int) {
-	url := fmt.Sprintf("%s/bibles/%s/%s/%d/", BaseURL, bible, book, chapter)
+	url := fmt.Sprintf("%s/bible/%s/%s/%d/", BaseURL, bible, book, chapter)
 	if err := b.Navigate(url); err != nil {
 		t.Fatalf("Failed to navigate to %s: %v", url, err)
 	}
@@ -78,7 +78,7 @@ func NavigateToSingle(t *testing.T, b *e2e.Browser, bible, book string, chapter 
 
 // NavigateToBiblesList navigates to the Bibles listing page.
 func NavigateToBiblesList(t *testing.T, b *e2e.Browser) {
-	if err := b.Navigate(BaseURL + "/bibles/"); err != nil {
+	if err := b.Navigate(BaseURL + "/bible/"); err != nil {
 		t.Fatalf("Failed to navigate to bibles list: %v", err)
 	}
 }
@@ -136,6 +136,21 @@ func SelectOption(t *testing.T, b *e2e.Browser, selector, value string) {
 	}
 }
 
+// CheckCheckbox clicks a checkbox if it's not already checked.
+func CheckCheckbox(t *testing.T, b *e2e.Browser, selector string) {
+	t.Helper()
+	if err := b.WaitFor(selector); err != nil {
+		t.Fatalf("Checkbox %s not found: %v", selector, err)
+	}
+	cb := b.Find(selector)
+	checked, _ := cb.IsChecked()
+	if !checked {
+		if err := cb.Click(); err != nil {
+			t.Fatalf("Failed to check %s: %v", selector, err)
+		}
+	}
+}
+
 // ExpectVisible asserts that an element is visible, failing the test if not.
 func ExpectVisible(t *testing.T, b *e2e.Browser, selector string) {
 	t.Helper()
@@ -165,5 +180,20 @@ func ExpectURL(t *testing.T, b *e2e.Browser, pattern string) {
 	t.Helper()
 	if err := b.WaitForURL(pattern); err != nil {
 		t.Errorf("Expected URL to contain %q: %v", pattern, err)
+	}
+}
+
+// ExpectOptionCount verifies a select element has at least the expected number of options.
+func ExpectOptionCount(t *testing.T, b *e2e.Browser, selector string, minCount int) {
+	t.Helper()
+	if err := b.WaitFor(selector); err != nil {
+		t.Fatalf("Select %s not found: %v", selector, err)
+	}
+	// Count options by selecting the options within the select
+	optionSelector := selector + " option"
+	options := b.FindAll(optionSelector)
+	count := options.Count()
+	if count < minCount {
+		t.Errorf("Expected %s to have at least %d options, but found %d", selector, minCount, count)
 	}
 }

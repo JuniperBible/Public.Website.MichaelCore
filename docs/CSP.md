@@ -35,7 +35,7 @@ The CSP is implemented as a meta tag in `/home/justin/Programming/Workspace/mich
 | `script-src` | `'self'` | JavaScript sources | Only scripts from same origin can execute. No inline `<script>` tags or `eval()` allowed. All JS loaded from `/assets/js/` |
 | `style-src` | `'self' 'unsafe-inline'` | CSS sources | Same-origin stylesheets plus inline styles. Required for Hugo's style fingerprinting and CSS custom properties |
 | `img-src` | `'self' data:` | Image sources | Same-origin images plus data URIs. Data URIs used for SVG icons in share buttons |
-| `connect-src` | `'self'` | Fetch/XHR/WebSocket endpoints | AJAX requests restricted to same origin. Bible data fetched from `/bibles/{bible}/{book}/{chapter}/` |
+| `connect-src` | `'self'` | Fetch/XHR/WebSocket endpoints | AJAX requests restricted to same origin. Bible data fetched from `/bible/{bible}/{book}/{chapter}/` |
 | `font-src` | `'self'` | Font sources | System fonts only, no external font CDNs |
 | `frame-ancestors` | `'none'` | Embedding in `<iframe>` | Prevents clickjacking attacks by disallowing embedding in frames |
 | `base-uri` | `'self'` | `<base>` tag restrictions | Prevents base tag injection attacks |
@@ -725,7 +725,7 @@ test('CSP is active and blocks external scripts', async ({ page }) => {
   });
 
   // Attempt to inject external script (should be blocked)
-  await page.goto('http://localhost:1313/bibles/');
+  await page.goto('http://localhost:1313/bible/');
   await page.evaluate(() => {
     const script = document.createElement('script');
     script.src = 'https://cdn.example.com/evil.js';
@@ -743,7 +743,7 @@ test('CSP is active and blocks external scripts', async ({ page }) => {
 });
 
 test('Inline styles are allowed (unsafe-inline)', async ({ page }) => {
-  await page.goto('http://localhost:1313/bibles/compare/');
+  await page.goto('http://localhost:1313/bible/compare/');
 
   // Verify inline styles work
   const element = await page.locator('.parallel-content');
