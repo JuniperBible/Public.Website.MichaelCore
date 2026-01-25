@@ -46,6 +46,21 @@
 
   /* Focus ring */
   --focus-ring: 0 0 0 3px rgba(122, 0, 176, 0.35);
+
+  /* Diff highlighting colors */
+  --diff-punct: #ffeb99;      /* punctuation/formatting */
+  --diff-spelling: #ffe0b3;   /* spelling modernization */
+  --diff-subst: #ffcccc;      /* word substitution */
+  --diff-add: #ccffcc;        /* addition */
+  --diff-omit: #e6e6e6;       /* omission */
+
+  /* State colors */
+  --state-loading: var(--brand-500);
+  --state-error: #d32f2f;
+  --state-error-bg: #ffebee;
+
+  /* Touch targets */
+  --touch-min: 44px;
 }
 
 /* -----------------------------
@@ -570,7 +585,321 @@ a:focus-visible {
 }
 
 /* -----------------------------
-   14) Print styles
+   14) Verse button component
+------------------------------ */
+.verse-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: var(--touch-min);
+  min-height: var(--touch-min);
+  padding: 10px 12px;
+
+  border-radius: var(--radius-1);
+  border: 1px solid var(--border-strong);
+  background: var(--surface-2);
+  color: var(--text-900);
+
+  box-shadow: var(--shadow-0);
+  cursor: pointer;
+  user-select: none;
+  text-decoration: none;
+  font: inherit;
+  line-height: 1;
+}
+
+.verse-btn:hover {
+  background: var(--surface-1);
+  border-color: rgba(0,0,0,.55);
+  transform: translateY(-1px);
+}
+
+.verse-btn:active {
+  transform: translateY(0);
+  box-shadow: none;
+}
+
+.verse-btn.is-active,
+.verse-btn[aria-pressed="true"] {
+  background: var(--brand-100);
+  border-color: var(--brand-500);
+  color: var(--brand-600);
+}
+
+.verse-btn:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+/* -----------------------------
+   15) Diff highlighting classes
+------------------------------ */
+.diff-insert {
+  background: var(--diff-add);
+  padding: 2px 0;
+  border-radius: 3px;
+}
+
+.diff-punct {
+  background: var(--diff-punct);
+  padding: 2px 0;
+  border-radius: 3px;
+}
+
+.diff-spelling {
+  background: var(--diff-spelling);
+  padding: 2px 0;
+  border-radius: 3px;
+}
+
+.diff-subst {
+  background: var(--diff-subst);
+  padding: 2px 0;
+  border-radius: 3px;
+}
+
+.diff-omit {
+  background: var(--diff-omit);
+  padding: 2px 0;
+  border-radius: 3px;
+  text-decoration: line-through;
+  color: var(--text-500);
+}
+
+/* -----------------------------
+   16) Share menu component
+------------------------------ */
+.share-menu {
+  position: absolute;
+  z-index: 1000;
+  min-width: 200px;
+
+  background: var(--surface-2);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-1);
+  box-shadow: var(--shadow-1);
+
+  padding: 6px 0;
+  margin-top: 4px;
+}
+
+.share-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+
+  padding: 10px 14px;
+  border: none;
+  background: transparent;
+  color: var(--text-900);
+
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+  user-select: none;
+  font: inherit;
+  line-height: 1.4;
+}
+
+.share-menu-item:hover {
+  background: var(--surface-1);
+}
+
+.share-menu-item:focus-visible {
+  outline: none;
+  background: var(--brand-100);
+  color: var(--brand-600);
+}
+
+.share-menu-divider {
+  height: 1px;
+  margin: 6px 0;
+  background: var(--border);
+  border: none;
+}
+
+/* -----------------------------
+   17) Strong's tooltip component
+------------------------------ */
+.strongs-tooltip {
+  position: absolute;
+  z-index: 1001;
+  max-width: 320px;
+
+  background: var(--surface-2);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-1);
+  box-shadow: var(--shadow-1);
+
+  padding: var(--pad-1);
+  font-size: 0.92rem;
+  line-height: 1.4;
+}
+
+.strongs-ref {
+  display: inline-block;
+  padding: 1px 4px;
+  margin: 0 2px;
+
+  border-radius: 4px;
+  border: 1px solid var(--border);
+  background: rgba(122, 0, 176, 0.08);
+  color: var(--brand-600);
+
+  font-size: 0.75em;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: help;
+  user-select: none;
+}
+
+.strongs-ref:hover {
+  background: rgba(122, 0, 176, 0.15);
+  border-color: var(--brand-500);
+}
+
+.strongs-ref:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+/* -----------------------------
+   18) Loading states
+------------------------------ */
+.loading {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--text-500);
+}
+
+.loading::before {
+  content: "";
+  display: block;
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--border);
+  border-top-color: var(--state-loading);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--surface-1) 0%,
+    var(--surface-2) 50%,
+    var(--surface-1) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+  border-radius: var(--radius-1);
+  min-height: 20px;
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* -----------------------------
+   19) Error and empty states
+------------------------------ */
+.error-state {
+  padding: var(--pad-2);
+  border-radius: var(--radius-1);
+  border: 1px solid var(--state-error);
+  background: var(--state-error-bg);
+  color: var(--state-error);
+  text-align: center;
+}
+
+.error-state::before {
+  content: "⚠️";
+  display: block;
+  font-size: 2rem;
+  margin-bottom: 8px;
+}
+
+.empty-state {
+  padding: var(--pad-3);
+  text-align: center;
+  color: var(--text-500);
+}
+
+.empty-state::before {
+  content: "📭";
+  display: block;
+  font-size: 2.5rem;
+  margin-bottom: 10px;
+  opacity: 0.6;
+}
+
+/* -----------------------------
+   20) Accessibility enhancements
+------------------------------ */
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .btn:hover,
+  .verse-btn:hover {
+    transform: none;
+  }
+}
+
+/* Enhanced contrast for users who prefer it */
+@media (prefers-contrast: more) {
+  :root {
+    --border: rgba(0, 0, 0, 0.35);
+    --border-strong: rgba(0, 0, 0, 0.55);
+  }
+
+  .btn,
+  .chip,
+  .verse-btn,
+  .book-link,
+  .chapter-link,
+  .tile {
+    border-width: 2px;
+  }
+
+  .strongs-ref {
+    border-width: 1.5px;
+  }
+}
+
+/* Enhanced focus styles for keyboard navigation */
+*:focus-visible {
+  outline: 3px solid var(--brand-500);
+  outline-offset: 2px;
+}
+
+.btn:focus-visible,
+.chip:focus-visible,
+.verse-btn:focus-visible,
+.book-link:focus-visible,
+.chapter-link:focus-visible,
+.tile:focus-visible,
+a:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+/* -----------------------------
+   21) Print styles
 ------------------------------ */
 @media print {
   .chrome, .reader-bar, .actions, .btn {

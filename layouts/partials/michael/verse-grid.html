@@ -1,0 +1,44 @@
+{{/*
+  Verse Grid Partial
+
+  Generates a verse selection grid with "All" button and individual verse buttons.
+  Used in Bible comparison interfaces to allow verse-by-verse navigation.
+
+  Parameters (via dict):
+    - id (string, optional): Prefix for element IDs
+
+  Usage:
+    {{ partial "michael/verse-grid.html" (dict) }}
+    {{ partial "michael/verse-grid.html" (dict "id" "sss") }}
+
+  When id is "sss", generates IDs like:
+    - sss-verse-grid
+    - sss-verse-buttons
+    - sss-all-verses-btn
+
+  When id is empty/omitted, generates IDs like:
+    - verse-grid
+    - verse-buttons
+    - all-verses-btn
+
+  CSS Classes Used:
+    - hidden: Hides the grid until a chapter is selected
+    - mt-2: Adds top margin
+    - row: Flexbox row layout
+    - muted: Muted text color for "v:" label
+    - chip: Chip/tag styling for buttons
+    - is-active: Active state for "All" button
+*/}}
+{{ $idPrefix := .id | default "" }}
+{{ $separator := cond (eq $idPrefix "") "" "-" }}
+{{ $verseGridId := printf "%s%sverse-grid" $idPrefix $separator }}
+{{ $verseButtonsId := printf "%s%sverse-buttons" $idPrefix $separator }}
+{{ $allVersesBtnId := printf "%s%sall-verses-btn" $idPrefix $separator }}
+
+<div id="{{ $verseGridId }}" class="hidden mt-2">
+  <div class="row" style="align-items: center; gap: 8px;">
+    <span class="muted">v:</span>
+    <button id="{{ $allVersesBtnId }}" class="chip is-active">All</button>
+    <div class="row" id="{{ $verseButtonsId }}" style="gap: 4px;"></div>
+  </div>
+</div>

@@ -8,6 +8,40 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Code Cleanup Charter** — Comprehensive cleanup plan
+  - `docs/CODE_CLEANUP_CHARTER.md` — Charter document
+  - `docs/TODO.txt` — Task tracking with phases and subtasks
+  - `docs/PHASE-0-BASELINE-INVENTORY.md` — Codebase inventory
+
+- **JavaScript Modules** (`assets/js/michael/`) — DRY refactoring
+  - `dom-utils.js` — Touch handling, contrast colors, messages
+  - `bible-api.js` — Unified chapter fetching and caching
+  - `verse-grid.js` — Verse selection component with accessibility
+  - `chapter-dropdown.js` — Chapter dropdown component
+  - `share-menu.js` — Share menu with ARIA and keyboard support
+
+- **Hugo Partials** (`layouts/partials/michael/`)
+  - `color-picker.html` — Highlight color selection
+  - `verse-grid.html` — Verse grid markup
+  - `sss-toggle.html` — SSS mode toggle button
+
+- **CSS Components** (`assets/css/theme.css`)
+  - Diff highlighting classes (`.diff-insert`, `.diff-punct`, etc.)
+  - Verse button component (`.verse-btn`)
+  - Share menu component (`.share-menu`)
+  - Strong's tooltip component (`.strongs-tooltip`)
+  - Loading states (`.loading`, `.skeleton`)
+  - Error/empty states
+  - `prefers-reduced-motion` support
+  - `prefers-contrast` support
+  - Enhanced `focus-visible` styling
+
+- **Architecture Documentation** (`docs/`)
+  - `ARCHITECTURE.md` — System overview and data flow
+  - `DATA-FORMATS.md` — JSON schemas and structures
+  - `VERSIFICATION.md` — Bible versification systems
+  - `HUGO-MODULE-USAGE.md` — Installation and configuration
+
 - Makefile with `make dev`, `make build`, and `make clean` targets
 - Standalone development mode with example data
 
@@ -15,6 +49,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated `hugo.toml` to support both module and standalone modes
 - Updated `shell.nix` with streamlined dependencies and make commands
 - Homepage layout now works with both `/bibles` and `/religion/bibles` paths
+
+### Security
+- CSP audit completed (21 innerHTML usages documented)
+- HIGH risk issue identified in `highlightMatches()` (bible-search.js)
+
+### Pending (Code Cleanup Charter)
+- Refactor parallel.js to use new modules
+- Refactor bible-search.js to use bible-api.js
+- Bundle Strong's definitions locally
+- Add service worker for offline support
+- Complete WCAG 2.1 AA compliance
 
 ## [1.0.0] - 2026-01-24
 
@@ -84,4 +129,9 @@ Consuming sites must provide:
 1. `data/bibles.json` - Bible metadata
 2. `data/bibles_auxiliary/{id}.json` - Per-translation verse data
 
-See [docs/PROJECT-CHARTER.md](docs/PROJECT-CHARTER.md) for full documentation.
+See the `docs/` directory for full documentation:
+- [ARCHITECTURE.md](ARCHITECTURE.md) — System overview
+- [DATA-FORMATS.md](DATA-FORMATS.md) — JSON schemas
+- [VERSIFICATION.md](VERSIFICATION.md) — Bible versification
+- [HUGO-MODULE-USAGE.md](HUGO-MODULE-USAGE.md) — Installation guide
+- [CODE_CLEANUP_CHARTER.md](CODE_CLEANUP_CHARTER.md) — Cleanup objectives
