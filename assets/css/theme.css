@@ -566,6 +566,9 @@ a:focus-visible {
   border-radius: var(--radius-1);
   padding: var(--pad-2);
   min-height: 400px;
+  min-width: 0;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
 }
 .compare-content {
   flex: 1;

@@ -154,6 +154,12 @@ window.Michael.OfflineManager = (function() {
 
     eventTarget.dispatchEvent(completeEvent);
 
+    // Resolve pending download promise
+    if (pendingDownload) {
+      pendingDownload.resolve();
+      pendingDownload = null;
+    }
+
     // Reset state
     downloadState = {
       inProgress: false,
@@ -183,6 +189,12 @@ window.Michael.OfflineManager = (function() {
     });
 
     eventTarget.dispatchEvent(errorEvent);
+
+    // Reject pending download promise
+    if (pendingDownload) {
+      pendingDownload.reject(new Error(data.error || 'Download failed'));
+      pendingDownload = null;
+    }
 
     // Reset state
     downloadState = {
@@ -272,10 +284,18 @@ window.Michael.OfflineManager = (function() {
   }
 
   /**
+   * Pending download promise resolver
+   * @private
+   * @type {{resolve: Function, reject: Function}|null}
+   */
+  let pendingDownload = null;
+
+  /**
    * Downloads and caches a Bible translation for offline use.
    *
    * This method triggers the service worker to pre-cache all chapters of the specified
    * Bible translation. Progress updates are fired as events that the UI can listen to.
+   * The promise resolves when the download completes (success or failure).
    *
    * @param {string} bibleId - Bible translation ID (e.g., "kjv", "asv", "web")
    * @param {string} basePath - Base path for Bible URLs (e.g., "/bible")
@@ -307,6 +327,11 @@ window.Michael.OfflineManager = (function() {
     downloadState.completedItems = 0;
     downloadState.totalItems = 0;
 
+    // Create a promise that will resolve when download completes
+    const downloadPromise = new Promise((resolve, reject) => {
+      pendingDownload = { resolve, reject };
+    });
+
     try {
       await sendMessageToServiceWorker({
         type: 'CACHE_BIBLE',
@@ -315,8 +340,12 @@ window.Michael.OfflineManager = (function() {
           basePath
         }
       });
+
+      // Wait for the download to actually complete
+      await downloadPromise;
     } catch (error) {
       downloadState.inProgress = false;
+      pendingDownload = null;
       throw error;
     }
   }
