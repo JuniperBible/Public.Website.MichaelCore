@@ -35,6 +35,8 @@
 {{ if $share }}<script src="{{ $share.RelPermalink }}" defer></script>{{ end }}
 {{ $strongs := resources.Get "js/strongs.js" }}
 {{ if $strongs }}<script src="{{ $strongs.RelPermalink }}" defer></script>{{ end }}
+{{ $footnotes := resources.Get "js/michael/footnotes.js" }}
+{{ if $footnotes }}<script src="{{ $footnotes.RelPermalink }}" defer></script>{{ end }}
 {{ end }}
 
 {{ define "main" }}
@@ -80,8 +82,20 @@
         <!-- Navigation with dropdowns -->
         {{ partial "michael/bible-nav.html" (dict "page" . "bible" .Params.bible "book" .Params.book "chapter" .Params.chapter "basePath" $basePath) }}
 
-        <div class="prose">
+        <div class="prose" id="chapter-content">
           {{ .Content }}
+        </div>
+
+        <!-- Notes sections (side by side) -->
+        <div class="chapter-notes-row" id="chapter-notes-row">
+          <aside id="footnotes-section" class="footnotes-section">
+            <h2>{{ i18n "footnotes" | default "Footnotes" }}</h2>
+            <ol class="footnotes-list" id="footnotes-list"></ol>
+          </aside>
+          <aside id="strongs-section" class="strongs-notes-section">
+            <h2>{{ i18n "strongsNotes" | default "Strong's Notes" }}</h2>
+            <ol class="strongs-notes-list" id="strongs-list"></ol>
+          </aside>
         </div>
 
         <!-- Bottom navigation for convenience -->

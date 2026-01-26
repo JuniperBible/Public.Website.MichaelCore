@@ -486,6 +486,26 @@ a:focus-visible {
 ------------------------------ */
 .row { display: flex; gap: 10px; flex-wrap: wrap; }
 .row--center { justify-content: center; }
+
+/* Verse grid layout */
+.verse-grid-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.verse-grid-row > .muted {
+  flex-shrink: 0;
+  line-height: 32px; /* Match button height for vertical alignment */
+}
+.verse-buttons-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  align-items: center;
+  flex: 1;
+  min-width: 0; /* Allow shrinking below content size */
+}
 .center { display: grid; place-items: center; }
 .muted { color: var(--text-500); }
 .mt-1 { margin-top: 8px; }
@@ -547,6 +567,23 @@ a:focus-visible {
   padding: 8px 12px;
   margin-bottom: var(--pad-2);
 }
+.compare-controls--compact {
+  padding: 6px 10px;
+  margin-bottom: var(--pad-1);
+}
+.compare-controls--compact .compare-controls__row {
+  gap: 6px;
+}
+.sss-bible-pair {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  flex-wrap: nowrap;
+}
+/* Keep back button with Bible selectors */
+#sss-back-btn {
+  flex-shrink: 0;
+}
 .compare-controls__row {
   display: flex;
   flex-wrap: wrap;
@@ -580,6 +617,57 @@ a:focus-visible {
   gap: var(--pad-2);
   margin-top: var(--pad-2);
 }
+.compare-pane-wrapper {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+/* Notes row - Footnotes and Strong's side by side */
+.compare-notes-row,
+.chapter-notes-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--pad-2);
+  margin-top: var(--pad-3);
+  padding-top: var(--pad-2);
+  border-top: 1px solid var(--border);
+}
+.compare-notes-row .footnotes-section,
+.compare-notes-row .strongs-notes-section,
+.chapter-notes-row .footnotes-section,
+.chapter-notes-row .strongs-notes-section {
+  padding: var(--pad-2) 0;
+}
+/* Hide header when list is empty */
+.compare-notes-row .footnotes-section:has(ol:empty) h2,
+.compare-notes-row .strongs-notes-section:has(ol:empty) h2,
+.chapter-notes-row .footnotes-section:has(ol:empty) h2,
+.chapter-notes-row .strongs-notes-section:has(ol:empty) h2 {
+  display: none;
+}
+.compare-notes-row h2,
+.chapter-notes-row h2 {
+  font-size: 1rem;
+  margin: 0 0 var(--pad-1) 0;
+  color: var(--michael-accent);
+}
+.strongs-notes-section ol,
+.footnotes-section ol {
+  margin: 0;
+  padding-left: 1.5rem;
+}
+.strongs-notes-section li,
+.footnotes-section li {
+  margin-bottom: 0.5rem;
+  line-height: 1.5;
+}
+/* Stack notes on smaller screens */
+@media (max-width: 768px) {
+  .compare-notes-row,
+  .chapter-notes-row {
+    grid-template-columns: 1fr;
+  }
+}
 .compare-pane {
   background: var(--surface);
   border: 1px solid var(--border);
@@ -588,10 +676,18 @@ a:focus-visible {
   min-height: 400px;
   min-width: 0;
   max-width: 100%;
-  overflow-x: auto;
+  overflow: auto;
   overflow-wrap: break-word;
   word-wrap: break-word;
   word-break: break-word;
+  display: grid;
+  grid-auto-rows: auto;
+  align-content: start;
+}
+.compare-pane .parallel-verse {
+  border-bottom: 1px solid var(--border);
+  padding-bottom: var(--pad-1);
+  margin-bottom: var(--pad-1);
 }
 .compare-content {
   flex: 1;
@@ -743,14 +839,19 @@ a:focus-visible {
   font-style: italic;
 }
 
-/* OSIS structural markers - hide paragraph/milestone divs in Bible text */
+/* OSIS structural markers - hide paragraph/milestone elements in Bible text
+   NOTE: We use display:contents (not display:none) for milestone/chapter because
+   HTML5 parsers treat self-closing custom tags like <milestone/> as unclosed,
+   so all subsequent content becomes children. display:contents allows children to render. */
 .prose milestone,
+.prose chapter {
+  display: contents;
+}
 .prose div[type="x-milestone"],
 .prose div[type="x-p"],
 .prose div[subType],
 .prose div[sID],
-.prose div[eID],
-.prose chapter {
+.prose div[eID] {
   display: none;
 }
 
@@ -862,10 +963,90 @@ a:focus-visible {
 }
 
 .diff-legend__swatch--add { background: var(--diff-add); }
-.diff-legend__swatch--omit { background: var(--diff-omit); }
+.diff-legend__swatch--omit {
+  background: var(--diff-omit);
+  position: relative;
+}
+.diff-legend__swatch--omit::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 1px;
+  right: 1px;
+  height: 2px;
+  background: var(--text-500);
+  transform: translateY(-50%);
+}
 .diff-legend__swatch--subst { background: var(--diff-subst); }
 .diff-legend__swatch--spelling { background: var(--diff-spelling); }
 .diff-legend__swatch--punct { background: var(--diff-punct); }
+
+/* -----------------------------
+   15b) Bible footnotes section
+------------------------------ */
+/* Hide inline notes in verse text - they'll be shown in footnotes section */
+.prose note,
+.compare-pane note,
+#parallel-content note {
+  display: none;
+}
+
+/* Footnote reference marker (superscript) */
+.footnote-ref {
+  font-size: 0.75em;
+  vertical-align: super;
+  color: var(--brand-500);
+  cursor: pointer;
+  text-decoration: none;
+  margin-left: 1px;
+}
+.footnote-ref:hover {
+  text-decoration: underline;
+}
+
+/* Footnotes section - reset margins/border when inside notes-row */
+.chapter-notes-row .footnotes-section,
+.compare-notes-row .footnotes-section {
+  margin-top: 0;
+  margin-bottom: 0;
+  padding-top: 0;
+  border-top: none;
+}
+/* Standalone footnotes section (outside notes-row) */
+.footnotes-section {
+  margin-top: var(--pad-3);
+  margin-bottom: var(--pad-3);
+  padding-top: var(--pad-2);
+  border-top: 1px solid var(--border);
+}
+.footnotes-section h2 {
+  font-size: 1rem;
+  margin-bottom: var(--pad-1);
+  color: var(--text-700);
+}
+.footnotes-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--text-700);
+}
+.footnotes-list li {
+  margin-bottom: 0.5em;
+  padding-left: 1.5em;
+  text-indent: -1.5em;
+}
+.footnote-num {
+  font-weight: 600;
+  color: var(--brand-500);
+  margin-right: 0.25em;
+}
+.footnote-catchword {
+  font-style: italic;
+}
+.footnote-literal {
+  font-style: italic;
+}
 
 /* -----------------------------
    16) Share menu component
@@ -1063,6 +1244,23 @@ a:focus-visible {
 .strongs-ref:focus-visible {
   outline: none;
   box-shadow: var(--focus-ring);
+}
+
+/* OSIS <w> elements with Strong's numbers */
+.strongs-word {
+  cursor: help;
+  border-bottom: 1px dotted var(--brand-500);
+  transition: background-color 0.15s ease;
+}
+
+.strongs-word:hover {
+  background: rgba(122, 0, 176, 0.1);
+}
+
+.strongs-word:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+  border-radius: 2px;
 }
 
 /* -----------------------------
@@ -1566,14 +1764,16 @@ a:focus-visible {
 
   /* ===== 13) OSIS STRUCTURAL ELEMENTS ===== */
 
-  /* Keep OSIS elements hidden */
+  /* Use display:contents for milestone/chapter (see note in main styles) */
   .prose milestone,
+  .prose chapter {
+    display: contents !important;
+  }
   .prose div[type="x-milestone"],
   .prose div[type="x-p"],
   .prose div[subType],
   .prose div[sID],
-  .prose div[eID],
-  .prose chapter {
+  .prose div[eID] {
     display: none !important;
   }
 

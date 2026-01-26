@@ -206,6 +206,105 @@
     }
   }
 
+  /**
+   * Track Strong's numbers that have been added to the notes list
+   * to avoid duplicates
+   * @type {Set<string>}
+   */
+  const addedStrongsNotes = new Set();
+
+  /**
+   * Add a Strong's definition to the Strong's Notes section
+   * @param {string} number - Strong's number (e.g., "430")
+   * @param {string} type - Language type: "H" for Hebrew or "G" for Greek
+   * @param {StrongsDefinition} def - The definition data
+   */
+  function addToStrongsNotes(number, type, def) {
+    const cacheKey = `${type}${number}`;
+
+    // Find the appropriate Strong's notes list (SSS mode or VVV mode)
+    let notesList = document.getElementById('sss-strongs-list');
+    let notesRow = document.getElementById('sss-notes-row');
+
+    // If SSS mode list doesn't exist or is hidden, try VVV mode
+    if (!notesList || notesRow?.classList.contains('hidden')) {
+      notesList = document.getElementById('vvv-strongs-list');
+      notesRow = document.getElementById('vvv-notes-row');
+    }
+
+    // Fallback: look for any visible strongs list (compare page or chapter page)
+    if (!notesList) {
+      notesList = document.querySelector('.strongs-notes-list');
+      notesRow = notesList?.closest('.compare-notes-row, .chapter-notes-row');
+    }
+
+    if (!notesList) return;
+
+    // Check if already added (avoid duplicates)
+    if (addedStrongsNotes.has(cacheKey)) {
+      // Scroll to existing entry and highlight
+      const existingEntry = document.getElementById(`strongs-note-${cacheKey}`);
+      if (existingEntry) {
+        existingEntry.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        existingEntry.style.backgroundColor = 'var(--brand-100)';
+        setTimeout(() => { existingEntry.style.backgroundColor = ''; }, 1500);
+      }
+      return;
+    }
+
+    addedStrongsNotes.add(cacheKey);
+
+    // Build the note HTML
+    const typeName = type === 'H' ? 'Hebrew' : 'Greek';
+    const baseUrl = type === 'H' ? STRONGS_URLS.hebrew : STRONGS_URLS.greek;
+    let html = `<strong>${typeName} ${number}</strong>`;
+
+    if (def.source === 'local') {
+      if (def.lemma) {
+        html += ` — <span class="strongs-lemma">${escapeHtml(def.lemma)}</span>`;
+        if (def.xlit) html += ` (${escapeHtml(def.xlit)})`;
+      }
+      if (def.definition) {
+        html += `: ${escapeHtml(def.definition)}`;
+      }
+    } else if (def.note) {
+      html += `: ${escapeHtml(def.note)}`;
+    }
+
+    html += ` <a href="${baseUrl}${number}/kjv/" target="_blank" rel="noopener" class="strongs-external-link">↗</a>`;
+
+    // Create and append the list item
+    const li = document.createElement('li');
+    li.id = `strongs-note-${cacheKey}`;
+    li.innerHTML = html;
+    notesList.appendChild(li);
+
+    // Show the notes row if it was hidden
+    if (notesRow) {
+      notesRow.classList.remove('hidden');
+    }
+
+    // Scroll to the new entry
+    li.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    li.style.backgroundColor = 'var(--brand-100)';
+    setTimeout(() => { li.style.backgroundColor = ''; }, 1500);
+  }
+
+  /**
+   * Clear Strong's notes when navigating to new chapter
+   */
+  function clearStrongsNotes() {
+    addedStrongsNotes.clear();
+    const lists = document.querySelectorAll('.strongs-notes-list');
+    lists.forEach(list => { list.innerHTML = ''; });
+  }
+
+  // Expose clearStrongsNotes for use by parallel.js
+  window.Michael = window.Michael || {};
+  window.Michael.Strongs = {
+    clearNotes: clearStrongsNotes
+  };
+
   // ============================================================================
   // DATA FETCHING
   // ============================================================================
@@ -226,10 +325,13 @@
    */
   async function loadDefinition(number, type, tip) {
     const cacheKey = `${type}${number}`;
+    let def = null;
 
     // Check cache first to avoid redundant lookups
     if (definitionCache.has(cacheKey)) {
-      showDefinition(tip, definitionCache.get(cacheKey));
+      def = definitionCache.get(cacheKey);
+      showDefinition(tip, def);
+      addToStrongsNotes(number, type, def);
       return;
     }
 
@@ -238,6 +340,7 @@
     if (localDef) {
       definitionCache.set(cacheKey, localDef);
       showDefinition(tip, localDef);
+      addToStrongsNotes(number, type, localDef);
       return;
     }
 
@@ -249,6 +352,7 @@
         if (apiDef) {
           definitionCache.set(cacheKey, apiDef);
           showDefinition(tip, apiDef);
+          addToStrongsNotes(number, type, apiDef);
           return;
         }
       } catch (error) {
@@ -270,6 +374,7 @@
     // Cache the definition for subsequent access
     definitionCache.set(cacheKey, definition);
     showDefinition(tip, definition);
+    addToStrongsNotes(number, type, definition);
   }
 
   /**
@@ -382,6 +487,82 @@
   }
 
   // ============================================================================
+  // OSIS WORD ELEMENT PROCESSING
+  // ============================================================================
+
+  /**
+   * Process OSIS <w> elements that contain Strong's numbers in their lemma attributes
+   *
+   * OSIS format uses <w> elements with attributes:
+   * - lemma="strong:H1234" or lemma="strong:G5678" - Strong's concordance number
+   * - morph="..." - Morphology codes (verb forms, noun cases, etc.)
+   *
+   * This function makes <w> elements clickable to show Strong's definitions,
+   * while preserving the original Hebrew/Greek text display.
+   *
+   * @param {HTMLElement} container - The container element to scan for <w> elements
+   */
+  function processOsisWordElements(container) {
+    // Find all <w> elements with lemma attributes
+    const wordElements = container.querySelectorAll('w[lemma]');
+
+    wordElements.forEach(wElement => {
+      // Skip if already processed
+      if (wElement.dataset.strongsProcessed) return;
+      wElement.dataset.strongsProcessed = 'true';
+
+      const lemma = wElement.getAttribute('lemma') || '';
+      const morph = wElement.getAttribute('morph') || '';
+
+      // Parse Strong's number from lemma attribute
+      // Format: "strong:H1234" or "strong:G5678" or multiple "strong:H1234 strong:H5678"
+      const strongsMatch = lemma.match(/strong:([HG])(\d+)/i);
+
+      if (strongsMatch) {
+        const type = strongsMatch[1].toUpperCase();
+        const number = strongsMatch[2];
+
+        // Add interactive attributes to the <w> element
+        wElement.classList.add('strongs-word');
+        wElement.dataset.strongsType = type;
+        wElement.dataset.strongsNumber = number;
+        if (morph) {
+          wElement.dataset.morph = morph;
+        }
+
+        // Accessibility attributes
+        wElement.setAttribute('role', 'button');
+        wElement.setAttribute('tabindex', '0');
+        wElement.setAttribute('aria-label',
+          `${wElement.textContent} - Strong's ${type === 'H' ? 'Hebrew' : 'Greek'} ${number}`
+        );
+      }
+    });
+
+    // Attach event listeners to all OSIS word elements
+    container.querySelectorAll('.strongs-word').forEach(el => {
+      // Prevent duplicate listeners
+      if (el.dataset.strongsWordListenerAdded) return;
+      el.dataset.strongsWordListenerAdded = 'true';
+
+      // Mouse/touch activation
+      el.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        showTooltip(el, el.dataset.strongsNumber, el.dataset.strongsType);
+      });
+
+      // Keyboard activation
+      el.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          showTooltip(el, el.dataset.strongsNumber, el.dataset.strongsType);
+        }
+      });
+    });
+  }
+
+  // ============================================================================
   // ACCESSIBILITY
   // ============================================================================
 
@@ -409,12 +590,17 @@
    */
   function processStrongsNumbers() {
     // Find all Bible text containers in the document
-    const bibleTexts = document.querySelectorAll('.bible-text');
+    // Include compare page panes and parallel content for Strong's tooltips
+    const bibleTexts = document.querySelectorAll('.bible-text, .compare-pane, #parallel-content');
 
     bibleTexts.forEach(container => {
       // Skip containers already processed to avoid duplicate work
       if (container.dataset.strongsProcessed) return;
       container.dataset.strongsProcessed = 'true';
+
+      // Process OSIS <w> elements with lemma attributes
+      // Format: <w lemma="strong:H430" morph="...">word</w>
+      processOsisWordElements(container);
 
       // TreeWalker efficiently traverses only text nodes (skips elements)
       const walker = document.createTreeWalker(
