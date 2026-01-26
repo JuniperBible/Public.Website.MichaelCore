@@ -518,6 +518,64 @@ a:focus-visible {
 }
 
 /* -----------------------------
+   Compare page styles
+------------------------------ */
+.compare-controls {
+  background: rgba(0,0,0,.04);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-1);
+  padding: 8px 12px;
+  margin-bottom: var(--pad-2);
+}
+.compare-controls__row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+.compare-controls__row + .compare-controls__row {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border);
+}
+.compare-controls__translations {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.chip--compact {
+  padding: 4px 8px;
+  font-size: 0.8rem;
+}
+.chip--compact input[type="checkbox"] {
+  margin-right: 4px;
+}
+.select--compact {
+  padding: 6px 10px;
+  font-size: 0.85rem;
+}
+.compare-panes {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--pad-2);
+  margin-top: var(--pad-2);
+}
+.compare-pane {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-1);
+  padding: var(--pad-2);
+  min-height: 400px;
+}
+.compare-content {
+  flex: 1;
+  min-height: 300px;
+}
+.compare-content .card {
+  height: 100%;
+}
+
+/* -----------------------------
    12) Page sections
 ------------------------------ */
 .page-header {
