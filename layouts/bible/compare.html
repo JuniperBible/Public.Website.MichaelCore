@@ -21,7 +21,7 @@
 
 {{ define "scripts" }}
 {{ partial "michael/strongs-data.html" . }}
-{{- range slice "js/michael/dom-utils.js" "js/michael/bible-api.js" "js/text-compare.js" "js/parallel.js" -}}
+{{- range slice "js/michael/dom-utils.js" "js/michael/bible-api.js" "js/michael/footnotes.js" "js/text-compare.js" "js/parallel.js" -}}
 {{- $script := resources.Get . -}}
 {{- if $script }}<script src="{{ $script.RelPermalink }}" defer></script>{{ end -}}
 {{- end -}}
@@ -51,9 +51,9 @@
         </div>
         <div class="compare-controls__row">
           {{ partial "michael/book-chapter-selects.html" (dict "site" $.Site "bookId" "book-select" "chapterId" "chapter-select") }}
-          {{ partial "michael/compare-diff-control.html" (dict "toggleId" "highlight-toggle" "colorId" "highlight" "optionClass" "color-option") }}
-          <button id="sss-mode-btn" class="btn btn--sm" aria-label="Toggle Side by Side Scripture mode" title="Side by Side Scripture">
-            SSS <span id="sss-mode-status" class="muted">OFF</span>
+          {{ partial "michael/compare-diff-control.html" (dict "toggleId" "highlight-toggle" "colorId" "highlight" "optionClass" "color-option" "hideColorPicker" true) }}
+          <button id="sss-mode-btn" class="btn btn--sm" aria-label="Switch to Side by Side Scripture mode" title="Switch to Side by Side Scripture (SSS)">
+            VVV <span class="muted">ON</span>
           </button>
         </div>
         {{ partial "michael/verse-grid.html" dict }}
@@ -62,17 +62,17 @@
     </div>
     <!-- SSS Mode (Side by Side Scripture) - Hidden by default -->
     <div id="sss-mode" class="hidden">
-      <div class="compare-controls">
+      <div class="compare-controls compare-controls--compact">
         <div class="compare-controls__row">
-          <button id="sss-back-btn" class="btn btn--sm" title="Back to Compare" aria-label="Back to Compare">&larr;</button>
-          {{ partial "michael/bible-select.html" (dict "site" $.Site "id" "sss-bible-left" "label" "Left Bible..." "class" "select select--compact") }}
-          {{ partial "michael/bible-select.html" (dict "site" $.Site "id" "sss-bible-right" "label" "Right Bible..." "class" "select select--compact") }}
-        </div>
-        <div class="compare-controls__row">
+          <span class="sss-bible-pair">
+            <button id="sss-back-btn" class="btn btn--sm" title="Back to Compare" aria-label="Back to Compare">&larr;</button>
+            {{ partial "michael/bible-select.html" (dict "site" $.Site "id" "sss-bible-left" "label" "Left Bible..." "class" "select select--compact") }}
+            {{ partial "michael/bible-select.html" (dict "site" $.Site "id" "sss-bible-right" "label" "Right Bible..." "class" "select select--compact") }}
+          </span>
           {{ partial "michael/book-chapter-selects.html" (dict "site" $.Site "bookId" "sss-book-select" "chapterId" "sss-chapter-select") }}
-          {{ partial "michael/compare-diff-control.html" (dict "toggleId" "sss-highlight-toggle" "colorId" "sss-highlight" "optionClass" "sss-color-option" "checked" true) }}
-          <button id="sss-toggle-btn" class="btn btn--sm" aria-label="Toggle Side by Side Scripture mode" title="Side by Side Scripture">
-            SSS <span id="sss-status" class="muted">ON</span>
+          {{ partial "michael/compare-diff-control.html" (dict "toggleId" "sss-highlight-toggle" "colorId" "sss-highlight" "optionClass" "sss-color-option" "checked" false "hideColorPicker" true) }}
+          <button id="sss-toggle-btn" class="btn btn--sm" aria-label="Switch to Vertical Verse View mode" title="Switch to Vertical Verse View (VVV)">
+            SSS <span class="muted">ON</span>
           </button>
         </div>
         {{ partial "michael/verse-grid.html" (dict "id" "sss") }}
@@ -80,13 +80,45 @@
       </div>
       <!-- Side by Side Panes -->
       <div class="compare-panes" id="sss-panes">
-        <div class="compare-pane" id="sss-left-pane"><div class="center muted">Select a Bible</div></div>
-        <div class="compare-pane" id="sss-right-pane"><div class="center muted">Select a Bible</div></div>
+        <div class="compare-pane-wrapper">
+          <div class="compare-pane" id="sss-left-pane"><div class="center muted">Select a Bible</div></div>
+          <!-- Notes section for left pane -->
+          <aside id="sss-left-footnotes-section" class="footnotes-section hidden">
+            <h2>{{ i18n "footnotes" | default "Footnotes" }}</h2>
+            <ol class="footnotes-list" id="sss-left-footnotes-list"></ol>
+          </aside>
+        </div>
+        <div class="compare-pane-wrapper">
+          <div class="compare-pane" id="sss-right-pane"><div class="center muted">Select a Bible</div></div>
+          <!-- Notes section for right pane -->
+          <aside id="sss-right-footnotes-section" class="footnotes-section hidden">
+            <h2>{{ i18n "footnotes" | default "Footnotes" }}</h2>
+            <ol class="footnotes-list" id="sss-right-footnotes-list"></ol>
+          </aside>
+        </div>
+      </div>
+      <!-- Strong's Notes section (shared, below panes) -->
+      <div class="compare-notes-row hidden" id="sss-notes-row">
+        <aside id="sss-strongs-section" class="strongs-notes-section">
+          <h2>{{ i18n "strongsNotes" | default "Strong's Notes" }}</h2>
+          <ol class="strongs-notes-list" id="sss-strongs-list"></ol>
+        </aside>
       </div>
     </div>
     <!-- Parallel Verse Display (Normal Mode) -->
     <div id="parallel-content" class="compare-content" aria-live="polite" aria-atomic="false">
       <div class="center muted">{{ i18n "selectPassagePrompt" | default "Select 2+ translations and a passage to compare." }}</div>
+    </div>
+    <!-- Notes sections for VVV mode (side by side) -->
+    <div class="compare-notes-row hidden" id="vvv-notes-row">
+      <aside id="vvv-footnotes-section" class="footnotes-section">
+        <h2>{{ i18n "footnotes" | default "Footnotes" }}</h2>
+        <ol class="footnotes-list" id="vvv-footnotes-list"></ol>
+      </aside>
+      <aside id="vvv-strongs-section" class="strongs-notes-section">
+        <h2>{{ i18n "strongsNotes" | default "Strong's Notes" }}</h2>
+        <ol class="strongs-notes-list" id="vvv-strongs-list"></ol>
+      </aside>
     </div>
     <!-- Screen reader announcements for compare page -->
     <div id="compare-announcer" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></div>

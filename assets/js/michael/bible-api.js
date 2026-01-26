@@ -125,54 +125,65 @@ window.Michael.BibleAPI = (function() {
         const num = parseInt(span.dataset.verse);
         if (isNaN(num)) return;
 
-        // Extract text content excluding the sup element (verse number)
-        let text = '';
+        // Extract HTML content excluding the sup element (verse number)
+        // Preserve <note>, <w>, and other semantic elements
+        let html = '';
         span.childNodes.forEach(node => {
           if (node.nodeType === Node.TEXT_NODE) {
-            text += node.textContent;
+            html += node.textContent;
           } else if (node.nodeType === Node.ELEMENT_NODE && node.tagName !== 'SUP') {
-            text += node.textContent;
+            // Preserve the full HTML of other elements (note, w, etc.)
+            html += node.outerHTML;
           }
         });
 
         verses.push({
           number: num,
-          text: text.trim()
+          text: html.trim()
         });
       });
       return verses;
     }
 
     // Strategy 2: Legacy format with strong elements containing verse numbers
-    const strongElements = bibleText.querySelectorAll('strong');
-    if (strongElements.length > 0) {
-      strongElements.forEach(strong => {
-        const num = strong.textContent.trim();
-        // Only process if strong contains just a number
-        if (!/^\d+$/.test(num)) return;
+    // Uses DOM Range API to handle OSIS milestone elements that break sibling traversal
+    const strongElements = Array.from(bibleText.querySelectorAll('strong'));
+    const verseStrongs = strongElements.filter(strong => /^\d+$/.test(strong.textContent.trim()));
 
-        // Extract text until next verse number
-        let text = '';
-        let node = strong.nextSibling;
-        while (node) {
-          if (node.nodeType === Node.TEXT_NODE) {
-            text += node.textContent;
-          } else if (node.nodeName === 'STRONG') {
-            // Stop at next verse number
-            break;
-          } else if (node.nodeType === Node.ELEMENT_NODE) {
-            // Skip share buttons and other UI elements
-            if (!node.classList?.contains('verse-share-btn')) {
-              text += node.textContent;
-            }
-          }
-          node = node.nextSibling;
+    if (verseStrongs.length > 0) {
+      verseStrongs.forEach((strong, index) => {
+        const num = parseInt(strong.textContent.trim());
+        const nextStrong = verseStrongs[index + 1];
+
+        // Create a range from this strong to the next (or end of container)
+        // Use doc.createRange() since we're working with the parsed document
+        const range = doc.createRange();
+        range.setStartAfter(strong);
+
+        if (nextStrong) {
+          range.setEndBefore(nextStrong);
+        } else {
+          // Last verse - extend to end of container
+          range.setEndAfter(bibleText.lastChild || bibleText);
         }
 
-        verses.push({
-          number: parseInt(num),
-          text: text.trim()
-        });
+        // Extract content as HTML
+        const fragment = range.cloneContents();
+        const tempDiv = doc.createElement('div');
+        tempDiv.appendChild(fragment);
+
+        // Clean up: remove UI elements that shouldn't be in verse text
+        tempDiv.querySelectorAll('.verse-share-btn').forEach(el => el.remove());
+        tempDiv.querySelectorAll('nav').forEach(el => el.remove());
+        tempDiv.querySelectorAll('.reader-bar').forEach(el => el.remove());
+        tempDiv.querySelectorAll('select').forEach(el => el.remove());
+        tempDiv.querySelectorAll('.bible-nav').forEach(el => el.remove());
+        tempDiv.querySelectorAll('button').forEach(el => el.remove());
+
+        const html = tempDiv.innerHTML.trim();
+        if (html) {
+          verses.push({ number: num, text: html });
+        }
       });
 
       if (verses.length > 0) return verses;
@@ -183,12 +194,13 @@ window.Michael.BibleAPI = (function() {
     if (verseElements.length > 0) {
       verseElements.forEach(el => {
         const verseNum = el.dataset.verse || el.querySelector('.verse-num')?.textContent?.trim();
-        let text = el.textContent?.replace(/^\d+\s*/, '').trim();
+        // Get innerHTML and strip leading verse number
+        let html = el.innerHTML?.replace(/^<sup[^>]*>\d+<\/sup>\s*/, '').trim();
 
-        if (verseNum && text) {
+        if (verseNum && html) {
           const num = parseInt(verseNum);
           if (!isNaN(num)) {
-            verses.push({ number: num, text });
+            verses.push({ number: num, text: html });
           }
         }
       });
@@ -205,7 +217,7 @@ window.Michael.BibleAPI = (function() {
         if (match) {
           verses.push({
             number: parseInt(match[1]),
-            text: span.textContent?.trim() || ''
+            text: span.innerHTML?.trim() || ''
           });
         }
       });

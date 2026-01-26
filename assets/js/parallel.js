@@ -109,7 +109,7 @@
    * Whether diff highlighting is enabled in SSS mode
    * @type {boolean}
    */
-  let sssHighlightEnabled = true;
+  let sssHighlightEnabled = false;
 
   /**
    * Color used for highlighting differences
@@ -439,9 +439,10 @@
           loadSSSComparison();
         }
       });
-      // SSS mode starts with highlight enabled, show legend
-      if (sssDiffLegend && sssHighlightToggle.checked) {
-        sssDiffLegend.classList.remove('hidden');
+      // Sync sssHighlightEnabled with checkbox state and update legend
+      sssHighlightEnabled = sssHighlightToggle.checked;
+      if (sssDiffLegend) {
+        sssDiffLegend.classList.toggle('hidden', !sssHighlightToggle.checked);
       }
     }
 
@@ -456,24 +457,40 @@
     // Chapter selection - auto-load on change
     chapterSelect.addEventListener('change', handleChapterChange);
 
-    // All verses button
-    addTapListener(allVersesBtn, () => {
-      currentVerse = 0;
-      updateVerseGridSelection();
-      saveState();
-      if (canLoadComparison()) {
-        loadComparison();
-      }
-    });
+    // All verses button - use click for immediate response
+    if (allVersesBtn) {
+      allVersesBtn.addEventListener('click', handleAllVersesClick);
+    }
 
-    // SSS All verses button
-    addTapListener(sssAllVersesBtn, () => {
-      sssVerse = 0;
-      updateSSSVerseGridSelection();
-      if (canLoadSSSComparison()) {
-        loadSSSComparison();
-      }
-    });
+    // SSS All verses button - use click for immediate response
+    if (sssAllVersesBtn) {
+      sssAllVersesBtn.addEventListener('click', handleSSSAllVersesClick);
+    }
+  }
+
+  /**
+   * Handle click on "All" button in normal mode
+   * @private
+   */
+  function handleAllVersesClick() {
+    currentVerse = 0;
+    updateVerseGridSelection();
+    saveState();
+    if (canLoadComparison()) {
+      loadComparison();
+    }
+  }
+
+  /**
+   * Handle click on "All" button in SSS mode
+   * @private
+   */
+  function handleSSSAllVersesClick() {
+    sssVerse = 0;
+    updateSSSVerseGridSelection();
+    if (canLoadSSSComparison()) {
+      loadSSSComparison();
+    }
   }
 
   /**
@@ -699,6 +716,11 @@
       return Promise.resolve();
     }
 
+    // Clear Strong's notes when loading new chapter
+    if (window.Michael?.Strongs?.clearNotes) {
+      window.Michael.Strongs.clearNotes();
+    }
+
     // Handle no translations selected
     if (selectedTranslations.length === 0) {
       parallelContent.innerHTML = `
@@ -732,6 +754,19 @@
     const html = buildComparisonHTML(chaptersData);
     parallelContent.innerHTML = html;
 
+    // Process footnotes for VVV mode content
+    if (window.Michael?.Footnotes) {
+      const notesRow = document.getElementById('vvv-notes-row');
+      const vvvFootnotesSection = document.getElementById('vvv-footnotes-section');
+      const vvvFootnotesList = document.getElementById('vvv-footnotes-list');
+      const footnoteCount = window.Michael.Footnotes.process(parallelContent, vvvFootnotesSection, vvvFootnotesList, 'vvv-');
+
+      // Show/hide the notes row based on whether there are footnotes
+      if (notesRow) {
+        notesRow.classList.toggle('hidden', footnoteCount === 0);
+      }
+    }
+
     // Announce completion to screen readers
     const bookInfo = bibleData.books.find(b => b.id === currentBook);
     const bookName = bookInfo?.name || currentBook;
@@ -754,6 +789,18 @@
     }
     if (verseButtons) {
       verseButtons.innerHTML = '';
+
+      // Always create a fresh All button
+      const newAllBtn = document.createElement('button');
+      newAllBtn.id = 'all-verses-btn';
+      newAllBtn.type = 'button';
+      newAllBtn.className = 'chip is-active';
+      newAllBtn.textContent = 'All';
+      newAllBtn.addEventListener('click', handleAllVersesClick);
+      verseButtons.appendChild(newAllBtn);
+
+      // Update global reference
+      allVersesBtn = newAllBtn;
     }
     currentVerse = 0;
   }
@@ -784,6 +831,8 @@
     // Populate verse buttons grid
     if (verseButtons) {
       verseButtons.innerHTML = '';
+
+      // Add verse buttons
       verses.forEach(verse => {
         const btn = document.createElement('button');
         btn.type = 'button';
@@ -794,6 +843,18 @@
         addTapListener(btn, () => handleVerseButtonClick(verse.number));
         verseButtons.appendChild(btn);
       });
+
+      // Always create a fresh All button at the end
+      const newAllBtn = document.createElement('button');
+      newAllBtn.id = 'all-verses-btn';
+      newAllBtn.type = 'button';
+      newAllBtn.className = 'chip';
+      newAllBtn.textContent = 'All';
+      newAllBtn.addEventListener('click', handleAllVersesClick);
+      verseButtons.appendChild(newAllBtn);
+
+      // Update global reference
+      allVersesBtn = newAllBtn;
     }
 
     if (verseGrid) {
@@ -827,6 +888,7 @@
   function updateVerseGridSelection() {
     if (!verseButtons) return;
 
+    // Update verse number buttons
     const buttons = verseButtons.querySelectorAll('.verse-btn');
     buttons.forEach(btn => {
       const verseNum = parseInt(btn.dataset.verse);
@@ -838,6 +900,16 @@
         btn.setAttribute('aria-pressed', 'false');
       }
     });
+
+    // Update "All" button - active when no specific verse is selected
+    const allBtn = verseButtons.querySelector('#all-verses-btn');
+    if (allBtn) {
+      if (currentVerse === 0) {
+        allBtn.classList.add('is-active');
+      } else {
+        allBtn.classList.remove('is-active');
+      }
+    }
   }
 
   /**
@@ -993,9 +1065,15 @@
 
           // Parse the reference
           const parts = refParam.split('.');
-          const book = parts[0];
+          const bookParam = parts[0];
           const chapter = parseInt(parts[1]) || 0;
           const verse = parseInt(parts[2]) || 0;
+
+          // Normalize book ID to match bibleData.books (case-insensitive lookup)
+          const matchedBook = bibleData?.books?.find(b =>
+            b.id.toLowerCase() === bookParam.toLowerCase()
+          );
+          const book = matchedBook ? matchedBook.id : bookParam;
 
           if (book && chapter > 0) {
             // Set up SSS mode with the single Bible and random Bible
@@ -1009,7 +1087,13 @@
             if (sssBibleLeft) sssBibleLeft.value = sssLeftBible;
             if (sssBibleRight) sssBibleRight.value = sssRightBible;
             if (sssBookSelect) {
-              sssBookSelect.value = sssBook;
+              // Set book select value - find matching option case-insensitively
+              const bookOption = Array.from(sssBookSelect.options).find(opt =>
+                opt.value.toLowerCase() === sssBook.toLowerCase()
+              );
+              if (bookOption) {
+                sssBookSelect.value = bookOption.value;
+              }
               populateSSSChapterDropdown();
             }
             if (sssChapterSelect) sssChapterSelect.value = sssChapter;
@@ -1046,16 +1130,28 @@
 
     if (refParam) {
       const parts = refParam.split('.');
-      const book = parts[0];
+      const bookParam = parts[0];
       const chapter = parts[1];
       const verse = parts[2];
+
+      // Normalize book ID to match bibleData.books (case-insensitive lookup)
+      const matchedBook = bibleData?.books?.find(b =>
+        b.id.toLowerCase() === bookParam.toLowerCase()
+      );
+      const book = matchedBook ? matchedBook.id : bookParam;
 
       if (book && chapter) {
         currentBook = book;
         currentChapter = parseInt(chapter) || 0;
         currentVerse = parseInt(verse) || 0;
 
-        bookSelect.value = currentBook;
+        // Set book select value - find matching option case-insensitively
+        const bookOption = Array.from(bookSelect.options).find(opt =>
+          opt.value.toLowerCase() === currentBook.toLowerCase()
+        );
+        if (bookOption) {
+          bookSelect.value = bookOption.value;
+        }
         populateChapterDropdown();
         chapterSelect.value = currentChapter;
 
@@ -1068,15 +1164,12 @@
       }
     }
 
-    // Set defaults if no URL params and no localStorage
-    if (!biblesParam && !refParam && selectedTranslations.length === 0) {
-      // Default: KJV, Vulgate, DRC, Geneva - Isaiah 42:16
-      const defaultBibles = ['kjv', 'vulgate', 'drc', 'geneva1599'];
-      defaultBibles.forEach(id => {
-        if (bibleData?.bibles?.some(b => b.id === id)) {
-          selectedTranslations.push(id);
-        }
-      });
+    // Set defaults if no URL params - always default to SSS mode
+    if (!biblesParam && !refParam) {
+      // Default: DRC, KJVA - Isaiah 42:16 in SSS mode
+      selectedTranslations = ['drc', 'kjva'].filter(id =>
+        bibleData?.bibles?.some(b => b.id === id)
+      );
       translationCheckboxes.forEach(cb => {
         cb.checked = selectedTranslations.includes(cb.value);
       });
@@ -1131,8 +1224,8 @@
       sssBibleLeft.value = 'drc';
     }
     if (!sssRightBible && sssBibleRight) {
-      sssRightBible = 'kjv';
-      sssBibleRight.value = 'kjv';
+      sssRightBible = 'kjva';
+      sssBibleRight.value = 'kjva';
     }
     if (!sssBook && sssBookSelect) {
       sssBook = 'Isa';
@@ -1197,6 +1290,7 @@
   function handleSSSBookChange() {
     sssBook = sssBookSelect?.value || '';
     sssVerse = 0; // Reset verse selection
+    triedBiblesWithNoVerses.clear(); // Reset tried Bibles for new book
 
     // Populate chapter dropdown and default to chapter 1
     populateSSSChapterDropdown();
@@ -1256,6 +1350,7 @@
   function handleSSSChapterChange() {
     sssChapter = parseInt(sssChapterSelect?.value) || 0;
     sssVerse = 0; // Reset verse selection
+    triedBiblesWithNoVerses.clear(); // Reset tried Bibles for new chapter
 
     if (sssChapter > 0 && sssBook) {
       // Announce chapter change to screen readers
@@ -1270,14 +1365,28 @@
   }
 
   /**
+   * Bibles that have been tried and found to have no verses for current chapter
+   * Used to avoid re-selecting them when auto-picking random comparison Bible
+   * @private
+   * @type {Set<string>}
+   */
+  let triedBiblesWithNoVerses = new Set();
+
+  /**
    * Load and display SSS comparison
    * Fetches both translations in parallel and renders side-by-side
+   * If the right Bible has no verses, automatically tries another Bible
    * @private
    * @async
    * @returns {Promise<void>}
    */
   async function loadSSSComparison() {
     if (!canLoadSSSComparison()) return;
+
+    // Clear Strong's notes when loading new chapter
+    if (window.Michael?.Strongs?.clearNotes) {
+      window.Michael.Strongs.clearNotes();
+    }
 
     // Show loading
     if (sssLeftPane) {
@@ -1292,6 +1401,35 @@
       window.Michael.BibleAPI.fetchChapter(basePath, sssLeftBible, sssBook, sssChapter),
       window.Michael.BibleAPI.fetchChapter(basePath, sssRightBible, sssBook, sssChapter)
     ]);
+
+    // If right Bible has no verses, try to pick another one automatically
+    if ((!rightVerses || rightVerses.length === 0) && leftVerses && leftVerses.length > 0) {
+      triedBiblesWithNoVerses.add(sssRightBible);
+
+      // Find another Bible that we haven't tried yet
+      const availableBibles = bibleData?.bibles?.filter(b =>
+        b.id !== sssLeftBible && !triedBiblesWithNoVerses.has(b.id)
+      ) || [];
+
+      if (availableBibles.length > 0) {
+        // Pick a random one from remaining options
+        const randomIndex = Math.floor(Math.random() * availableBibles.length);
+        const newBible = availableBibles[randomIndex].id;
+
+        // Update the right Bible and selector
+        sssRightBible = newBible;
+        if (sssBibleRight) sssBibleRight.value = sssRightBible;
+
+        // Recursively try loading again with the new Bible
+        return loadSSSComparison();
+      }
+      // If no more Bibles to try, fall through and display what we have
+    }
+
+    // Reset tried Bibles set when we successfully load (for next time)
+    if (rightVerses && rightVerses.length > 0) {
+      triedBiblesWithNoVerses.clear();
+    }
 
     // Populate verse grid
     populateSSSVerseGrid(leftVerses || rightVerses);
@@ -1315,6 +1453,66 @@
     if (sssRightPane) {
       sssRightPane.innerHTML = buildSSSPaneHTML(rightFiltered, rightBible, bookName, leftFiltered, leftBible);
     }
+
+    // Process footnotes for SSS mode - separate per pane
+    if (window.Michael?.Footnotes) {
+      const leftFootnotesSection = document.getElementById('sss-left-footnotes-section');
+      const leftFootnotesList = document.getElementById('sss-left-footnotes-list');
+      const rightFootnotesSection = document.getElementById('sss-right-footnotes-section');
+      const rightFootnotesList = document.getElementById('sss-right-footnotes-list');
+
+      // Process left pane footnotes
+      const leftFootnoteCount = window.Michael.Footnotes.process(
+        sssLeftPane, leftFootnotesSection, leftFootnotesList, 'sss-left-'
+      );
+
+      // Process right pane footnotes
+      const rightFootnoteCount = window.Michael.Footnotes.process(
+        sssRightPane, rightFootnotesSection, rightFootnotesList, 'sss-right-'
+      );
+
+      // Hide Strong's notes row if no Strong's notes (footnotes are now per-pane)
+      const notesRow = document.getElementById('sss-notes-row');
+      if (notesRow) {
+        // The notes row now only contains Strong's, check if it has any
+        const strongsList = document.getElementById('sss-strongs-list');
+        notesRow.classList.toggle('hidden', !strongsList || strongsList.children.length === 0);
+      }
+    }
+
+    // Synchronize verse row heights between panes
+    syncSSSVerseHeights();
+  }
+
+  /**
+   * Synchronize verse row heights between left and right SSS panes
+   * Ensures verses are aligned horizontally across both panes
+   * @private
+   */
+  function syncSSSVerseHeights() {
+    if (!sssLeftPane || !sssRightPane) return;
+
+    // Use requestAnimationFrame to ensure layout is complete before measuring
+    requestAnimationFrame(() => {
+      const leftVerses = sssLeftPane.querySelectorAll('.parallel-verse');
+      const rightVerses = sssRightPane.querySelectorAll('.parallel-verse');
+
+      // Reset heights first to get natural heights
+      leftVerses.forEach(v => v.style.minHeight = '');
+      rightVerses.forEach(v => v.style.minHeight = '');
+
+      // Use another frame to ensure reset is applied before measuring
+      requestAnimationFrame(() => {
+        leftVerses.forEach((leftVerse, index) => {
+          const rightVerse = rightVerses[index];
+          if (rightVerse) {
+            const maxHeight = Math.max(leftVerse.offsetHeight, rightVerse.offsetHeight);
+            leftVerse.style.minHeight = maxHeight + 'px';
+            rightVerse.style.minHeight = maxHeight + 'px';
+          }
+        });
+      });
+    });
   }
 
   /**
@@ -1326,12 +1524,28 @@
   function populateSSSVerseGrid(verses) {
     if (!verses || verses.length === 0) {
       if (sssVerseGrid) sssVerseGrid.classList.add('hidden');
-      if (sssVerseButtons) sssVerseButtons.innerHTML = '';
+      if (sssVerseButtons) {
+        sssVerseButtons.innerHTML = '';
+
+        // Always create a fresh All button
+        const newAllBtn = document.createElement('button');
+        newAllBtn.id = 'sss-all-verses-btn';
+        newAllBtn.type = 'button';
+        newAllBtn.className = 'chip is-active';
+        newAllBtn.textContent = 'All';
+        newAllBtn.addEventListener('click', handleSSSAllVersesClick);
+        sssVerseButtons.appendChild(newAllBtn);
+
+        // Update global reference
+        sssAllVersesBtn = newAllBtn;
+      }
       return;
     }
 
     if (sssVerseButtons) {
       sssVerseButtons.innerHTML = '';
+
+      // Add verse buttons
       verses.forEach(verse => {
         const btn = document.createElement('button');
         btn.type = 'button';
@@ -1342,6 +1556,18 @@
         addTapListener(btn, () => handleSSSVerseButtonClick(verse.number));
         sssVerseButtons.appendChild(btn);
       });
+
+      // Always create a fresh All button at the end
+      const newAllBtn = document.createElement('button');
+      newAllBtn.id = 'sss-all-verses-btn';
+      newAllBtn.type = 'button';
+      newAllBtn.className = 'chip';
+      newAllBtn.textContent = 'All';
+      newAllBtn.addEventListener('click', handleSSSAllVersesClick);
+      sssVerseButtons.appendChild(newAllBtn);
+
+      // Update global reference
+      sssAllVersesBtn = newAllBtn;
     }
 
     if (sssVerseGrid) {
@@ -1373,6 +1599,7 @@
   function updateSSSVerseGridSelection() {
     if (!sssVerseButtons) return;
 
+    // Update verse number buttons
     const buttons = sssVerseButtons.querySelectorAll('.sss-verse-btn');
     buttons.forEach(btn => {
       const verseNum = parseInt(btn.dataset.verse);
@@ -1384,6 +1611,16 @@
         btn.setAttribute('aria-pressed', 'false');
       }
     });
+
+    // Update "All" button - active when no specific verse is selected
+    const allBtn = sssVerseButtons.querySelector('#sss-all-verses-btn');
+    if (allBtn) {
+      if (sssVerse === 0) {
+        allBtn.classList.add('is-active');
+      } else {
+        allBtn.classList.remove('is-active');
+      }
+    }
   }
 
   /**
@@ -1459,78 +1696,158 @@
    * @returns {string} HTML string with highlighted differences
    */
   function highlightNormalDifferences(text, otherTexts) {
+    // If highlighting disabled or no other texts to compare, return original text unchanged
+    // CSS will hide any <note> elements automatically
     if (!normalHighlightEnabled || otherTexts.length === 0) return text;
 
-    // Use TextCompare engine if available for sophisticated diff analysis
-    if (window.TextCompare) {
-      // Compare against first non-empty other text for now
-      // Multi-text comparison could show union of all differences
-      const compareText = otherTexts.find(t => t && t.length > 0);
-      if (compareText) {
-        return highlightWithTextCompare(text, compareText);
-      }
-    }
+    // Extract <note> elements to preserve them (CSS hides them, footnotes.js processes them)
+    const noteRegex = /<note[^>]*>[\s\S]*?<\/note>/gi;
+    const notes = text.match(noteRegex) || [];
+    const textWithoutNotes = text.replace(noteRegex, '');
+    const otherTextsWithoutNotes = otherTexts.map(t => t ? t.replace(noteRegex, '') : t);
 
-    // Fallback: simple word-level comparison
-    const textColor = getContrastColor(highlightColor);
+    // For diff comparison, strip ALL HTML/OSIS markup tags but keep the text content
+    const stripAllMarkup = (str) => str
+      .replace(/<[^>]+>/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
 
-    // Collect all words from other translations into a Set for fast lookup
+    const cleanText = stripAllMarkup(textWithoutNotes);
+    const cleanOtherTexts = otherTextsWithoutNotes.map(t => t ? stripAllMarkup(t) : t);
+
+    // Collect all words from other translations into a Set for fast lookup (lowercase, no punctuation)
     const otherWords = new Set();
-    otherTexts.forEach(t => {
+    cleanOtherTexts.forEach(t => {
       if (t) {
-        // Normalize and clean each word (lowercase, remove punctuation)
         t.toLowerCase().split(/\s+/).forEach(w => {
           otherWords.add(w.replace(/[.,;:!?'"]/g, ''));
         });
       }
     });
 
-    // Check each word against the collective set
-    const words = text.split(/\s+/);
-    return words.map(word => {
+    // Find words that don't appear in any other translation
+    const words = cleanText.split(/\s+/).filter(w => w.length > 0);
+    const diffWordsLower = new Set();
+
+    words.forEach(word => {
       const cleanWord = word.toLowerCase().replace(/[.,;:!?'"]/g, '');
-      // Highlight words that don't appear in ANY other translation
       if (!otherWords.has(cleanWord) && cleanWord.length > 0) {
-        return `<span class="diff-insert">${word}</span>`;
+        diffWordsLower.add(cleanWord);
       }
-      return word;
-    }).join(' ');
+    });
+
+    // If no differences, return original text unchanged
+    if (diffWordsLower.size === 0) {
+      return text;
+    }
+
+    // Apply highlighting to the ORIGINAL text (preserving HTML structure)
+    // We work on textWithoutNotes to avoid corrupting note elements
+    // Then append notes at the end
+    let highlighted = textWithoutNotes;
+
+    // Process text nodes only - find words and wrap them with spans
+    // This regex finds word boundaries while preserving HTML tags
+    highlighted = highlighted.replace(
+      /(<[^>]+>)|([^<\s]+)/g,
+      (match, tag, word) => {
+        if (tag) {
+          // It's an HTML tag, preserve it
+          return tag;
+        }
+        if (word) {
+          // It's a word (possibly with punctuation)
+          const cleanWord = word.toLowerCase().replace(/[.,;:!?'"]/g, '');
+          if (diffWordsLower.has(cleanWord)) {
+            return `<span class="diff-insert">${word}</span>`;
+          }
+        }
+        return match;
+      }
+    );
+
+    // Append notes at the end (CSS will hide them, footnotes.js processes them)
+    return highlighted + notes.join('');
   }
 
   /**
    * Highlight differences between two texts (SSS mode)
    * Uses TextCompare engine if available, falls back to simple word matching
    * In SSS mode, highlights words in one translation that differ from the other
+   * Preserves OSIS markup (<w> tags) for Strong's number tooltips
    * @private
    * @param {string} text - The text to highlight
    * @param {string} compareText - The text to compare against
    * @returns {string} HTML string with highlighted differences
    */
   function highlightDifferences(text, compareText) {
+    // If highlighting disabled or no comparison text, return original text unchanged
+    // CSS will hide any <note> elements automatically
     if (!sssHighlightEnabled || !compareText) return text;
 
-    // Use TextCompare engine if available for sophisticated analysis
-    if (window.TextCompare) {
-      return highlightWithTextCompare(text, compareText);
-    }
+    // Extract <note> elements to preserve them (CSS hides them, footnotes.js processes them)
+    const noteRegex = /<note[^>]*>[\s\S]*?<\/note>/gi;
+    const notes = text.match(noteRegex) || [];
+    const textWithoutNotes = text.replace(noteRegex, '');
+    const compareWithoutNotes = compareText.replace(noteRegex, '');
 
-    // Fallback: simple word-level diff
-    const textColor = getContrastColor(highlightColor);
-    const words = text.split(/\s+/);
+    // For diff comparison, strip ALL HTML/OSIS markup tags but keep the text content
+    const stripAllMarkup = (str) => str
+      .replace(/<[^>]+>/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
 
-    // Build set of words from comparison text (normalized)
-    const compareWords = compareText.toLowerCase().split(/\s+/).map(w =>
-      w.replace(/[.,;:!?'"]/g, '')
+    const cleanText = stripAllMarkup(textWithoutNotes);
+    const cleanCompare = stripAllMarkup(compareWithoutNotes);
+
+    // Collect words from comparison text for lookup (lowercase, no punctuation)
+    const compareWords = new Set(
+      cleanCompare.toLowerCase().split(/\s+/).map(w => w.replace(/[.,;:!?'"]/g, ''))
     );
 
-    // Highlight words not found in the comparison text
-    return words.map(word => {
+    // Find words in our text that don't appear in comparison
+    const words = cleanText.split(/\s+/).filter(w => w.length > 0);
+    const diffWordsLower = new Set();
+
+    words.forEach(word => {
       const cleanWord = word.toLowerCase().replace(/[.,;:!?'"]/g, '');
-      if (!compareWords.includes(cleanWord) && cleanWord.length > 0) {
-        return `<span class="diff-insert">${word}</span>`;
+      if (!compareWords.has(cleanWord) && cleanWord.length > 0) {
+        diffWordsLower.add(cleanWord);
       }
-      return word;
-    }).join(' ');
+    });
+
+    // If no differences, return original text unchanged
+    if (diffWordsLower.size === 0) {
+      return text;
+    }
+
+    // Apply highlighting to the ORIGINAL text (preserving HTML structure)
+    // We work on textWithoutNotes to avoid corrupting note elements
+    // Then append notes at the end
+    let highlighted = textWithoutNotes;
+
+    // Process text nodes only - find words and wrap them with spans
+    // This regex finds word boundaries while preserving HTML tags
+    highlighted = highlighted.replace(
+      /(<[^>]+>)|([^<\s]+)/g,
+      (match, tag, word) => {
+        if (tag) {
+          // It's an HTML tag, preserve it
+          return tag;
+        }
+        if (word) {
+          // It's a word (possibly with punctuation)
+          const cleanWord = word.toLowerCase().replace(/[.,;:!?'"]/g, '');
+          if (diffWordsLower.has(cleanWord)) {
+            return `<span class="diff-insert">${word}</span>`;
+          }
+        }
+        return match;
+      }
+    );
+
+    // Append notes at the end (CSS will hide them, footnotes.js processes them)
+    return highlighted + notes.join('');
   }
 
   /**
