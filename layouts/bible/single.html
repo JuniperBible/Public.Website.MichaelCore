@@ -91,14 +91,14 @@
     {{ else if .Params.book }}
       <!-- Book view: show chapter list -->
       {{ partial "michael/bible-nav.html" (dict "page" . "bible" .Params.bible "book" .Params.book "chapter" 0 "basePath" $basePath) }}
-      <div class="prose">
+      <div class="book-content">
         {{ .Content | safeHTML }}
       </div>
 
     {{ else }}
       <!-- Bible overview: show book list -->
       {{ partial "michael/bible-nav.html" (dict "page" . "bible" .Params.bible "book" "" "chapter" 0 "basePath" $basePath) }}
-      <div class="prose">
+      <div class="book-content">
         {{ .Content | safeHTML }}
       </div>
     {{ end }}

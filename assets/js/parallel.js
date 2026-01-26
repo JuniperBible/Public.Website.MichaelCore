@@ -417,9 +417,11 @@
 
     // Normal mode highlight toggle
     const highlightToggle = document.getElementById('highlight-toggle');
+    const diffLegend = document.getElementById('diff-legend');
     if (highlightToggle) {
       highlightToggle.addEventListener('change', (e) => {
         normalHighlightEnabled = e.target.checked;
+        if (diffLegend) diffLegend.classList.toggle('hidden', !e.target.checked);
         if (canLoadComparison()) {
           loadComparison();
         }
@@ -428,13 +430,19 @@
 
     // SSS mode highlight toggle
     const sssHighlightToggle = document.getElementById('sss-highlight-toggle');
+    const sssDiffLegend = document.getElementById('sss-diff-legend');
     if (sssHighlightToggle) {
       sssHighlightToggle.addEventListener('change', (e) => {
         sssHighlightEnabled = e.target.checked;
+        if (sssDiffLegend) sssDiffLegend.classList.toggle('hidden', !e.target.checked);
         if (canLoadSSSComparison()) {
           loadSSSComparison();
         }
       });
+      // SSS mode starts with highlight enabled, show legend
+      if (sssDiffLegend && sssHighlightToggle.checked) {
+        sssDiffLegend.classList.remove('hidden');
+      }
     }
 
     // Color picker setup (normal mode)

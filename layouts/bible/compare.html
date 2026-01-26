@@ -57,6 +57,7 @@
           </button>
         </div>
         {{ partial "michael/verse-grid.html" dict }}
+        {{ partial "michael/diff-legend.html" dict }}
       </div>
     </div>
     <!-- SSS Mode (Side by Side Scripture) - Hidden by default -->
@@ -75,6 +76,7 @@
           </button>
         </div>
         {{ partial "michael/verse-grid.html" (dict "id" "sss") }}
+        {{ partial "michael/diff-legend.html" (dict "id" "sss") }}
       </div>
       <!-- Side by Side Panes -->
       <div class="compare-panes" id="sss-panes">

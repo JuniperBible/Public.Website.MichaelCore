@@ -575,6 +575,41 @@ a:focus-visible {
   height: 100%;
 }
 
+/* Color picker */
+.color-picker-btn {
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: 2px solid var(--border);
+  border-radius: var(--radius-1);
+}
+.color-picker-btn:hover {
+  border-color: var(--text-500);
+}
+.color-picker-dropdown {
+  position: absolute;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-1);
+  padding: 6px;
+  box-shadow: 0 2px 8px rgba(0,0,0,.15);
+  z-index: 100;
+}
+.color-picker-options {
+  gap: 4px;
+}
+.color-option-btn {
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: 2px solid transparent;
+  border-radius: var(--radius-1);
+}
+.color-option-btn:hover,
+.color-option-btn.is-active {
+  border-color: var(--text-900);
+}
+
 /* -----------------------------
    12) Page sections
 ------------------------------ */
@@ -773,6 +808,37 @@ a:focus-visible {
   text-decoration: line-through;
   color: var(--text-500);
 }
+
+/* Diff legend */
+.diff-legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  padding: 6px 10px;
+  font-size: 0.8rem;
+  color: var(--text-700);
+}
+
+.diff-legend__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.diff-legend__swatch {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+  border: 1px solid var(--border);
+}
+
+.diff-legend__swatch--add { background: var(--diff-add); }
+.diff-legend__swatch--omit { background: var(--diff-omit); }
+.diff-legend__swatch--subst { background: var(--diff-subst); }
+.diff-legend__swatch--spelling { background: var(--diff-spelling); }
+.diff-legend__swatch--punct { background: var(--diff-punct); }
 
 /* -----------------------------
    16) Share menu component
