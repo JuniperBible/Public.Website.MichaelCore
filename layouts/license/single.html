@@ -50,7 +50,7 @@
   {{- $limitationRules = $limitationRules | merge (dict .tag .) -}}
 {{- end -}}
 
-<main class="container" style="padding: var(--pad-3) var(--pad-2);">
+<main class="container pad-3-2">
   <article class="panel">
     <header class="page-header">
       <h1>{{ .Title }}</h1>
@@ -169,7 +169,7 @@
           <summary style="cursor: pointer; font-weight: 600; padding: 8px 0;">
             {{ $bible.title }} ({{ $bible.abbrev }})
           </summary>
-          <div style="background: var(--bg-alt); padding: var(--pad-2); border-radius: var(--radius); font-size: 0.875rem; white-space: pre-wrap; margin-top: 8px;">{{ . }}</div>
+          <div style="background: var(--bg-alt); padding: var(--pad-2); border-radius: var(--radius); font-size: 0.875rem; white-space: pre-wrap; word-break: break-word; overflow-wrap: break-word; margin-top: 8px;">{{ . }}</div>
         </details>
         {{ end }}
         {{ end }}
@@ -206,11 +206,11 @@
     </div>
 
     <nav class="actions">
-      <a href="/licenses/" class="btn">
-        &larr; All Licenses
+      <a href="{{ "/licenses/" | relLangURL }}" class="btn">
+        &larr; {{ i18n "allLicenses" | default "All Licenses" }}
       </a>
-      <a href="/bible/" class="btn">
-        All Bibles
+      <a href="{{ "/bible/" | relLangURL }}" class="btn">
+        {{ i18n "allBibles" | default "All Bibles" }}
       </a>
     </nav>
   </article>

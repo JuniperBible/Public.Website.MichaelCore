@@ -4,6 +4,9 @@
 # Note: Bible content remains in original languages; only navigation UI is translated
 
 # Navigation
+[home]
+other = "Home"
+
 [bibleNavigation]
 other = "Bible Navigation"
 
@@ -24,6 +27,9 @@ other = "Back to Bible"
 
 [allBibles]
 other = "All Bibles"
+
+[allLicenses]
+other = "All Licenses"
 
 [allChapters]
 other = "All Chapters"

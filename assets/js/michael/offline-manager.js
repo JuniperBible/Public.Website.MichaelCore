@@ -21,7 +21,14 @@ window.Michael.OfflineManager = (function() {
   const eventTarget = new EventTarget();
 
   /**
-   * Current download state
+   * Current download state (tracks per-Bible downloads)
+   * @private
+   * @type {Map<string, {totalItems: number, completedItems: number}>}
+   */
+  const downloadStates = new Map();
+
+  /**
+   * Legacy download state for backwards compatibility with events
    * @private
    * @type {{inProgress: boolean, totalItems: number, completedItems: number, currentBible: string|null}}
    */
@@ -141,12 +148,11 @@ window.Michael.OfflineManager = (function() {
    * @param {number} data.itemCount - Number of items cached
    */
   function handleCacheComplete(data) {
-    downloadState.inProgress = false;
-    downloadState.completedItems = downloadState.totalItems;
+    const bibleId = data.bible || downloadState.currentBible;
 
     const completeEvent = new CustomEvent('download-complete', {
       detail: {
-        bible: data.bible || downloadState.currentBible,
+        bible: bibleId,
         itemCount: data.itemCount || downloadState.totalItems,
         success: true
       }
@@ -154,19 +160,26 @@ window.Michael.OfflineManager = (function() {
 
     eventTarget.dispatchEvent(completeEvent);
 
-    // Resolve pending download promise
-    if (pendingDownload) {
-      pendingDownload.resolve();
-      pendingDownload = null;
+    // Resolve per-Bible pending download promise
+    const pending = pendingDownloads.get(bibleId);
+    if (pending) {
+      pending.resolve();
+      pendingDownloads.delete(bibleId);
     }
 
-    // Reset state
-    downloadState = {
-      inProgress: false,
-      totalItems: 0,
-      completedItems: 0,
-      currentBible: null
-    };
+    // Clean up per-Bible state
+    downloadStates.delete(bibleId);
+
+    // Update legacy state only if no more downloads
+    if (downloadStates.size === 0) {
+      downloadState = {
+        inProgress: false,
+        totalItems: 0,
+        completedItems: 0,
+        currentBible: null
+      };
+      pendingDownload = null;
+    }
   }
 
   /**
@@ -178,11 +191,11 @@ window.Michael.OfflineManager = (function() {
    * @param {string} data.bible - Bible ID that failed
    */
   function handleCacheError(data) {
-    downloadState.inProgress = false;
+    const bibleId = data.bible || downloadState.currentBible;
 
     const errorEvent = new CustomEvent('download-complete', {
       detail: {
-        bible: data.bible || downloadState.currentBible,
+        bible: bibleId,
         success: false,
         error: data.error || 'Unknown error occurred'
       }
@@ -190,19 +203,26 @@ window.Michael.OfflineManager = (function() {
 
     eventTarget.dispatchEvent(errorEvent);
 
-    // Reject pending download promise
-    if (pendingDownload) {
-      pendingDownload.reject(new Error(data.error || 'Download failed'));
-      pendingDownload = null;
+    // Reject per-Bible pending download promise
+    const pending = pendingDownloads.get(bibleId);
+    if (pending) {
+      pending.reject(new Error(data.error || 'Download failed'));
+      pendingDownloads.delete(bibleId);
     }
 
-    // Reset state
-    downloadState = {
-      inProgress: false,
-      totalItems: 0,
-      completedItems: 0,
-      currentBible: null
-    };
+    // Clean up per-Bible state
+    downloadStates.delete(bibleId);
+
+    // Update legacy state only if no more downloads
+    if (downloadStates.size === 0) {
+      downloadState = {
+        inProgress: false,
+        totalItems: 0,
+        completedItems: 0,
+        currentBible: null
+      };
+      pendingDownload = null;
+    }
   }
 
   /**
@@ -284,7 +304,14 @@ window.Michael.OfflineManager = (function() {
   }
 
   /**
-   * Pending download promise resolver
+   * Pending download promise resolvers (per-Bible)
+   * @private
+   * @type {Map<string, {resolve: Function, reject: Function}>}
+   */
+  const pendingDownloads = new Map();
+
+  /**
+   * Legacy pending download promise resolver (for backwards compatibility)
    * @private
    * @type {{resolve: Function, reject: Function}|null}
    */
@@ -318,10 +345,15 @@ window.Michael.OfflineManager = (function() {
    * }
    */
   async function downloadBible(bibleId, basePath = '/bible') {
-    if (downloadState.inProgress) {
-      throw new Error('Download already in progress');
+    // Check if THIS specific Bible is already being downloaded
+    if (downloadStates.has(bibleId)) {
+      throw new Error(`Download already in progress for ${bibleId.toUpperCase()}`);
     }
 
+    // Track this Bible's download state
+    downloadStates.set(bibleId, { totalItems: 0, completedItems: 0 });
+
+    // Update legacy state for backwards compatibility
     downloadState.inProgress = true;
     downloadState.currentBible = bibleId;
     downloadState.completedItems = 0;
@@ -329,6 +361,8 @@ window.Michael.OfflineManager = (function() {
 
     // Create a promise that will resolve when download completes
     const downloadPromise = new Promise((resolve, reject) => {
+      pendingDownloads.set(bibleId, { resolve, reject });
+      // Also set legacy pendingDownload for backwards compatibility
       pendingDownload = { resolve, reject };
     });
 
@@ -344,11 +378,15 @@ window.Michael.OfflineManager = (function() {
       // Wait for the download to actually complete
       await downloadPromise;
     } finally {
-      // Always reset state when done (success or failure)
-      // Note: handleCacheComplete/handleCacheError also reset state,
-      // but this ensures cleanup even if those don't fire
-      downloadState.inProgress = false;
-      pendingDownload = null;
+      // Always clean up this Bible's state when done
+      downloadStates.delete(bibleId);
+      pendingDownloads.delete(bibleId);
+
+      // Update legacy state
+      if (downloadStates.size === 0) {
+        downloadState.inProgress = false;
+        pendingDownload = null;
+      }
     }
   }
 
@@ -386,7 +424,7 @@ window.Michael.OfflineManager = (function() {
    *
    * Returns the current state of any in-progress download operation.
    *
-   * @returns {{inProgress: boolean, progress: number, completed: number, total: number, bible: string|null}}
+   * @returns {{inProgress: boolean, progress: number, completed: number, total: number, bible: string|null, activeDownloads: string[]}}
    *          Current download progress information
    *
    * @example
@@ -401,11 +439,12 @@ window.Michael.OfflineManager = (function() {
       : 0;
 
     return {
-      inProgress: downloadState.inProgress,
+      inProgress: downloadStates.size > 0,
       progress,
       completed: downloadState.completedItems,
       total: downloadState.totalItems,
-      bible: downloadState.currentBible
+      bible: downloadState.currentBible,
+      activeDownloads: Array.from(downloadStates.keys())
     };
   }
 

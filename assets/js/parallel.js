@@ -956,9 +956,11 @@
    * Restore state from URL query parameters or localStorage
    * URL parameters take precedence over localStorage
    * Falls back to defaults if neither source has data
+   * When only one Bible is provided, auto-selects a random second Bible and enters SSS mode
    * @private
    * @example
    * // URL: ?bibles=kjv,vulgate&ref=Gen.1.1
+   * // URL: ?bibles=asv&ref=2chr.28 (single Bible - auto-selects random second Bible for SSS)
    * // localStorage: ["kjv", "drc"]
    */
   function restoreState() {
@@ -976,6 +978,57 @@
       translationCheckboxes.forEach(cb => {
         cb.checked = selectedTranslations.includes(cb.value);
       });
+
+      // Single Bible mode: auto-select random second Bible and enter SSS mode
+      if (selectedTranslations.length === 1 && refParam) {
+        const singleBible = selectedTranslations[0];
+
+        // Get all available Bibles except the selected one
+        const otherBibles = bibleData?.bibles?.filter(b => b.id !== singleBible) || [];
+
+        if (otherBibles.length > 0) {
+          // Randomly select another Bible
+          const randomIndex = Math.floor(Math.random() * otherBibles.length);
+          const randomBible = otherBibles[randomIndex].id;
+
+          // Parse the reference
+          const parts = refParam.split('.');
+          const book = parts[0];
+          const chapter = parseInt(parts[1]) || 0;
+          const verse = parseInt(parts[2]) || 0;
+
+          if (book && chapter > 0) {
+            // Set up SSS mode with the single Bible and random Bible
+            sssLeftBible = singleBible;
+            sssRightBible = randomBible;
+            sssBook = book;
+            sssChapter = chapter;
+            sssVerse = verse;
+
+            // Update SSS mode selectors
+            if (sssBibleLeft) sssBibleLeft.value = sssLeftBible;
+            if (sssBibleRight) sssBibleRight.value = sssRightBible;
+            if (sssBookSelect) {
+              sssBookSelect.value = sssBook;
+              populateSSSChapterDropdown();
+            }
+            if (sssChapterSelect) sssChapterSelect.value = sssChapter;
+
+            // Enter SSS mode directly without resetting to defaults
+            sssMode = true;
+            updateSSSModeStatus();
+            if (normalModeEl) normalModeEl.classList.add('hidden');
+            if (sssModeEl) sssModeEl.classList.remove('hidden');
+            document.getElementById('parallel-content')?.classList.add('hidden');
+
+            // Load SSS comparison
+            if (canLoadSSSComparison()) {
+              loadSSSComparison();
+            }
+            return; // Don't continue with normal flow
+          }
+        }
+      }
     } else {
       // Try localStorage
       const saved = localStorage.getItem('bible-compare-translations');
