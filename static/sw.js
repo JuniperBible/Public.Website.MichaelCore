@@ -13,7 +13,7 @@
  */
 
 // Cache version - increment to force cache refresh
-const CACHE_VERSION = '1';
+const CACHE_VERSION = '2';
 const SHELL_CACHE = `michael-shell-v${CACHE_VERSION}`;
 const CHAPTERS_CACHE = `michael-chapters-v${CACHE_VERSION}`;
 const OFFLINE_URL = '/offline.html';
@@ -293,14 +293,18 @@ function isNavigationRequest(request) {
  * Allow the page to communicate with the service worker
  */
 self.addEventListener('message', (event) => {
-  if (event.data && event.data.type === 'SKIP_WAITING') {
+  const { type, data } = event.data || {};
+  const port = event.ports[0];
+
+  if (type === 'SKIP_WAITING') {
     console.log('[Service Worker] Received SKIP_WAITING message');
     self.skipWaiting();
+    return;
   }
 
-  if (event.data && event.data.type === 'CACHE_URLS') {
+  if (type === 'CACHE_URLS') {
     console.log('[Service Worker] Received CACHE_URLS message');
-    const urls = event.data.urls || [];
+    const urls = data?.urls || event.data.urls || [];
 
     caches.open(CHAPTERS_CACHE).then(cache => {
       urls.forEach(url => {
@@ -311,7 +315,252 @@ self.addEventListener('message', (event) => {
         });
       });
     });
+    return;
+  }
+
+  if (type === 'GET_CACHE_STATUS') {
+    console.log('[Service Worker] Received GET_CACHE_STATUS message');
+    getCacheStatus().then(status => {
+      if (port) port.postMessage(status);
+    }).catch(error => {
+      if (port) port.postMessage({ error: error.message });
+    });
+    return;
+  }
+
+  if (type === 'CACHE_BIBLE') {
+    console.log('[Service Worker] Received CACHE_BIBLE message', data);
+    cacheBible(data.bibleId, data.basePath).then(() => {
+      if (port) port.postMessage({ success: true });
+    }).catch(error => {
+      if (port) port.postMessage({ error: error.message });
+    });
+    return;
+  }
+
+  if (type === 'CLEAR_CACHE') {
+    console.log('[Service Worker] Received CLEAR_CACHE message');
+    clearBibleCache().then(itemsCleared => {
+      if (port) port.postMessage({ success: true, itemsCleared });
+      // Notify all clients
+      self.clients.matchAll().then(clients => {
+        clients.forEach(client => {
+          client.postMessage({ type: 'CACHE_CLEARED', data: { itemsCleared } });
+        });
+      });
+    }).catch(error => {
+      if (port) port.postMessage({ error: error.message });
+    });
+    return;
   }
 });
+
+/**
+ * Get cache status information
+ */
+async function getCacheStatus() {
+  try {
+    const cache = await caches.open(CHAPTERS_CACHE);
+    const keys = await cache.keys();
+
+    // Filter to only chapter pages
+    const chapterKeys = keys.filter(req => isChapterPage(new URL(req.url)));
+
+    // Estimate size (rough approximation)
+    let totalSize = 0;
+    for (const request of chapterKeys) {
+      const response = await cache.match(request);
+      if (response) {
+        const blob = await response.clone().blob();
+        totalSize += blob.size;
+      }
+    }
+
+    return {
+      chapterCount: chapterKeys.length,
+      sizeBytes: totalSize
+    };
+  } catch (error) {
+    console.error('[Service Worker] getCacheStatus error:', error);
+    return { chapterCount: 0, sizeBytes: 0 };
+  }
+}
+
+/**
+ * Cache all chapters for a Bible translation
+ */
+async function cacheBible(bibleId, basePath) {
+  console.log(`[Service Worker] Caching Bible: ${bibleId}`);
+
+  // Get the Bible's book/chapter structure from the auxiliary data
+  // We need to fetch this from the page or construct URLs
+  const cache = await caches.open(CHAPTERS_CACHE);
+
+  // First, fetch the Bible overview page to discover books
+  const bibleUrl = `${basePath}/${bibleId}/`;
+  let bibleResponse;
+  try {
+    bibleResponse = await fetch(bibleUrl);
+  } catch (error) {
+    throw new Error(`Failed to fetch Bible page: ${error.message}`);
+  }
+
+  if (!bibleResponse.ok) {
+    throw new Error(`Bible page returned ${bibleResponse.status}`);
+  }
+
+  // Cache the Bible overview page
+  await cache.put(bibleUrl, bibleResponse.clone());
+
+  // Parse the page to find book links
+  const html = await bibleResponse.text();
+  const bookLinks = extractBookLinks(html, basePath, bibleId);
+
+  if (bookLinks.length === 0) {
+    // Notify completion with what we have
+    self.clients.matchAll().then(clients => {
+      clients.forEach(client => {
+        client.postMessage({
+          type: 'CACHE_COMPLETE',
+          data: { bible: bibleId, itemCount: 1 }
+        });
+      });
+    });
+    return;
+  }
+
+  // Collect all chapter URLs
+  const chapterUrls = [];
+  let completedItems = 0;
+  const totalBooks = bookLinks.length;
+
+  // Process each book to get chapter URLs
+  for (const bookUrl of bookLinks) {
+    try {
+      const bookResponse = await fetch(bookUrl);
+      if (bookResponse.ok) {
+        await cache.put(bookUrl, bookResponse.clone());
+        const bookHtml = await bookResponse.text();
+        const chapters = extractChapterLinks(bookHtml, basePath, bibleId);
+        chapterUrls.push(...chapters);
+      }
+    } catch (error) {
+      console.warn(`[Service Worker] Failed to fetch book ${bookUrl}:`, error);
+    }
+
+    completedItems++;
+    // Send progress update
+    self.clients.matchAll().then(clients => {
+      clients.forEach(client => {
+        client.postMessage({
+          type: 'CACHE_PROGRESS',
+          data: {
+            completed: completedItems,
+            total: totalBooks + chapterUrls.length,
+            currentItem: bookUrl
+          }
+        });
+      });
+    });
+  }
+
+  // Now cache all chapters
+  const totalItems = totalBooks + chapterUrls.length;
+  for (const chapterUrl of chapterUrls) {
+    try {
+      const chapterResponse = await fetch(chapterUrl);
+      if (chapterResponse.ok) {
+        await cache.put(chapterUrl, chapterResponse.clone());
+      }
+    } catch (error) {
+      console.warn(`[Service Worker] Failed to cache chapter ${chapterUrl}:`, error);
+    }
+
+    completedItems++;
+    // Send progress update every 10 chapters to reduce message overhead
+    if (completedItems % 10 === 0 || completedItems === totalItems) {
+      self.clients.matchAll().then(clients => {
+        clients.forEach(client => {
+          client.postMessage({
+            type: 'CACHE_PROGRESS',
+            data: {
+              completed: completedItems,
+              total: totalItems,
+              currentItem: chapterUrl
+            }
+          });
+        });
+      });
+    }
+  }
+
+  // Notify completion
+  self.clients.matchAll().then(clients => {
+    clients.forEach(client => {
+      client.postMessage({
+        type: 'CACHE_COMPLETE',
+        data: { bible: bibleId, itemCount: totalItems }
+      });
+    });
+  });
+}
+
+/**
+ * Extract book links from Bible overview page HTML
+ */
+function extractBookLinks(html, basePath, bibleId) {
+  const links = [];
+  // Match href="/bible/{bibleId}/{book}/"
+  const pattern = new RegExp(`href="(${basePath}/${bibleId}/[a-z0-9]+/)"`, 'gi');
+  let match;
+  while ((match = pattern.exec(html)) !== null) {
+    const url = match[1];
+    // Avoid duplicates
+    if (!links.includes(url)) {
+      links.push(url);
+    }
+  }
+  return links;
+}
+
+/**
+ * Extract chapter links from book page HTML
+ */
+function extractChapterLinks(html, basePath, bibleId) {
+  const links = [];
+  // Match href="/bible/{bibleId}/{book}/{chapter}/"
+  const pattern = new RegExp(`href="(${basePath}/${bibleId}/[a-z0-9]+/\\d+/)"`, 'gi');
+  let match;
+  while ((match = pattern.exec(html)) !== null) {
+    const url = match[1];
+    // Avoid duplicates
+    if (!links.includes(url)) {
+      links.push(url);
+    }
+  }
+  return links;
+}
+
+/**
+ * Clear all cached Bible content
+ */
+async function clearBibleCache() {
+  try {
+    const cache = await caches.open(CHAPTERS_CACHE);
+    const keys = await cache.keys();
+    let itemsCleared = 0;
+
+    for (const request of keys) {
+      await cache.delete(request);
+      itemsCleared++;
+    }
+
+    console.log(`[Service Worker] Cleared ${itemsCleared} items from cache`);
+    return itemsCleared;
+  } catch (error) {
+    console.error('[Service Worker] clearBibleCache error:', error);
+    throw error;
+  }
+}
 
 console.log('[Service Worker] Script loaded');
