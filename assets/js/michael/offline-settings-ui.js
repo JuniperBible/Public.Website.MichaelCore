@@ -54,6 +54,9 @@
 
       // Load initial cache status
       await updateCacheStatus(OfflineManager);
+
+      // Check cache status for each Bible and update UI
+      await updateBibleCacheStatuses(OfflineManager);
     } catch (error) {
       console.error('[Offline Settings] Initialization failed:', error);
       showMessage('Failed to initialize offline functionality: ' + error.message, 'error');
@@ -188,6 +191,37 @@
   }
 
   /**
+   * Checks and updates cache status for all Bible checkboxes
+   *
+   * @param {Object} OfflineManager - The OfflineManager instance
+   */
+  async function updateBibleCacheStatuses(OfflineManager) {
+    const checkboxes = document.querySelectorAll('.bible-download-checkbox');
+    const basePath = '/bible';
+
+    for (const checkbox of checkboxes) {
+      const bibleId = checkbox.dataset.bibleId;
+      if (!bibleId) continue;
+
+      try {
+        const status = await OfflineManager.getBibleCacheStatus(bibleId, basePath);
+
+        if (status.isFullyCached) {
+          // Disable checkbox and show cached status
+          checkbox.disabled = true;
+          checkbox.checked = false;
+          updateBibleStatus(bibleId, 'Cached', 'is-cached');
+        } else if (status.cachedChapters > 0) {
+          // Show partial cache status but allow re-download
+          updateBibleStatus(bibleId, `${status.cachedChapters} chapters`, 'is-partial');
+        }
+      } catch (error) {
+        console.warn(`[Offline Settings] Failed to get cache status for ${bibleId}:`, error);
+      }
+    }
+  }
+
+  /**
    * Updates the cache status display
    *
    * @param {Object} OfflineManager - The OfflineManager instance
@@ -248,6 +282,13 @@
     if (detail.success) {
       updateBibleStatus(detail.bible, 'Cached', 'is-cached');
       showMessage(`${detail.bible.toUpperCase()} downloaded successfully`, 'success');
+
+      // Disable the checkbox for this Bible since it's now cached
+      const checkbox = document.querySelector(`.bible-download-checkbox[data-bible-id="${detail.bible}"]`);
+      if (checkbox) {
+        checkbox.disabled = true;
+        checkbox.checked = false;
+      }
     } else {
       updateBibleStatus(detail.bible, 'Failed', 'is-error');
       showMessage(`Failed to download ${detail.bible.toUpperCase()}: ${detail.error}`, 'error');
@@ -269,6 +310,12 @@
     statusElements.forEach(el => {
       el.textContent = '';
       el.className = 'bible-download-status';
+    });
+
+    // Re-enable all checkboxes
+    const checkboxes = document.querySelectorAll('.bible-download-checkbox');
+    checkboxes.forEach(cb => {
+      cb.disabled = false;
     });
 
     // Re-enable clear button

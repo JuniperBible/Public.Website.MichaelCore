@@ -50,6 +50,8 @@ These are loaded with defer to avoid blocking page rendering.
 ================================================================================
 */}}
 {{ define "scripts" }}
+{{ $showMore := resources.Get "js/michael/show-more.js" }}
+{{ if $showMore }}<script src="{{ $showMore.RelPermalink }}" defer></script>{{ end }}
 {{ $offlineManager := resources.Get "js/michael/offline-manager.js" }}
 {{ if $offlineManager }}<script src="{{ $offlineManager.RelPermalink }}" defer></script>{{ end }}
 {{ $offlineUI := resources.Get "js/michael/offline-settings-ui.js" }}
@@ -129,12 +131,6 @@ These are loaded with defer to avoid blocking page rendering.
         Show More ({{ sub $total $pageSize }} more)
       </button>
     </nav>
-    <script>
-      document.getElementById('show-more-bibles')?.addEventListener('click', function() {
-        document.querySelectorAll('.bible-extra').forEach(el => el.classList.remove('hidden'));
-        this.style.display = 'none';
-      });
-    </script>
     {{ end }}
 
     {{/*

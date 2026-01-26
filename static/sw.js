@@ -353,6 +353,16 @@ self.addEventListener('message', (event) => {
     });
     return;
   }
+
+  if (type === 'GET_BIBLE_CACHE_STATUS') {
+    console.log('[Service Worker] Received GET_BIBLE_CACHE_STATUS message', data);
+    getBibleCacheStatus(data.bibleId, data.basePath).then(status => {
+      if (port) port.postMessage(status);
+    }).catch(error => {
+      if (port) port.postMessage({ error: error.message });
+    });
+    return;
+  }
 });
 
 /**
@@ -560,6 +570,37 @@ async function clearBibleCache() {
   } catch (error) {
     console.error('[Service Worker] clearBibleCache error:', error);
     throw error;
+  }
+}
+
+/**
+ * Get cache status for a specific Bible translation
+ * Returns the number of cached chapters vs expected total
+ */
+async function getBibleCacheStatus(bibleId, basePath) {
+  try {
+    const cache = await caches.open(CHAPTERS_CACHE);
+    const keys = await cache.keys();
+
+    // Count chapters for this Bible
+    const biblePattern = new RegExp(`^${basePath}/${bibleId}/[^/]+/\\d+/?$`);
+    const cachedChapters = keys.filter(req => biblePattern.test(new URL(req.url).pathname));
+
+    // Check if Bible overview page is cached (indicates download was started)
+    const bibleOverviewUrl = `${basePath}/${bibleId}/`;
+    const hasBibleOverview = keys.some(req => new URL(req.url).pathname === bibleOverviewUrl);
+
+    return {
+      bibleId,
+      cachedChapters: cachedChapters.length,
+      hasBibleOverview,
+      // Consider "fully cached" if we have the overview + at least 1000 chapters
+      // (most Bibles have 1000+ chapters)
+      isFullyCached: hasBibleOverview && cachedChapters.length >= 1000
+    };
+  } catch (error) {
+    console.error('[Service Worker] getBibleCacheStatus error:', error);
+    return { bibleId, cachedChapters: 0, hasBibleOverview: false, isFullyCached: false };
   }
 }
 

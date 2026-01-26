@@ -234,7 +234,11 @@ a:focus-visible {
   color: #fff;
 }
 
-.btn--primary:hover { background: var(--brand-600); }
+.btn--primary:hover {
+  background: var(--brand-600);
+  color: #fff;
+  text-decoration: none;
+}
 
 /* Secondary */
 .btn--secondary {
@@ -515,6 +519,12 @@ a:focus-visible {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: var(--pad-2);
+}
+.grid-2 > .card {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
 }
 
 /* -----------------------------
@@ -1862,6 +1872,10 @@ a:focus-visible {
 
 .bible-download-status.is-error {
   color: var(--state-error);
+}
+
+.bible-download-status.is-partial {
+  color: var(--text-400);
 }
 
 /* -----------------------------

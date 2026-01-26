@@ -343,10 +343,12 @@ window.Michael.OfflineManager = (function() {
 
       // Wait for the download to actually complete
       await downloadPromise;
-    } catch (error) {
+    } finally {
+      // Always reset state when done (success or failure)
+      // Note: handleCacheComplete/handleCacheError also reset state,
+      // but this ensures cleanup even if those don't fire
       downloadState.inProgress = false;
       pendingDownload = null;
-      throw error;
     }
   }
 
@@ -477,10 +479,57 @@ window.Michael.OfflineManager = (function() {
     return 'serviceWorker' in navigator && 'caches' in window;
   }
 
+  /**
+   * Gets the cache status for a specific Bible translation.
+   *
+   * Returns information about how many chapters are cached for this Bible
+   * and whether it appears to be fully cached.
+   *
+   * @param {string} bibleId - Bible translation ID (e.g., "kjv", "asv", "web")
+   * @param {string} basePath - Base path for Bible URLs (e.g., "/bible")
+   * @returns {Promise<{bibleId: string, cachedChapters: number, hasBibleOverview: boolean, isFullyCached: boolean}>}
+   *          Bible cache status information
+   *
+   * @example
+   * const status = await OfflineManager.getBibleCacheStatus('kjv', '/bible');
+   * if (status.isFullyCached) {
+   *   console.log('KJV is fully cached');
+   * } else {
+   *   console.log(`KJV has ${status.cachedChapters} chapters cached`);
+   * }
+   */
+  async function getBibleCacheStatus(bibleId, basePath = '/bible') {
+    try {
+      const response = await sendMessageToServiceWorker({
+        type: 'GET_BIBLE_CACHE_STATUS',
+        data: {
+          bibleId,
+          basePath
+        }
+      });
+
+      return {
+        bibleId: response.bibleId || bibleId,
+        cachedChapters: response.cachedChapters || 0,
+        hasBibleOverview: response.hasBibleOverview || false,
+        isFullyCached: response.isFullyCached || false
+      };
+    } catch (error) {
+      console.error('Failed to get Bible cache status:', error);
+      return {
+        bibleId,
+        cachedChapters: 0,
+        hasBibleOverview: false,
+        isFullyCached: false
+      };
+    }
+  }
+
   // Public API
   return {
     initialize,
     getCacheStatus,
+    getBibleCacheStatus,
     downloadBible,
     clearCache,
     getDownloadProgress,

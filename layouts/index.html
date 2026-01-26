@@ -15,10 +15,12 @@
       <h2>Bible Translations</h2>
       <div class="grid-2">
         {{ range .Site.Data.bibles.bibles }}
-        <a href="{{ printf "/bible/%s/" .id | relLangURL }}" class="card">
-          <h3 class="card__title">{{ .title }}</h3>
-          <p class="card__meta">{{ .abbrev }}</p>
-        </a>
+        <div class="card">
+          <h3 class="card__title">
+            <a href="{{ printf "/bible/%s/" .id | relLangURL }}">{{ .title }}</a>
+          </h3>
+          <span class="badge">{{ .abbrev }}</span>
+        </div>
         {{ end }}
       </div>
       <nav class="actions">
