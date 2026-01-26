@@ -14,15 +14,11 @@
     <section>
       <h2>Bible Translations</h2>
       <div class="grid-2">
-        {{ $count := 0 }}
-        {{ range .Pages }}
-        {{ if and .Params.abbrev (lt $count 4) }}
-        <a href="{{ .RelPermalink }}" class="card">
-          <h3 class="card__title">{{ .Title }}</h3>
-          {{ with .Description }}<p class="card__meta">{{ . }}</p>{{ end }}
+        {{ range .Site.Data.bibles.bibles }}
+        <a href="{{ printf "/bible/%s/" .id | relLangURL }}" class="card">
+          <h3 class="card__title">{{ .title }}</h3>
+          <p class="card__meta">{{ .abbrev }}</p>
         </a>
-        {{ $count = add $count 1 }}
-        {{ end }}
         {{ end }}
       </div>
       <nav class="actions">

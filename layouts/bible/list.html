@@ -90,8 +90,9 @@ These are loaded with defer to avoid blocking page rendering.
     {{/*
     ============================================================================
     BIBLE TRANSLATIONS GRID
-    Renders all available Bible translations as clickable cards in a 2-column
-    responsive grid. Each card displays:
+    Renders available Bible translations as clickable cards in a 2-column
+    responsive grid with pagination (9 items initially, "Show More" for rest).
+    Each card displays:
       - Title: Full translation name
       - Abbreviation: Short form (e.g., KJV, NIV)
       - Language badge: If .language is set
@@ -101,24 +102,40 @@ These are loaded with defer to avoid blocking page rendering.
     Data source: .Site.Data.bibles.bibles array from data/bible.json
     ============================================================================
     */}}
-    <section class="grid-2">
-      {{ range .Site.Data.bibles.bibles }}
-      <div class="card">
+    {{ $bibles := .Site.Data.bibles.bibles }}
+    {{ $pageSize := 9 }}
+    {{ $total := len $bibles }}
+    <section class="grid-2" id="bible-grid">
+      {{ range $index, $bible := $bibles }}
+      <div class="card{{ if ge $index $pageSize }} hidden bible-extra{{ end }}">
         <h2 class="card__title">
-          <a href="{{ printf "%s/%s/" $basePath .id | relLangURL }}">{{ .title }}</a>
+          <a href="{{ printf "%s/%s/" $basePath $bible.id | relLangURL }}">{{ $bible.title }}</a>
         </h2>
-        <p class="card__meta">{{ .abbrev }}</p>
+        <p class="card__meta">{{ $bible.abbrev }}</p>
         <div class="row mt-1">
-          {{ with .language }}
+          {{ with $bible.language }}
           <span class="badge">{{ . }}</span>
           {{ end }}
-          {{ with .license }}
+          {{ with $bible.license }}
           <a href="{{ printf "/license/%s/" (. | lower) | relLangURL }}" class="badge">{{ . }}</a>
           {{ end }}
         </div>
       </div>
       {{ end }}
     </section>
+    {{ if gt $total $pageSize }}
+    <nav class="actions mt-2">
+      <button id="show-more-bibles" class="btn btn--secondary">
+        Show More ({{ sub $total $pageSize }} more)
+      </button>
+    </nav>
+    <script>
+      document.getElementById('show-more-bibles')?.addEventListener('click', function() {
+        document.querySelectorAll('.bible-extra').forEach(el => el.classList.remove('hidden'));
+        this.style.display = 'none';
+      });
+    </script>
+    {{ end }}
 
     {{/*
     ============================================================================
