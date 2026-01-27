@@ -41,14 +41,6 @@
   <link rel="icon" type="image/png" sizes="16x16" href="/icons/icon-16.png">
 </head>
 <body>
-  {{/* Detect PWA standalone mode via inline script to avoid FOUC */}}
-  <script>
-    if (window.matchMedia('(display-mode: standalone)').matches ||
-        window.navigator.standalone === true) {
-      document.body.classList.add('pwa-standalone');
-    }
-  </script>
-
   {{ partial "header.html" . }}
 
   {{ block "main" . }}{{ end }}
@@ -69,5 +61,13 @@
 
   {{/* PWA Install Banner */}}
   {{ partial "michael/pwa-install-banner.html" . }}
+
+  {{/* Detect PWA standalone mode */}}
+  <script>
+    if (window.matchMedia('(display-mode: standalone)').matches ||
+        window.navigator.standalone === true) {
+      document.body.classList.add('pwa-standalone');
+    }
+  </script>
 </body>
 </html>
