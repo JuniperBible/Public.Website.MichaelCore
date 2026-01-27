@@ -87,8 +87,18 @@ fi
 # Create output directory
 mkdir -p "$OUTPUT_DIR"
 
-# Check for required tools
-if ! command -v syft &> /dev/null; then
+# Check for required tools — prefer local tools/syft build, then PATH
+SYFT_BIN=""
+SYFT_LOCAL="$PROJECT_ROOT/tools/syft"
+if [[ -x "$SYFT_LOCAL/syft" ]]; then
+    SYFT_BIN="$SYFT_LOCAL/syft"
+elif command -v syft &> /dev/null; then
+    SYFT_BIN="syft"
+elif [[ -d "$SYFT_LOCAL/cmd/syft" ]]; then
+    echo "Building syft from tools/syft..."
+    (cd "$SYFT_LOCAL" && go build -o syft ./cmd/syft/) || { echo "Error: failed to build syft"; exit 1; }
+    SYFT_BIN="$SYFT_LOCAL/syft"
+else
     echo "Error: syft not found. Install with: nix-shell -p syft"
     exit 1
 fi
@@ -223,7 +233,7 @@ for format in "${FORMATS[@]}"; do
             temp_file=$(mktemp)
             TEMP_FILES+=("$temp_file")
             echo "Generating SPDX 2.3 JSON -> $output_file"
-            syft scan "$PROJECT_ROOT" \
+            "$SYFT_BIN" scan "$PROJECT_ROOT" \
                 --source-name "$PROJECT_NAME" \
                 --source-version "$PROJECT_VERSION" \
                 -o "spdx-json=$temp_file" \
@@ -235,7 +245,7 @@ for format in "${FORMATS[@]}"; do
             temp_file=$(mktemp)
             TEMP_FILES+=("$temp_file")
             echo "Generating CycloneDX JSON -> $output_file"
-            syft scan "$PROJECT_ROOT" \
+            "$SYFT_BIN" scan "$PROJECT_ROOT" \
                 --source-name "$PROJECT_NAME" \
                 --source-version "$PROJECT_VERSION" \
                 -o "cyclonedx-json=$temp_file" \
@@ -246,7 +256,7 @@ for format in "${FORMATS[@]}"; do
             output_file="$OUTPUT_DIR/sbom.cdx.xml"
             echo "Generating CycloneDX XML -> $output_file"
             # XML merging is complex, generate directly (manual deps won't be included)
-            syft scan "$PROJECT_ROOT" \
+            "$SYFT_BIN" scan "$PROJECT_ROOT" \
                 --source-name "$PROJECT_NAME" \
                 --source-version "$PROJECT_VERSION" \
                 -o "cyclonedx-xml=$output_file" \
@@ -258,7 +268,7 @@ for format in "${FORMATS[@]}"; do
             temp_file=$(mktemp)
             TEMP_FILES+=("$temp_file")
             echo "Generating Syft JSON -> $output_file"
-            syft scan "$PROJECT_ROOT" \
+            "$SYFT_BIN" scan "$PROJECT_ROOT" \
                 --source-name "$PROJECT_NAME" \
                 --source-version "$PROJECT_VERSION" \
                 -o "syft-json=$temp_file" \

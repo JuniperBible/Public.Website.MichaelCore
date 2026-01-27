@@ -10,3 +10,7 @@
 	path = tools/caddy
 	url = https://github.com/FocuswithJustin/caddy.git
 	branch = master
+[submodule "tools/syft"]
+	path = tools/syft
+	url = https://github.com/FocuswithJustin/syft.git
+	branch = main
