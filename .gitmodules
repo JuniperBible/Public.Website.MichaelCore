@@ -2,10 +2,6 @@
 	path = tools/juniper
 	url = https://github.com/FocuswithJustin/JuniperBible.git
 	branch = development
-[submodule "tools/magellan"]
-	path = tools/magellan
-	url = https://github.com/FocuswithJustin/magellan.git
-	branch = development
 [submodule "tools/hugo"]
 	path = tools/hugo
 	url = https://github.com/FocuswithJustin/hugo.git
