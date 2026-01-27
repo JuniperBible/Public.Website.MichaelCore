@@ -35,6 +35,7 @@ const activeDownloads = new Map(); // bibleId -> AbortController
 
 // Assets to pre-cache on install
 // CSS files are now embedded with their fingerprinted paths by Hugo
+// Only include JS files that are actually built (referenced in templates)
 const SHELL_ASSETS = [
   '/',
   OFFLINE_URL,
@@ -44,7 +45,7 @@ const SHELL_ASSETS = [
   '/icons/apple-touch-icon.png',
   // CSS with fingerprinted path from Hugo
   '{{ $theme.RelPermalink }}',
-  // Core JS files
+  // Core JS files (only those referenced in templates)
   '/js/michael/bible-api.js',
   '/js/michael/dom-utils.js',
   '/js/michael/share-menu.js',
@@ -54,12 +55,8 @@ const SHELL_ASSETS = [
   '/js/michael/user-storage.js',
   '/js/michael/reading-tracker.js',
   '/js/michael/bible-nav.js',
-  '/js/michael/chapter-dropdown.js',
   '/js/michael/footnotes.js',
   '/js/michael/show-more.js',
-  '/js/michael/diff-highlight.js',
-  '/js/michael/verse-grid.js',
-  '/js/michael/sss-mode.js',
   '/js/share.js',
   '/js/strongs.js',
   '/js/bible-search.js',
