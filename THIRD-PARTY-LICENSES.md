@@ -11,7 +11,7 @@ This file provides proper attribution as required by their respective licenses.
 **Source:** https://github.com/STEPBible/step
 **License:** BSD 3-Clause License
 
-The parallel translation view interface and comparison patterns in this project
+The vertical parallel translation view (not side-by-side) interface and comparison patterns in this project
 are inspired by and adapted from STEPBible's comparison interface.
 
 ### BSD 3-Clause License
@@ -62,15 +62,4 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 Bible text data is extracted from SWORD modules. The extraction tool
 (Juniper) is included as a submodule.
-
----
-
-## Blue Letter Bible
-
-**Service:** Blue Letter Bible
-**Source:** https://www.blueletterbible.org/
-**Usage:** Strong's number lookups
-
-Strong's number tooltips link to Blue Letter Bible for Hebrew and Greek
-lexicon definitions.
 
