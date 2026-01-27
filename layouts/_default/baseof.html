@@ -16,7 +16,7 @@
 <html lang="{{ .Site.Language.Lang | default "en" }}" data-hugo-env="{{ hugo.Environment }}">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>{{- if .IsHome -}}{{ .Site.Title }}{{- else -}}{{ .Title }} | {{ .Site.Title }}{{- end -}}</title>
   <meta name="description" content="{{ with .Description }}{{ . }}{{ else }}{{ with .Summary }}{{ . | plainify }}{{ else }}{{ .Site.Params.description }}{{ end }}{{ end }}">
   {{/* Content Security Policy - restrictive by default */}}
@@ -41,6 +41,14 @@
   <link rel="icon" type="image/png" sizes="16x16" href="/icons/icon-16.png">
 </head>
 <body>
+  {{/* Detect PWA standalone mode via inline script to avoid FOUC */}}
+  <script>
+    if (window.matchMedia('(display-mode: standalone)').matches ||
+        window.navigator.standalone === true) {
+      document.body.classList.add('pwa-standalone');
+    }
+  </script>
+
   {{ partial "header.html" . }}
 
   {{ block "main" . }}{{ end }}
