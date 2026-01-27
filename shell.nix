@@ -19,6 +19,7 @@ pkgs.mkShell {
     curl
     lsof  # for kill-dev target
     git
+    cloc
   ];
 
   shellHook = ''
