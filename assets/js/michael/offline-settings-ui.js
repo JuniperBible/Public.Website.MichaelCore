@@ -150,14 +150,14 @@
       }
     }
 
-    // Re-enable controls
+    // Re-enable controls (except for already-cached Bibles)
     setDownloadControlsEnabled(true);
+
+    // Re-disable checkboxes for cached Bibles
+    await updateBibleCacheStatuses(OfflineManager);
 
     // Hide progress container
     showProgressContainer(false);
-
-    // Uncheck all checkboxes
-    checkboxes.forEach(cb => cb.checked = false);
   }
 
   /**

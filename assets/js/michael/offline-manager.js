@@ -119,20 +119,30 @@ window.Michael.OfflineManager = (function() {
    * @param {string} data.currentItem - Currently processing item
    */
   function handleCacheProgress(data) {
+    const bibleId = data.bible || downloadState.currentBible;
+
+    // Update per-Bible state if tracking this Bible
+    if (bibleId && downloadStates.has(bibleId)) {
+      const state = downloadStates.get(bibleId);
+      state.completedItems = data.completed || 0;
+      state.totalItems = data.total || 0;
+    }
+
+    // Update legacy state for backwards compatibility
     downloadState.completedItems = data.completed || 0;
     downloadState.totalItems = data.total || 0;
 
-    const progress = downloadState.totalItems > 0
-      ? Math.round((downloadState.completedItems / downloadState.totalItems) * 100)
+    const progress = (data.total || 0) > 0
+      ? Math.round(((data.completed || 0) / (data.total || 1)) * 100)
       : 0;
 
     const progressEvent = new CustomEvent('download-progress', {
       detail: {
         progress,
-        completed: downloadState.completedItems,
-        total: downloadState.totalItems,
+        completed: data.completed || 0,
+        total: data.total || 0,
         currentItem: data.currentItem,
-        bible: downloadState.currentBible
+        bible: bibleId
       }
     });
 
@@ -247,17 +257,32 @@ window.Michael.OfflineManager = (function() {
    *
    * @private
    * @param {Object} message - Message to send
+   * @param {number} [timeout=30000] - Timeout in milliseconds (default 30 seconds)
    * @returns {Promise<any>} Response from service worker
    */
-  async function sendMessageToServiceWorker(message) {
+  async function sendMessageToServiceWorker(message, timeout = 30000) {
     if (!navigator.serviceWorker.controller) {
       throw new Error('No active service worker controller');
     }
 
     return new Promise((resolve, reject) => {
       const messageChannel = new MessageChannel();
+      let timeoutId;
+
+      const cleanup = () => {
+        if (timeoutId) {
+          clearTimeout(timeoutId);
+        }
+        messageChannel.port1.onmessage = null;
+      };
+
+      timeoutId = setTimeout(() => {
+        cleanup();
+        reject(new Error('Service worker message timeout'));
+      }, timeout);
 
       messageChannel.port1.onmessage = (event) => {
+        cleanup();
         if (event.data.error) {
           reject(new Error(event.data.error));
         } else {
@@ -564,12 +589,62 @@ window.Michael.OfflineManager = (function() {
     }
   }
 
+  /**
+   * Cancels an in-progress Bible download.
+   *
+   * @param {string} bibleId - Bible translation ID to cancel
+   * @returns {Promise<boolean>} True if cancelled, false if no active download
+   *
+   * @example
+   * const cancelled = await OfflineManager.cancelDownload('kjv');
+   * if (cancelled) {
+   *   console.log('Download cancelled');
+   * }
+   */
+  async function cancelDownload(bibleId) {
+    if (!downloadStates.has(bibleId)) {
+      return false;
+    }
+
+    try {
+      await sendMessageToServiceWorker({
+        type: 'CANCEL_DOWNLOAD',
+        data: { bibleId }
+      });
+
+      // Clean up local state
+      const pending = pendingDownloads.get(bibleId);
+      if (pending) {
+        pending.reject(new Error('Download cancelled'));
+        pendingDownloads.delete(bibleId);
+      }
+      downloadStates.delete(bibleId);
+
+      // Fire cancellation event
+      const cancelEvent = new CustomEvent('download-complete', {
+        detail: {
+          bible: bibleId,
+          success: false,
+          cancelled: true,
+          error: 'Download cancelled by user'
+        }
+      });
+      eventTarget.dispatchEvent(cancelEvent);
+
+      return true;
+    } catch (error) {
+      console.error('Failed to cancel download:', error);
+      return false;
+    }
+  }
+
   // Public API
   return {
     initialize,
     getCacheStatus,
     getBibleCacheStatus,
     downloadBible,
+    cancelDownload,
     clearCache,
     getDownloadProgress,
     addEventListener,

@@ -18,6 +18,9 @@ const SHELL_CACHE = `michael-shell-v${CACHE_VERSION}`;
 const CHAPTERS_CACHE = `michael-chapters-v${CACHE_VERSION}`;
 const OFFLINE_URL = '/offline.html';
 
+// Track active download operations for cancellation
+const activeDownloads = new Map(); // bibleId -> AbortController
+
 // Assets to pre-cache on install
 // Note: CSS files use content hashing, so paths will change on content updates
 const SHELL_ASSETS = [
@@ -284,8 +287,11 @@ function isChapterPage(url) {
  * Helper: Check if request is a navigation request
  */
 function isNavigationRequest(request) {
-  return request.mode === 'navigate' ||
-         (request.method === 'GET' && request.headers.get('accept').includes('text/html'));
+  if (request.mode === 'navigate') {
+    return true;
+  }
+  const accept = request.headers.get('accept');
+  return request.method === 'GET' && accept && accept.includes('text/html');
 }
 
 /**
@@ -363,6 +369,19 @@ self.addEventListener('message', (event) => {
     });
     return;
   }
+
+  if (type === 'CANCEL_DOWNLOAD') {
+    console.log('[Service Worker] Received CANCEL_DOWNLOAD message', data);
+    const bibleId = data?.bibleId;
+    if (bibleId && activeDownloads.has(bibleId)) {
+      activeDownloads.get(bibleId).abort();
+      activeDownloads.delete(bibleId);
+      if (port) port.postMessage({ success: true, cancelled: bibleId });
+    } else {
+      if (port) port.postMessage({ success: false, error: 'No active download found' });
+    }
+    return;
+  }
 });
 
 /**
@@ -402,130 +421,188 @@ async function getCacheStatus() {
 async function cacheBible(bibleId, basePath) {
   console.log(`[Service Worker] Caching Bible: ${bibleId}`);
 
-  // Get the Bible's book/chapter structure from the auxiliary data
-  // We need to fetch this from the page or construct URLs
-  const cache = await caches.open(CHAPTERS_CACHE);
+  // Set up abort controller for cancellation
+  const abortController = new AbortController();
+  activeDownloads.set(bibleId, abortController);
+  const signal = abortController.signal;
 
-  // First, fetch the Bible overview page to discover books
-  const bibleUrl = `${basePath}/${bibleId}/`;
-  let bibleResponse;
+  // Helper to check if cancelled
+  const checkCancelled = () => {
+    if (signal.aborted) {
+      throw new Error('Download cancelled');
+    }
+  };
+
   try {
-    bibleResponse = await fetch(bibleUrl);
-  } catch (error) {
-    throw new Error(`Failed to fetch Bible page: ${error.message}`);
-  }
+    // Get the Bible's book/chapter structure from the auxiliary data
+    // We need to fetch this from the page or construct URLs
+    const cache = await caches.open(CHAPTERS_CACHE);
 
-  if (!bibleResponse.ok) {
-    throw new Error(`Bible page returned ${bibleResponse.status}`);
-  }
-
-  // Cache the Bible overview page
-  await cache.put(bibleUrl, bibleResponse.clone());
-
-  // Parse the page to find book links
-  const html = await bibleResponse.text();
-  const bookLinks = extractBookLinks(html, basePath, bibleId);
-
-  if (bookLinks.length === 0) {
-    // Notify completion with what we have
-    self.clients.matchAll().then(clients => {
-      clients.forEach(client => {
-        client.postMessage({
-          type: 'CACHE_COMPLETE',
-          data: { bible: bibleId, itemCount: 1 }
-        });
-      });
-    });
-    return;
-  }
-
-  // Collect all chapter URLs
-  const chapterUrls = [];
-  let completedItems = 0;
-  const totalBooks = bookLinks.length;
-
-  // Process each book to get chapter URLs
-  for (const bookUrl of bookLinks) {
+    // First, fetch the Bible overview page to discover books
+    const bibleUrl = `${basePath}/${bibleId}/`;
+    let bibleResponse;
     try {
-      const bookResponse = await fetch(bookUrl);
-      if (bookResponse.ok) {
-        await cache.put(bookUrl, bookResponse.clone());
-        const bookHtml = await bookResponse.text();
-        const chapters = extractChapterLinks(bookHtml, basePath, bibleId);
-        chapterUrls.push(...chapters);
-      }
+      bibleResponse = await fetch(bibleUrl, { signal });
     } catch (error) {
-      console.warn(`[Service Worker] Failed to fetch book ${bookUrl}:`, error);
+      if (error.name === 'AbortError') {
+        throw new Error('Download cancelled');
+      }
+      throw new Error(`Failed to fetch Bible page: ${error.message}`);
     }
 
-    completedItems++;
-    // Send progress update
+    if (!bibleResponse.ok) {
+      throw new Error(`Bible page returned ${bibleResponse.status}`);
+    }
+
+    // Cache the Bible overview page
+    await cache.put(bibleUrl, bibleResponse.clone());
+
+    // Parse the page to find book links
+    const html = await bibleResponse.text();
+    const bookLinks = extractBookLinks(html, basePath, bibleId);
+
+    if (bookLinks.length === 0) {
+      // Notify completion with what we have
+      self.clients.matchAll().then(clients => {
+        clients.forEach(client => {
+          client.postMessage({
+            type: 'CACHE_COMPLETE',
+            data: { bible: bibleId, itemCount: 1 }
+          });
+        });
+      });
+      return;
+    }
+
+    // Phase 1: Discover all chapters first (to get accurate total)
+    console.log(`[Service Worker] Discovering chapters for ${bibleId}...`);
+    const chapterUrls = [];
+    let failedBooks = 0;
+
+    for (const bookUrl of bookLinks) {
+      checkCancelled();
+      try {
+        const bookResponse = await fetch(bookUrl, { signal });
+        if (bookResponse.ok) {
+          await cache.put(bookUrl, bookResponse.clone());
+          const bookHtml = await bookResponse.text();
+          const chapters = extractChapterLinks(bookHtml, basePath, bibleId);
+          chapterUrls.push(...chapters);
+        } else {
+          failedBooks++;
+        }
+      } catch (error) {
+        if (error.name === 'AbortError' || error.message === 'Download cancelled') {
+          throw new Error('Download cancelled');
+        }
+        console.warn(`[Service Worker] Failed to fetch book ${bookUrl}:`, error);
+        failedBooks++;
+      }
+    }
+
+    // Calculate total upfront (1 overview + books + chapters)
+    const totalItems = 1 + bookLinks.length + chapterUrls.length;
+    let completedItems = 1 + bookLinks.length; // Overview and books already cached
+
+    console.log(`[Service Worker] Found ${chapterUrls.length} chapters to cache`);
+
+    // Send initial progress with accurate total
     self.clients.matchAll().then(clients => {
       clients.forEach(client => {
         client.postMessage({
           type: 'CACHE_PROGRESS',
           data: {
+            bible: bibleId,
             completed: completedItems,
-            total: totalBooks + chapterUrls.length,
-            currentItem: bookUrl
+            total: totalItems,
+            currentItem: 'Starting chapter downloads...'
           }
         });
       });
     });
-  }
 
-  // Now cache all chapters
-  const totalItems = totalBooks + chapterUrls.length;
-  for (const chapterUrl of chapterUrls) {
-    try {
-      const chapterResponse = await fetch(chapterUrl);
-      if (chapterResponse.ok) {
-        await cache.put(chapterUrl, chapterResponse.clone());
+    // Phase 2: Cache all chapters
+    let failedChapters = 0;
+    for (const chapterUrl of chapterUrls) {
+      checkCancelled();
+      try {
+        const chapterResponse = await fetch(chapterUrl, { signal });
+        if (chapterResponse.ok) {
+          await cache.put(chapterUrl, chapterResponse.clone());
+        } else {
+          failedChapters++;
+        }
+      } catch (error) {
+        if (error.name === 'AbortError' || error.message === 'Download cancelled') {
+          throw new Error('Download cancelled');
+        }
+        console.warn(`[Service Worker] Failed to cache chapter ${chapterUrl}:`, error);
+        failedChapters++;
       }
-    } catch (error) {
-      console.warn(`[Service Worker] Failed to cache chapter ${chapterUrl}:`, error);
-    }
 
-    completedItems++;
-    // Send progress update every 10 chapters to reduce message overhead
-    if (completedItems % 10 === 0 || completedItems === totalItems) {
-      self.clients.matchAll().then(clients => {
-        clients.forEach(client => {
-          client.postMessage({
-            type: 'CACHE_PROGRESS',
-            data: {
-              completed: completedItems,
-              total: totalItems,
-              currentItem: chapterUrl
-            }
+      completedItems++;
+      // Send progress update every 10 chapters to reduce message overhead
+      if (completedItems % 10 === 0 || completedItems === totalItems) {
+        self.clients.matchAll().then(clients => {
+          clients.forEach(client => {
+            client.postMessage({
+              type: 'CACHE_PROGRESS',
+              data: {
+                bible: bibleId,
+                completed: completedItems,
+                total: totalItems,
+                currentItem: chapterUrl
+              }
+            });
           });
         });
-      });
+      }
     }
-  }
 
-  // Notify completion
-  self.clients.matchAll().then(clients => {
-    clients.forEach(client => {
-      client.postMessage({
-        type: 'CACHE_COMPLETE',
-        data: { bible: bibleId, itemCount: totalItems }
+    // Notify completion (include failure count if any)
+    const successCount = totalItems - failedBooks - failedChapters;
+    console.log(`[Service Worker] Cached ${successCount}/${totalItems} items for ${bibleId}`);
+
+    self.clients.matchAll().then(clients => {
+      clients.forEach(client => {
+        client.postMessage({
+          type: 'CACHE_COMPLETE',
+          data: {
+            bible: bibleId,
+            itemCount: successCount,
+            totalItems: totalItems,
+            failedCount: failedBooks + failedChapters
+          }
+        });
       });
     });
-  });
+
+  } finally {
+    // Clean up the abort controller
+    activeDownloads.delete(bibleId);
+  }
 }
 
 /**
  * Extract book links from Bible overview page HTML
+ * Looks for both href attributes (anchor links) and value attributes (select options)
  */
 function extractBookLinks(html, basePath, bibleId) {
   const links = [];
-  // Match href="/bible/{bibleId}/{book}/"
-  const pattern = new RegExp(`href="(${basePath}/${bibleId}/[a-z0-9]+/)"`, 'gi');
+  // Match both href="/bible/{bibleId}/{book}/" and value="/bible/{bibleId}/{book}/"
+  // Book IDs can contain letters, numbers, and are case-insensitive
+  const hrefPattern = new RegExp(`href="(${basePath}/${bibleId}/[a-zA-Z0-9]+/)"`, 'gi');
+  const valuePattern = new RegExp(`value="(${basePath}/${bibleId}/[a-zA-Z0-9]+/)"`, 'gi');
+
   let match;
-  while ((match = pattern.exec(html)) !== null) {
+  while ((match = hrefPattern.exec(html)) !== null) {
     const url = match[1];
-    // Avoid duplicates
+    if (!links.includes(url)) {
+      links.push(url);
+    }
+  }
+  while ((match = valuePattern.exec(html)) !== null) {
+    const url = match[1];
     if (!links.includes(url)) {
       links.push(url);
     }
@@ -535,15 +612,24 @@ function extractBookLinks(html, basePath, bibleId) {
 
 /**
  * Extract chapter links from book page HTML
+ * Looks for both href attributes (anchor links) and value attributes (select options)
  */
 function extractChapterLinks(html, basePath, bibleId) {
   const links = [];
-  // Match href="/bible/{bibleId}/{book}/{chapter}/"
-  const pattern = new RegExp(`href="(${basePath}/${bibleId}/[a-z0-9]+/\\d+/)"`, 'gi');
+  // Match both href="/bible/{bibleId}/{book}/{chapter}/" and value="/bible/{bibleId}/{book}/{chapter}/"
+  // Book IDs can contain letters, numbers, and are case-insensitive
+  const hrefPattern = new RegExp(`href="(${basePath}/${bibleId}/[a-zA-Z0-9]+/\\d+/)"`, 'gi');
+  const valuePattern = new RegExp(`value="(${basePath}/${bibleId}/[a-zA-Z0-9]+/\\d+/)"`, 'gi');
+
   let match;
-  while ((match = pattern.exec(html)) !== null) {
+  while ((match = hrefPattern.exec(html)) !== null) {
     const url = match[1];
-    // Avoid duplicates
+    if (!links.includes(url)) {
+      links.push(url);
+    }
+  }
+  while ((match = valuePattern.exec(html)) !== null) {
+    const url = match[1];
     if (!links.includes(url)) {
       links.push(url);
     }
@@ -586,21 +672,35 @@ async function getBibleCacheStatus(bibleId, basePath) {
     const biblePattern = new RegExp(`^${basePath}/${bibleId}/[^/]+/\\d+/?$`);
     const cachedChapters = keys.filter(req => biblePattern.test(new URL(req.url).pathname));
 
+    // Count books for this Bible
+    const bookPattern = new RegExp(`^${basePath}/${bibleId}/[^/]+/?$`);
+    const cachedBooks = keys.filter(req => {
+      const pathname = new URL(req.url).pathname;
+      // Match book pages but not the Bible overview page
+      return bookPattern.test(pathname) && pathname !== `${basePath}/${bibleId}/`;
+    });
+
     // Check if Bible overview page is cached (indicates download was started)
     const bibleOverviewUrl = `${basePath}/${bibleId}/`;
     const hasBibleOverview = keys.some(req => new URL(req.url).pathname === bibleOverviewUrl);
 
+    // Estimate expected chapters based on cached books
+    // Standard Bible has ~1189 chapters across 66 books (~18 chapters/book average)
+    // If we have books cached, we can estimate expected chapters
+    const expectedMinChapters = cachedBooks.length > 0 ? cachedBooks.length * 10 : 1000;
+
     return {
       bibleId,
       cachedChapters: cachedChapters.length,
+      cachedBooks: cachedBooks.length,
       hasBibleOverview,
-      // Consider "fully cached" if we have the overview + at least 1000 chapters
-      // (most Bibles have 1000+ chapters)
-      isFullyCached: hasBibleOverview && cachedChapters.length >= 1000
+      // Consider "fully cached" if we have chapters and the count is reasonable
+      // A Bible with 66 books should have ~1189 chapters, but some have fewer books
+      isFullyCached: hasBibleOverview && cachedChapters.length >= expectedMinChapters
     };
   } catch (error) {
     console.error('[Service Worker] getBibleCacheStatus error:', error);
-    return { bibleId, cachedChapters: 0, hasBibleOverview: false, isFullyCached: false };
+    return { bibleId, cachedChapters: 0, cachedBooks: 0, hasBibleOverview: false, isFullyCached: false };
   }
 }
 
