@@ -104,8 +104,8 @@
    * @param {Object} OfflineManager - The OfflineManager instance
    */
   async function handleDownloadBibles(OfflineManager) {
-    // Get selected Bibles
-    const checkboxes = document.querySelectorAll('.bible-download-checkbox:checked');
+    // Get selected Bibles that are not disabled (not already cached)
+    const checkboxes = document.querySelectorAll('.bible-download-checkbox:checked:not(:disabled)');
 
     if (checkboxes.length === 0) {
       showMessage('Please select at least one Bible to download', 'error');
