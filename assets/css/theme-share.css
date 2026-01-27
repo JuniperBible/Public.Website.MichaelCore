@@ -1,0 +1,159 @@
+/* ==========================================================================
+   Michael Bible Module — Share Menu & Toast Styles
+   Share dropdown menu and toast notification components
+   ========================================================================== */
+
+/* -----------------------------
+   Share Menu
+------------------------------ */
+.share-menu {
+  position: absolute;
+  z-index: 1000;
+  min-width: 200px;
+
+  background: var(--surface-2);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-1);
+  box-shadow: var(--shadow-1);
+
+  padding: 6px 0;
+  margin-top: 4px;
+}
+
+.share-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+
+  padding: 10px 14px;
+  border: none;
+  background: transparent;
+  color: var(--text-900);
+
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+  user-select: none;
+  font: inherit;
+  line-height: 1.4;
+}
+
+.share-menu-item:hover {
+  background: var(--surface-1);
+}
+
+.share-menu-item:focus-visible {
+  outline: none;
+  background: var(--brand-100);
+  color: var(--brand-600);
+}
+
+.share-menu-divider {
+  height: 1px;
+  margin: 6px 0;
+  background: var(--border);
+  border: none;
+}
+
+/* Offline mode modifier */
+.share-menu--offline {
+  border-left: 3px solid var(--text-500);
+}
+
+/* Disabled share button (offline mode) */
+.share-btn--disabled,
+.share-menu-item:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  color: var(--text-500);
+}
+
+.share-btn--disabled:hover,
+.share-menu-item:disabled:hover {
+  background: transparent;
+}
+
+.share-btn--disabled svg,
+.share-menu-item:disabled svg {
+  opacity: 0.5;
+}
+
+/* -----------------------------
+   Toast Notifications
+   .share-toast is a legacy alias
+------------------------------ */
+.toast,
+.share-toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(100px);
+  z-index: 9999;
+
+  max-width: 90%;
+  width: auto;
+  min-width: 280px;
+
+  padding: 12px 20px;
+  background: var(--chrome-900);
+  color: rgba(255, 255, 255, 0.95);
+  border-radius: var(--radius-1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+
+  font-size: 0.92rem;
+  line-height: 1.4;
+  text-align: center;
+
+  opacity: 0;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+              opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.toast--visible,
+.share-toast--visible {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+}
+
+/* Toast positioned at top of screen */
+.toast--top {
+  bottom: auto;
+  top: 24px;
+  transform: translateX(-50%) translateY(-100px);
+}
+
+.toast--top.toast--visible {
+  transform: translateX(-50%) translateY(0);
+}
+
+/* Toast type variants */
+.toast--success {
+  background: #1d3a0a;
+  border-left: 4px solid var(--success-500);
+}
+
+.toast--warning {
+  background: #5c4100;
+  border-left: 4px solid #ffc107;
+}
+
+.toast--error {
+  background: #5c1a1a;
+  border-left: 4px solid var(--state-error);
+}
+
+/* Responsive toast positioning */
+@media (max-width: 480px) {
+  .toast,
+  .share-toast {
+    min-width: 260px;
+    bottom: 16px;
+    font-size: 0.88rem;
+  }
+
+  .toast--top {
+    bottom: auto;
+    top: 16px;
+  }
+}
