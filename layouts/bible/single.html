@@ -53,11 +53,12 @@
     {{ end }}
 
     <header class="page-header">
-      <h1>{{ .Title }}</h1>
-      {{/* On Bible overview pages, prefer override description; otherwise use front matter */}}
+      {{/* On Bible overview pages, prefer override title and description */}}
       {{ if not (or .Params.chapter .Params.book) }}
+        <h1>{{ with $bibleData.title }}{{ . }}{{ else }}{{ .Title }}{{ end }}</h1>
         {{ with $bibleData.description }}<p>{{ . }}</p>{{ end }}
       {{ else }}
+        <h1>{{ .Title }}</h1>
         {{ with .Params.description }}<p>{{ . }}</p>{{ end }}
       {{ end }}
 
