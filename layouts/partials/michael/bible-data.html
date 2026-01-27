@@ -22,7 +22,7 @@
 {{- range $bible := $bibles -}}
   {{- $override := index $overrides $bible.id -}}
   {{- if $override -}}
-    {{- $merged = $merged | append (merge $override $bible) -}}
+    {{- $merged = $merged | append (merge $bible $override) -}}
   {{- else -}}
     {{- $merged = $merged | append $bible -}}
   {{- end -}}
