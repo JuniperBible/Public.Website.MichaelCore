@@ -721,6 +721,8 @@ window.Michael.OfflineManager = (function() {
       return {
         bibleId: response.bibleId || bibleId,
         cachedChapters: response.cachedChapters || 0,
+        cachedBooks: response.cachedBooks || 0,
+        totalChapters: response.totalChapters || 0,
         hasBibleOverview: response.hasBibleOverview || false,
         isFullyCached: response.isFullyCached || false
       };
@@ -729,6 +731,8 @@ window.Michael.OfflineManager = (function() {
       return {
         bibleId,
         cachedChapters: 0,
+        cachedBooks: 0,
+        totalChapters: 0,
         hasBibleOverview: false,
         isFullyCached: false
       };

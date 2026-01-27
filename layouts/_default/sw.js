@@ -28,10 +28,14 @@
 const CACHE_VERSION = '{{ $hash }}';
 const SHELL_CACHE = `michael-shell-v${CACHE_VERSION}`;
 const CHAPTERS_CACHE = 'michael-chapters-v3';
+const METADATA_CACHE = 'michael-metadata-v1';
 const OFFLINE_URL = '/offline.html';
 
 // Track active download operations for cancellation
 const activeDownloads = new Map(); // bibleId -> AbortController
+
+// In-memory Bible metadata (total chapters per Bible)
+const bibleMetadata = new Map(); // bibleId -> { totalChapters, totalBooks }
 
 // Assets to pre-cache on install
 // CSS files are now embedded with their fingerprinted paths by Hugo
@@ -134,8 +138,8 @@ self.addEventListener('activate', (event) => {
         // Get all cache names
         const cacheNames = await caches.keys();
 
-        // Delete old caches (keep current shell and chapters caches)
-        const cacheWhitelist = [SHELL_CACHE, CHAPTERS_CACHE];
+        // Delete old caches (keep current shell, chapters, and metadata caches)
+        const cacheWhitelist = [SHELL_CACHE, CHAPTERS_CACHE, METADATA_CACHE];
         const deletionPromises = cacheNames
           .filter(cacheName => !cacheWhitelist.includes(cacheName))
           .map(cacheName => {
@@ -144,6 +148,9 @@ self.addEventListener('activate', (event) => {
           });
 
         await Promise.all(deletionPromises);
+
+        // Load Bible metadata from persistent cache
+        await loadAllBibleMetadata();
 
         console.log('[Service Worker] Activation complete');
 
@@ -534,6 +541,14 @@ async function cacheBible(bibleId, basePath) {
 
     console.log(`[Service Worker] Found ${chapterUrls.length} chapters to cache`);
 
+    // Store Bible metadata for later retrieval (total chapters known after discovery)
+    bibleMetadata.set(bibleId, {
+      totalChapters: chapterUrls.length,
+      totalBooks: bookLinks.length
+    });
+    // Also persist to metadata cache
+    await saveBibleMetadata(bibleId, chapterUrls.length, bookLinks.length);
+
     // Send initial progress with accurate total
     self.clients.matchAll().then(clients => {
       clients.forEach(client => {
@@ -712,23 +727,103 @@ async function getBibleCacheStatus(bibleId, basePath) {
     const bibleOverviewUrl = `${basePath}/${bibleId}/`;
     const hasBibleOverview = keys.some(req => new URL(req.url).pathname === bibleOverviewUrl);
 
-    // Estimate expected chapters based on cached books
-    // Standard Bible has ~1189 chapters across 66 books (~18 chapters/book average)
-    // If we have books cached, we can estimate expected chapters
-    const expectedMinChapters = cachedBooks.length > 0 ? cachedBooks.length * 10 : 1000;
+    // Get total chapters from stored metadata first (actual count from when Bible was cached)
+    let totalChapters = 0;
+    let totalBooks = 0;
+
+    // Check in-memory metadata first
+    if (bibleMetadata.has(bibleId)) {
+      const meta = bibleMetadata.get(bibleId);
+      totalChapters = meta.totalChapters;
+      totalBooks = meta.totalBooks;
+    } else {
+      // Try to load from persistent metadata cache
+      const savedMeta = await loadBibleMetadata(bibleId);
+      if (savedMeta) {
+        totalChapters = savedMeta.totalChapters;
+        totalBooks = savedMeta.totalBooks;
+        // Store in memory for faster access
+        bibleMetadata.set(bibleId, savedMeta);
+      }
+    }
+
+    // Determine if fully cached
+    // If we have metadata, use exact count. Otherwise, consider cached if we have overview + chapters
+    const isFullyCached = totalChapters > 0
+      ? (hasBibleOverview && cachedChapters.length >= totalChapters)
+      : (hasBibleOverview && cachedChapters.length > 100); // Fallback heuristic
 
     return {
       bibleId,
       cachedChapters: cachedChapters.length,
       cachedBooks: cachedBooks.length,
+      totalChapters,
+      totalBooks,
       hasBibleOverview,
-      // Consider "fully cached" if we have chapters and the count is reasonable
-      // A Bible with 66 books should have ~1189 chapters, but some have fewer books
-      isFullyCached: hasBibleOverview && cachedChapters.length >= expectedMinChapters
+      isFullyCached
     };
   } catch (error) {
     console.error('[Service Worker] getBibleCacheStatus error:', error);
-    return { bibleId, cachedChapters: 0, cachedBooks: 0, hasBibleOverview: false, isFullyCached: false };
+    return { bibleId, cachedChapters: 0, cachedBooks: 0, totalChapters: 0, hasBibleOverview: false, isFullyCached: false };
+  }
+}
+
+/**
+ * Save Bible metadata to persistent cache
+ */
+async function saveBibleMetadata(bibleId, totalChapters, totalBooks) {
+  try {
+    const cache = await caches.open(METADATA_CACHE);
+    const metadata = { bibleId, totalChapters, totalBooks, savedAt: Date.now() };
+    const response = new Response(JSON.stringify(metadata), {
+      headers: { 'Content-Type': 'application/json' }
+    });
+    await cache.put(`/metadata/${bibleId}`, response);
+    console.log(`[Service Worker] Saved metadata for ${bibleId}: ${totalChapters} chapters, ${totalBooks} books`);
+  } catch (error) {
+    console.warn('[Service Worker] Failed to save Bible metadata:', error);
+  }
+}
+
+/**
+ * Load Bible metadata from persistent cache
+ */
+async function loadBibleMetadata(bibleId) {
+  try {
+    const cache = await caches.open(METADATA_CACHE);
+    const response = await cache.match(`/metadata/${bibleId}`);
+    if (response) {
+      const metadata = await response.json();
+      return metadata;
+    }
+  } catch (error) {
+    console.warn('[Service Worker] Failed to load Bible metadata:', error);
+  }
+  return null;
+}
+
+/**
+ * Load all Bible metadata on service worker activation
+ */
+async function loadAllBibleMetadata() {
+  try {
+    const cache = await caches.open(METADATA_CACHE);
+    const keys = await cache.keys();
+    for (const request of keys) {
+      const response = await cache.match(request);
+      if (response) {
+        const metadata = await response.json();
+        if (metadata.bibleId) {
+          bibleMetadata.set(metadata.bibleId, {
+            totalChapters: metadata.totalChapters,
+            totalBooks: metadata.totalBooks
+          });
+        }
+      }
+    }
+    console.log(`[Service Worker] Loaded metadata for ${bibleMetadata.size} Bibles`);
+  } catch (error) {
+    console.warn('[Service Worker] Failed to load all Bible metadata:', error);
   }
 }
 

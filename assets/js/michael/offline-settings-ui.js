@@ -212,9 +212,13 @@
           checkbox.checked = true;
           updateBibleStatus(bibleId, '100% Cached', 'is-cached');
         } else if (status.cachedChapters > 0) {
-          // Show partial cache status with percentage
-          const percent = Math.round((status.cachedChapters / status.totalChapters) * 100);
-          updateBibleStatus(bibleId, `${percent}% (${status.cachedChapters}/${status.totalChapters})`, 'is-partial');
+          // Show partial cache status with percentage if we know total, otherwise just count
+          if (status.totalChapters > 0) {
+            const percent = Math.round((status.cachedChapters / status.totalChapters) * 100);
+            updateBibleStatus(bibleId, `${percent}% (${status.cachedChapters}/${status.totalChapters})`, 'is-partial');
+          } else {
+            updateBibleStatus(bibleId, `${status.cachedChapters} chapters`, 'is-partial');
+          }
         } else {
           // Not cached - clear any previous status
           updateBibleStatus(bibleId, '', '');
