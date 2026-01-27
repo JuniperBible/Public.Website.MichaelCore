@@ -162,11 +162,9 @@ vendor-package:
 	@echo "Packages created in $(ASSETS_DIR)/"
 	@ls -lh $(ASSETS_DIR)/*.tar.xz
 
-# Restore from compressed packages
+# Restore from compressed packages (always extracts to ensure all Bibles present)
 vendor-restore:
-	@if [ -f "$(DATA_DIR)/bibles.json" ] && [ -d "$(DATA_DIR)/bibles_auxiliary" ]; then \
-		echo "Bible data already present in $(DATA_DIR)"; \
-	elif [ -f "$(ASSETS_DIR)/all-bibles.tar.xz" ]; then \
+	@if [ -f "$(ASSETS_DIR)/all-bibles.tar.xz" ]; then \
 		echo "Restoring Bible data from packages..."; \
 		mkdir -p $(DATA_DIR); \
 		tar -xJf "$(ASSETS_DIR)/all-bibles.tar.xz" -C $(DATA_DIR); \
