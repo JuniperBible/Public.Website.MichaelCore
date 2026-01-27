@@ -1,0 +1,58 @@
+/* ==========================================================================
+   Michael Bible Module — Color Tokens
+   All project colors defined in one place for easy theming
+   ========================================================================== */
+
+:root {
+  /* Brand - Purple theme */
+  --brand-100: #f2e6fa;
+  --brand-400: #9b30d1;
+  --brand-500: #7a00b0;
+  --brand-600: #64008f;
+
+  /* Success - Green */
+  --success-100: #e8f5e9;
+  --success-500: #36b000;
+
+  /* Chrome (header/footer) - Dark gray */
+  --chrome-800: #4a4a4a;
+  --chrome-900: #3f3f3f;
+
+  /* Background / Surfaces (parchment theme) */
+  --bg-0: #b6a58f;        /* outer background */
+  --surface-0: #e7ddc4;   /* main panel */
+  --surface-1: #f1ead6;   /* inner cards */
+  --surface-2: #ffffff;   /* inputs */
+
+  /* Text - Dark to light */
+  --text-900: #1d1b1f;    /* primary text */
+  --text-700: #3d3841;    /* secondary text - WCAG AA compliant */
+  --text-500: #565056;    /* muted text - WCAG AA compliant (4.5:1 on #e7ddc4) */
+  --text-400: #706a75;    /* subtle text */
+
+  /* Links */
+  --link: var(--brand-500);
+
+  /* Borders */
+  --border: rgba(0, 0, 0, 0.18);
+  --border-strong: rgba(0, 0, 0, 0.35);
+
+  /* Shadows */
+  --shadow-0: 0 1px 0 rgba(0,0,0,.14);
+  --shadow-1: 0 1px 0 rgba(0,0,0,.18), 0 3px 10px rgba(0,0,0,.10);
+
+  /* Focus ring */
+  --focus-ring: 0 0 0 3px rgba(122, 0, 176, 0.35);
+
+  /* Diff highlighting colors */
+  --diff-add: #ccffcc;        /* addition - green */
+  --diff-omit: #e6e6e6;       /* omission - gray */
+  --diff-punct: #ffeb99;      /* punctuation/formatting - yellow */
+  --diff-spelling: #ffe0b3;   /* spelling modernization - orange */
+  --diff-subst: #ffcccc;      /* word substitution - red */
+
+  /* State colors */
+  --state-error: #d32f2f;
+  --state-error-bg: #ffebee;
+  --state-loading: var(--brand-500);
+}

@@ -5,59 +5,19 @@
          chapter grid, and reading controls across all pages.
    ========================================================================== */
 
+/* Import color tokens */
+@import "theme-colors.css";
+
 /* -----------------------------
-   0) Design Tokens
+   0) Design Tokens (non-color)
 ------------------------------ */
 :root {
-  /* Brand */
-  --brand-500: #7a00b0;
-  --brand-600: #64008f;
-  --brand-100: #f2e6fa;
-
-  /* Semantic */
-  --success-500: #36b000;
-
-  /* Neutrals / parchment */
-  --chrome-900: #3f3f3f;
-  --chrome-800: #4a4a4a;
-  --bg-0: #b6a58f;        /* outer background */
-  --surface-0: #e7ddc4;   /* main panel */
-  --surface-1: #f1ead6;   /* inner cards */
-  --surface-2: #ffffff;   /* inputs */
-
-  /* Text */
-  --text-900: #1d1b1f;
-  --text-700: #3d3841;  /* Improved contrast from #504a53 for WCAG AA compliance */
-  --text-500: #565056;  /* Improved contrast from #6b6570 for WCAG AA compliance (4.5:1 on #e7ddc4) */
-  --link: var(--brand-500);
-
-  /* Borders/shadows */
-  --border: rgba(0, 0, 0, 0.18);
-  --border-strong: rgba(0, 0, 0, 0.35);
-  --shadow-1: 0 1px 0 rgba(0,0,0,.18), 0 3px 10px rgba(0,0,0,.10);
-  --shadow-0: 0 1px 0 rgba(0,0,0,.14);
-
   /* Shape + spacing */
   --radius-1: 8px;
   --radius-2: 14px;
   --pad-1: 10px;
   --pad-2: 16px;
   --pad-3: 24px;
-
-  /* Focus ring */
-  --focus-ring: 0 0 0 3px rgba(122, 0, 176, 0.35);
-
-  /* Diff highlighting colors */
-  --diff-punct: #ffeb99;      /* punctuation/formatting */
-  --diff-spelling: #ffe0b3;   /* spelling modernization */
-  --diff-subst: #ffcccc;      /* word substitution */
-  --diff-add: #ccffcc;        /* addition */
-  --diff-omit: #e6e6e6;       /* omission */
-
-  /* State colors */
-  --state-loading: var(--brand-500);
-  --state-error: #d32f2f;
-  --state-error-bg: #ffebee;
 
   /* Touch targets */
   --touch-min: 44px;
