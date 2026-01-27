@@ -6,7 +6,16 @@
   directly into the service worker. This solves the problem of CSS files
   being fingerprinted but the SW having hardcoded paths.
 */}}
-{{- $theme := resources.Get "css/theme.css" | minify | fingerprint -}}
+{{- $colors := resources.Get "css/theme-colors.css" -}}
+{{- $main := resources.Get "css/theme.css" -}}
+{{- $compare := resources.Get "css/theme-compare.css" -}}
+{{- $share := resources.Get "css/theme-share.css" -}}
+{{- $strongs := resources.Get "css/theme-strongs.css" -}}
+{{- $pwa := resources.Get "css/theme-pwa.css" -}}
+{{- $offline := resources.Get "css/theme-offline.css" -}}
+{{- $print := resources.Get "css/theme-print.css" -}}
+{{- $custom := resources.Get "css/theme-custom.css" -}}
+{{- $theme := slice $colors $main $compare $share $strongs $pwa $offline $print $custom | resources.Concat "css/theme.bundle.css" | minify | fingerprint -}}
 {{- $hash := substr $theme.Data.Integrity 0 12 | replaceRE "[^a-zA-Z0-9]" "" -}}
 /**
  * Service Worker for Michael Bible Module
