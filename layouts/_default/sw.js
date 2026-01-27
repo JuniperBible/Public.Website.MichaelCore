@@ -46,6 +46,9 @@ const activeDownloads = new Map(); // bibleId -> AbortController
 // In-memory Bible metadata (total chapters per Bible)
 const bibleMetadata = new Map(); // bibleId -> { totalChapters, totalBooks }
 
+// Track metadata loading Promise to avoid race conditions
+let metadataReady = null;
+
 // Assets to pre-cache on install
 // CSS files are now embedded with their fingerprinted paths by Hugo
 // Only include JS files that are actually built (referenced in templates)
@@ -159,7 +162,8 @@ self.addEventListener('activate', (event) => {
         await Promise.all(deletionPromises);
 
         // Load Bible metadata from persistent cache
-        await loadAllBibleMetadata();
+        metadataReady = loadAllBibleMetadata();
+        await metadataReady;
 
         console.log('[Service Worker] Activation complete');
 
@@ -365,7 +369,7 @@ function isNavigationRequest(request) {
  * Message Handler
  * Allow the page to communicate with the service worker
  */
-self.addEventListener('message', (event) => {
+self.addEventListener('message', async (event) => {
   const { type, data } = event.data || {};
   const port = event.ports[0];
 
@@ -373,6 +377,9 @@ self.addEventListener('message', (event) => {
   const sendResponse = (response) => {
     if (port) port.postMessage(response);
   };
+
+  // Wait for metadata to be loaded before processing messages that access it
+  if (metadataReady) await metadataReady;
 
   switch (type) {
     case 'SKIP_WAITING':
@@ -510,9 +517,11 @@ async function cacheBible(bibleId, basePath) {
 
   // Set up abort controller for cancellation
   const abortController = new AbortController();
-  activeDownloads.set(bibleId, abortController);
 
   try {
+    // Set activeDownloads inside try block to ensure finally cleanup runs
+    activeDownloads.set(bibleId, abortController);
+
     const cache = await caches.open(CHAPTERS_CACHE);
 
     // Phase 1: Fetch and cache Bible overview, discover books
@@ -676,6 +685,15 @@ function notifyClients(type, data) {
 }
 
 /**
+ * Escape special regex characters in a string
+ * @param {string} str - String to escape
+ * @returns {string} Escaped string safe for use in RegExp
+ */
+function escapeRegExp(str) {
+  return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+/**
  * Extract book links from Bible overview page HTML
  * Looks for both href attributes (anchor links) and value attributes (select options)
  */
@@ -683,8 +701,8 @@ function extractBookLinks(html, basePath, bibleId) {
   const links = [];
   // Match both href="/bible/{bibleId}/{book}/" and value="/bible/{bibleId}/{book}/"
   // Book IDs can contain letters, numbers, and are case-insensitive
-  const hrefPattern = new RegExp(`href="(${basePath}/${bibleId}/[a-zA-Z0-9]+/)"`, 'gi');
-  const valuePattern = new RegExp(`value="(${basePath}/${bibleId}/[a-zA-Z0-9]+/)"`, 'gi');
+  const hrefPattern = new RegExp(`href="(${escapeRegExp(basePath)}/${escapeRegExp(bibleId)}/[a-zA-Z0-9]+/)"`, 'gi');
+  const valuePattern = new RegExp(`value="(${escapeRegExp(basePath)}/${escapeRegExp(bibleId)}/[a-zA-Z0-9]+/)"`, 'gi');
 
   let match;
   while ((match = hrefPattern.exec(html)) !== null) {
@@ -710,8 +728,8 @@ function extractChapterLinks(html, basePath, bibleId) {
   const links = [];
   // Match both href="/bible/{bibleId}/{book}/{chapter}/" and value="/bible/{bibleId}/{book}/{chapter}/"
   // Book IDs can contain letters, numbers, and are case-insensitive
-  const hrefPattern = new RegExp(`href="(${basePath}/${bibleId}/[a-zA-Z0-9]+/\\d+/)"`, 'gi');
-  const valuePattern = new RegExp(`value="(${basePath}/${bibleId}/[a-zA-Z0-9]+/\\d+/)"`, 'gi');
+  const hrefPattern = new RegExp(`href="(${escapeRegExp(basePath)}/${escapeRegExp(bibleId)}/[a-zA-Z0-9]+/\\d+/)"`, 'gi');
+  const valuePattern = new RegExp(`value="(${escapeRegExp(basePath)}/${escapeRegExp(bibleId)}/[a-zA-Z0-9]+/\\d+/)"`, 'gi');
 
   let match;
   while ((match = hrefPattern.exec(html)) !== null) {

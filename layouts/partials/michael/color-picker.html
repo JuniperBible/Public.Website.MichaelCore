@@ -23,11 +23,11 @@
 {{ $id := .id }}
 {{ $optionClass := .optionClass }}
 {{ $defaultColors := slice
-  (dict "value" "#222" "label" "Dark")
-  (dict "value" "#444" "label" "Medium Dark")
-  (dict "value" "#666" "label" "Medium")
-  (dict "value" "#888" "label" "Medium Light")
-  (dict "value" "#aaa" "label" "Light")
+  (dict "value" "#222" "label" (i18n "colorDark" | default "Dark"))
+  (dict "value" "#444" "label" (i18n "colorMediumDark" | default "Medium Dark"))
+  (dict "value" "#666" "label" (i18n "colorMedium" | default "Medium"))
+  (dict "value" "#888" "label" (i18n "colorMediumLight" | default "Medium Light"))
+  (dict "value" "#aaa" "label" (i18n "colorLight" | default "Light"))
 }}
 {{ $colors := .colors | default $defaultColors }}
 {{ $firstColor := index $colors 0 }}

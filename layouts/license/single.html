@@ -54,33 +54,33 @@
   <article class="panel">
     <header class="page-header">
       <h1>{{ .Title }}</h1>
-      <p>SPDX License Identifier: <code>{{ $licenseId }}</code></p>
+      <p>{{ i18n "spdxLicenseIdentifier" | default "SPDX License Identifier" }}: <code>{{ $licenseId }}</code></p>
     </header>
 
     <div class="license-content">
       {{- /* License badges */ -}}
       <div class="row gap-1 mb-2">
         {{ if .Params.isOsiApproved }}
-        <span class="badge badge--success">OSI Approved</span>
+        <span class="badge badge--success">{{ i18n "osiApproved" | default "OSI Approved" }}</span>
         {{ end }}
         {{ if $spdxInfo }}
-        <span class="badge">SPDX Standard License</span>
+        <span class="badge">{{ i18n "spdxStandardLicense" | default "SPDX Standard License" }}</span>
         {{ else if strings.HasPrefix $licenseId "LicenseRef-" }}
-        <span class="badge badge--warning">Custom License</span>
+        <span class="badge badge--warning">{{ i18n "customLicense" | default "Custom License" }}</span>
         {{ end }}
       </div>
 
       {{- /* License description from choosealicense */ -}}
       {{ with $licenseRights.description }}
       <section class="panel--inner license-section">
-        <h2 class="mt-0">About This License</h2>
+        <h2 class="mt-0">{{ i18n "aboutThisLicense" | default "About This License" }}</h2>
         <p>{{ . }}</p>
         {{ with $licenseRights.how }}
-        <h3>How to Apply</h3>
+        <h3>{{ i18n "howToApply" | default "How to Apply" }}</h3>
         <p>{{ . }}</p>
         {{ end }}
         {{ with $licenseRights.note }}
-        <p><strong>Note:</strong> {{ . }}</p>
+        <p><strong>{{ i18n "note" | default "Note:" }}</strong> {{ . }}</p>
         {{ end }}
       </section>
       {{ end }}
@@ -88,7 +88,7 @@
       {{- /* Rights table - using choosealicense data */ -}}
       {{ if or $licenseRights.permissions $licenseRights.conditions $licenseRights.limitations }}
       <section class="panel--inner license-section">
-        <h2 class="mt-0">Your Rights</h2>
+        <h2 class="mt-0">{{ i18n "yourRights" | default "Your Rights" }}</h2>
 
         <div class="license-rights-grid">
           {{- /* Permissions */ -}}
@@ -99,7 +99,7 @@
                 <circle cx="12" cy="12" r="10"/>
                 <path d="m9 12 2 2 4-4"/>
               </svg>
-              Permissions
+              {{ i18n "permissions" | default "Permissions" }}
             </h3>
             <ul>
               {{ range . }}
@@ -120,7 +120,7 @@
                 <circle cx="12" cy="12" r="10"/>
                 <path d="M12 8v4M12 16h.01"/>
               </svg>
-              Conditions
+              {{ i18n "conditions" | default "Conditions" }}
             </h3>
             <ul>
               {{ range . }}
@@ -141,7 +141,7 @@
                 <circle cx="12" cy="12" r="10"/>
                 <path d="m15 9-6 6M9 9l6 6"/>
               </svg>
-              Limitations
+              {{ i18n "limitations" | default "Limitations" }}
             </h3>
             <ul>
               {{ range . }}
@@ -160,8 +160,8 @@
       {{- /* Bible-specific license texts */ -}}
       {{ if $bibles }}
       <section class="panel--inner license-section">
-        <h2 class="mt-0">License Statements from Bible Modules</h2>
-        <p class="muted mb-2">Each Bible module includes its own license statement from the publisher:</p>
+        <h2 class="mt-0">{{ i18n "licenseStatementsFromBibles" | default "License Statements from Bible Modules" }}</h2>
+        <p class="muted mb-2">{{ i18n "licenseStatementsDescription" | default "Each Bible module includes its own license statement from the publisher:" }}</p>
 
         {{ range $bible := $bibles }}
         {{ with $bible.licenseText }}
@@ -179,8 +179,8 @@
       {{- /* Additional resources from SPDX */ -}}
       {{ with $spdxInfo.seeAlso }}
       <section class="panel--inner license-section">
-        <h3 class="mt-0">Additional Resources</h3>
-        <ul style="margin-bottom: 0;">
+        <h3 class="mt-0">{{ i18n "additionalResources" | default "Additional Resources" }}</h3>
+        <ul class="mb-0">
           {{ range . }}
           <li><a href="{{ . }}" target="_blank" rel="noopener">{{ . }}</a></li>
           {{ end }}
@@ -189,7 +189,7 @@
       {{ end }}
 
       {{- /* Bible translations using this license */ -}}
-      <h2>Bible Translations Using This License</h2>
+      <h2>{{ i18n "bibleTranslationsUsingLicense" | default "Bible Translations Using This License" }}</h2>
       {{ if $bibles }}
       <div class="grid-2">
         {{ range $bibles }}
@@ -201,7 +201,7 @@
         {{ end }}
       </div>
       {{ else }}
-      <p class="muted">No Bible translations currently use this license.</p>
+      <p class="muted">{{ i18n "noBibleTranslationsUseLicense" | default "No Bible translations currently use this license." }}</p>
       {{ end }}
     </div>
 

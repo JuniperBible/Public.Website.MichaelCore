@@ -18,12 +18,12 @@
 {{- $aux := index $site.Data.bibles_auxiliary $firstBible.id -}}
 <label for="{{ $bookId }}" class="sr-only">{{ i18n "selectBook" | default "Select Book" }}</label>
 <select id="{{ $bookId }}" class="select w-auto" aria-label="{{ i18n "selectBook" | default "Select Book" }}">
-  <option value="">Book...</option>
+  <option value="">{{ i18n "bookPlaceholder" | default "Book..." }}</option>
   {{- range $aux.books -}}
   <option value="{{ .id }}">{{ .name }}</option>
   {{- end -}}
 </select>
 <label for="{{ $chapterId }}" class="sr-only">{{ i18n "selectChapter" | default "Select Chapter" }}</label>
 <select id="{{ $chapterId }}" class="select w-auto" disabled aria-label="{{ i18n "selectChapter" | default "Select Chapter" }}">
-  <option value="">Ch...</option>
+  <option value="">{{ i18n "chapterPlaceholder" | default "Ch..." }}</option>
 </select>

@@ -14,9 +14,9 @@
 {{- $id := .id | default "" -}}
 {{- $prefix := cond (eq $id "") "" (printf "%s-" $id) -}}
 <div id="{{ $prefix }}diff-legend" class="diff-legend hidden">
-  <span class="diff-legend__item"><span class="diff-legend__swatch diff-legend__swatch--add"></span>Added</span>
-  <span class="diff-legend__item"><span class="diff-legend__swatch diff-legend__swatch--omit"></span>Omitted</span>
-  <span class="diff-legend__item"><span class="diff-legend__swatch diff-legend__swatch--subst"></span>Changed</span>
-  <span class="diff-legend__item"><span class="diff-legend__swatch diff-legend__swatch--spelling"></span>Spelling</span>
-  <span class="diff-legend__item"><span class="diff-legend__swatch diff-legend__swatch--punct"></span>Punctuation</span>
+  <span class="diff-legend__item"><span class="diff-legend__swatch diff-legend__swatch--add"></span>{{ i18n "diffAdded" | default "Added" }}</span>
+  <span class="diff-legend__item"><span class="diff-legend__swatch diff-legend__swatch--omit"></span>{{ i18n "diffOmitted" | default "Omitted" }}</span>
+  <span class="diff-legend__item"><span class="diff-legend__swatch diff-legend__swatch--subst"></span>{{ i18n "diffChanged" | default "Changed" }}</span>
+  <span class="diff-legend__item"><span class="diff-legend__swatch diff-legend__swatch--spelling"></span>{{ i18n "diffSpelling" | default "Spelling" }}</span>
+  <span class="diff-legend__item"><span class="diff-legend__swatch diff-legend__swatch--punct"></span>{{ i18n "diffPunctuation" | default "Punctuation" }}</span>
 </div>

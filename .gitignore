@@ -13,3 +13,10 @@ data/example/bibles_auxiliary/
 
 # Keep compressed packages (these ARE committed)
 !assets/downloads/*.tar.xz
+
+# Editor and OS files
+.DS_Store
+*.swp
+*.swo
+.env.local
+node_modules/

@@ -127,7 +127,7 @@ These are loaded with defer to avoid blocking page rendering.
     {{ if gt $total $pageSize }}
     <nav class="actions mt-2">
       <button id="show-more-bibles" class="btn btn--secondary">
-        Show More ({{ sub $total $pageSize }} more)
+        {{ i18n "showMore" | default "Show More" }} ({{ sub $total $pageSize }} {{ i18n "more" | default "more" }})
       </button>
     </nav>
     {{ end }}

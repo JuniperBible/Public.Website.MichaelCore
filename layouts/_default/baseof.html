@@ -17,46 +17,6 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  {{/* Early PWA standalone detection - must run before body renders */}}
-  <script>
-    (function() {
-      // Detect PWA standalone mode using multiple methods
-      var displayModes = ['standalone', 'fullscreen', 'minimal-ui', 'window-controls-overlay'];
-      var isStandalone = false;
-
-      // Check all display modes
-      for (var i = 0; i < displayModes.length; i++) {
-        if (window.matchMedia('(display-mode: ' + displayModes[i] + ')').matches) {
-          isStandalone = true;
-          break;
-        }
-      }
-
-      // iOS Safari standalone
-      if (window.navigator.standalone === true) {
-        isStandalone = true;
-      }
-
-      // Android TWA
-      if (document.referrer.includes('android-app://')) {
-        isStandalone = true;
-      }
-
-      // Check if opened from home screen (no browser UI visible)
-      // This is a heuristic: if window.outerHeight equals window.innerHeight, likely no browser chrome
-      if (!isStandalone && window.outerHeight && window.innerHeight) {
-        var heightDiff = window.outerHeight - window.innerHeight;
-        // If difference is very small (< 100px), likely no URL bar = PWA mode
-        if (heightDiff < 100 && heightDiff >= 0) {
-          isStandalone = true;
-        }
-      }
-
-      if (isStandalone) {
-        document.documentElement.classList.add('pwa-standalone');
-      }
-    })();
-  </script>
   <title>{{- if .IsHome -}}{{ .Site.Title }}{{- else -}}{{ .Title }} | {{ .Site.Title }}{{- end -}}</title>
   <meta name="description" content="{{ with .Description }}{{ . }}{{ else }}{{ with .Summary }}{{ . | plainify }}{{ else }}{{ .Site.Params.description }}{{ end }}{{ end }}">
   {{/* Content Security Policy - restrictive by default */}}
@@ -111,19 +71,14 @@
   {{/* PWA Install Banner */}}
   {{ partial "michael/pwa-install-banner.html" . }}
 
-  {{/* Detect PWA standalone mode - also add to body for CSS specificity */}}
+  {{/* Detect PWA standalone mode */}}
   <script>
     (function() {
-      // If html already has the class, add to body too
-      if (document.documentElement.classList.contains('pwa-standalone')) {
-        document.body.classList.add('pwa-standalone');
-        return;
-      }
-
-      // Re-check in case it wasn't detected earlier
+      // Detect PWA standalone mode using multiple methods
       var displayModes = ['standalone', 'fullscreen', 'minimal-ui', 'window-controls-overlay'];
       var isStandalone = false;
 
+      // Check all display modes
       for (var i = 0; i < displayModes.length; i++) {
         if (window.matchMedia('(display-mode: ' + displayModes[i] + ')').matches) {
           isStandalone = true;
@@ -131,13 +86,22 @@
         }
       }
 
-      if (window.navigator.standalone === true) isStandalone = true;
-      if (document.referrer.includes('android-app://')) isStandalone = true;
+      // iOS Safari standalone
+      if (window.navigator.standalone === true) {
+        isStandalone = true;
+      }
+
+      // Android TWA
+      if (document.referrer.includes('android-app://')) {
+        isStandalone = true;
+      }
 
       // Height heuristic for PWA mode
       if (!isStandalone && window.outerHeight && window.innerHeight) {
         var heightDiff = window.outerHeight - window.innerHeight;
-        if (heightDiff < 100 && heightDiff >= 0) isStandalone = true;
+        if (heightDiff < 100 && heightDiff >= 0) {
+          isStandalone = true;
+        }
       }
 
       if (isStandalone) {

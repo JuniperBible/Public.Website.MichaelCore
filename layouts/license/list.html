@@ -4,32 +4,32 @@
   <div class="panel">
     <header class="page-header">
       <h1>{{ .Title }}</h1>
-      <p>Software Bill of Materials (SBOM) for Bible translations and software dependencies</p>
+      <p>{{ i18n "sbomDescription" | default "Software Bill of Materials (SBOM) for Bible translations and software dependencies" }}</p>
     </header>
 
     <!-- SBOM Summary -->
     <section class="panel--inner license-section">
-      <h2 class="mt-0">SBOM Summary</h2>
-      <div class="row gap-2" style="flex-wrap: wrap;">
+      <h2 class="mt-0">{{ i18n "sbomSummary" | default "SBOM Summary" }}</h2>
+      <div class="row row--wrap gap-2">
         <div>
-          <strong>{{ len (partialCached "michael/bible-data.html" .Site) }}</strong> Bible Translations
+          <strong>{{ len (partialCached "michael/bible-data.html" .Site) }}</strong> {{ i18n "bibles" | default "Bible Translations" }}
         </div>
         <div>
-          <strong>{{ len .Pages }}</strong> Unique Licenses
+          <strong>{{ len .Pages }}</strong> {{ i18n "uniqueLicenses" | default "Unique Licenses" }}
         </div>
         {{ with $softwareDeps }}
         <div>
-          <strong>{{ len .tools }}</strong> Build Tools
+          <strong>{{ len .tools }}</strong> {{ i18n "buildTools" | default "Build Tools" }}
         </div>
         <div>
-          <strong>{{ len .libraries }}</strong> Libraries
+          <strong>{{ len .libraries }}</strong> {{ i18n "libraries" | default "Libraries" }}
         </div>
         <div>
-          <strong>{{ len .data_sources }}</strong> Data Sources
+          <strong>{{ len .data_sources }}</strong> {{ i18n "dataSources" | default "Data Sources" }}
         </div>
         {{ end }}
         <div>
-          Generated: <code>{{ now.Format "2006-01-02" }}</code>
+          {{ i18n "generated" | default "Generated" }}: <code>{{ now.Format "2006-01-02" }}</code>
         </div>
       </div>
     </section>
@@ -37,17 +37,17 @@
     <!-- Software Dependencies Section -->
     {{ with $softwareDeps }}
     <section class="panel--inner license-section">
-      <h2 class="mt-0">Software Dependencies</h2>
+      <h2 class="mt-0">{{ i18n "softwareDependencies" | default "Software Dependencies" }}</h2>
 
       {{ with .tools }}
-      <h3>Build Tools</h3>
+      <h3>{{ i18n "buildTools" | default "Build Tools" }}</h3>
       <table class="license-table">
         <thead>
           <tr>
-            <th>Name</th>
-            <th>Version</th>
-            <th>License</th>
-            <th>Description</th>
+            <th>{{ i18n "name" | default "Name" }}</th>
+            <th>{{ i18n "version" | default "Version" }}</th>
+            <th>{{ i18n "license" | default "License" }}</th>
+            <th>{{ i18n "description" | default "Description" }}</th>
           </tr>
         </thead>
         <tbody>
@@ -66,14 +66,14 @@
       {{ end }}
 
       {{ with .libraries }}
-      <h3>Libraries</h3>
+      <h3>{{ i18n "libraries" | default "Libraries" }}</h3>
       <table class="license-table">
         <thead>
           <tr>
-            <th>Name</th>
-            <th>Version</th>
-            <th>License</th>
-            <th>Description</th>
+            <th>{{ i18n "name" | default "Name" }}</th>
+            <th>{{ i18n "version" | default "Version" }}</th>
+            <th>{{ i18n "license" | default "License" }}</th>
+            <th>{{ i18n "description" | default "Description" }}</th>
           </tr>
         </thead>
         <tbody>
@@ -92,14 +92,14 @@
       {{ end }}
 
       {{ with .data_sources }}
-      <h3>Data Sources</h3>
+      <h3>{{ i18n "dataSources" | default "Data Sources" }}</h3>
       <table class="license-table">
         <thead>
           <tr>
-            <th>Name</th>
-            <th>Version</th>
-            <th>License</th>
-            <th>Description</th>
+            <th>{{ i18n "name" | default "Name" }}</th>
+            <th>{{ i18n "version" | default "Version" }}</th>
+            <th>{{ i18n "license" | default "License" }}</th>
+            <th>{{ i18n "description" | default "Description" }}</th>
           </tr>
         </thead>
         <tbody>
@@ -120,7 +120,7 @@
     {{ end }}
 
     <!-- Bible License breakdown -->
-    <h2>Bible Translation Licenses</h2>
+    <h2>{{ i18n "bibleTranslationLicenses" | default "Bible Translation Licenses" }}</h2>
     {{ range .Pages }}
     {{ $licenseId := .Params.licenseId }}
     {{ $bibles := slice }}
@@ -133,19 +133,19 @@
     <section class="panel--inner license-section">
       <div class="row row--space-between gap-1">
         <div>
-          <h3 style="margin: 0;">
+          <h3 class="mt-0 mb-0">
             <a href="{{ .RelPermalink }}">{{ .Title }}</a>
           </h3>
-          <p class="muted" style="margin: 4px 0 0 0;">
+          <p class="muted mt-xs mb-0">
             SPDX: <code>{{ .Params.licenseId }}</code>
             {{ if .Params.isOsiApproved }}
-            <span class="badge badge--success" style="margin-left: 8px;">OSI Approved</span>
+            <span class="badge badge--success ml-1">OSI Approved</span>
             {{ end }}
           </p>
         </div>
         <div>
           <a href="{{ .RelPermalink }}" class="btn btn--sm">
-            View Details
+            {{ i18n "viewDetails" | default "View Details" }}
           </a>
         </div>
       </div>
@@ -155,9 +155,9 @@
         <table class="license-table">
           <thead>
             <tr>
-              <th>Translation</th>
-              <th>Abbreviation</th>
-              <th>Language</th>
+              <th>{{ i18n "tableTranslation" | default "Translation" }}</th>
+              <th>{{ i18n "abbreviation" | default "Abbreviation" }}</th>
+              <th>{{ i18n "language" | default "Language" }}</th>
             </tr>
           </thead>
           <tbody>
@@ -179,9 +179,9 @@
 
     <!-- Export options -->
     <section class="panel--inner license-section">
-      <h3 class="mt-0">Export SBOM</h3>
-      <p class="muted">Download the full Software Bill of Materials in standard formats:</p>
-      <div class="row gap-1" style="flex-wrap: wrap;">
+      <h3 class="mt-0">{{ i18n "exportSbom" | default "Export SBOM" }}</h3>
+      <p class="muted">{{ i18n "exportSbomDescription" | default "Download the full Software Bill of Materials in standard formats:" }}</p>
+      <div class="row row--wrap gap-1">
         <a href="/downloads/sbom/sbom.spdx.json" class="btn btn--secondary" download>
           SPDX JSON
         </a>
@@ -199,7 +199,7 @@
 
     <nav class="actions">
       <a href="/bible/" class="btn">
-        &larr; All Bibles
+        &larr; {{ i18n "allBibles" | default "All Bibles" }}
       </a>
     </nav>
   </div>

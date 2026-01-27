@@ -55,4 +55,15 @@
   --state-error: #d32f2f;
   --state-error-bg: #ffebee;
   --state-loading: var(--brand-500);
+
+  /* Success text color */
+  --success-text: #1d3a0a;
+
+  /* Toast background colors */
+  --toast-success-bg: #1d3a0a;
+  --toast-warning-bg: #5c4100;
+  --toast-error-bg: #5c1a1a;
+
+  /* Surface alpha (semi-transparent white) */
+  --surface-alpha: rgba(255,255,255,.55);
 }

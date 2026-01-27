@@ -135,6 +135,18 @@
    */
   let normalHighlightEnabled = false;
 
+  /**
+   * Guard flag to prevent concurrent loadComparison calls
+   * @type {boolean}
+   */
+  let isLoadingComparison = false;
+
+  /**
+   * Pending requestAnimationFrame ID for syncSSSVerseHeights
+   * @type {number|null}
+   */
+  let pendingSyncRAF = null;
+
   // Note: Chapter cache now managed by window.Michael.BibleAPI
 
   /**
@@ -624,6 +636,8 @@
     if (canLoadComparison()) {
       loadComparison().then(() => {
         populateVerseGrid();
+      }).catch(error => {
+        console.error('Failed to load comparison after translation change:', error);
       });
     }
   }
@@ -662,6 +676,8 @@
     if (canLoadComparison()) {
       loadComparison().then(() => {
         populateVerseGrid();
+      }).catch(error => {
+        console.error('Failed to load comparison after book change:', error);
       });
     } else {
       resetVerseGrid();
@@ -728,6 +744,8 @@
     if (canLoadComparison()) {
       loadComparison().then(() => {
         populateVerseGrid();
+      }).catch(error => {
+        console.error('Failed to load comparison after chapter change:', error);
       });
     } else {
       resetVerseGrid();
@@ -746,10 +764,15 @@
       return Promise.resolve();
     }
 
-    // Clear Strong's notes when loading new chapter
-    if (window.Michael?.Strongs?.clearNotes) {
-      window.Michael.Strongs.clearNotes();
-    }
+    // Prevent concurrent calls
+    if (isLoadingComparison) return Promise.resolve();
+    isLoadingComparison = true;
+
+    try {
+      // Clear Strong's notes when loading new chapter
+      if (window.Michael?.Strongs?.clearNotes) {
+        window.Michael.Strongs.clearNotes();
+      }
 
     // Handle no translations selected
     if (selectedTranslations.length === 0) {
@@ -793,11 +816,14 @@
       }
     }
 
-    // Announce completion to screen readers
-    const bookInfo = bibleData.books.find(b => b.id === currentBook);
-    const bookName = bookInfo?.name || currentBook;
-    const verseInfo = currentVerse > 0 ? ` verse ${currentVerse}` : '';
-    announce(`${bookName} chapter ${currentChapter}${verseInfo} loaded with ${selectedTranslations.length} translation${selectedTranslations.length !== 1 ? 's' : ''}.`);
+      // Announce completion to screen readers
+      const bookInfo = bibleData.books.find(b => b.id === currentBook);
+      const bookName = bookInfo?.name || currentBook;
+      const verseInfo = currentVerse > 0 ? ` verse ${currentVerse}` : '';
+      announce(`${bookName} chapter ${currentChapter}${verseInfo} loaded with ${selectedTranslations.length} translation${selectedTranslations.length !== 1 ? 's' : ''}.`);
+    } finally {
+      isLoadingComparison = false;
+    }
   }
 
   /* ========================================================================
@@ -1187,6 +1213,8 @@
         if (canLoadComparison()) {
           loadComparison().then(() => {
             populateVerseGrid();
+          }).catch(error => {
+            console.error('Failed to load comparison after restoring state:', error);
           });
         }
       }
@@ -1526,8 +1554,14 @@
   function syncSSSVerseHeights() {
     if (!sssLeftPane || !sssRightPane) return;
 
+    // Cancel any pending RAF to prevent pileup
+    if (pendingSyncRAF) {
+      cancelAnimationFrame(pendingSyncRAF);
+      pendingSyncRAF = null;
+    }
+
     // Use requestAnimationFrame to ensure layout is complete before measuring
-    requestAnimationFrame(() => {
+    pendingSyncRAF = requestAnimationFrame(() => {
       const leftVerses = sssLeftPane.querySelectorAll('.parallel-verse');
       const rightVerses = sssRightPane.querySelectorAll('.parallel-verse');
 
@@ -1545,6 +1579,7 @@
             rightVerse.style.minHeight = maxHeight + 'px';
           }
         });
+        pendingSyncRAF = null;
       });
     });
   }
@@ -1794,7 +1829,7 @@
           // It's a word (possibly with punctuation)
           const cleanWord = word.toLowerCase().replace(/[.,;:!?'"]/g, '');
           if (diffWordsLower.has(cleanWord)) {
-            return `<span class="diff-insert">${word}</span>`;
+            return `<span class="diff-insert">${escapeHtml(word)}</span>`;
           }
         }
         return match;
@@ -1874,7 +1909,7 @@
           // It's a word (possibly with punctuation)
           const cleanWord = word.toLowerCase().replace(/[.,;:!?'"]/g, '');
           if (diffWordsLower.has(cleanWord)) {
-            return `<span class="diff-insert">${word}</span>`;
+            return `<span class="diff-insert">${escapeHtml(word)}</span>`;
           }
         }
         return match;

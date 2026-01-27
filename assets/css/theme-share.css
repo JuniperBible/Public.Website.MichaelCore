@@ -129,17 +129,17 @@
 
 /* Toast type variants */
 .toast--success {
-  background: #1d3a0a;
+  background: var(--toast-success-bg);
   border-left: 4px solid var(--success-500);
 }
 
 .toast--warning {
-  background: #5c4100;
+  background: var(--toast-warning-bg);
   border-left: 4px solid #ffc107;
 }
 
 .toast--error {
-  background: #5c1a1a;
+  background: var(--toast-error-bg);
   border-left: 4px solid var(--state-error);
 }
 

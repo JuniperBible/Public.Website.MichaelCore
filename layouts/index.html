@@ -15,7 +15,7 @@
 
     {{ with $biblesPage }}
     <section>
-      <h2>Bible Translations</h2>
+      <h2>{{ i18n "bibles" | default "Bible Translations" }}</h2>
       <div class="grid-2 bible-grid">
         {{ range (partialCached "michael/bible-data.html" .Site) }}
         <div class="card">
@@ -31,7 +31,7 @@
         {{ end }}
       </div>
       <nav class="actions">
-        <a href="{{ .RelPermalink }}" class="btn btn--primary">View All Bibles</a>
+        <a href="{{ .RelPermalink }}" class="btn btn--primary">{{ i18n "viewAllBibles" | default "View All Bibles" }}</a>
       </nav>
     </section>
     {{ end }}

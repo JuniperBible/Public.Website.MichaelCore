@@ -73,6 +73,12 @@
   // ============================================================================
 
   /**
+   * Active toast timeout ID for cleanup
+   * @type {number|null}
+   */
+  let activeToastTimeout = null;
+
+  /**
    * Check if the browser is currently online
    * @returns {boolean} True if online, false otherwise
    */
@@ -86,6 +92,12 @@
    * @param {number} duration - Duration in milliseconds (default: 3000)
    */
   function showToast(message, duration = 3000) {
+    // Clear any existing timeout to prevent pileup
+    if (activeToastTimeout) {
+      clearTimeout(activeToastTimeout);
+      activeToastTimeout = null;
+    }
+
     // Remove any existing toast
     const existingToast = document.querySelector('.share-toast');
     if (existingToast) {
@@ -108,10 +120,11 @@
     });
 
     // Remove after duration
-    setTimeout(() => {
+    activeToastTimeout = setTimeout(() => {
       toast.classList.remove('share-toast--visible');
       setTimeout(() => {
         toast.remove();
+        activeToastTimeout = null;
       }, 300);
     }, duration);
   }

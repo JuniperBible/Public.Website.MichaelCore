@@ -31,8 +31,11 @@
       {{- $bookHasContent := false -}}
       {{- range .chapters -}}
         {{- range .verses -}}
-          {{- if gt (len .text) 50 -}}
-            {{- $bookHasContent = true -}}
+          {{/* Content check: repeated at book and chapter level (gotmpl limitation) */}}
+          {{- with .text -}}
+            {{- if gt (len .) 50 -}}
+              {{- $bookHasContent = true -}}
+            {{- end -}}
           {{- end -}}
         {{- end -}}
       {{- end -}}
@@ -86,8 +89,10 @@
       {{- range .chapters -}}
         {{- $chapterHasContent := false -}}
         {{- range .verses -}}
-          {{- if gt (len .text) 50 -}}
-            {{- $chapterHasContent = true -}}
+          {{- with .text -}}
+            {{- if gt (len .) 50 -}}
+              {{- $chapterHasContent = true -}}
+            {{- end -}}
           {{- end -}}
         {{- end -}}
         {{- if $chapterHasContent -}}
@@ -132,8 +137,10 @@
           {{/* Check if chapter has real content */}}
           {{- $chapterHasContent := false -}}
           {{- range .verses -}}
-            {{- if gt (len .text) 50 -}}
-              {{- $chapterHasContent = true -}}
+            {{- with .text -}}
+              {{- if gt (len .) 50 -}}
+                {{- $chapterHasContent = true -}}
+              {{- end -}}
             {{- end -}}
           {{- end -}}
 

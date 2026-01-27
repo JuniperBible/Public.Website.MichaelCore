@@ -14,7 +14,7 @@
 */}}
 {{- $site := .site -}}
 {{- $id := .id -}}
-{{- $label := .label | default "Bible..." -}}
+{{- $label := .label | default (i18n "biblePlaceholder" | default "Bible...") -}}
 {{- $class := .class | default "select w-auto" -}}
 <label for="{{ $id }}" class="sr-only">{{ i18n "selectBible" | default "Select Bible" }}</label>
 <select id="{{ $id }}" class="{{ $class }}" aria-label="{{ i18n "selectBible" | default "Select Bible" }}">

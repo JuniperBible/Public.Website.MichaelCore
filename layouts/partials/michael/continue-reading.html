@@ -7,11 +7,11 @@
 
   Usage: {{ partial "michael/continue-reading.html" . }}
 */}}
-<div id="continue-reading" class="continue-reading" style="display: none;" role="region" aria-label="Continue reading">
+<div id="continue-reading" class="continue-reading hidden" role="region" aria-label="Continue reading">
   <div class="continue-reading__content">
-    <span class="continue-reading__label">Continue Reading</span>
+    <span class="continue-reading__label">{{ i18n "continueReading" | default "Continue Reading" }}</span>
     <a id="continue-reading-link" href="#" class="continue-reading__chapter">
-      <span id="continue-reading-title">Loading...</span>
+      <span id="continue-reading-title">{{ i18n "loading" | default "Loading..." }}</span>
       <span class="continue-reading__arrow" aria-hidden="true">&rarr;</span>
     </a>
   </div>
@@ -64,7 +64,7 @@
 
       link.href = url;
       title.textContent = displayTitle;
-      container.style.display = '';
+      container.classList.remove('hidden');
 
       // Announce to screen readers
       container.setAttribute('aria-live', 'polite');
@@ -75,7 +75,7 @@
     // Handle dismiss
     if (dismissBtn) {
       dismissBtn.addEventListener('click', () => {
-        container.style.display = 'none';
+        container.classList.add('hidden');
         sessionStorage.setItem('continue-reading-dismissed', 'true');
       });
     }

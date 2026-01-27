@@ -1,7 +1,7 @@
 # Michael - Hugo Bible Module
 # https://github.com/FocuswithJustin/michael
 
-.PHONY: dev dev-hugo dev-caddy kill-dev build clean help vendor vendor-fetch vendor-convert vendor-package vendor-restore juniper caddy hugo sbom ensure-data test test-compare test-search test-single test-offline test-mobile test-keyboard check push sync-submodules fmt lint info
+.PHONY: dev dev-hugo dev-caddy kill-dev build clean help vendor vendor-fetch vendor-convert vendor-package vendor-restore juniper caddy hugo sbom ensure-data test test-compare test-search test-single test-offline test-mobile test-keyboard test-pwa check push sync-submodules fmt lint info
 
 # Bible modules to vendor
 BIBLES := KJVA DRC Tyndale Coverdale Geneva1599 WEB Vulgate SBLGNT LXX ASV OSMHB
@@ -11,6 +11,7 @@ JUNIPER := tools/juniper
 SWORD_DIR := $(HOME)/.sword
 DATA_DIR := data/example
 ASSETS_DIR := assets/downloads
+PORT ?= 1313
 
 # Detect current branch
 BRANCH := $(shell git rev-parse --abbrev-ref HEAD)
@@ -60,16 +61,16 @@ HUGO := $(shell test -x tools/hugo/hugo && echo ./tools/hugo/hugo || echo hugo)
 # Caddy binary - use local build if available, else system caddy
 CADDY := $(shell test -x tools/caddy/cmd/caddy/caddy && echo ./tools/caddy/cmd/caddy/caddy || echo caddy)
 
-# Kill any running dev servers on port 1313
+# Kill any running dev servers on port $(PORT)
 kill-dev:
-	@-lsof -ti:1313 | xargs -r kill 2>/dev/null || true
+	@-lsof -ti:$(PORT) | xargs -r kill 2>/dev/null || true
 
 # Default dev: alias to dev-caddy
 dev: dev-caddy
 
 # Caddy dev server: build site and serve with Caddy (production-like, HTTP only)
 dev-caddy: kill-dev sync-submodules caddy build
-	@echo "Starting Caddy server on http://localhost:1313"
+	@echo "Starting Caddy server on http://localhost:$(PORT)"
 	@echo "Press Ctrl+C to stop"
 	$(CADDY) run --config Caddyfile
 
@@ -184,14 +185,14 @@ sbom:
 # Run all regression tests (starts Hugo server automatically)
 test:
 	@echo "Starting Hugo server for tests..."
-	@hugo server --port 1313 --buildDrafts &
+	@hugo server --port $(PORT) --buildDrafts &
 	@sleep 3
 	@echo "Running regression tests..."
 	@cd tests && go test -v ./regression/... || (pkill -f "hugo server" && exit 1)
 	@pkill -f "hugo server" || true
 	@echo "Tests complete!"
 
-# Run individual test suites (assumes Hugo is running on port 1313)
+# Run individual test suites (assumes Hugo is running on port $(PORT))
 test-compare:
 	cd tests && go test -v ./regression/ -run TestCompare
 
@@ -283,11 +284,9 @@ sync-submodules:
 	@cd tools/caddy && git checkout master && git pull origin master
 	@if [ "$(BRANCH)" = "main" ]; then \
 		cd tools/juniper && git checkout main && git pull origin main; \
-		cd ../magellan && git checkout main && git pull origin main; \
 		echo "Submodules synced to main branches"; \
 	elif [ "$(BRANCH)" = "development" ]; then \
 		cd tools/juniper && git checkout development && git pull origin development; \
-		cd ../magellan && git checkout development && git pull origin development; \
 		echo "Submodules synced to development branches"; \
 	else \
 		echo "Unknown branch $(BRANCH) - skipping submodule sync"; \
@@ -311,7 +310,6 @@ fmt:
 	@echo "Formatting Go code..."
 	@cd tests && go fmt ./...
 	@cd tools/juniper && go fmt ./...
-	@cd tools/magellan && go fmt ./...
 	@echo "Done."
 
 # Run linters

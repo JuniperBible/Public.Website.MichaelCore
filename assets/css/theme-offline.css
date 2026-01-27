@@ -324,7 +324,7 @@
 .offline-message--success {
   background: rgba(54, 176, 0, 0.1);
   border-color: var(--success-500);
-  color: #1d3a0a;
+  color: var(--success-text);
 }
 
 .offline-message--error {
