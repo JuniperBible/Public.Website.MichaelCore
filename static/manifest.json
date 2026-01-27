@@ -6,7 +6,7 @@
   "scope": "/",
   "display": "standalone",
   "display_override": ["standalone", "minimal-ui"],
-  "orientation": "portrait-primary",
+  "orientation": "any",
   "theme_color": "#7a00b0",
   "background_color": "#e7ddc4",
   "lang": "en",
@@ -16,6 +16,11 @@
     "client_mode": "navigate-existing"
   },
   "handle_links": "preferred",
+  "window": {
+    "default_width": 800,
+    "default_height": 900,
+    "resizable": true
+  },
   "icons": [
     {
       "src": "/icons/icon-192.png",
