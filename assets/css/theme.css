@@ -157,8 +157,20 @@ body.pwa-standalone .chrome {
   flex-shrink: 0;
 }
 
-body.pwa-standalone footer {
+/* Hide full footer navigation in PWA mode, show only copyright */
+body.pwa-standalone footer.chrome {
+  display: none;
+}
+
+body.pwa-standalone .footer-copyright {
   flex-shrink: 0;
+  padding: 4px 0;
+}
+
+body.pwa-standalone .footer-copyright p {
+  padding: 4px 0 !important;
+  font-size: 0.75rem !important;
+  margin: 0;
 }
 
 body > main {
