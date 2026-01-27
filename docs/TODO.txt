@@ -415,4 +415,39 @@ PROGRESS LOG
   - static/offline.html (Michael branding, logo, theme colors)
   - assets/css/theme.css (continue-reading styles)
 
+[2026-01-26] PWA Production Finalization COMPLETED
+  - PWA standalone mode: 100% viewport height, footer nav hidden
+  - Added notification permission request after install
+  - Added run-on-login permission request (Chromium 120+)
+  - Updated manifest.json with launch_handler and handle_links
+  - Fixed PWA standalone detection (moved script to end of body)
+  - Complete service worker pre-cache list (all 20 JS modules)
+
+  Service Worker Pre-cached Assets:
+  - Core: /, /offline.html, /manifest.json
+  - Icons: icon-192.png, icon-512.png, apple-touch-icon.png
+  - CSS: theme.css (fingerprinted)
+  - JS modules:
+    * bible-api.js, dom-utils.js, share-menu.js
+    * offline-manager.js, offline-settings-ui.js
+    * pwa-install.js, user-storage.js, reading-tracker.js
+    * bible-nav.js, chapter-dropdown.js, footnotes.js
+    * show-more.js, diff-highlight.js, verse-grid.js
+    * sss-mode.js, share.js, strongs.js
+    * bible-search.js, text-compare.js, parallel.js
+
+  PWA Features Complete:
+  [x] Web App Manifest with icons, shortcuts, categories
+  [x] Service Worker with cache-first/network-first strategies
+  [x] Offline fallback page with dynamic cached chapter list
+  [x] Background Sync for resilient Bible downloads
+  [x] IndexedDB storage for reading progress, bookmarks, settings
+  [x] Reading streak tracking
+  [x] Continue Reading feature on home page
+  [x] Install prompt with iOS-specific instructions
+  [x] Notification permission request
+  [x] Run-on-login permission (experimental)
+  [x] 100% viewport in standalone mode
+  [x] Safe area insets for notched devices
+
 ================================================================================

@@ -55,8 +55,16 @@ const SHELL_ASSETS = [
   '/js/michael/reading-tracker.js',
   '/js/michael/bible-nav.js',
   '/js/michael/chapter-dropdown.js',
+  '/js/michael/footnotes.js',
+  '/js/michael/show-more.js',
+  '/js/michael/diff-highlight.js',
+  '/js/michael/verse-grid.js',
+  '/js/michael/sss-mode.js',
   '/js/share.js',
   '/js/strongs.js',
+  '/js/bible-search.js',
+  '/js/text-compare.js',
+  '/js/parallel.js',
 ];
 
 // Default chapters to pre-cache for offline reading
