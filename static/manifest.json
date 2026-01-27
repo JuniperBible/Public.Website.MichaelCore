@@ -19,7 +19,7 @@
   "window": {
     "default_width": 800,
     "default_height": 1000,
-    "resizable": false
+    "resizable": true
   },
   "icons": [
     {

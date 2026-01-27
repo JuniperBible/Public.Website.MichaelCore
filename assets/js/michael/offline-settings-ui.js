@@ -104,8 +104,8 @@
    * @param {Object} OfflineManager - The OfflineManager instance
    */
   async function handleDownloadBibles(OfflineManager) {
-    // Get selected Bibles that are not disabled (not already cached)
-    const checkboxes = document.querySelectorAll('.bible-download-checkbox:checked:not(:disabled)');
+    // Get all selected Bibles
+    const checkboxes = document.querySelectorAll('.bible-download-checkbox:checked');
 
     if (checkboxes.length === 0) {
       showMessage('Please select at least one Bible to download', 'error');
@@ -235,18 +235,14 @@
         const status = await OfflineManager.getBibleCacheStatus(bibleId, basePath);
 
         if (status.isFullyCached) {
-          // Disable checkbox, check it to show it's downloaded, show cached status
-          checkbox.disabled = true;
+          // Show cached state visually — keep checkbox interactive for deselection
           checkbox.checked = true;
-          checkbox.setAttribute('data-keep-disabled', 'true');
           updateBibleStatus(bibleId, '', 'is-cached');
           if (chip) {
             chip.classList.add('is-cached');
             cachedBibles.push(chip);
           }
         } else if (status.cachedChapters > 0) {
-          // Remove keep-disabled flag for partial caches
-          checkbox.removeAttribute('data-keep-disabled');
           // Show partial cache status with percentage if we know total, otherwise just count
           if (status.totalChapters > 0) {
             const percent = Math.round((status.cachedChapters / status.totalChapters) * 100);
@@ -260,7 +256,6 @@
           }
         } else {
           // Not cached - clear any previous status
-          checkbox.removeAttribute('data-keep-disabled');
           updateBibleStatus(bibleId, '', '');
           if (chip) {
             chip.classList.remove('is-cached');
@@ -343,10 +338,9 @@
       updateBibleStatus(detail.bible, '', 'is-cached');
       showMessage(`${detail.bible.toUpperCase()} downloaded successfully`, 'success');
 
-      // Disable the checkbox and check it to show it's downloaded
+      // Mark as cached visually — keep checkbox interactive
       const checkbox = document.querySelector(`.bible-download-checkbox[data-bible-id="${detail.bible}"]`);
       if (checkbox) {
-        checkbox.disabled = true;
         checkbox.checked = true;
 
         // Add cached class to chip
@@ -385,12 +379,11 @@
       const chips = document.querySelectorAll('.bible-chip.is-cached');
       chips.forEach(chip => chip.classList.remove('is-cached'));
 
-      // Re-enable all checkboxes and clear disabled markers
+      // Re-enable all checkboxes and uncheck
       const checkboxes = document.querySelectorAll('.bible-download-checkbox');
       checkboxes.forEach(cb => {
         cb.disabled = false;
         cb.checked = false;
-        cb.removeAttribute('data-keep-disabled');
       });
 
       // Re-enable clear button
@@ -466,7 +459,7 @@
   function setDownloadControlsEnabled(enabled) {
     const downloadBtn = document.getElementById('download-offline-btn');
     const clearBtn = document.getElementById('clear-cache-btn');
-    const checkboxes = document.querySelectorAll('.bible-download-checkbox:not([data-keep-disabled])');
+    const checkboxes = document.querySelectorAll('.bible-download-checkbox');
 
     if (downloadBtn) {
       downloadBtn.disabled = !enabled;
@@ -481,12 +474,8 @@
       clearBtn.disabled = !enabled;
     }
 
-    // Only enable/disable checkboxes that aren't marked to stay disabled
     checkboxes.forEach(cb => {
-      // Don't re-enable cached Bibles
-      if (!cb.hasAttribute('data-keep-disabled')) {
-        cb.disabled = !enabled;
-      }
+      cb.disabled = !enabled;
     });
   }
 

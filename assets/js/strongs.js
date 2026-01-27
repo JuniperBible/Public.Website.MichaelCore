@@ -703,12 +703,20 @@
    * - Changes anywhere in the document tree (subtree: true)
    */
   const observer = new MutationObserver((mutations) => {
+    let needsReprocess = false;
     mutations.forEach((mutation) => {
       if (mutation.addedNodes.length) {
-        // New content detected: scan for Strong's numbers
-        processStrongsNumbers();
+        needsReprocess = true;
+        // Clear processed flag on the mutated container so it gets re-scanned
+        const target = mutation.target;
+        if (target.dataset && target.dataset.strongsProcessed) {
+          delete target.dataset.strongsProcessed;
+        }
       }
     });
+    if (needsReprocess) {
+      processStrongsNumbers();
+    }
   });
 
   // Start observing the entire document body
