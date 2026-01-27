@@ -5,12 +5,17 @@
   "start_url": "/bible/",
   "scope": "/",
   "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
   "orientation": "portrait-primary",
   "theme_color": "#7a00b0",
   "background_color": "#e7ddc4",
   "lang": "en",
   "dir": "ltr",
   "categories": ["books", "education", "lifestyle"],
+  "launch_handler": {
+    "client_mode": "navigate-existing"
+  },
+  "handle_links": "preferred",
   "icons": [
     {
       "src": "/icons/icon-192.png",

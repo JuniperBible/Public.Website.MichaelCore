@@ -82,6 +82,89 @@
     // Clear dismissed state
     localStorage.removeItem(STORAGE_KEY_DISMISSED);
     localStorage.removeItem(STORAGE_KEY_DISMISSED_TIME);
+
+    // Request permissions after install (notifications, run on login)
+    showPostInstallPermissions();
+  }
+
+  /**
+   * Request notification permission
+   * Called after app installation to enable push notifications
+   */
+  async function requestNotificationPermission() {
+    if (!('Notification' in window)) {
+      console.log('[PWA Install] Notifications not supported');
+      return false;
+    }
+
+    if (Notification.permission === 'granted') {
+      console.log('[PWA Install] Notifications already granted');
+      return true;
+    }
+
+    if (Notification.permission === 'denied') {
+      console.log('[PWA Install] Notifications denied');
+      return false;
+    }
+
+    try {
+      const permission = await Notification.requestPermission();
+      console.log(`[PWA Install] Notification permission: ${permission}`);
+      return permission === 'granted';
+    } catch (error) {
+      console.error('[PWA Install] Error requesting notifications:', error);
+      return false;
+    }
+  }
+
+  /**
+   * Request run on OS login permission (Chromium-based browsers)
+   * This uses the experimental Run On OS Login API
+   */
+  async function requestRunOnLogin() {
+    // Check if the API is available (Chromium 120+)
+    if (!('launchQueue' in window) || !navigator.runOnOsLoginEnabled) {
+      console.log('[PWA Install] Run on OS login API not available');
+      return false;
+    }
+
+    try {
+      // Request permission to run on OS login
+      const result = await navigator.permissions.query({ name: 'run-on-os-login' });
+
+      if (result.state === 'granted') {
+        console.log('[PWA Install] Run on OS login already granted');
+        return true;
+      }
+
+      if (result.state === 'prompt') {
+        // This will show a permission dialog
+        const permission = await navigator.permissions.request({ name: 'run-on-os-login' });
+        console.log(`[PWA Install] Run on OS login: ${permission.state}`);
+        return permission.state === 'granted';
+      }
+
+      return false;
+    } catch (error) {
+      // API not supported or permission denied
+      console.log('[PWA Install] Run on OS login not supported:', error.message);
+      return false;
+    }
+  }
+
+  /**
+   * Show post-install permissions dialog
+   * Asks for notifications and run-on-login after app installation
+   */
+  async function showPostInstallPermissions() {
+    // Small delay to let the install complete
+    await new Promise(resolve => setTimeout(resolve, 1000));
+
+    // Request notification permission
+    await requestNotificationPermission();
+
+    // Try to request run on login (if supported)
+    await requestRunOnLogin();
   }
 
   /**
@@ -236,7 +319,9 @@
     canInstall,
     triggerInstallPrompt,
     isPWAInstalled,
-    isIOS
+    isIOS,
+    requestNotificationPermission,
+    requestRunOnLogin
   };
 
 })();
