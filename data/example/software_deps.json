@@ -37,7 +37,17 @@
       "purpose": "APPLICATION"
     }
   ],
-  "libraries": [],
+  "libraries": [
+    {
+      "name": "Patrick Hand",
+      "version": "25",
+      "license": "OFL-1.1",
+      "supplier": "PERSON: Patrick Wagesreiter",
+      "downloadLocation": "https://fonts.google.com/specimen/Patrick+Hand",
+      "description": "Handwritten font used for headings and UI elements",
+      "purpose": "LIBRARY"
+    }
+  ],
   "data_sources": [
     {
       "name": "SPDX License List",

@@ -2,10 +2,10 @@
   "$schema": "http://cyclonedx.org/schema/bom-1.6.schema.json",
   "bomFormat": "CycloneDX",
   "specVersion": "1.6",
-  "serialNumber": "urn:uuid:5c7f1149-47e1-42d3-a283-3e584c134c1b",
+  "serialNumber": "urn:uuid:34cdb98c-b042-4747-af15-9f408c41928c",
   "version": 1,
   "metadata": {
-    "timestamp": "2026-01-26T22:13:41-05:00",
+    "timestamp": "2026-01-27T01:06:29-05:00",
     "tools": {
       "components": [
         {
@@ -20,7 +20,7 @@
       "bom-ref": "ad204b3b2edbeeb1",
       "type": "file",
       "name": "michael",
-      "version": "65b4727"
+      "version": "f4f2384"
     }
   },
   "components": [
@@ -34216,6 +34216,25 @@
         {
           "type": "website",
           "url": "NOASSERTION"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "Patrick Hand",
+      "version": "25",
+      "description": "Handwritten font used for headings and UI elements",
+      "licenses": [
+        {
+          "license": {
+            "id": "OFL-1.1"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://fonts.google.com/specimen/Patrick+Hand"
         }
       ]
     }
