@@ -42,6 +42,7 @@ help:
 	@echo "  make test-offline  Run offline/PWA tests"
 	@echo "  make test-mobile   Run mobile touch tests"
 	@echo "  make test-keyboard Run keyboard navigation tests"
+	@echo "  make test-pwa      Run PWA-specific tests (manifest, SW, install)"
 	@echo ""
 	@echo "Tools & Vendor:"
 	@echo "  make vendor         Full vendor workflow (fetch + convert + package)"
@@ -209,6 +210,9 @@ test-mobile:
 
 test-keyboard:
 	cd tests && go test -v ./regression/ -run TestKeyboard
+
+test-pwa:
+	cd tests && go test -v ./regression/ -run "TestManifest|TestPWA|TestServiceWorker|TestInstall|TestUserStorage|TestReadingTracker|TestBackgroundSync"
 
 # ============================================================================
 # Quality Checks

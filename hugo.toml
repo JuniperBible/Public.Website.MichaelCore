@@ -26,8 +26,15 @@ languageCode = "en"
   baseName = "sbom"
   isPlainText = true
 
+# Output format for Service Worker (generated with fingerprinted asset paths)
+[outputFormats.SW]
+  mediaType = "text/javascript"
+  baseName = "sw"
+  isPlainText = true
+  notAlternative = true
+
 [outputs]
-  home = ["HTML", "RSS"]
+  home = ["HTML", "RSS", "SW"]
   section = ["HTML", "RSS"]
   page = ["HTML"]
 

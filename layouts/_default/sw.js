@@ -1,3 +1,13 @@
+{{/*
+  Template: sw.js
+  Purpose: Service Worker generated at build time with correct asset hashes
+
+  This template is processed by Hugo to embed fingerprinted asset paths
+  directly into the service worker. This solves the problem of CSS files
+  being fingerprinted but the SW having hardcoded paths.
+*/}}
+{{- $theme := resources.Get "css/theme.css" | minify | fingerprint -}}
+{{- $hash := substr $theme.Data.Integrity 0 12 | replaceRE "[^a-zA-Z0-9]" "" -}}
 /**
  * Service Worker for Michael Bible Module
  *
@@ -10,28 +20,34 @@
  * - Shell assets: Pre-cached on install (CSS, JS)
  * - Chapter pages: Cached on-demand as users browse
  * - Offline fallback: Pre-cached for when all else fails
+ *
+ * Generated at build time by Hugo to include fingerprinted asset paths.
  */
 
-// Cache version - increment to force cache refresh
-const CACHE_VERSION = '2';
+// Cache version - derived from theme CSS hash for automatic invalidation
+const CACHE_VERSION = '{{ $hash }}';
 const SHELL_CACHE = `michael-shell-v${CACHE_VERSION}`;
-const CHAPTERS_CACHE = `michael-chapters-v${CACHE_VERSION}`;
+const CHAPTERS_CACHE = 'michael-chapters-v3';
 const OFFLINE_URL = '/offline.html';
 
 // Track active download operations for cancellation
 const activeDownloads = new Map(); // bibleId -> AbortController
 
 // Assets to pre-cache on install
-// Note: CSS files use content hashing, so paths will change on content updates
+// CSS files are now embedded with their fingerprinted paths by Hugo
 const SHELL_ASSETS = [
   '/',
   OFFLINE_URL,
-  // CSS files - these paths will need to be updated when CSS changes
-  // The service worker will cache whatever CSS is currently loaded
-  // JS files - these are also content-hashed
+  '/manifest.json',
+  '/icons/icon-192.png',
+  '/icons/icon-512.png',
+  // CSS with fingerprinted path from Hugo
+  '{{ $theme.RelPermalink }}',
+  // JS files
   '/js/michael/bible-api.js',
   '/js/michael/dom-utils.js',
   '/js/michael/share-menu.js',
+  '/js/michael/offline-manager.js',
   '/js/share.js',
   '/js/strongs.js',
 ];
@@ -106,7 +122,7 @@ self.addEventListener('activate', (event) => {
         // Get all cache names
         const cacheNames = await caches.keys();
 
-        // Delete old caches
+        // Delete old caches (keep current shell and chapters caches)
         const cacheWhitelist = [SHELL_CACHE, CHAPTERS_CACHE];
         const deletionPromises = cacheNames
           .filter(cacheName => !cacheWhitelist.includes(cacheName))
@@ -703,5 +719,55 @@ async function getBibleCacheStatus(bibleId, basePath) {
     return { bibleId, cachedChapters: 0, cachedBooks: 0, hasBibleOverview: false, isFullyCached: false };
   }
 }
+
+/**
+ * Background Sync Event Handler
+ * Handles queued Bible downloads when the device comes back online
+ */
+self.addEventListener('sync', (event) => {
+  console.log('[Service Worker] Sync event:', event.tag);
+
+  if (event.tag.startsWith('download-bible-')) {
+    const bibleId = event.tag.replace('download-bible-', '');
+    console.log(`[Service Worker] Background sync for Bible: ${bibleId}`);
+
+    event.waitUntil(
+      (async () => {
+        try {
+          // Default base path for Bible URLs
+          const basePath = '/bible';
+
+          // Cache the Bible
+          await cacheBible(bibleId, basePath);
+
+          // Notify clients that background sync completed
+          const clients = await self.clients.matchAll();
+          clients.forEach(client => {
+            client.postMessage({
+              type: 'BACKGROUND_SYNC_COMPLETE',
+              data: { bible: bibleId, success: true }
+            });
+          });
+
+          console.log(`[Service Worker] Background sync completed for ${bibleId}`);
+        } catch (error) {
+          console.error(`[Service Worker] Background sync failed for ${bibleId}:`, error);
+
+          // Notify clients of failure
+          const clients = await self.clients.matchAll();
+          clients.forEach(client => {
+            client.postMessage({
+              type: 'BACKGROUND_SYNC_COMPLETE',
+              data: { bible: bibleId, success: false, error: error.message }
+            });
+          });
+
+          // Re-throw to let the sync manager know it failed (will retry)
+          throw error;
+        }
+      })()
+    );
+  }
+});
 
 console.log('[Service Worker] Script loaded');

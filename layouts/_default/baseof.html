@@ -29,6 +29,16 @@
   {{/* Focus with Justin — Starter Theme */}}
   {{ $theme := resources.Get "css/theme.css" | minify | fingerprint }}
   <link rel="stylesheet" href="{{ $theme.RelPermalink }}" integrity="{{ $theme.Data.Integrity }}">
+
+  {{/* PWA Support */}}
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#7a00b0">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Michael">
+  <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/icons/icon-32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/icons/icon-16.png">
 </head>
 <body>
   {{ partial "header.html" . }}
@@ -42,5 +52,8 @@
 
   {{/* Service Worker registration */}}
   {{ partial "michael/sw-register.html" . }}
+
+  {{/* PWA Install Banner */}}
+  {{ partial "michael/pwa-install-banner.html" . }}
 </body>
 </html>

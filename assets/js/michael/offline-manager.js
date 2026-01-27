@@ -544,6 +544,152 @@ window.Michael.OfflineManager = (function() {
   }
 
   /**
+   * Checks if the browser supports background sync.
+   *
+   * @returns {boolean} True if background sync is supported
+   *
+   * @example
+   * if (OfflineManager.isBackgroundSyncSupported()) {
+   *   console.log('Background sync available');
+   * }
+   */
+  function isBackgroundSyncSupported() {
+    return 'serviceWorker' in navigator && 'SyncManager' in window;
+  }
+
+  /**
+   * Queues a Bible download for background sync.
+   *
+   * When the user is offline or the download fails, this method queues the
+   * download to be retried automatically when the device comes back online.
+   * The download will complete even if the user closes the app.
+   *
+   * @param {string} bibleId - Bible translation ID (e.g., "kjv", "asv", "web")
+   * @param {string} basePath - Base path for Bible URLs (e.g., "/bible")
+   * @returns {Promise<boolean>} True if queued successfully, false if not supported
+   *
+   * @example
+   * const queued = await OfflineManager.queueBackgroundDownload('kjv', '/bible');
+   * if (queued) {
+   *   console.log('Download will complete when online');
+   * }
+   */
+  async function queueBackgroundDownload(bibleId, basePath = '/bible') {
+    if (!isBackgroundSyncSupported()) {
+      console.warn('Background Sync is not supported');
+      return false;
+    }
+
+    try {
+      const registration = await navigator.serviceWorker.ready;
+
+      // Store pending download info in localStorage for the SW to pick up
+      const pendingKey = `michael-pending-download-${bibleId}`;
+      localStorage.setItem(pendingKey, JSON.stringify({ bibleId, basePath, queuedAt: Date.now() }));
+
+      // Register a background sync task
+      await registration.sync.register(`download-bible-${bibleId}`);
+
+      console.log(`[Offline Manager] Queued background sync for ${bibleId}`);
+
+      // Fire event to notify UI
+      const queuedEvent = new CustomEvent('download-queued', {
+        detail: {
+          bible: bibleId,
+          basePath
+        }
+      });
+      eventTarget.dispatchEvent(queuedEvent);
+
+      return true;
+    } catch (error) {
+      console.error('Failed to queue background download:', error);
+      return false;
+    }
+  }
+
+  /**
+   * Downloads a Bible with automatic background sync fallback.
+   *
+   * Attempts a normal download first. If it fails due to network issues,
+   * automatically queues it for background sync (if supported).
+   *
+   * @param {string} bibleId - Bible translation ID (e.g., "kjv", "asv", "web")
+   * @param {string} basePath - Base path for Bible URLs (e.g., "/bible")
+   * @returns {Promise<{success: boolean, queued: boolean, error?: string}>}
+   *
+   * @example
+   * const result = await OfflineManager.downloadBibleWithSync('kjv', '/bible');
+   * if (result.success) {
+   *   console.log('Downloaded successfully');
+   * } else if (result.queued) {
+   *   console.log('Queued for background download');
+   * } else {
+   *   console.error('Failed:', result.error);
+   * }
+   */
+  async function downloadBibleWithSync(bibleId, basePath = '/bible') {
+    try {
+      await downloadBible(bibleId, basePath);
+      return { success: true, queued: false };
+    } catch (error) {
+      // Check if it's a network error
+      if (error.message.includes('network') ||
+          error.message.includes('timeout') ||
+          error.message.includes('fetch') ||
+          !navigator.onLine) {
+
+        // Try to queue for background sync
+        if (isBackgroundSyncSupported()) {
+          const queued = await queueBackgroundDownload(bibleId, basePath);
+          if (queued) {
+            return { success: false, queued: true };
+          }
+        }
+      }
+
+      return { success: false, queued: false, error: error.message };
+    }
+  }
+
+  /**
+   * Gets the list of pending background sync downloads.
+   *
+   * @returns {Array<{bibleId: string, basePath: string, queuedAt: number}>}
+   *
+   * @example
+   * const pending = OfflineManager.getPendingDownloads();
+   * pending.forEach(item => {
+   *   console.log(`${item.bibleId} queued at ${new Date(item.queuedAt)}`);
+   * });
+   */
+  function getPendingDownloads() {
+    const pending = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key && key.startsWith('michael-pending-download-')) {
+        try {
+          const data = JSON.parse(localStorage.getItem(key));
+          pending.push(data);
+        } catch (e) {
+          // Invalid data, skip
+        }
+      }
+    }
+    return pending;
+  }
+
+  /**
+   * Clears a pending background sync download.
+   *
+   * @param {string} bibleId - Bible translation ID to clear
+   */
+  function clearPendingDownload(bibleId) {
+    const pendingKey = `michael-pending-download-${bibleId}`;
+    localStorage.removeItem(pendingKey);
+  }
+
+  /**
    * Gets the cache status for a specific Bible translation.
    *
    * Returns information about how many chapters are cached for this Bible
@@ -644,11 +790,16 @@ window.Michael.OfflineManager = (function() {
     getCacheStatus,
     getBibleCacheStatus,
     downloadBible,
+    downloadBibleWithSync,
+    queueBackgroundDownload,
     cancelDownload,
     clearCache,
     getDownloadProgress,
+    getPendingDownloads,
+    clearPendingDownload,
     addEventListener,
     removeEventListener,
-    isSupported
+    isSupported,
+    isBackgroundSyncSupported
   };
 })();

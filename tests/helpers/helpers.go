@@ -200,3 +200,79 @@ func ExpectOptionCount(t *testing.T, b *e2e.Browser, selector string, minCount i
 		t.Errorf("Expected %s to have at least %d options, but found %d", selector, minCount, count)
 	}
 }
+
+// =============================================================================
+// PWA Test Helpers
+// =============================================================================
+
+// WaitForServiceWorker waits for the service worker to be registered and active.
+func WaitForServiceWorker(t *testing.T, b *e2e.Browser) {
+	t.Helper()
+	// Wait up to 10 seconds for SW to activate
+	for i := 0; i < 20; i++ {
+		time.Sleep(500 * time.Millisecond)
+		result, err := b.Evaluate(`
+			(async () => {
+				if (!('serviceWorker' in navigator)) return 'unsupported';
+				const reg = await navigator.serviceWorker.ready;
+				return reg.active ? 'active' : 'waiting';
+			})()
+		`)
+		if err == nil && result == "active" {
+			return
+		}
+	}
+	t.Log("Service worker may not be fully active")
+}
+
+// NavigateToOfflineSettings navigates to the offline settings page/section.
+func NavigateToOfflineSettings(t *testing.T, b *e2e.Browser) {
+	t.Helper()
+	if err := b.Navigate(BaseURL + "/bible/"); err != nil {
+		t.Fatalf("Failed to navigate to Bible page: %v", err)
+	}
+	// Look for offline settings section
+	if err := b.WaitFor("#offline-download-form"); err != nil {
+		t.Log("Offline settings form not found on page")
+	}
+}
+
+// GetCacheStatus retrieves cache status information from the OfflineManager.
+func GetCacheStatus(t *testing.T, b *e2e.Browser) map[string]interface{} {
+	t.Helper()
+	result, err := b.Evaluate(`
+		(async () => {
+			if (!window.Michael?.OfflineManager) return null;
+			await window.Michael.OfflineManager.initialize('/sw.js');
+			return await window.Michael.OfflineManager.getCacheStatus();
+		})()
+	`)
+	if err != nil {
+		t.Fatalf("Failed to get cache status: %v", err)
+	}
+	if result == nil {
+		return nil
+	}
+	if m, ok := result.(map[string]interface{}); ok {
+		return m
+	}
+	return nil
+}
+
+// SimulateOffline sets the browser to offline mode.
+func SimulateOffline(t *testing.T, b *e2e.Browser, offline bool) {
+	t.Helper()
+	if err := b.SetOffline(offline); err != nil {
+		t.Fatalf("Failed to set offline mode: %v", err)
+	}
+}
+
+// CheckManifestField verifies a specific field exists in the manifest.
+func CheckManifestField(t *testing.T, manifest map[string]interface{}, field string) bool {
+	t.Helper()
+	if _, exists := manifest[field]; !exists {
+		t.Errorf("Manifest missing required field: %s", field)
+		return false
+	}
+	return true
+}

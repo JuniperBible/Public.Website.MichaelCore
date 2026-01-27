@@ -1,0 +1,42 @@
+{{/*
+  Partial: pwa-install-banner.html
+  Purpose: PWA install prompt banner
+
+  Shows a non-intrusive banner encouraging users to install the app.
+  Includes iOS-specific instructions for manual installation.
+*/}}
+
+{{/* Standard install banner (Chrome, Edge, etc.) */}}
+<div id="pwa-install-banner" class="pwa-install-banner hidden" role="banner" aria-hidden="true">
+  <div class="pwa-install-content">
+    <img src="/icons/icon-192.png" alt="" class="pwa-install-icon" width="48" height="48">
+    <div class="pwa-install-text">
+      <strong>Install Michael Bible</strong>
+      <span>Read offline, anytime</span>
+    </div>
+  </div>
+  <div class="pwa-install-actions">
+    <button id="pwa-install-btn" type="button" class="pwa-install-button">
+      Install
+    </button>
+    <button id="pwa-install-dismiss" type="button" class="pwa-install-dismiss" aria-label="Dismiss install banner">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+</div>
+
+{{/* iOS instructions banner */}}
+<div id="pwa-ios-instructions" class="pwa-ios-instructions hidden" role="banner" aria-hidden="true">
+  <div class="pwa-install-content">
+    <img src="/icons/icon-192.png" alt="" class="pwa-install-icon" width="48" height="48">
+    <div class="pwa-install-text">
+      <strong>Install Michael Bible</strong>
+      <span>Tap <span aria-label="Share">&#xfeffShare&#xfeff</span> then "Add to Home Screen"</span>
+    </div>
+  </div>
+  <button id="pwa-ios-dismiss" type="button" class="pwa-install-dismiss" aria-label="Dismiss" onclick="this.parentElement.classList.add('hidden')">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+
+<script src="/js/michael/pwa-install.js" defer></script>
