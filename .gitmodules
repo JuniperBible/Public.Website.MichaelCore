@@ -1,10 +1,10 @@
 [submodule "tools/juniper"]
 	path = tools/juniper
-	url = git@github.com:FocuswithJustin/JuniperBible.git
+	url = https://github.com/FocuswithJustin/JuniperBible.git
 	branch = development
 [submodule "tools/magellan"]
 	path = tools/magellan
-	url = git@github.com:FocuswithJustin/magellan.git
+	url = https://github.com/FocuswithJustin/magellan.git
 	branch = development
 [submodule "tools/hugo"]
 	path = tools/hugo
@@ -12,5 +12,5 @@
 	branch = master
 [submodule "tools/caddy"]
 	path = tools/caddy
-	url = git@github.com:FocuswithJustin/caddy.git
+	url = https://github.com/FocuswithJustin/caddy.git
 	branch = master
