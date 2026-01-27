@@ -164,6 +164,33 @@ other = "Mọi điều tốt đẹp đều bắt đầu và kết thúc với"
 [footerGod]
 other = "Thiên Chúa"
 
+# Accessibility
+[skipToContent]
+other = "Chuyển đến nội dung"
+
+# Service Worker Update
+[swUpdateAvailable]
+other = "Cập nhật có sẵn"
+
+[swUpdateMessage]
+other = "Phiên bản mới đã sẵn sàng để cài đặt."
+
+[swUpdateNow]
+other = "Cập nhật ngay"
+
+[swDismissUpdate]
+other = "Đóng thông báo cập nhật"
+
+# 404 Page
+[pageNotFound]
+other = "Không tìm thấy trang"
+
+[pageNotFoundMessage]
+other = "Trang bạn đang tìm kiếm không tồn tại hoặc đã được di chuyển."
+
+[returnHome]
+other = "Trở về trang chủ"
+
 # Color picker
 [colorDark]
 other = "Dark"

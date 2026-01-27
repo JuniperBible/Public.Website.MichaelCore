@@ -164,6 +164,33 @@ other = "Semua perkara baik bermula dan berakhir dengan"
 [footerGod]
 other = "Tuhan"
 
+# Accessibility
+[skipToContent]
+other = "Langkau ke kandungan"
+
+# Service Worker Update
+[swUpdateAvailable]
+other = "Kemas kini tersedia"
+
+[swUpdateMessage]
+other = "Versi baharu bersedia untuk dipasang."
+
+[swUpdateNow]
+other = "Kemas kini sekarang"
+
+[swDismissUpdate]
+other = "Tutup pemberitahuan kemas kini"
+
+# 404 Page
+[pageNotFound]
+other = "Halaman tidak dijumpai"
+
+[pageNotFoundMessage]
+other = "Halaman yang anda cari tidak wujud atau telah dipindahkan."
+
+[returnHome]
+other = "Kembali ke laman utama"
+
 # Color picker
 [colorDark]
 other = "Dark"

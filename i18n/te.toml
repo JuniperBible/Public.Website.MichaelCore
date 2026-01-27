@@ -164,6 +164,33 @@ other = "మంచి విషయాలన్నీ ప్రారంభమవ
 [footerGod]
 other = "దేవునితో"
 
+# Accessibility
+[skipToContent]
+other = "కంటెంట్‌కు వెళ్లండి"
+
+# Service Worker Update
+[swUpdateAvailable]
+other = "నవీకరణ అందుబాటులో ఉంది"
+
+[swUpdateMessage]
+other = "కొత్త వెర్షన్ ఇన్‌స్టాల్ చేయడానికి సిద్ధంగా ఉంది."
+
+[swUpdateNow]
+other = "ఇప్పుడు నవీకరించండి"
+
+[swDismissUpdate]
+other = "నవీకరణ నోటిఫికేషన్ మూసివేయండి"
+
+# 404 Page
+[pageNotFound]
+other = "పేజీ కనుగొనబడలేదు"
+
+[pageNotFoundMessage]
+other = "మీరు వెతుకుతున్న పేజీ ఉనికిలో లేదు లేదా తరలించబడింది."
+
+[returnHome]
+other = "హోమ్‌కు తిరిగి వెళ్లండి"
+
 # Color picker
 [colorDark]
 other = "Dark"

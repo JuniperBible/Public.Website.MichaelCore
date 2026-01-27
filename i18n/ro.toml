@@ -164,6 +164,33 @@ other = "Toate lucrurile bune încep și se termină cu"
 [footerGod]
 other = "Dumnezeu"
 
+# Accessibility
+[skipToContent]
+other = "Salt la conținut"
+
+# Service Worker Update
+[swUpdateAvailable]
+other = "Actualizare disponibilă"
+
+[swUpdateMessage]
+other = "O nouă versiune este gata de instalare."
+
+[swUpdateNow]
+other = "Actualizează acum"
+
+[swDismissUpdate]
+other = "Închide notificarea de actualizare"
+
+# 404 Page
+[pageNotFound]
+other = "Pagina nu a fost găsită"
+
+[pageNotFoundMessage]
+other = "Pagina pe care o căutați nu există sau a fost mutată."
+
+[returnHome]
+other = "Înapoi la pagina principală"
+
 # Color picker
 [colorDark]
 other = "Dark"

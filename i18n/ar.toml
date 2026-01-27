@@ -164,6 +164,33 @@ other = "كل الأشياء الجيدة تبدأ وتنتهي بـ"
 [footerGod]
 other = "الله"
 
+# Accessibility
+[skipToContent]
+other = "تخطي إلى المحتوى"
+
+# Service Worker Update
+[swUpdateAvailable]
+other = "تحديث متاح"
+
+[swUpdateMessage]
+other = "إصدار جديد جاهز للتثبيت."
+
+[swUpdateNow]
+other = "حدث الآن"
+
+[swDismissUpdate]
+other = "تجاهل إشعار التحديث"
+
+# 404 Page
+[pageNotFound]
+other = "الصفحة غير موجودة"
+
+[pageNotFoundMessage]
+other = "الصفحة التي تبحث عنها غير موجودة أو تم نقلها."
+
+[returnHome]
+other = "العودة للرئيسية"
+
 # Color picker
 [colorDark]
 other = "Dark"

@@ -164,6 +164,33 @@ other = "Allt gott börjar och slutar med"
 [footerGod]
 other = "Gud"
 
+# Accessibility
+[skipToContent]
+other = "Hoppa till innehåll"
+
+# Service Worker Update
+[swUpdateAvailable]
+other = "Uppdatering tillgänglig"
+
+[swUpdateMessage]
+other = "En ny version är redo att installeras."
+
+[swUpdateNow]
+other = "Uppdatera nu"
+
+[swDismissUpdate]
+other = "Stäng uppdateringsmeddelande"
+
+# 404 Page
+[pageNotFound]
+other = "Sidan hittades inte"
+
+[pageNotFoundMessage]
+other = "Sidan du letar efter finns inte eller har flyttats."
+
+[returnHome]
+other = "Tillbaka till startsidan"
+
 # Color picker
 [colorDark]
 other = "Dark"

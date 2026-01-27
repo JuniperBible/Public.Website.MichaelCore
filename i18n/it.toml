@@ -164,6 +164,33 @@ other = "Tutte le cose buone iniziano e finiscono con"
 [footerGod]
 other = "Dio"
 
+# Accessibility
+[skipToContent]
+other = "Vai al contenuto"
+
+# Service Worker Update
+[swUpdateAvailable]
+other = "Aggiornamento disponibile"
+
+[swUpdateMessage]
+other = "Una nuova versione è pronta per l'installazione."
+
+[swUpdateNow]
+other = "Aggiorna ora"
+
+[swDismissUpdate]
+other = "Chiudi notifica di aggiornamento"
+
+# 404 Page
+[pageNotFound]
+other = "Pagina non trovata"
+
+[pageNotFoundMessage]
+other = "La pagina che stai cercando non esiste o è stata spostata."
+
+[returnHome]
+other = "Torna alla home"
+
 # Color picker
 [colorDark]
 other = "Dark"

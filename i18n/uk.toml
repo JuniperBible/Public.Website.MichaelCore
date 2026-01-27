@@ -164,6 +164,33 @@ other = "Усе добре починається і закінчується"
 [footerGod]
 other = "Богом"
 
+# Accessibility
+[skipToContent]
+other = "Перейти до вмісту"
+
+# Service Worker Update
+[swUpdateAvailable]
+other = "Доступне оновлення"
+
+[swUpdateMessage]
+other = "Нова версія готова до встановлення."
+
+[swUpdateNow]
+other = "Оновити зараз"
+
+[swDismissUpdate]
+other = "Закрити сповіщення про оновлення"
+
+# 404 Page
+[pageNotFound]
+other = "Сторінку не знайдено"
+
+[pageNotFoundMessage]
+other = "Сторінка, яку ви шукаєте, не існує або була переміщена."
+
+[returnHome]
+other = "Повернутися на головну"
+
 # Color picker
 [colorDark]
 other = "Dark"

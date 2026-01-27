@@ -164,6 +164,33 @@ other = "ሁሉም ጥሩ ነገሮች የሚጀምሩት እና የሚያልቁ
 [footerGod]
 other = "እግዚአብሔር"
 
+# Accessibility
+[skipToContent]
+other = "ወደ ይዘት ዝለል"
+
+# Service Worker Update
+[swUpdateAvailable]
+other = "ማሻሻያ አለ"
+
+[swUpdateMessage]
+other = "አዲስ ስሪት ለመጫን ዝግጁ ነው።"
+
+[swUpdateNow]
+other = "አሁን አዘምን"
+
+[swDismissUpdate]
+other = "የማሻሻያ ማሳወቂያን ዝጋ"
+
+# 404 Page
+[pageNotFound]
+other = "ገጽ አልተገኘም"
+
+[pageNotFoundMessage]
+other = "እየፈለጉት ያለው ገጽ የለም ወይም ተንቀሳቅሷል።"
+
+[returnHome]
+other = "ወደ መነሻ ተመለስ"
+
 # Color picker
 [colorDark]
 other = "Dark"

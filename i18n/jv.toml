@@ -164,6 +164,33 @@ other = "Kabeh sing apik diwiwiti lan dipungkasi karo"
 [footerGod]
 other = "Gusti Allah"
 
+# Accessibility
+[skipToContent]
+other = "Langsung menyang konten"
+
+# Service Worker Update
+[swUpdateAvailable]
+other = "Nganyari kasedhiya"
+
+[swUpdateMessage]
+other = "Versi anyar siap kanggo diinstal."
+
+[swUpdateNow]
+other = "Nganyari saiki"
+
+[swDismissUpdate]
+other = "Tutup kabar nganyari"
+
+# 404 Page
+[pageNotFound]
+other = "Kaca ora ketemu"
+
+[pageNotFoundMessage]
+other = "Kaca sing sampeyan goleki ora ana utawa wis dipindhah."
+
+[returnHome]
+other = "Bali menyang ngarep"
+
 # Color picker
 [colorDark]
 other = "Dark"

@@ -719,18 +719,11 @@
     subtree: true     // Monitor entire descendant tree
   });
 
-  // Clean up observer on page unload to prevent memory leaks
-  window.addEventListener('beforeunload', () => {
-    observer.disconnect();
-  });
-
-  // Also clean up on visibility change for SPA scenarios
+  // Pause observer when page is hidden to save resources
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'hidden') {
-      // Page is being hidden, disconnect to save resources
       observer.disconnect();
     } else if (document.visibilityState === 'visible') {
-      // Page is visible again, reconnect and reprocess
       observer.observe(document.body, {
         childList: true,
         subtree: true

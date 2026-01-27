@@ -164,6 +164,33 @@ other = "Alle goede dingen beginnen en eindigen met"
 [footerGod]
 other = "God"
 
+# Accessibility
+[skipToContent]
+other = "Naar inhoud springen"
+
+# Service Worker Update
+[swUpdateAvailable]
+other = "Update beschikbaar"
+
+[swUpdateMessage]
+other = "Een nieuwe versie is klaar voor installatie."
+
+[swUpdateNow]
+other = "Nu bijwerken"
+
+[swDismissUpdate]
+other = "Update melding sluiten"
+
+# 404 Page
+[pageNotFound]
+other = "Pagina niet gevonden"
+
+[pageNotFoundMessage]
+other = "De pagina die u zoekt bestaat niet of is verplaatst."
+
+[returnHome]
+other = "Terug naar home"
+
 # Color picker
 [colorDark]
 other = "Dark"

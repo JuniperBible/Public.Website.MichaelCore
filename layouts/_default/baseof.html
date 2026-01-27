@@ -50,9 +50,10 @@
   <link rel="icon" type="image/png" sizes="16x16" href="/icons/icon-16.png">
 </head>
 <body>
+  <a href="#main-content" class="skip-link">{{ i18n "skipToContent" | default "Skip to content" }}</a>
   {{ partial "header.html" . }}
 
-  {{ block "main" . }}{{ end }}
+  {{ block "main" . }}{{ end }}{{/* main content block — pages should include id="main-content" */}}
 
   {{ partial "footer.html" . }}
 

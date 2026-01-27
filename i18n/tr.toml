@@ -164,6 +164,33 @@ other = "Tüm iyi şeyler başlar ve biter"
 [footerGod]
 other = "Tanrı ile"
 
+# Accessibility
+[skipToContent]
+other = "İçeriğe atla"
+
+# Service Worker Update
+[swUpdateAvailable]
+other = "Güncelleme mevcut"
+
+[swUpdateMessage]
+other = "Yeni bir sürüm yüklemeye hazır."
+
+[swUpdateNow]
+other = "Şimdi güncelle"
+
+[swDismissUpdate]
+other = "Güncelleme bildirimini kapat"
+
+# 404 Page
+[pageNotFound]
+other = "Sayfa bulunamadı"
+
+[pageNotFoundMessage]
+other = "Aradığınız sayfa mevcut değil veya taşınmış."
+
+[returnHome]
+other = "Ana sayfaya dön"
+
 # Color picker
 [colorDark]
 other = "Dark"

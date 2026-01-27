@@ -142,9 +142,7 @@ window.Michael.ShareMenu = (function() {
    * @returns {string} Escaped string safe for HTML insertion
    */
   ShareMenu.prototype.escapeHtml = function(str) {
-    const div = document.createElement('div');
-    div.textContent = str;
-    return div.innerHTML;
+    return window.Michael.DomUtils.escapeHtml(str);
   };
 
   /**

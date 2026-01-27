@@ -164,6 +164,33 @@ other = "Kaikki hyvä alkaa ja päättyy"
 [footerGod]
 other = "Jumalaan"
 
+# Accessibility
+[skipToContent]
+other = "Siirry sisältöön"
+
+# Service Worker Update
+[swUpdateAvailable]
+other = "Päivitys saatavilla"
+
+[swUpdateMessage]
+other = "Uusi versio on valmis asennettavaksi."
+
+[swUpdateNow]
+other = "Päivitä nyt"
+
+[swDismissUpdate]
+other = "Sulje päivitysilmoitus"
+
+# 404 Page
+[pageNotFound]
+other = "Sivua ei löydy"
+
+[pageNotFoundMessage]
+other = "Etsimääsi sivua ei ole olemassa tai se on siirretty."
+
+[returnHome]
+other = "Palaa kotiin"
+
 # Color picker
 [colorDark]
 other = "Dark"

@@ -164,6 +164,33 @@ other = "تمام اچھی چیزیں شروع ہوتی ہیں اور ختم ہ�
 [footerGod]
 other = "خدا"
 
+# Accessibility
+[skipToContent]
+other = "مواد پر جائیں"
+
+# Service Worker Update
+[swUpdateAvailable]
+other = "اپ ڈیٹ دستیاب ہے"
+
+[swUpdateMessage]
+other = "ایک نیا ورژن انسٹال کرنے کے لیے تیار ہے۔"
+
+[swUpdateNow]
+other = "ابھی اپ ڈیٹ کریں"
+
+[swDismissUpdate]
+other = "اپ ڈیٹ نوٹیفکیشن بند کریں"
+
+# 404 Page
+[pageNotFound]
+other = "صفحہ نہیں ملا"
+
+[pageNotFoundMessage]
+other = "جس صفحے کی آپ تلاش کر رہے ہیں وہ موجود نہیں ہے یا منتقل کر دیا گیا ہے۔"
+
+[returnHome]
+other = "ہوم پر واپس جائیں"
+
 # Color picker
 [colorDark]
 other = "Dark"

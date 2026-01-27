@@ -164,6 +164,33 @@ other = "সমস্ত ভাল জিনিস শুরু হয় এব
 [footerGod]
 other = "ঈশ্বর"
 
+# Accessibility
+[skipToContent]
+other = "বিষয়বস্তুতে যান"
+
+# Service Worker Update
+[swUpdateAvailable]
+other = "আপডেট উপলব্ধ"
+
+[swUpdateMessage]
+other = "একটি নতুন সংস্করণ ইনস্টল করার জন্য প্রস্তুত।"
+
+[swUpdateNow]
+other = "এখনই আপডেট করুন"
+
+[swDismissUpdate]
+other = "আপডেট বিজ্ঞপ্তি বাতিল করুন"
+
+# 404 Page
+[pageNotFound]
+other = "পৃষ্ঠা পাওয়া যায়নি"
+
+[pageNotFoundMessage]
+other = "আপনি যে পৃষ্ঠাটি খুঁজছেন তা বিদ্যমান নেই বা সরানো হয়েছে।"
+
+[returnHome]
+other = "হোমে ফিরুন"
+
 # Color picker
 [colorDark]
 other = "Dark"

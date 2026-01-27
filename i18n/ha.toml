@@ -164,6 +164,33 @@ other = "Dukkan abubuwa masu kyau suna farawa kuma suna ƙarewa da"
 [footerGod]
 other = "Allah"
 
+# Accessibility
+[skipToContent]
+other = "Tsallake zuwa abun ciki"
+
+# Service Worker Update
+[swUpdateAvailable]
+other = "Sabuntawa yana samuwa"
+
+[swUpdateMessage]
+other = "Sabon sigar yana shirye don shigarwa."
+
+[swUpdateNow]
+other = "Sabunta yanzu"
+
+[swDismissUpdate]
+other = "Rufe sanarwar sabuntawa"
+
+# 404 Page
+[pageNotFound]
+other = "Ba a sami shafin ba"
+
+[pageNotFoundMessage]
+other = "Shafin da kuke nema ba ya wanzu ko an motsa shi."
+
+[returnHome]
+other = "Koma gida"
+
 # Color picker
 [colorDark]
 other = "Dark"

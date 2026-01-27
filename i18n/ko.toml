@@ -164,6 +164,33 @@ other = "모든 좋은 것은 시작하고 끝나는 것은"
 [footerGod]
 other = "하나님"
 
+# Accessibility
+[skipToContent]
+other = "콘텐츠로 건너뛰기"
+
+# Service Worker Update
+[swUpdateAvailable]
+other = "업데이트 가능"
+
+[swUpdateMessage]
+other = "새 버전을 설치할 준비가 되었습니다."
+
+[swUpdateNow]
+other = "지금 업데이트"
+
+[swDismissUpdate]
+other = "업데이트 알림 닫기"
+
+# 404 Page
+[pageNotFound]
+other = "페이지를 찾을 수 없음"
+
+[pageNotFoundMessage]
+other = "찾으시는 페이지가 존재하지 않거나 이동되었습니다."
+
+[returnHome]
+other = "홈으로 돌아가기"
+
 # Color picker
 [colorDark]
 other = "Dark"

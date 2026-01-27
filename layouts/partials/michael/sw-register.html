@@ -142,8 +142,8 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
           </svg>
           <div class="sw-update-banner__text">
-            <div class="sw-update-banner__title">Update Available</div>
-            <div class="sw-update-banner__message">A new version is ready to install.</div>
+            <div class="sw-update-banner__title">{{ i18n "swUpdateAvailable" | default "Update Available" }}</div>
+            <div class="sw-update-banner__message">{{ i18n "swUpdateMessage" | default "A new version is ready to install." }}</div>
           </div>
         </div>
         <div class="sw-update-banner__actions">
@@ -152,13 +152,13 @@
             class="sw-update-banner__reload-btn"
             type="button"
           >
-            Update Now
+            {{ i18n "swUpdateNow" | default "Update Now" }}
           </button>
           <button
             id="sw-update-dismiss-btn"
             class="sw-update-banner__dismiss-btn"
             type="button"
-            aria-label="Dismiss update notification"
+            aria-label="{{ i18n "swDismissUpdate" | default "Dismiss update notification" }}"
           >
             <span aria-hidden="true">&times;</span>
           </button>

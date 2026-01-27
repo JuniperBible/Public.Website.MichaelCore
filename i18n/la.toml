@@ -164,6 +164,33 @@ other = "Omnia bona incipiunt et finiuntur cum"
 [footerGod]
 other = "Deo"
 
+# Accessibility
+[skipToContent]
+other = "Ad contentum transire"
+
+# Service Worker Update
+[swUpdateAvailable]
+other = "Emendatio disponibilis"
+
+[swUpdateMessage]
+other = "Nova versio installare parata est."
+
+[swUpdateNow]
+other = "Nunc emendare"
+
+[swDismissUpdate]
+other = "Nuntium emendationis claudere"
+
+# 404 Page
+[pageNotFound]
+other = "Pagina non inventa"
+
+[pageNotFoundMessage]
+other = "Pagina quam quaeris non exstat aut mota est."
+
+[returnHome]
+other = "Ad domum redire"
+
 # Color picker
 [colorDark]
 other = "Dark"

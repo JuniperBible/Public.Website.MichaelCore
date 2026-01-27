@@ -42,6 +42,26 @@
 }
 
 /* -----------------------------
+   0b) Skip Navigation Link
+------------------------------ */
+.skip-link {
+  position: absolute;
+  top: -100%;
+  left: var(--pad-1);
+  z-index: var(--z-toast);
+  padding: var(--pad-1) var(--pad-2);
+  background: var(--brand-500);
+  color: var(--surface-2);
+  border-radius: 0 0 var(--radius-1) var(--radius-1);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.skip-link:focus {
+  top: 0;
+}
+
+/* -----------------------------
    1) Base / Layout Helpers
 ------------------------------ */
 * { box-sizing: border-box; }
@@ -95,7 +115,6 @@ main.pwa-home {
   overflow-x: auto;
   box-sizing: border-box;
   max-width: 100%;
-  word-wrap: break-word;
   overflow-wrap: break-word;
 }
 
@@ -692,7 +711,7 @@ a:focus-visible {
 }
 
 .verse-share-btn:hover {
-  opacity: 1 !important;
+  opacity: 1;
 }
 
 /* Strong's number markers */
@@ -934,11 +953,6 @@ a:focus-visible {
    18) License Pages - Extracted from inline styles
    ========================================================================== */
 
-/* License page wrapper */
-.license-content {
-  /* No specific styles needed, uses existing panel/section classes */
-}
-
 /* Gap utilities for flexbox/grid */
 .gap-1 {
   gap: var(--pad-1);
@@ -1007,15 +1021,15 @@ a:focus-visible {
 
 /* License rights type colors */
 .license-rights-col--permissions h3 {
-  color: var(--color-success, #22c55e);
+  color: var(--success-500);
 }
 
 .license-rights-col--conditions h3 {
-  color: var(--color-warning, #eab308);
+  color: #eab308;
 }
 
 .license-rights-col--limitations h3 {
-  color: var(--color-error, #ef4444);
+  color: var(--state-error);
 }
 
 /* License text display - pre-formatted with wrapping */

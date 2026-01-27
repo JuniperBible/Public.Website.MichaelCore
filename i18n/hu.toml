@@ -164,6 +164,33 @@ other = "Minden jó dolog kezdődik és végződik"
 [footerGod]
 other = "Istennel"
 
+# Accessibility
+[skipToContent]
+other = "Ugrás a tartalomhoz"
+
+# Service Worker Update
+[swUpdateAvailable]
+other = "Frissítés elérhető"
+
+[swUpdateMessage]
+other = "Egy új verzió telepítésre kész."
+
+[swUpdateNow]
+other = "Frissítés most"
+
+[swDismissUpdate]
+other = "Frissítési értesítés bezárása"
+
+# 404 Page
+[pageNotFound]
+other = "Az oldal nem található"
+
+[pageNotFoundMessage]
+other = "A keresett oldal nem létezik vagy át lett helyezve."
+
+[returnHome]
+other = "Vissza a főoldalra"
+
 # Color picker
 [colorDark]
 other = "Dark"

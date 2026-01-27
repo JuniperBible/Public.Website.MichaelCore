@@ -164,6 +164,33 @@ other = "Ang lahat ng mabuting bagay ay nagsisimula at nagtatapos sa"
 [footerGod]
 other = "Diyos"
 
+# Accessibility
+[skipToContent]
+other = "Tumalon sa nilalaman"
+
+# Service Worker Update
+[swUpdateAvailable]
+other = "May available na update"
+
+[swUpdateMessage]
+other = "Handa nang i-install ang bagong bersyon."
+
+[swUpdateNow]
+other = "I-update ngayon"
+
+[swDismissUpdate]
+other = "Isara ang abiso ng update"
+
+# 404 Page
+[pageNotFound]
+other = "Hindi nahanap ang pahina"
+
+[pageNotFoundMessage]
+other = "Ang pahina na iyong hinahanap ay hindi umiiral o inilipat na."
+
+[returnHome]
+other = "Bumalik sa home"
+
 # Color picker
 [colorDark]
 other = "Dark"

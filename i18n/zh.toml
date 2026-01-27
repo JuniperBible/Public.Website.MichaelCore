@@ -164,6 +164,33 @@ other = "一切美好的事物都始于并终于"
 [footerGod]
 other = "神"
 
+# Accessibility
+[skipToContent]
+other = "跳转到内容"
+
+# Service Worker Update
+[swUpdateAvailable]
+other = "更新可用"
+
+[swUpdateMessage]
+other = "新版本已准备好安装。"
+
+[swUpdateNow]
+other = "立即更新"
+
+[swDismissUpdate]
+other = "关闭更新通知"
+
+# 404 Page
+[pageNotFound]
+other = "找不到页面"
+
+[pageNotFoundMessage]
+other = "您要查找的页面不存在或已被移动。"
+
+[returnHome]
+other = "返回主页"
+
 # Color picker
 [colorDark]
 other = "Dark"

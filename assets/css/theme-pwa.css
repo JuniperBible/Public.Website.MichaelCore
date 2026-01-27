@@ -3,12 +3,114 @@
    Styles for when app is installed as PWA (Add to Home Screen)
    ========================================================================== */
 
-/* CSS Media Query fallback - works even if JS detection fails */
+/* Shared PWA standalone styles — used by both media query and JS class fallback.
+   The media query covers modern browsers; the .pwa-standalone class covers
+   browsers where display-mode media queries aren't reliable (iOS Safari, TWA). */
+
+:is(
+  html.pwa-standalone,
+  html.pwa-standalone body
+) {
+  height: 100vh;
+  height: 100dvh;
+  max-height: 100vh;
+  max-height: 100dvh;
+  overflow: hidden;
+}
+
+:is(html.pwa-standalone) body {
+  min-height: 100vh;
+  min-height: 100dvh;
+  padding-top: env(safe-area-inset-top, 0);
+  padding-bottom: env(safe-area-inset-bottom, 0);
+  padding-left: env(safe-area-inset-left, 0);
+  padding-right: env(safe-area-inset-right, 0);
+}
+
+:is(html.pwa-standalone) body > main {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+
+:is(html.pwa-standalone) .pwa-install-banner,
+:is(html.pwa-standalone) .pwa-ios-instructions {
+  display: none !important;
+}
+
+:is(html.pwa-standalone) footer.chrome,
+:is(body.pwa-standalone) footer.chrome {
+  display: none !important;
+}
+
+:is(html.pwa-standalone) .footer-copyright {
+  flex-shrink: 0;
+  padding: 2px 0;
+}
+
+:is(html.pwa-standalone) .footer-copyright p,
+:is(body.pwa-standalone) .footer-copyright p {
+  padding: 2px 0 !important;
+  font-size: 0.7rem !important;
+  margin: 0;
+  line-height: 1.3;
+}
+
+:is(html.pwa-standalone) .footer-copyright .container {
+  padding: 0 var(--pad-1);
+}
+
+:is(html.pwa-standalone) .chrome {
+  flex-shrink: 0;
+}
+
+:is(html.pwa-standalone) main.pwa-home {
+  padding: var(--pad-2) var(--pad-1);
+}
+
+:is(html.pwa-standalone) main.pwa-home .panel {
+  padding: var(--pad-2);
+}
+
+:is(html.pwa-standalone) .page-header {
+  padding: var(--pad-1) 0;
+}
+
+:is(html.pwa-standalone) .page-header h1 {
+  font-size: 1.25rem;
+  margin-bottom: 0.25rem;
+}
+
+:is(html.pwa-standalone) .page-header p {
+  font-size: 0.85rem;
+  margin: 0;
+}
+
+:is(html.pwa-standalone) .card {
+  padding: var(--pad-1);
+}
+
+:is(html.pwa-standalone) main.pwa-home h2 {
+  font-size: 1rem;
+  margin: var(--pad-1) 0;
+}
+
+:is(html.pwa-standalone) .continue-reading {
+  padding: var(--pad-1);
+  margin-bottom: var(--pad-1);
+}
+
+/* CSS Media Query — applies the same styles when display-mode matches,
+   without needing the JS-added class */
 @media all and (display-mode: standalone),
        all and (display-mode: fullscreen),
        all and (display-mode: minimal-ui),
        all and (display-mode: window-controls-overlay) {
-  html, body {
+  html { --pwa-standalone: 1; }
+  html:not(.pwa-standalone) { /* Add class via CSS to unify selectors */  }
+
+  html, html body {
     height: 100vh;
     height: 100dvh;
     max-height: 100vh;
@@ -32,135 +134,28 @@
     -webkit-overflow-scrolling: touch;
   }
 
-  /* Hide install banner in installed PWA */
   .pwa-install-banner,
-  .pwa-ios-instructions {
-    display: none !important;
-  }
+  .pwa-ios-instructions { display: none !important; }
 
-  /* Hide full footer navigation in PWA mode, show only thin copyright */
-  footer.chrome {
-    display: none !important;
-  }
+  footer.chrome { display: none !important; }
 
-  .footer-copyright {
-    flex-shrink: 0;
-    padding: 2px 0;
-  }
-
+  .footer-copyright { flex-shrink: 0; padding: 2px 0; }
   .footer-copyright p {
     padding: 2px 0 !important;
     font-size: 0.7rem !important;
     margin: 0;
     line-height: 1.3;
   }
-
-  .footer-copyright .container {
-    padding: 0 var(--pad-1);
-  }
-
-  /* Header chrome should not shrink */
-  .chrome {
-    flex-shrink: 0;
-  }
-
-  /* Home page content - allow scrolling within main */
-  main.pwa-home {
-    padding: var(--pad-2) var(--pad-1);
-  }
-
-  main.pwa-home .panel {
-    padding: var(--pad-2);
-  }
-
-  /* Page header compact */
-  .page-header {
-    padding: var(--pad-1) 0;
-  }
-
-  .page-header h1 {
-    font-size: 1.25rem;
-    margin-bottom: 0.25rem;
-  }
-
-  .page-header p {
-    font-size: 0.85rem;
-    margin: 0;
-  }
-
-  /* Cards compact */
-  .card {
-    padding: var(--pad-1);
-  }
-
-  /* Section heading compact */
-  main.pwa-home h2 {
-    font-size: 1rem;
-    margin: var(--pad-1) 0;
-  }
-
-  /* Continue reading compact */
-  .continue-reading {
-    padding: var(--pad-1);
-    margin-bottom: var(--pad-1);
-  }
-}
-
-/* JS class-based styles (for browsers where media query doesn't work) */
-html.pwa-standalone,
-html.pwa-standalone body {
-  height: 100vh;
-  height: 100dvh;
-  max-height: 100vh;
-  max-height: 100dvh;
-  overflow: hidden;
-}
-
-html.pwa-standalone body {
-  min-height: 100vh;
-  min-height: 100dvh;
-  padding-top: env(safe-area-inset-top, 0);
-  padding-bottom: env(safe-area-inset-bottom, 0);
-  padding-left: env(safe-area-inset-left, 0);
-  padding-right: env(safe-area-inset-right, 0);
-}
-
-html.pwa-standalone body > main {
-  flex: 1;
-  overflow-y: auto;
-  overflow-x: hidden;
-  -webkit-overflow-scrolling: touch;
-}
-
-html.pwa-standalone .pwa-install-banner,
-html.pwa-standalone .pwa-ios-instructions {
-  display: none !important;
-}
-
-html.pwa-standalone footer.chrome {
-  display: none !important;
-}
-
-html.pwa-standalone .footer-copyright {
-  flex-shrink: 0;
-  padding: 2px 0;
-}
-
-html.pwa-standalone .footer-copyright p {
-  padding: 2px 0 !important;
-  font-size: 0.7rem !important;
-  margin: 0;
-  line-height: 1.3;
-}
-
-/* Fallback: body.pwa-standalone */
-body.pwa-standalone footer.chrome {
-  display: none !important;
-}
-
-body.pwa-standalone .footer-copyright p {
-  padding: 2px 0 !important;
-  font-size: 0.7rem !important;
+  .footer-copyright .container { padding: 0 var(--pad-1); }
+  .chrome { flex-shrink: 0; }
+  main.pwa-home { padding: var(--pad-2) var(--pad-1); }
+  main.pwa-home .panel { padding: var(--pad-2); }
+  .page-header { padding: var(--pad-1) 0; }
+  .page-header h1 { font-size: 1.25rem; margin-bottom: 0.25rem; }
+  .page-header p { font-size: 0.85rem; margin: 0; }
+  .card { padding: var(--pad-1); }
+  main.pwa-home h2 { font-size: 1rem; margin: var(--pad-1) 0; }
+  .continue-reading { padding: var(--pad-1); margin-bottom: var(--pad-1); }
 }
 
 /* ==========================================================================

@@ -164,6 +164,33 @@ other = "Mambo yote mazuri yanaanza na kumalizika na"
 [footerGod]
 other = "Mungu"
 
+# Accessibility
+[skipToContent]
+other = "Ruka kwenda maudhui"
+
+# Service Worker Update
+[swUpdateAvailable]
+other = "Sasisha inapatikana"
+
+[swUpdateMessage]
+other = "Toleo jipya liko tayari kusakinishwa."
+
+[swUpdateNow]
+other = "Sasisha sasa"
+
+[swDismissUpdate]
+other = "Funga arifa ya usasishaji"
+
+# 404 Page
+[pageNotFound]
+other = "Ukurasa haujapatikana"
+
+[pageNotFoundMessage]
+other = "Ukurasa unaoutafuta haupo au umehamishwa."
+
+[returnHome]
+other = "Rudi nyumbani"
+
 # Color picker
 [colorDark]
 other = "Dark"

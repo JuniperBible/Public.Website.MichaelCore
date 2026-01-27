@@ -164,6 +164,33 @@ other = "すべての良いことは始まり、終わるのは"
 [footerGod]
 other = "神"
 
+# Accessibility
+[skipToContent]
+other = "コンテンツへスキップ"
+
+# Service Worker Update
+[swUpdateAvailable]
+other = "更新が利用可能"
+
+[swUpdateMessage]
+other = "新しいバージョンのインストール準備ができました。"
+
+[swUpdateNow]
+other = "今すぐ更新"
+
+[swDismissUpdate]
+other = "更新通知を閉じる"
+
+# 404 Page
+[pageNotFound]
+other = "ページが見つかりません"
+
+[pageNotFoundMessage]
+other = "お探しのページは存在しないか、移動されました。"
+
+[returnHome]
+other = "ホームに戻る"
+
 # Color picker
 [colorDark]
 other = "Dark"

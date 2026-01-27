@@ -164,6 +164,33 @@ other = "כל הדברים הטובים מתחילים ומסתיימים עם"
 [footerGod]
 other = "אלוהים"
 
+# Accessibility
+[skipToContent]
+other = "דלג לתוכן"
+
+# Service Worker Update
+[swUpdateAvailable]
+other = "עדכון זמין"
+
+[swUpdateMessage]
+other = "גרסה חדשה מוכנה להתקנה."
+
+[swUpdateNow]
+other = "עדכן עכשיו"
+
+[swDismissUpdate]
+other = "סגור התראת עדכון"
+
+# 404 Page
+[pageNotFound]
+other = "הדף לא נמצא"
+
+[pageNotFoundMessage]
+other = "הדף שאתה מחפש לא קיים או הועבר."
+
+[returnHome]
+other = "חזרה לדף הבית"
+
 # Color picker
 [colorDark]
 other = "Dark"

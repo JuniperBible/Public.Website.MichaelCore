@@ -164,6 +164,33 @@ other = "Alle gode ting begynder og slutter med"
 [footerGod]
 other = "Gud"
 
+# Accessibility
+[skipToContent]
+other = "Spring til indhold"
+
+# Service Worker Update
+[swUpdateAvailable]
+other = "Opdatering tilgængelig"
+
+[swUpdateMessage]
+other = "En ny version er klar til installation."
+
+[swUpdateNow]
+other = "Opdater nu"
+
+[swDismissUpdate]
+other = "Luk opdateringsbesked"
+
+# 404 Page
+[pageNotFound]
+other = "Siden blev ikke fundet"
+
+[pageNotFoundMessage]
+other = "Den side du leder efter findes ikke eller er blevet flyttet."
+
+[returnHome]
+other = "Tilbage til forsiden"
+
 # Color picker
 [colorDark]
 other = "Dark"

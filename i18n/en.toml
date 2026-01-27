@@ -371,6 +371,33 @@ other = "All good things start and end with"
 [footerGod]
 other = "God"
 
+# Accessibility
+[skipToContent]
+other = "Skip to content"
+
+# Service Worker Update
+[swUpdateAvailable]
+other = "Update Available"
+
+[swUpdateMessage]
+other = "A new version is ready to install."
+
+[swUpdateNow]
+other = "Update Now"
+
+[swDismissUpdate]
+other = "Dismiss update notification"
+
+# 404 Page
+[pageNotFound]
+other = "Page Not Found"
+
+[pageNotFoundMessage]
+other = "The page you are looking for does not exist or has been moved."
+
+[returnHome]
+other = "Return Home"
+
 # Color picker
 [colorDark]
 other = "Dark"

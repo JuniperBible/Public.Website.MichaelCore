@@ -164,6 +164,33 @@ other = "सभी अच्छी चीजें शुरू होती ह
 [footerGod]
 other = "परमेश्वर"
 
+# Accessibility
+[skipToContent]
+other = "सामग्री पर जाएं"
+
+# Service Worker Update
+[swUpdateAvailable]
+other = "अपडेट उपलब्ध"
+
+[swUpdateMessage]
+other = "एक नया संस्करण इंस्टॉल करने के लिए तैयार है।"
+
+[swUpdateNow]
+other = "अभी अपडेट करें"
+
+[swDismissUpdate]
+other = "अपडेट सूचना बंद करें"
+
+# 404 Page
+[pageNotFound]
+other = "पृष्ठ नहीं मिला"
+
+[pageNotFoundMessage]
+other = "आप जिस पृष्ठ की तलाश कर रहे हैं वह मौजूद नहीं है या स्थानांतरित कर दिया गया है।"
+
+[returnHome]
+other = "होम पर लौटें"
+
 # Color picker
 [colorDark]
 other = "Dark"

@@ -164,6 +164,33 @@ other = "ኵሉ ሠናይ ይትጌጋም ወይተፈጸም በ"
 [footerGod]
 other = "እግዚአብሔር"
 
+# Accessibility
+[skipToContent]
+other = "ወደ ይዘት ተሸጋገር"
+
+# Service Worker Update
+[swUpdateAvailable]
+other = "ማሻሻያ ይገኛል"
+
+[swUpdateMessage]
+other = "አዲስ ስሪት ለመትከል ዝግጁ ነው።"
+
+[swUpdateNow]
+other = "አሁን አዘምን"
+
+[swDismissUpdate]
+other = "ማሻሻያ ማስታወሻ ዝጋ"
+
+# 404 Page
+[pageNotFound]
+other = "ገጽ አልተገኘም"
+
+[pageNotFoundMessage]
+other = "እየፈለጉ ያሉት ገጽ የለም ወይም ተንቀሳቅሷል።"
+
+[returnHome]
+other = "ወደ ቤት ተመለስ"
+
 # Color picker
 [colorDark]
 other = "Dark"

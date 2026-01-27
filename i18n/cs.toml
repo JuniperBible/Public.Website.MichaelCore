@@ -164,6 +164,33 @@ other = "Všechny dobré věci začínají a končí"
 [footerGod]
 other = "Bohem"
 
+# Accessibility
+[skipToContent]
+other = "Přejít na obsah"
+
+# Service Worker Update
+[swUpdateAvailable]
+other = "Aktualizace k dispozici"
+
+[swUpdateMessage]
+other = "Nová verze je připravena k instalaci."
+
+[swUpdateNow]
+other = "Aktualizovat nyní"
+
+[swDismissUpdate]
+other = "Zavřít oznámení o aktualizaci"
+
+# 404 Page
+[pageNotFound]
+other = "Stránka nenalezena"
+
+[pageNotFoundMessage]
+other = "Stránka, kterou hledáte, neexistuje nebo byla přesunuta."
+
+[returnHome]
+other = "Návrat domů"
+
 # Color picker
 [colorDark]
 other = "Dark"
