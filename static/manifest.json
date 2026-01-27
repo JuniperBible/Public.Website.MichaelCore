@@ -18,8 +18,8 @@
   "handle_links": "preferred",
   "window": {
     "default_width": 800,
-    "default_height": 900,
-    "resizable": true
+    "default_height": 1000,
+    "resizable": false
   },
   "icons": [
     {
