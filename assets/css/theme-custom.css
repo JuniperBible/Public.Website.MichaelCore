@@ -1,0 +1,34 @@
+/* ==========================================================================
+   Michael Bible Module — Custom Theme Overrides
+
+   This file is for site-specific customizations that override the default
+   theme styles. It is loaded last, so all rules here take precedence.
+
+   Examples of what you might add here:
+   - Custom brand colors (override --brand-* variables)
+   - Font family changes
+   - Spacing adjustments
+   - Component style tweaks
+   - Page-specific overrides
+
+   Usage:
+   - Add your custom CSS rules below
+   - Use CSS custom properties from theme-colors.css when possible
+   - For specificity issues, increase selector weight or use !important sparingly
+   ========================================================================== */
+
+/* -----------------------------
+   Custom Color Overrides
+   Example:
+   :root {
+     --brand-500: #your-color;
+   }
+------------------------------ */
+
+/* -----------------------------
+   Custom Component Overrides
+------------------------------ */
+
+/* -----------------------------
+   Custom Page-Specific Styles
+------------------------------ */

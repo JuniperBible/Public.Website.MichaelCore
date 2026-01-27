@@ -13,6 +13,7 @@
 @import "theme-pwa.css";
 @import "theme-offline.css";
 @import "theme-print.css";
+@import "theme-custom.css"; /* Custom overrides - loaded last */
 
 /* -----------------------------
    0) Design Tokens (non-color)
