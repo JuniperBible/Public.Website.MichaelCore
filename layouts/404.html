@@ -1,6 +1,6 @@
 {{ define "main" }}
-<main id="main-content">
-  <div class="container" style="text-align: center; padding: var(--pad-3) var(--pad-1);">
+<main id="main-content" class="error-page">
+  <div class="container">
     <h1>{{ i18n "pageNotFound" | default "Page Not Found" }}</h1>
     <p>{{ i18n "pageNotFoundMessage" | default "The page you are looking for does not exist or has been moved." }}</p>
     <p><a href="{{ "/" | relLangURL }}" class="btn">{{ i18n "returnHome" | default "Return Home" }}</a></p>

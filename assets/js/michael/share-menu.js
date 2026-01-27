@@ -310,10 +310,12 @@ window.Michael.ShareMenu = (function() {
           const text = this.options.getShareText();
           const url = this.options.getShareUrl();
           const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`;
-          // Validate URL before opening (must be https://twitter.com)
-          if (twitterUrl.startsWith('https://twitter.com/')) {
-            window.open(twitterUrl, '_blank', 'width=550,height=420,noopener,noreferrer');
-          }
+          try {
+            const parsed = new URL(twitterUrl);
+            if (parsed.hostname === 'twitter.com' || parsed.hostname === 'x.com') {
+              window.open(twitterUrl, '_blank', 'width=550,height=420,noopener,noreferrer');
+            }
+          } catch (e) { /* invalid URL — do nothing */ }
         }
         break;
 
@@ -321,10 +323,12 @@ window.Michael.ShareMenu = (function() {
         {
           const url = this.options.getShareUrl();
           const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`;
-          // Validate URL before opening (must be https://www.facebook.com)
-          if (facebookUrl.startsWith('https://www.facebook.com/')) {
-            window.open(facebookUrl, '_blank', 'width=550,height=420,noopener,noreferrer');
-          }
+          try {
+            const parsed = new URL(facebookUrl);
+            if (parsed.hostname === 'www.facebook.com') {
+              window.open(facebookUrl, '_blank', 'width=550,height=420,noopener,noreferrer');
+            }
+          } catch (e) { /* invalid URL — do nothing */ }
         }
         break;
     }

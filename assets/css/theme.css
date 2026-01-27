@@ -61,6 +61,12 @@
   top: 0;
 }
 
+/* Error / 404 page */
+.error-page {
+  text-align: center;
+  padding: var(--pad-3) var(--pad-1);
+}
+
 /* -----------------------------
    1) Base / Layout Helpers
 ------------------------------ */
@@ -962,13 +968,9 @@ a:focus-visible {
   gap: var(--pad-2);
 }
 
-/* Spacing utilities */
+/* Spacing utilities (see also line ~532 for .mb-2, .gap-* — these are additional) */
 .mb-1 {
   margin-bottom: var(--pad-1);
-}
-
-.mb-2 {
-  margin-bottom: var(--pad-2);
 }
 
 .mt-0 {

@@ -190,6 +190,12 @@
   border-color: var(--text-500);
 }
 
+.color-picker-btn:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+  border-color: var(--brand-500);
+}
+
 .color-picker-dropdown {
   position: absolute;
   background: var(--surface-2);

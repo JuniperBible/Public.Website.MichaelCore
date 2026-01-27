@@ -1,114 +1,24 @@
 /* ==========================================================================
    Michael Bible Module — PWA Standalone Mode Styles
    Styles for when app is installed as PWA (Add to Home Screen)
+
+   Two detection paths, one set of rules:
+   1. CSS @media display-mode (modern browsers)
+   2. JS-added .pwa-standalone class (iOS Safari, TWA, height heuristic)
+
+   The media query adds .pwa-standalone via JS at runtime (baseof.html).
+   Both paths are covered by the class-based selectors below.
+   The media query block ONLY handles edge cases where JS hasn't run yet.
    ========================================================================== */
 
-/* Shared PWA standalone styles — used by both media query and JS class fallback.
-   The media query covers modern browsers; the .pwa-standalone class covers
-   browsers where display-mode media queries aren't reliable (iOS Safari, TWA). */
-
-:is(
-  html.pwa-standalone,
-  html.pwa-standalone body
-) {
-  height: 100vh;
-  height: 100dvh;
-  max-height: 100vh;
-  max-height: 100dvh;
-  overflow: hidden;
-}
-
-:is(html.pwa-standalone) body {
-  min-height: 100vh;
-  min-height: 100dvh;
-  padding-top: env(safe-area-inset-top, 0);
-  padding-bottom: env(safe-area-inset-bottom, 0);
-  padding-left: env(safe-area-inset-left, 0);
-  padding-right: env(safe-area-inset-right, 0);
-}
-
-:is(html.pwa-standalone) body > main {
-  flex: 1;
-  overflow-y: auto;
-  overflow-x: hidden;
-  -webkit-overflow-scrolling: touch;
-}
-
-:is(html.pwa-standalone) .pwa-install-banner,
-:is(html.pwa-standalone) .pwa-ios-instructions {
-  display: none !important;
-}
-
-:is(html.pwa-standalone) footer.chrome,
-:is(body.pwa-standalone) footer.chrome {
-  display: none !important;
-}
-
-:is(html.pwa-standalone) .footer-copyright {
-  flex-shrink: 0;
-  padding: 2px 0;
-}
-
-:is(html.pwa-standalone) .footer-copyright p,
-:is(body.pwa-standalone) .footer-copyright p {
-  padding: 2px 0 !important;
-  font-size: 0.7rem !important;
-  margin: 0;
-  line-height: 1.3;
-}
-
-:is(html.pwa-standalone) .footer-copyright .container {
-  padding: 0 var(--pad-1);
-}
-
-:is(html.pwa-standalone) .chrome {
-  flex-shrink: 0;
-}
-
-:is(html.pwa-standalone) main.pwa-home {
-  padding: var(--pad-2) var(--pad-1);
-}
-
-:is(html.pwa-standalone) main.pwa-home .panel {
-  padding: var(--pad-2);
-}
-
-:is(html.pwa-standalone) .page-header {
-  padding: var(--pad-1) 0;
-}
-
-:is(html.pwa-standalone) .page-header h1 {
-  font-size: 1.25rem;
-  margin-bottom: 0.25rem;
-}
-
-:is(html.pwa-standalone) .page-header p {
-  font-size: 0.85rem;
-  margin: 0;
-}
-
-:is(html.pwa-standalone) .card {
-  padding: var(--pad-1);
-}
-
-:is(html.pwa-standalone) main.pwa-home h2 {
-  font-size: 1rem;
-  margin: var(--pad-1) 0;
-}
-
-:is(html.pwa-standalone) .continue-reading {
-  padding: var(--pad-1);
-  margin-bottom: var(--pad-1);
-}
-
-/* CSS Media Query — applies the same styles when display-mode matches,
-   without needing the JS-added class */
+/* Display-mode media query — ensures styles apply even before JS runs */
 @media all and (display-mode: standalone),
        all and (display-mode: fullscreen),
        all and (display-mode: minimal-ui),
        all and (display-mode: window-controls-overlay) {
-  html { --pwa-standalone: 1; }
-  html:not(.pwa-standalone) { /* Add class via CSS to unify selectors */  }
+  html:not(.pwa-standalone) {
+    /* Redundant once JS adds the class, but covers the brief pre-JS window */
+  }
 
   html, html body {
     height: 100vh;
@@ -136,9 +46,7 @@
 
   .pwa-install-banner,
   .pwa-ios-instructions { display: none !important; }
-
   footer.chrome { display: none !important; }
-
   .footer-copyright { flex-shrink: 0; padding: 2px 0; }
   .footer-copyright p {
     padding: 2px 0 !important;
@@ -148,15 +56,74 @@
   }
   .footer-copyright .container { padding: 0 var(--pad-1); }
   .chrome { flex-shrink: 0; }
-  main.pwa-home { padding: var(--pad-2) var(--pad-1); }
-  main.pwa-home .panel { padding: var(--pad-2); }
-  .page-header { padding: var(--pad-1) 0; }
-  .page-header h1 { font-size: 1.25rem; margin-bottom: 0.25rem; }
-  .page-header p { font-size: 0.85rem; margin: 0; }
-  .card { padding: var(--pad-1); }
-  main.pwa-home h2 { font-size: 1rem; margin: var(--pad-1) 0; }
-  .continue-reading { padding: var(--pad-1); margin-bottom: var(--pad-1); }
 }
+
+/* JS class-based styles — primary path once JS runs.
+   Also covers iOS Safari standalone and TWA where media query won't match. */
+html.pwa-standalone,
+html.pwa-standalone body {
+  height: 100vh;
+  height: 100dvh;
+  max-height: 100vh;
+  max-height: 100dvh;
+  overflow: hidden;
+}
+
+html.pwa-standalone body {
+  min-height: 100vh;
+  min-height: 100dvh;
+  padding-top: env(safe-area-inset-top, 0);
+  padding-bottom: env(safe-area-inset-bottom, 0);
+  padding-left: env(safe-area-inset-left, 0);
+  padding-right: env(safe-area-inset-right, 0);
+}
+
+html.pwa-standalone body > main {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+
+html.pwa-standalone .pwa-install-banner,
+html.pwa-standalone .pwa-ios-instructions {
+  display: none !important;
+}
+
+:is(html, body).pwa-standalone footer.chrome {
+  display: none !important;
+}
+
+html.pwa-standalone .footer-copyright {
+  flex-shrink: 0;
+  padding: 2px 0;
+}
+
+:is(html, body).pwa-standalone .footer-copyright p {
+  padding: 2px 0 !important;
+  font-size: 0.7rem !important;
+  margin: 0;
+  line-height: 1.3;
+}
+
+html.pwa-standalone .footer-copyright .container {
+  padding: 0 var(--pad-1);
+}
+
+html.pwa-standalone .chrome {
+  flex-shrink: 0;
+}
+
+/* PWA compact layout adjustments (class-based only — these are visual
+   refinements that don't need pre-JS coverage) */
+html.pwa-standalone main.pwa-home { padding: var(--pad-2) var(--pad-1); }
+html.pwa-standalone main.pwa-home .panel { padding: var(--pad-2); }
+html.pwa-standalone .page-header { padding: var(--pad-1) 0; }
+html.pwa-standalone .page-header h1 { font-size: 1.25rem; margin-bottom: 0.25rem; }
+html.pwa-standalone .page-header p { font-size: 0.85rem; margin: 0; }
+html.pwa-standalone .card { padding: var(--pad-1); }
+html.pwa-standalone main.pwa-home h2 { font-size: 1rem; margin: var(--pad-1) 0; }
+html.pwa-standalone .continue-reading { padding: var(--pad-1); margin-bottom: var(--pad-1); }
 
 /* ==========================================================================
    PWA Install Banner
