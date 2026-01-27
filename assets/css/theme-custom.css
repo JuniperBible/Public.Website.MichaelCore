@@ -4,26 +4,54 @@
    This file is for site-specific customizations that override the default
    theme styles. It is loaded last, so all rules here take precedence.
 
-   Examples of what you might add here:
-   - Custom brand colors (override --brand-* variables)
-   - Font family changes
-   - Spacing adjustments
-   - Component style tweaks
-   - Page-specific overrides
-
-   Usage:
-   - Add your custom CSS rules below
-   - Use CSS custom properties from theme-colors.css when possible
-   - For specificity issues, increase selector weight or use !important sparingly
+   Color palette sourced from juniperbible.org
    ========================================================================== */
 
 /* -----------------------------
    Custom Color Overrides
-   Example:
-   :root {
-     --brand-500: #your-color;
-   }
+   Matched to juniperbible.org
 ------------------------------ */
+:root {
+  /* Brand - Muted purple (juniperbible accent) */
+  --brand-100: #f0e0f0;
+  --brand-400: #7d5c7d;
+  --brand-500: #6b4c6b;
+  --brand-600: #684580;
+
+  /* Success - Green */
+  --success-100: #e8f5e9;
+  --success-500: #16a34a;
+
+  /* Chrome (header/footer) - Dark teal */
+  --chrome-800: #223836;
+  --chrome-900: #1a3230;
+
+  /* Background / Surfaces (warm parchment) */
+  --bg-0: #b8a080;
+  --surface-0: #f5f1e8;
+  --surface-1: #ebe5d8;
+  --surface-2: #ffffff;
+
+  /* Text */
+  --text-900: #1a1a1a;
+  --text-700: #4a4540;
+  --text-500: #6b6560;
+  --text-400: #857f78;
+
+  /* Links */
+  --link: var(--brand-500);
+
+  /* Borders */
+  --border: #d4cfc5;
+  --border-strong: #b8b2a6;
+
+  /* Shadows */
+  --shadow-0: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-1: 0 4px 6px rgba(0, 0, 0, 0.07), 0 1px 3px rgba(0, 0, 0, 0.05);
+
+  /* Focus ring */
+  --focus-ring: 0 0 0 3px rgba(107, 76, 107, 0.35);
+}
 
 /* -----------------------------
    Custom Component Overrides
