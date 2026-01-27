@@ -39,4 +39,5 @@
   </button>
 </div>
 
-<script src="/js/michael/pwa-install.js" defer></script>
+{{ $pwaInstall := resources.Get "js/michael/pwa-install.js" }}
+{{ if $pwaInstall }}<script src="{{ $pwaInstall.RelPermalink }}" defer></script>{{ end }}

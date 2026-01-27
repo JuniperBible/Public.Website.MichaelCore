@@ -1,5 +1,8 @@
 {{ define "main" }}
 <main class="container" style="padding: var(--pad-3) var(--pad-2);">
+  {{/* Continue Reading banner */}}
+  {{ partial "michael/continue-reading.html" . }}
+
   <div class="panel">
     <header class="page-header">
       <h1>{{ .Site.Title }}</h1>

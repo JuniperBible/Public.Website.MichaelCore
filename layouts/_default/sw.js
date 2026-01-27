@@ -41,13 +41,20 @@ const SHELL_ASSETS = [
   '/manifest.json',
   '/icons/icon-192.png',
   '/icons/icon-512.png',
+  '/icons/apple-touch-icon.png',
   // CSS with fingerprinted path from Hugo
   '{{ $theme.RelPermalink }}',
-  // JS files
+  // Core JS files
   '/js/michael/bible-api.js',
   '/js/michael/dom-utils.js',
   '/js/michael/share-menu.js',
   '/js/michael/offline-manager.js',
+  '/js/michael/offline-settings-ui.js',
+  '/js/michael/pwa-install.js',
+  '/js/michael/user-storage.js',
+  '/js/michael/reading-tracker.js',
+  '/js/michael/bible-nav.js',
+  '/js/michael/chapter-dropdown.js',
   '/js/share.js',
   '/js/strongs.js',
 ];

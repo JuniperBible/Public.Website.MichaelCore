@@ -1,0 +1,91 @@
+{{/*
+  Template: continue-reading.html
+  Purpose: Show "Continue Reading" prompt based on user's reading history
+
+  This component displays the user's last read chapter using data stored
+  in IndexedDB by reading-tracker.js. Shows nothing if no reading history.
+
+  Usage: {{ partial "michael/continue-reading.html" . }}
+*/}}
+<div id="continue-reading" class="continue-reading" style="display: none;" role="region" aria-label="Continue reading">
+  <div class="continue-reading__content">
+    <span class="continue-reading__label">Continue Reading</span>
+    <a id="continue-reading-link" href="#" class="continue-reading__chapter">
+      <span id="continue-reading-title">Loading...</span>
+      <span class="continue-reading__arrow" aria-hidden="true">&rarr;</span>
+    </a>
+  </div>
+  <button id="continue-reading-dismiss" class="continue-reading__dismiss" type="button" aria-label="Dismiss continue reading prompt">
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <line x1="18" y1="6" x2="6" y2="18"></line>
+      <line x1="6" y1="6" x2="18" y2="18"></line>
+    </svg>
+  </button>
+</div>
+
+<script>
+(function() {
+  'use strict';
+
+  // Wait for reading tracker to be available
+  function initContinueReading() {
+    if (!window.Michael?.ReadingTracker) {
+      // Retry after a short delay
+      setTimeout(initContinueReading, 100);
+      return;
+    }
+
+    const tracker = window.Michael.ReadingTracker;
+    const container = document.getElementById('continue-reading');
+    const link = document.getElementById('continue-reading-link');
+    const title = document.getElementById('continue-reading-title');
+    const dismissBtn = document.getElementById('continue-reading-dismiss');
+
+    if (!container || !link || !title) return;
+
+    // Check if user dismissed continue reading
+    const dismissed = sessionStorage.getItem('continue-reading-dismissed');
+    if (dismissed === 'true') return;
+
+    // Get last read chapter
+    tracker.getLastRead().then(lastRead => {
+      if (!lastRead || !lastRead.bibleId || !lastRead.bookId || !lastRead.chapter) return;
+
+      // Build URL from parts
+      const url = `/bible/${lastRead.bibleId}/${lastRead.bookId}/${lastRead.chapter}/`;
+
+      // Don't show if we're already on that page
+      if (window.location.pathname === url) return;
+
+      // Format the title - capitalize book name
+      const bookName = lastRead.bookId.charAt(0).toUpperCase() + lastRead.bookId.slice(1);
+      const bible = lastRead.bibleId.toUpperCase();
+      const displayTitle = `${bookName} ${lastRead.chapter} (${bible})`;
+
+      link.href = url;
+      title.textContent = displayTitle;
+      container.style.display = '';
+
+      // Announce to screen readers
+      container.setAttribute('aria-live', 'polite');
+    }).catch(err => {
+      console.debug('Continue reading not available:', err);
+    });
+
+    // Handle dismiss
+    if (dismissBtn) {
+      dismissBtn.addEventListener('click', () => {
+        container.style.display = 'none';
+        sessionStorage.setItem('continue-reading-dismissed', 'true');
+      });
+    }
+  }
+
+  // Initialize when DOM is ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initContinueReading);
+  } else {
+    initContinueReading();
+  }
+})();
+</script>

@@ -53,6 +53,12 @@
   {{/* Service Worker registration */}}
   {{ partial "michael/sw-register.html" . }}
 
+  {{/* PWA Core Scripts */}}
+  {{ $userStorage := resources.Get "js/michael/user-storage.js" }}
+  {{ if $userStorage }}<script src="{{ $userStorage.RelPermalink }}" defer></script>{{ end }}
+  {{ $readingTracker := resources.Get "js/michael/reading-tracker.js" }}
+  {{ if $readingTracker }}<script src="{{ $readingTracker.RelPermalink }}" defer></script>{{ end }}
+
   {{/* PWA Install Banner */}}
   {{ partial "michael/pwa-install-banner.html" . }}
 </body>

@@ -2354,3 +2354,119 @@ a:focus-visible {
     flex: 1;
   }
 }
+
+/* -----------------------------
+   29) Continue Reading Banner
+------------------------------ */
+.continue-reading {
+  background: var(--brand-100);
+  border: 1px solid var(--brand-500);
+  border-radius: var(--radius-1);
+  padding: var(--pad-1) var(--pad-2);
+  margin-bottom: var(--pad-2);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--pad-2);
+  animation: continue-reading-fade-in 0.3s ease-out;
+}
+
+@keyframes continue-reading-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.continue-reading__content {
+  display: flex;
+  align-items: center;
+  gap: var(--pad-1);
+  flex: 1;
+  min-width: 0;
+}
+
+.continue-reading__label {
+  font-size: 0.875rem;
+  color: var(--text-700);
+  white-space: nowrap;
+}
+
+.continue-reading__chapter {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--brand-500);
+  text-decoration: none;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: background 0.15s ease;
+}
+
+.continue-reading__chapter:hover {
+  background: rgba(122, 0, 176, 0.1);
+  text-decoration: underline;
+}
+
+.continue-reading__chapter:focus {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+.continue-reading__arrow {
+  font-size: 1.125rem;
+}
+
+.continue-reading__dismiss {
+  background: transparent;
+  border: none;
+  color: var(--text-700);
+  cursor: pointer;
+  padding: 8px;
+  min-width: var(--touch-min);
+  min-height: var(--touch-min);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-1);
+  transition: background 0.15s ease;
+  flex-shrink: 0;
+}
+
+.continue-reading__dismiss:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.continue-reading__dismiss:focus {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+@media (max-width: 480px) {
+  .continue-reading {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--pad-1);
+  }
+
+  .continue-reading__content {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .continue-reading__dismiss {
+    position: absolute;
+    top: 0;
+    right: 0;
+  }
+
+  .continue-reading {
+    position: relative;
+    padding-right: calc(var(--touch-min) + var(--pad-1));
+  }
+}

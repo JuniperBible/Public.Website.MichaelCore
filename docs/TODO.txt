@@ -393,4 +393,26 @@ PROGRESS LOG
   - TestOfflineManagerErrorHandling - handles missing Bible
   - TestUserStorageErrorHandling - returns null/default for missing data
 
+[2026-01-26] PWA Integration COMPLETED
+  - Fixed script loading: Using Hugo resources.Get for JS files in baseof.html
+  - Fixed pwa-install-banner.html to use Hugo resources.Get
+  - Updated offline.html with Michael branding (colors, logo, accent colors)
+  - Created Continue Reading UI component
+    * layouts/partials/michael/continue-reading.html
+    * CSS styles in theme.css (.continue-reading)
+    * Integrated with reading-tracker.js
+    * Shows on home page when user has reading history
+  - All JS modules properly loaded via Hugo asset pipeline
+  - Service worker pre-caches all required assets
+
+  Files created:
+  - layouts/partials/michael/continue-reading.html
+
+  Files modified:
+  - layouts/_default/baseof.html (proper resources.Get for JS)
+  - layouts/partials/michael/pwa-install-banner.html (proper resources.Get)
+  - layouts/index.html (include continue-reading partial)
+  - static/offline.html (Michael branding, logo, theme colors)
+  - assets/css/theme.css (continue-reading styles)
+
 ================================================================================
