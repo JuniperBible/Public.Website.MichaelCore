@@ -90,10 +90,112 @@ body {
 }
 
 /* PWA Standalone Mode - when installed as app
-   Uses html.pwa-standalone class set early via JS in <head>
-   This ensures styles apply before first paint */
+   Uses both CSS media query AND JS class for maximum compatibility */
 
-/* Base PWA standalone styles - using html selector for early application */
+/* CSS Media Query fallback - works even if JS detection fails */
+@media all and (display-mode: standalone),
+       all and (display-mode: fullscreen),
+       all and (display-mode: minimal-ui),
+       all and (display-mode: window-controls-overlay) {
+  html, body {
+    height: 100vh;
+    height: 100dvh;
+    max-height: 100vh;
+    max-height: 100dvh;
+    overflow: hidden;
+  }
+
+  body {
+    min-height: 100vh;
+    min-height: 100dvh;
+    padding-top: env(safe-area-inset-top, 0);
+    padding-bottom: env(safe-area-inset-bottom, 0);
+    padding-left: env(safe-area-inset-left, 0);
+    padding-right: env(safe-area-inset-right, 0);
+  }
+
+  body > main {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Hide install banner in installed PWA */
+  .pwa-install-banner,
+  .pwa-ios-instructions {
+    display: none !important;
+  }
+
+  /* Hide full footer navigation in PWA mode, show only thin copyright */
+  footer.chrome {
+    display: none !important;
+  }
+
+  .footer-copyright {
+    flex-shrink: 0;
+    padding: 2px 0;
+  }
+
+  .footer-copyright p {
+    padding: 2px 0 !important;
+    font-size: 0.7rem !important;
+    margin: 0;
+    line-height: 1.3;
+  }
+
+  .footer-copyright .container {
+    padding: 0 var(--pad-1);
+  }
+
+  /* Header chrome should not shrink */
+  .chrome {
+    flex-shrink: 0;
+  }
+
+  /* Home page content - allow scrolling within main */
+  main.pwa-home {
+    padding: var(--pad-2) var(--pad-1);
+  }
+
+  main.pwa-home .panel {
+    padding: var(--pad-2);
+  }
+
+  /* Page header compact */
+  .page-header {
+    padding: var(--pad-1) 0;
+  }
+
+  .page-header h1 {
+    font-size: 1.25rem;
+    margin-bottom: 0.25rem;
+  }
+
+  .page-header p {
+    font-size: 0.85rem;
+    margin: 0;
+  }
+
+  /* Cards compact */
+  .card {
+    padding: var(--pad-1);
+  }
+
+  /* Section heading compact */
+  main.pwa-home h2 {
+    font-size: 1rem;
+    margin: var(--pad-1) 0;
+  }
+
+  /* Continue reading compact */
+  .continue-reading {
+    padding: var(--pad-1);
+    margin-bottom: var(--pad-1);
+  }
+}
+
+/* JS class-based styles (for browsers where media query doesn't work) */
 html.pwa-standalone,
 html.pwa-standalone body {
   height: 100vh;
@@ -106,7 +208,6 @@ html.pwa-standalone body {
 html.pwa-standalone body {
   min-height: 100vh;
   min-height: 100dvh;
-  /* Safe area insets for notched devices */
   padding-top: env(safe-area-inset-top, 0);
   padding-bottom: env(safe-area-inset-bottom, 0);
   padding-left: env(safe-area-inset-left, 0);
@@ -120,13 +221,11 @@ html.pwa-standalone body > main {
   -webkit-overflow-scrolling: touch;
 }
 
-/* Hide install banner in installed PWA */
 html.pwa-standalone .pwa-install-banner,
 html.pwa-standalone .pwa-ios-instructions {
   display: none !important;
 }
 
-/* Hide full footer navigation in PWA mode, show only thin copyright */
 html.pwa-standalone footer.chrome {
   display: none !important;
 }
@@ -143,82 +242,7 @@ html.pwa-standalone .footer-copyright p {
   line-height: 1.3;
 }
 
-html.pwa-standalone .footer-copyright .container {
-  padding: 0 var(--pad-1);
-}
-
-/* Header chrome should not shrink */
-html.pwa-standalone .chrome {
-  flex-shrink: 0;
-}
-
-/* Home page - scale content to fit without scrolling */
-html.pwa-standalone main.container {
-  display: flex;
-  flex-direction: column;
-  padding: var(--pad-1) !important;
-  overflow: hidden;
-}
-
-html.pwa-standalone main.container > .panel {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-
-html.pwa-standalone main.container > .panel > section {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  min-height: 0;
-}
-
-html.pwa-standalone main.container > .panel > section > .grid-2 {
-  flex: 1;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-}
-
-html.pwa-standalone main.container > .panel > section > .actions {
-  flex-shrink: 0;
-  margin-top: var(--pad-1);
-}
-
-/* Page header should be compact in PWA mode */
-html.pwa-standalone .page-header {
-  padding: var(--pad-1) 0;
-}
-
-html.pwa-standalone .page-header h1 {
-  font-size: 1.25rem;
-  margin-bottom: 0.25rem;
-}
-
-html.pwa-standalone .page-header p {
-  font-size: 0.85rem;
-  margin: 0;
-}
-
-/* Cards should be more compact */
-html.pwa-standalone .card {
-  padding: var(--pad-1);
-}
-
-/* Section heading compact */
-html.pwa-standalone main.container h2 {
-  font-size: 1rem;
-  margin: var(--pad-1) 0;
-}
-
-/* Continue reading compact */
-html.pwa-standalone .continue-reading {
-  padding: var(--pad-1);
-  margin-bottom: var(--pad-1);
-}
-
-/* Fallback: also support body.pwa-standalone for the end-of-body script */
+/* Fallback: body.pwa-standalone */
 body.pwa-standalone footer.chrome {
   display: none !important;
 }
