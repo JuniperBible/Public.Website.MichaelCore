@@ -139,6 +139,31 @@ other = "Tap Share then \"Add to Home Screen\""
 [readMore]
 other = "Read more"
 
+# Footer
+[footerAndContributors]
+other = "ja"
+
+[footerContributors]
+other = "avustajat"
+
+[footerAllRightsReserved]
+other = "Kaikki oikeudet pidätetään. Luvaton kopiointi tai levittäminen on ankarasti kielletty."
+
+[footerFindMore]
+other = "Löydä lisää"
+
+[footerBibleTranslations]
+other = "Raamatun käännöksiä"
+
+[footerAndRelatedWorks]
+other = "ja aiheeseen liittyviä teoksia osoitteessa"
+
+[footerClosing]
+other = "Kaikki hyvä alkaa ja päättyy"
+
+[footerGod]
+other = "Jumalaan"
+
 # Color picker
 [colorDark]
 other = "Dark"

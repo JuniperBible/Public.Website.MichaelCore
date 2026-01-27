@@ -139,6 +139,31 @@ other = "Tap Share then \"Add to Home Screen\""
 [readMore]
 other = "Read more"
 
+# Footer
+[footerAndContributors]
+other = "és"
+
+[footerContributors]
+other = "közreműködők"
+
+[footerAllRightsReserved]
+other = "Minden jog fenntartva. Az engedély nélküli másolás vagy terjesztés szigorúan tilos."
+
+[footerFindMore]
+other = "Találjon több"
+
+[footerBibleTranslations]
+other = "bibliafordítást"
+
+[footerAndRelatedWorks]
+other = "és kapcsolódó műveket itt"
+
+[footerClosing]
+other = "Minden jó dolog kezdődik és végződik"
+
+[footerGod]
+other = "Istennel"
+
 # Color picker
 [colorDark]
 other = "Dark"

@@ -27,7 +27,7 @@
 }
 
 .offline-settings__summary:hover {
-  background: rgba(0,0,0,.04);
+  background: var(--bg-light);
 }
 
 .offline-settings__summary:focus-visible {
@@ -249,7 +249,7 @@
 .download-progress-container {
   margin: var(--pad-2) 0;
   padding: var(--pad-2);
-  background: rgba(122, 0, 176, 0.05);
+  background: var(--brand-bg-lightest);
   border: 1px solid var(--brand-500);
   border-radius: var(--radius-1);
 }
@@ -322,7 +322,7 @@
 }
 
 .offline-message--success {
-  background: rgba(54, 176, 0, 0.1);
+  background: var(--success-bg-light);
   border-color: var(--success-500);
   color: var(--success-text);
 }
@@ -334,7 +334,7 @@
 }
 
 .offline-message--info {
-  background: rgba(122, 0, 176, 0.05);
+  background: var(--brand-bg-lightest);
   border-color: var(--brand-500);
   color: var(--text-900);
 }

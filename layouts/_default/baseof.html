@@ -62,6 +62,10 @@
   {{/* Service Worker registration */}}
   {{ partial "michael/sw-register.html" . }}
 
+  {{/* Shared Utilities (loaded before page-specific scripts) */}}
+  {{ $domUtils := resources.Get "js/michael/dom-utils.js" }}
+  {{ if $domUtils }}<script src="{{ $domUtils.RelPermalink }}" defer></script>{{ end }}
+
   {{/* PWA Core Scripts */}}
   {{ $userStorage := resources.Get "js/michael/user-storage.js" }}
   {{ if $userStorage }}<script src="{{ $userStorage.RelPermalink }}" defer></script>{{ end }}

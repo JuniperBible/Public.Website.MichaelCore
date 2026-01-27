@@ -1,0 +1,25 @@
+{{/*
+  Partial: notes-section.html
+  Purpose: Reusable footnotes and Strong's notes section
+
+  Parameters:
+  - prefix: ID prefix for elements (e.g., "sss-left-", "vvv-")
+  - type: "both" | "footnotes" | "strongs" (default: "both")
+  - hidden: whether the aside starts hidden (default: false)
+*/}}
+{{- $prefix := .prefix | default "" -}}
+{{- $type := .type | default "both" -}}
+{{- $hidden := .hidden | default false -}}
+{{- $hiddenClass := cond $hidden " hidden" "" -}}
+{{- if or (eq $type "footnotes") (eq $type "both") -}}
+<aside id="{{ $prefix }}footnotes-section" class="footnotes-section{{ $hiddenClass }}">
+  <h2>{{ i18n "footnotes" | default "Footnotes" }}</h2>
+  <ol class="footnotes-list" id="{{ $prefix }}footnotes-list"></ol>
+</aside>
+{{- end -}}
+{{- if or (eq $type "strongs") (eq $type "both") -}}
+<aside id="{{ $prefix }}strongs-section" class="strongs-notes-section">
+  <h2>{{ i18n "strongsNotes" | default "Strong's Notes" }}</h2>
+  <ol class="strongs-notes-list" id="{{ $prefix }}strongs-list"></ol>
+</aside>
+{{- end -}}

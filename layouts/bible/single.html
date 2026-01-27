@@ -95,14 +95,7 @@
 
         <!-- Notes sections (side by side) -->
         <div class="chapter-notes-row" id="chapter-notes-row">
-          <aside id="footnotes-section" class="footnotes-section">
-            <h2>{{ i18n "footnotes" | default "Footnotes" }}</h2>
-            <ol class="footnotes-list" id="footnotes-list"></ol>
-          </aside>
-          <aside id="strongs-section" class="strongs-notes-section">
-            <h2>{{ i18n "strongsNotes" | default "Strong's Notes" }}</h2>
-            <ol class="strongs-notes-list" id="strongs-list"></ol>
-          </aside>
+          {{ partial "michael/notes-section.html" (dict "type" "both") }}
         </div>
 
         <!-- Bottom navigation for convenience -->
@@ -113,14 +106,14 @@
       <!-- Book view: show chapter list -->
       {{ partial "michael/bible-nav.html" (dict "page" . "bible" .Params.bible "book" .Params.book "chapter" 0 "basePath" $basePath) }}
       <div class="book-content">
-        {{ .Content | safeHTML }}
+        {{ .Content }}
       </div>
 
     {{ else }}
       <!-- Bible overview: show book list -->
       {{ partial "michael/bible-nav.html" (dict "page" . "bible" .Params.bible "book" "" "chapter" 0 "basePath" $basePath) }}
       <div class="book-content">
-        {{ .Content | safeHTML }}
+        {{ .Content }}
       </div>
     {{ end }}
 

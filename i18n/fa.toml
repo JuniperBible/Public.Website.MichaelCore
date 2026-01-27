@@ -139,6 +139,31 @@ other = "Tap Share then \"Add to Home Screen\""
 [readMore]
 other = "Read more"
 
+# Footer
+[footerAndContributors]
+other = "و"
+
+[footerContributors]
+other = "مشارکت‌کنندگان"
+
+[footerAllRightsReserved]
+other = "کلیه حقوق محفوظ است. کپی یا توزیع غیرمجاز به شدت ممنوع است."
+
+[footerFindMore]
+other = "بیشتر پیدا کنید"
+
+[footerBibleTranslations]
+other = "ترجمه‌های کتاب مقدس"
+
+[footerAndRelatedWorks]
+other = "و آثار مرتبط در"
+
+[footerClosing]
+other = "همه چیزهای خوب شروع و پایان می‌یابند با"
+
+[footerGod]
+other = "خدا"
+
 # Color picker
 [colorDark]
 other = "Dark"

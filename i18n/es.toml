@@ -139,6 +139,31 @@ other = "Tap Share then \"Add to Home Screen\""
 [readMore]
 other = "Read more"
 
+# Footer
+[footerAndContributors]
+other = "y"
+
+[footerContributors]
+other = "colaboradores"
+
+[footerAllRightsReserved]
+other = "Todos los derechos reservados. Está estrictamente prohibida la duplicación o distribución no autorizada."
+
+[footerFindMore]
+other = "Encuentra más"
+
+[footerBibleTranslations]
+other = "traducciones de la Biblia"
+
+[footerAndRelatedWorks]
+other = "y obras relacionadas en"
+
+[footerClosing]
+other = "Todas las cosas buenas comienzan y terminan con"
+
+[footerGod]
+other = "Dios"
+
 # Color picker
 [colorDark]
 other = "Dark"

@@ -620,16 +620,7 @@ function renderWithHighlights(text, diffs, side, options = {}) {
  * Uses shared utility from DomUtils module
  */
 function escapeHtml(text) {
-  if (window.Michael?.DomUtils?.escapeHtml) {
-    return window.Michael.DomUtils.escapeHtml(text);
-  }
-  // Fallback if DomUtils not loaded
-  return text
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#039;');
+  return window.Michael.DomUtils.escapeHtml(text);
 }
 
 // ==================== CSS Classes (for reference) ====================

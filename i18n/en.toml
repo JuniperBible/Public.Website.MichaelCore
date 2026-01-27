@@ -346,6 +346,31 @@ other = "Bible Translations Using This License"
 [noBibleTranslationsUseLicense]
 other = "No Bible translations currently use this license."
 
+# Footer
+[footerAndContributors]
+other = "and"
+
+[footerContributors]
+other = "contributors"
+
+[footerAllRightsReserved]
+other = "All rights reserved. Unauthorized duplication or distribution is strictly prohibited."
+
+[footerFindMore]
+other = "Find more"
+
+[footerBibleTranslations]
+other = "bible translations"
+
+[footerAndRelatedWorks]
+other = "and related works at"
+
+[footerClosing]
+other = "All good things start and end with"
+
+[footerGod]
+other = "God"
+
 # Color picker
 [colorDark]
 other = "Dark"

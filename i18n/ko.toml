@@ -139,6 +139,31 @@ other = "Tap Share then \"Add to Home Screen\""
 [readMore]
 other = "Read more"
 
+# Footer
+[footerAndContributors]
+other = "및"
+
+[footerContributors]
+other = "기여자"
+
+[footerAllRightsReserved]
+other = "모든 권리 보유. 무단 복제 또는 배포는 엄격히 금지됩니다."
+
+[footerFindMore]
+other = "더 많은"
+
+[footerBibleTranslations]
+other = "성경 번역"
+
+[footerAndRelatedWorks]
+other = "및 관련 작품 찾기"
+
+[footerClosing]
+other = "모든 좋은 것은 시작하고 끝나는 것은"
+
+[footerGod]
+other = "하나님"
+
 # Color picker
 [colorDark]
 other = "Dark"

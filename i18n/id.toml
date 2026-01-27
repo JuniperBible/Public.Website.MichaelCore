@@ -139,6 +139,31 @@ other = "Tap Share then \"Add to Home Screen\""
 [readMore]
 other = "Read more"
 
+# Footer
+[footerAndContributors]
+other = "dan"
+
+[footerContributors]
+other = "kontributor"
+
+[footerAllRightsReserved]
+other = "Hak cipta dilindungi. Penggandaan atau distribusi tanpa izin sangat dilarang."
+
+[footerFindMore]
+other = "Temukan lebih banyak"
+
+[footerBibleTranslations]
+other = "terjemahan Alkitab"
+
+[footerAndRelatedWorks]
+other = "dan karya terkait di"
+
+[footerClosing]
+other = "Semua hal baik dimulai dan diakhiri dengan"
+
+[footerGod]
+other = "Tuhan"
+
 # Color picker
 [colorDark]
 other = "Dark"

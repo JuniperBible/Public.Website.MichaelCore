@@ -17,6 +17,7 @@
   /* Chrome (header/footer) - Dark gray */
   --chrome-800: #4a4a4a;
   --chrome-900: #3f3f3f;
+  --chrome-text: rgba(255, 255, 255, 0.92);
 
   /* Background / Surfaces (parchment theme) */
   --bg-0: #b6a58f;        /* outer background */
@@ -36,6 +37,7 @@
   /* Borders */
   --border: rgba(0, 0, 0, 0.18);
   --border-strong: rgba(0, 0, 0, 0.35);
+  --border-hover: rgba(0, 0, 0, 0.55);
 
   /* Shadows */
   --shadow-0: 0 1px 0 rgba(0,0,0,.14);
@@ -56,7 +58,9 @@
   --state-error-bg: #ffebee;
   --state-loading: var(--brand-500);
 
-  /* Success text color */
+  /* Success tints */
+  --success-border: rgba(54, 176, 0, 0.45);
+  --success-bg-light: rgba(54, 176, 0, 0.12);
   --success-text: #1d3a0a;
 
   /* Toast background colors */
@@ -65,5 +69,20 @@
   --toast-error-bg: #5c1a1a;
 
   /* Surface alpha (semi-transparent white) */
-  --surface-alpha: rgba(255,255,255,.55);
+  --surface-alpha: rgba(255, 255, 255, 0.55);
+
+  /* Subtle backgrounds */
+  --bg-light: rgba(0, 0, 0, 0.04);
+
+  /* Brand tints */
+  --brand-bg-lightest: rgba(122, 0, 176, 0.05);
+  --brand-bg-light: rgba(122, 0, 176, 0.08);
+  --brand-bg: rgba(122, 0, 176, 0.1);
+  --brand-bg-medium: rgba(122, 0, 176, 0.15);
+
+  /* Z-index scale */
+  --z-dropdown: 100;
+  --z-overlay: 1000;
+  --z-overlay-above: 1001;
+  --z-toast: 9999;
 }

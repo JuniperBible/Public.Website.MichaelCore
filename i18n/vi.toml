@@ -139,6 +139,31 @@ other = "Tap Share then \"Add to Home Screen\""
 [readMore]
 other = "Read more"
 
+# Footer
+[footerAndContributors]
+other = "và"
+
+[footerContributors]
+other = "những người đóng góp"
+
+[footerAllRightsReserved]
+other = "Bảo lưu mọi quyền. Nghiêm cấm sao chép hoặc phân phối trái phép."
+
+[footerFindMore]
+other = "Tìm thêm"
+
+[footerBibleTranslations]
+other = "bản dịch Kinh Thánh"
+
+[footerAndRelatedWorks]
+other = "và các tác phẩm liên quan tại"
+
+[footerClosing]
+other = "Mọi điều tốt đẹp đều bắt đầu và kết thúc với"
+
+[footerGod]
+other = "Thiên Chúa"
+
 # Color picker
 [colorDark]
 other = "Dark"

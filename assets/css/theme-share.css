@@ -8,7 +8,7 @@
 ------------------------------ */
 .share-menu {
   position: absolute;
-  z-index: 1000;
+  z-index: var(--z-overlay);
   min-width: 200px;
 
   background: var(--surface-2);
@@ -89,7 +89,7 @@
   bottom: 24px;
   left: 50%;
   transform: translateX(-50%) translateY(100px);
-  z-index: 9999;
+  z-index: var(--z-toast);
 
   max-width: 90%;
   width: auto;

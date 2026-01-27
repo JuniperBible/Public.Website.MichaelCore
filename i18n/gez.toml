@@ -139,6 +139,31 @@ other = "Tap Share then \"Add to Home Screen\""
 [readMore]
 other = "Read more"
 
+# Footer
+[footerAndContributors]
+other = "ወ"
+
+[footerContributors]
+other = "አበርክቶ ሠራተኞች"
+
+[footerAllRightsReserved]
+other = "ኵሉ መሥዋዕ ተሐንጸ። ዘኢተፈቅደ ማኅተም ወይኒ መከፋፈል ብርቱዐ ይኅደግ።"
+
+[footerFindMore]
+other = "ረክብ ዝያዳ"
+
+[footerBibleTranslations]
+other = "ትርጓሜያተ መጽሐፍ ቅዱስ"
+
+[footerAndRelatedWorks]
+other = "ወምስላተ ተዛመደ በ"
+
+[footerClosing]
+other = "ኵሉ ሠናይ ይትጌጋም ወይተፈጸም በ"
+
+[footerGod]
+other = "እግዚአብሔር"
+
 # Color picker
 [colorDark]
 other = "Dark"

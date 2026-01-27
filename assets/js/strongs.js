@@ -458,13 +458,7 @@
    * @returns {string} Escaped string safe for HTML insertion
    */
   function escapeHtml(str) {
-    if (window.Michael?.DomUtils?.escapeHtml) {
-      return window.Michael.DomUtils.escapeHtml(str);
-    }
-    // Fallback if DomUtils not loaded
-    const div = document.createElement('div');
-    div.textContent = str;
-    return div.innerHTML;
+    return window.Michael.DomUtils.escapeHtml(str);
   }
 
   // ============================================================================

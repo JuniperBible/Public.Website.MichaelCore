@@ -139,6 +139,31 @@ other = "Tap Share then \"Add to Home Screen\""
 [readMore]
 other = "Read more"
 
+# Footer
+[footerAndContributors]
+other = "மற்றும்"
+
+[footerContributors]
+other = "பங்களிப்பாளர்கள்"
+
+[footerAllRightsReserved]
+other = "அனைத்து உரிமைகளும் பாதுகாக்கப்பட்டவை. அங்கீகரிக்கப்படாத நகல் அல்லது விநியோகம் கண்டிப்பாக தடைசெய்யப்பட்டுள்ளது."
+
+[footerFindMore]
+other = "மேலும் கண்டறியவும்"
+
+[footerBibleTranslations]
+other = "பைபிள் மொழிபெயர்ப்புகள்"
+
+[footerAndRelatedWorks]
+other = "மற்றும் தொடர்புடைய படைப்புகளை இங்கே"
+
+[footerClosing]
+other = "எல்லா நல்ல விஷயங்களும் தொடங்கி முடிவடைவது"
+
+[footerGod]
+other = "தேவன்"
+
 # Color picker
 [colorDark]
 other = "Dark"

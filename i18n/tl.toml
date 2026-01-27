@@ -139,6 +139,31 @@ other = "Tap Share then \"Add to Home Screen\""
 [readMore]
 other = "Read more"
 
+# Footer
+[footerAndContributors]
+other = "at"
+
+[footerContributors]
+other = "mga tagapag-ambag"
+
+[footerAllRightsReserved]
+other = "Lahat ng karapatan ay nakalaan. Mahigpit na ipinagbabawal ang hindi awtorisadong pagkopya o pamamahagi."
+
+[footerFindMore]
+other = "Maghanap ng higit pa"
+
+[footerBibleTranslations]
+other = "mga pagsasalin ng Bibliya"
+
+[footerAndRelatedWorks]
+other = "at mga kaugnay na gawa sa"
+
+[footerClosing]
+other = "Ang lahat ng mabuting bagay ay nagsisimula at nagtatapos sa"
+
+[footerGod]
+other = "Diyos"
+
 # Color picker
 [colorDark]
 other = "Dark"

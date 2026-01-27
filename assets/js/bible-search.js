@@ -88,9 +88,7 @@
    * // Returns: '&lt;script&gt;alert("xss")&lt;/script&gt;'
    */
   function escapeHtml(str) {
-    const div = document.createElement('div');
-    div.textContent = str;
-    return div.innerHTML;
+    return window.Michael.DomUtils.escapeHtml(str);
   }
 
   /**

@@ -174,7 +174,7 @@ body.pwa-standalone .footer-copyright p {
   bottom: 0;
   left: 0;
   right: 0;
-  z-index: 1000;
+  z-index: var(--z-overlay);
   background: var(--chrome-900);
   color: rgba(255,255,255,.95);
   padding: var(--pad-2);
@@ -284,7 +284,7 @@ body.pwa-standalone .footer-copyright p {
   top: 0;
   left: 0;
   right: 0;
-  z-index: 1001;
+  z-index: var(--z-overlay-above);
   background: var(--brand-500);
   color: var(--surface-2);
   padding: var(--pad-1) var(--pad-2);

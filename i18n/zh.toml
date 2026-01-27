@@ -139,6 +139,31 @@ other = "Tap Share then \"Add to Home Screen\""
 [readMore]
 other = "Read more"
 
+# Footer
+[footerAndContributors]
+other = "和"
+
+[footerContributors]
+other = "贡献者"
+
+[footerAllRightsReserved]
+other = "版权所有。严禁未经授权的复制或分发。"
+
+[footerFindMore]
+other = "查找更多"
+
+[footerBibleTranslations]
+other = "圣经译本"
+
+[footerAndRelatedWorks]
+other = "和相关作品于"
+
+[footerClosing]
+other = "一切美好的事物都始于并终于"
+
+[footerGod]
+other = "神"
+
 # Color picker
 [colorDark]
 other = "Dark"

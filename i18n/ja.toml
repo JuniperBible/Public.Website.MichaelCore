@@ -139,6 +139,31 @@ other = "Tap Share then \"Add to Home Screen\""
 [readMore]
 other = "Read more"
 
+# Footer
+[footerAndContributors]
+other = "と"
+
+[footerContributors]
+other = "貢献者"
+
+[footerAllRightsReserved]
+other = "すべての権利は保護されています。無断での複製または配布は固く禁じられています。"
+
+[footerFindMore]
+other = "さらに多くの"
+
+[footerBibleTranslations]
+other = "聖書翻訳"
+
+[footerAndRelatedWorks]
+other = "と関連作品を見つける"
+
+[footerClosing]
+other = "すべての良いことは始まり、終わるのは"
+
+[footerGod]
+other = "神"
+
 # Color picker
 [colorDark]
 other = "Dark"

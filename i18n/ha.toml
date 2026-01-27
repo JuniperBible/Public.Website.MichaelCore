@@ -139,6 +139,31 @@ other = "Tap Share then \"Add to Home Screen\""
 [readMore]
 other = "Read more"
 
+# Footer
+[footerAndContributors]
+other = "da"
+
+[footerContributors]
+other = "masu bayarwa"
+
+[footerAllRightsReserved]
+other = "An kiyaye dukkan haƙƙoƙi. An haramta yin kwafi ko rarrabawa ba tare da izini ba."
+
+[footerFindMore]
+other = "Nemo ƙarin"
+
+[footerBibleTranslations]
+other = "fassarar Littafi Mai Tsarki"
+
+[footerAndRelatedWorks]
+other = "da ayyukan da suke da alaƙa a"
+
+[footerClosing]
+other = "Dukkan abubuwa masu kyau suna farawa kuma suna ƙarewa da"
+
+[footerGod]
+other = "Allah"
+
 # Color picker
 [colorDark]
 other = "Dark"

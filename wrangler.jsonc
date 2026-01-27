@@ -3,6 +3,8 @@
   "name": "michael-dev",
   "compatibility_date": "2026-01-27",
   "assets": {
-    "directory": "./public"
+    "directory": "./public",
+    "html_handling": "auto-trailing-slash",
+    "not_found_handling": "single-page-application"
   }
 }

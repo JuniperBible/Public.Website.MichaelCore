@@ -139,6 +139,31 @@ other = "Tap Share then \"Add to Home Screen\""
 [readMore]
 other = "Read more"
 
+# Footer
+[footerAndContributors]
+other = "ve"
+
+[footerContributors]
+other = "katkıda bulunanlar"
+
+[footerAllRightsReserved]
+other = "Tüm hakları saklıdır. İzinsiz çoğaltma veya dağıtım kesinlikle yasaktır."
+
+[footerFindMore]
+other = "Daha fazla bulun"
+
+[footerBibleTranslations]
+other = "İncil çevirileri"
+
+[footerAndRelatedWorks]
+other = "ve ilgili eserler"
+
+[footerClosing]
+other = "Tüm iyi şeyler başlar ve biter"
+
+[footerGod]
+other = "Tanrı ile"
+
 # Color picker
 [colorDark]
 other = "Dark"

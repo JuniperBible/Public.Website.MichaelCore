@@ -136,11 +136,11 @@ a:focus-visible {
 ------------------------------ */
 .chrome {
   background: var(--chrome-900);
-  color: rgba(255,255,255,.92);
+  color: var(--chrome-text);
 }
 
 .chrome a {
-  color: rgba(255,255,255,.92);
+  color: var(--chrome-text);
   text-decoration: none;
 }
 
@@ -148,11 +148,11 @@ a:focus-visible {
 
 .footer-copyright {
   background: var(--chrome-900);
-  color: rgba(255,255,255,.92);
+  color: var(--chrome-text);
   text-align: center;
 }
 .footer-copyright a {
-  color: rgba(255,255,255,.92);
+  color: var(--chrome-text);
   text-decoration: underline;
 }
 .footer-copyright a:hover { color: var(--surface-2); }
@@ -274,7 +274,7 @@ a:focus-visible {
 
 .chip:hover {
   background: var(--surface-1);
-  border-color: rgba(0,0,0,.55);
+  border-color: var(--border-hover);
 }
 
 .chip:focus-visible {
@@ -315,9 +315,9 @@ a:focus-visible {
 
 /* Semantic badge variants */
 .badge--success {
-  border-color: rgba(54,176,0,.45);
+  border-color: var(--success-border);
   color: var(--success-text);
-  background: rgba(54,176,0,.12);
+  background: var(--success-bg-light);
 }
 
 /* -----------------------------
@@ -397,14 +397,14 @@ a:focus-visible {
 .notice {
   border-radius: var(--radius-1);
   border: 1px solid var(--border);
-  background: rgba(255,255,255,.55);
+  background: var(--surface-alpha);
   padding: 10px 12px;
   color: var(--text-700);
 }
 
 .notice--success {
-  border-color: rgba(54,176,0,.45);
-  background: rgba(54,176,0,.12);
+  border-color: var(--success-border);
+  background: var(--success-bg-light);
   color: var(--success-text);
 }
 
@@ -429,7 +429,7 @@ a:focus-visible {
 
 .tile:hover {
   background: var(--surface-1);
-  border-color: rgba(0,0,0,.55);
+  border-color: var(--border-hover);
 }
 
 .tile:focus-visible {
@@ -613,7 +613,7 @@ a:focus-visible {
 .book-link:hover,
 .chapter-link:hover {
   background: var(--surface-1);
-  border-color: rgba(0,0,0,.55);
+  border-color: var(--border-hover);
   text-decoration: none;
 }
 
@@ -772,7 +772,7 @@ a:focus-visible {
 
 .verse-btn:hover {
   background: var(--surface-1);
-  border-color: rgba(0,0,0,.55);
+  border-color: var(--border-hover);
   transform: translateY(-1px);
 }
 

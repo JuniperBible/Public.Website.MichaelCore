@@ -139,6 +139,31 @@ other = "Tap Share then \"Add to Home Screen\""
 [readMore]
 other = "Read more"
 
+# Footer
+[footerAndContributors]
+other = "na"
+
+[footerContributors]
+other = "wachangiaji"
+
+[footerAllRightsReserved]
+other = "Haki zote zimehifadhiwa. Kunakili au kusambaza bila idhini kunachibika kabisa."
+
+[footerFindMore]
+other = "Tafuta zaidi"
+
+[footerBibleTranslations]
+other = "tafsiri za Biblia"
+
+[footerAndRelatedWorks]
+other = "na kazi zinazohusiana katika"
+
+[footerClosing]
+other = "Mambo yote mazuri yanaanza na kumalizika na"
+
+[footerGod]
+other = "Mungu"
+
 # Color picker
 [colorDark]
 other = "Dark"

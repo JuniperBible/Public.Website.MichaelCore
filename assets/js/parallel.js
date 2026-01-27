@@ -361,9 +361,7 @@
    * @returns {string} Escaped string safe for HTML insertion
    */
   function escapeHtml(str) {
-    const div = document.createElement('div');
-    div.textContent = str;
-    return div.innerHTML;
+    return window.Michael.DomUtils.escapeHtml(str);
   }
 
   /**

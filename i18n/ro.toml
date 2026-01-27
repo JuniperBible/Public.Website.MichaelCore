@@ -139,6 +139,31 @@ other = "Tap Share then \"Add to Home Screen\""
 [readMore]
 other = "Read more"
 
+# Footer
+[footerAndContributors]
+other = "și"
+
+[footerContributors]
+other = "colaboratori"
+
+[footerAllRightsReserved]
+other = "Toate drepturile rezervate. Copierea sau distribuirea neautorizată este strict interzisă."
+
+[footerFindMore]
+other = "Găsiți mai multe"
+
+[footerBibleTranslations]
+other = "traduceri biblice"
+
+[footerAndRelatedWorks]
+other = "și lucrări conexe la"
+
+[footerClosing]
+other = "Toate lucrurile bune încep și se termină cu"
+
+[footerGod]
+other = "Dumnezeu"
+
 # Color picker
 [colorDark]
 other = "Dark"

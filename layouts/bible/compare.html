@@ -21,7 +21,7 @@
 
 {{ define "scripts" }}
 {{ partial "michael/strongs-data.html" . }}
-{{- range slice "js/michael/dom-utils.js" "js/michael/bible-api.js" "js/michael/footnotes.js" "js/text-compare.js" "js/parallel.js" -}}
+{{- range slice "js/michael/bible-api.js" "js/michael/footnotes.js" "js/text-compare.js" "js/parallel.js" -}}
 {{- $script := resources.Get . -}}
 {{- if $script }}<script src="{{ $script.RelPermalink }}" defer></script>{{ end -}}
 {{- end -}}
@@ -83,26 +83,17 @@
         <div class="compare-pane-wrapper">
           <div class="compare-pane" id="sss-left-pane"><div class="center muted">Select a Bible</div></div>
           <!-- Notes section for left pane -->
-          <aside id="sss-left-footnotes-section" class="footnotes-section hidden">
-            <h2>{{ i18n "footnotes" | default "Footnotes" }}</h2>
-            <ol class="footnotes-list" id="sss-left-footnotes-list"></ol>
-          </aside>
+          {{ partial "michael/notes-section.html" (dict "prefix" "sss-left-" "type" "footnotes" "hidden" true) }}
         </div>
         <div class="compare-pane-wrapper">
           <div class="compare-pane" id="sss-right-pane"><div class="center muted">Select a Bible</div></div>
           <!-- Notes section for right pane -->
-          <aside id="sss-right-footnotes-section" class="footnotes-section hidden">
-            <h2>{{ i18n "footnotes" | default "Footnotes" }}</h2>
-            <ol class="footnotes-list" id="sss-right-footnotes-list"></ol>
-          </aside>
+          {{ partial "michael/notes-section.html" (dict "prefix" "sss-right-" "type" "footnotes" "hidden" true) }}
         </div>
       </div>
       <!-- Strong's Notes section (shared, below panes) -->
       <div class="compare-notes-row hidden" id="sss-notes-row">
-        <aside id="sss-strongs-section" class="strongs-notes-section">
-          <h2>{{ i18n "strongsNotes" | default "Strong's Notes" }}</h2>
-          <ol class="strongs-notes-list" id="sss-strongs-list"></ol>
-        </aside>
+        {{ partial "michael/notes-section.html" (dict "prefix" "sss-" "type" "strongs") }}
       </div>
     </div>
     <!-- Parallel Verse Display (Normal Mode) -->
@@ -111,14 +102,7 @@
     </div>
     <!-- Notes sections for VVV mode (side by side) -->
     <div class="compare-notes-row hidden" id="vvv-notes-row">
-      <aside id="vvv-footnotes-section" class="footnotes-section">
-        <h2>{{ i18n "footnotes" | default "Footnotes" }}</h2>
-        <ol class="footnotes-list" id="vvv-footnotes-list"></ol>
-      </aside>
-      <aside id="vvv-strongs-section" class="strongs-notes-section">
-        <h2>{{ i18n "strongsNotes" | default "Strong's Notes" }}</h2>
-        <ol class="strongs-notes-list" id="vvv-strongs-list"></ol>
-      </aside>
+      {{ partial "michael/notes-section.html" (dict "prefix" "vvv-" "type" "both") }}
     </div>
     <!-- Screen reader announcements for compare page -->
     <div id="compare-announcer" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></div>
