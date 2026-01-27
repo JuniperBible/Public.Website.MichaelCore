@@ -1,5 +1,5 @@
 {{ define "main" }}
-<main class="container" style="padding: var(--pad-3) var(--pad-2);">
+<main class="container pwa-home">
   {{/* Continue Reading banner */}}
   {{ partial "michael/continue-reading.html" . }}
 
@@ -16,7 +16,7 @@
     {{ with $biblesPage }}
     <section>
       <h2>Bible Translations</h2>
-      <div class="grid-2">
+      <div class="grid-2 bible-grid">
         {{ range .Site.Data.bibles.bibles }}
         <div class="card">
           <h3 class="card__title">

@@ -17,6 +17,21 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  {{/* Early PWA standalone detection - must run before body renders */}}
+  <script>
+    (function() {
+      // Detect PWA standalone mode early and add class to html element
+      // This runs before body exists, so we add to documentElement (html)
+      var isStandalone = window.matchMedia('(display-mode: standalone)').matches ||
+                         window.matchMedia('(display-mode: fullscreen)').matches ||
+                         window.matchMedia('(display-mode: minimal-ui)').matches ||
+                         window.navigator.standalone === true ||
+                         document.referrer.includes('android-app://');
+      if (isStandalone) {
+        document.documentElement.classList.add('pwa-standalone');
+      }
+    })();
+  </script>
   <title>{{- if .IsHome -}}{{ .Site.Title }}{{- else -}}{{ .Title }} | {{ .Site.Title }}{{- end -}}</title>
   <meta name="description" content="{{ with .Description }}{{ . }}{{ else }}{{ with .Summary }}{{ . | plainify }}{{ else }}{{ .Site.Params.description }}{{ end }}{{ end }}">
   {{/* Content Security Policy - restrictive by default */}}
@@ -62,12 +77,18 @@
   {{/* PWA Install Banner */}}
   {{ partial "michael/pwa-install-banner.html" . }}
 
-  {{/* Detect PWA standalone mode */}}
+  {{/* Detect PWA standalone mode - also add to body for CSS specificity */}}
   <script>
-    if (window.matchMedia('(display-mode: standalone)').matches ||
-        window.navigator.standalone === true) {
-      document.body.classList.add('pwa-standalone');
-    }
+    (function() {
+      var isStandalone = window.matchMedia('(display-mode: standalone)').matches ||
+                         window.matchMedia('(display-mode: fullscreen)').matches ||
+                         window.matchMedia('(display-mode: minimal-ui)').matches ||
+                         window.navigator.standalone === true ||
+                         document.referrer.includes('android-app://');
+      if (isStandalone) {
+        document.body.classList.add('pwa-standalone');
+      }
+    })();
   </script>
 </body>
 </html>
