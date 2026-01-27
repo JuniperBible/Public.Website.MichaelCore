@@ -1,8 +1,8 @@
 /**
  * @file strongs.js - Strong's concordance tooltip functionality
  * @description Displays Greek and Hebrew word definitions when users
- *              click on Strong's numbers in Bible text. Supports both
- *              local bundled definitions and external API fallback.
+ *              click on Strong's numbers in Bible text. Uses locally
+ *              bundled definitions injected by Hugo at build time.
  * @version 2.0.0
  *
  * Strong's Numbering System:
@@ -30,15 +30,7 @@
   // CONFIGURATION
   // ============================================================================
 
-  /**
-   * External lexicon URLs for full Strong's definitions
-   * Blue Letter Bible provides comprehensive Strong's concordance data
-   * @const {Object}
-   */
-  const STRONGS_URLS = {
-    hebrew: 'https://www.blueletterbible.org/lexicon/h',
-    greek: 'https://www.blueletterbible.org/lexicon/g'
-  };
+  // Strong's definitions are served locally — no external links needed
 
   /**
    * Strong's definition object structure
@@ -111,7 +103,6 @@
     tooltip.innerHTML = `
       <h4 class="strongs-number"></h4>
       <div class="strongs-definition"></div>
-      <a class="strongs-link" href="#" target="_blank" rel="noopener">View Full Entry</a>
     `;
     document.body.appendChild(tooltip);
 
@@ -179,10 +170,6 @@
     // Populate tooltip header with language type and number
     const typeName = type === 'H' ? 'Hebrew' : 'Greek';
     tip.querySelector('.strongs-number').textContent = `${typeName} ${number}`;
-
-    // Set external lexicon link
-    const baseUrl = type === 'H' ? STRONGS_URLS.hebrew : STRONGS_URLS.greek;
-    tip.querySelector('.strongs-link').href = `${baseUrl}${number}/kjv/`;
 
     // Load and display definition content
     loadDefinition(number, type, tip);
@@ -256,7 +243,6 @@
 
     // Build the note HTML
     const typeName = type === 'H' ? 'Hebrew' : 'Greek';
-    const baseUrl = type === 'H' ? STRONGS_URLS.hebrew : STRONGS_URLS.greek;
     let html = `<strong>${typeName} ${number}</strong>`;
 
     if (def.source === 'local') {
@@ -271,7 +257,6 @@
       html += `: ${escapeHtml(def.note)}`;
     }
 
-    html += ` <a href="${baseUrl}${number}/kjv/" target="_blank" rel="noopener" class="strongs-external-link">↗</a>`;
 
     // Create and append the list item
     const li = document.createElement('li');
@@ -315,15 +300,13 @@
    * Data Loading Strategy:
    * 1. Check in-memory cache first for instant display
    * 2. Check for local bundled JSON data (injected by Hugo partial)
-   * 3. Fall back to external API if needed (currently disabled due to CORS)
-   * 4. Show "offline unavailable" message if no data source available
+   * 3. Show "not available" message if no local data found
    *
-   * @async
    * @param {string} number - The numeric part of the Strong's number
    * @param {string} type - Language type: "H" for Hebrew or "G" for Greek
    * @param {HTMLElement} tip - The tooltip element to populate
    */
-  async function loadDefinition(number, type, tip) {
+  function loadDefinition(number, type, tip) {
     const cacheKey = `${type}${number}`;
     let def = null;
 
@@ -344,30 +327,12 @@
       return;
     }
 
-    // If no local data and online, could try external API here
-    // Currently disabled due to CORS restrictions with Blue Letter Bible
-    if (navigator.onLine) {
-      try {
-        const apiDef = await fetchFromAPI(number, type);
-        if (apiDef) {
-          definitionCache.set(cacheKey, apiDef);
-          showDefinition(tip, apiDef);
-          addToStrongsNotes(number, type, apiDef);
-          return;
-        }
-      } catch (error) {
-        console.warn(`Failed to fetch Strong's ${type}${number} from API:`, error);
-      }
-    }
-
     // Fallback: Show unavailable message
     const typeName = type === 'H' ? 'Hebrew' : 'Greek';
     const definition = {
       number: `${type}${number}`,
       type: typeName,
-      note: navigator.onLine
-        ? `Click "View Full Entry" for the complete ${typeName} definition from Strong's Concordance.`
-        : `Definition not available offline. Connect to the internet or add this entry to local data.`,
+      note: `${typeName} ${number} — definition not available in local data.`,
       offline: !navigator.onLine
     };
 
@@ -411,20 +376,6 @@
     };
   }
 
-  /**
-   * Fetch definition from external API (Blue Letter Bible)
-   * Currently returns null due to CORS restrictions
-   *
-   * @param {string} number - Strong's number without prefix
-   * @param {string} type - 'H' for Hebrew or 'G' for Greek
-   * @returns {Promise<StrongsDefinition|null>} Definition object or null
-   */
-  async function fetchFromAPI(number, type) {
-    // Note: Blue Letter Bible doesn't have a public JSON API
-    // and their website blocks CORS requests
-    // This is a placeholder for future API integration if available
-    return null;
-  }
 
   /**
    * Renders definition content into the tooltip

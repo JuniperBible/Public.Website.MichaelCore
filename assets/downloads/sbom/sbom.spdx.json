@@ -3,14 +3,14 @@
   "dataLicense": "CC0-1.0",
   "SPDXID": "SPDXRef-DOCUMENT",
   "name": "michael",
-  "documentNamespace": "https://anchore.com/syft/dir/michael-0e08d224-e303-425c-b9d7-5bd4adcf9d6a",
+  "documentNamespace": "https://anchore.com/syft/dir/michael-9d84d754-ccd5-4dcd-b520-512158142217",
   "creationInfo": {
     "licenseListVersion": "3.27",
     "creators": [
       "Organization: Anchore, Inc",
       "Tool: syft-1.38.0"
     ],
-    "created": "2026-01-27T06:06:27Z"
+    "created": "2026-01-27T07:20:15Z"
   },
   "packages": [
     {
@@ -23862,7 +23862,7 @@
     {
       "name": "michael",
       "SPDXID": "SPDXRef-DocumentRoot-Directory-michael",
-      "versionInfo": "f4f2384",
+      "versionInfo": "475f20d",
       "supplier": "NOASSERTION",
       "downloadLocation": "NOASSERTION",
       "filesAnalyzed": false,
@@ -23965,6 +23965,18 @@
       "licenseDeclared": "Proprietary",
       "copyrightText": "NOASSERTION",
       "description": "Book mappings and Bible data structures",
+      "primaryPackagePurpose": "DATA"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-strong's-concordance-lexicon",
+      "name": "Strong's Concordance Lexicon",
+      "versionInfo": "2024",
+      "supplier": "ORGANIZATION: OpenScriptures",
+      "downloadLocation": "https://github.com/openscriptures/strongs",
+      "licenseConcluded": "CC-BY-SA-3.0",
+      "licenseDeclared": "CC-BY-SA-3.0",
+      "copyrightText": "NOASSERTION",
+      "description": "Complete Hebrew (8674) and Greek (5523) Strong's lexicon definitions",
       "primaryPackagePurpose": "DATA"
     },
     {

@@ -63,6 +63,12 @@ languageCode = "en"
     source = "data/example"
     target = "data"
 
+  # Mount Strong's concordance data
+  [[module.mounts]]
+    source = "data/strongs"
+    target = "data/strongs"
+    includeFiles = ["*.json"]
+
   # Mount SPDX license data (only JSON files)
   [[module.mounts]]
     source = "tools/juniper/vendor_external/spdx"

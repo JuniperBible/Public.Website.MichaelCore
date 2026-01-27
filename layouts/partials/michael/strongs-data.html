@@ -1,9 +1,9 @@
 {{- /*
-  Strong's Definitions Data Injector
+  Strong's Definitions Data Loader
 
-  This partial injects Strong's Hebrew and Greek lexicon data into the page
-  for offline use. The data is loaded from JSON files and made available
-  to the strongs.js script via window.Michael.StrongsData.
+  Generates a cacheable external JS file containing Strong's Hebrew and Greek
+  lexicon data, loaded via <script src>. The browser caches this file so it's
+  only downloaded once, rather than inlining ~3MB into every page.
 
   Usage: {{ partial "michael/strongs-data.html" . }}
 */ -}}
@@ -29,26 +29,18 @@
   {{- end -}}
 {{- end -}}
 
-{{- /* Initialize Michael namespace if needed */ -}}
-<script>
-  window.Michael = window.Michael || {};
-  window.Michael.StrongsData = window.Michael.StrongsData || {};
-</script>
-
+{{- /* Build JS content string */ -}}
+{{- $jsContent := "window.Michael=window.Michael||{};window.Michael.StrongsData=window.Michael.StrongsData||{};" -}}
 {{- if $hebrewData -}}
-<script>
-  // Hebrew Strong's definitions ({{ len $hebrewData }} entries)
-  window.Michael.StrongsData.hebrew = {{ $hebrewData | jsonify | safeJS }};
-</script>
-{{- else -}}
-<!-- Warning: Hebrew Strong's data not found at data/strongs/hebrew.json -->
+  {{- $jsContent = printf "%swindow.Michael.StrongsData.hebrew=%s;" $jsContent ($hebrewData | jsonify) -}}
+{{- end -}}
+{{- if $greekData -}}
+  {{- $jsContent = printf "%swindow.Michael.StrongsData.greek=%s;" $jsContent ($greekData | jsonify) -}}
 {{- end -}}
 
-{{- if $greekData -}}
-<script>
-  // Greek Strong's definitions ({{ len $greekData }} entries)
-  window.Michael.StrongsData.greek = {{ $greekData | jsonify | safeJS }};
-</script>
-{{- else -}}
-<!-- Warning: Greek Strong's data not found at data/strongs/greek.json -->
+{{- /* Create a cacheable JS resource */ -}}
+{{- $strongsJS := resources.FromString "js/strongs-data.js" $jsContent -}}
+{{- if hugo.IsProduction -}}
+  {{- $strongsJS = $strongsJS | minify | fingerprint -}}
 {{- end -}}
+<script src="{{ $strongsJS.RelPermalink }}" defer></script>

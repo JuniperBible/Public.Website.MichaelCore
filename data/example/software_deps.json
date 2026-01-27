@@ -84,6 +84,15 @@
       "downloadLocation": "NOASSERTION",
       "description": "Book mappings and Bible data structures",
       "purpose": "DATA"
+    },
+    {
+      "name": "Strong's Concordance Lexicon",
+      "version": "2024",
+      "license": "CC-BY-SA-3.0",
+      "supplier": "ORGANIZATION: OpenScriptures",
+      "downloadLocation": "https://github.com/openscriptures/strongs",
+      "description": "Complete Hebrew (8674) and Greek (5523) Strong's lexicon definitions",
+      "purpose": "DATA"
     }
   ]
 }
