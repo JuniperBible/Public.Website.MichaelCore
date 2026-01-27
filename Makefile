@@ -78,7 +78,7 @@ dev-hugo: kill-dev sync-submodules
 	$(HUGO) server --buildDrafts --buildFuture --disableFastRender
 
 # Build static site (regenerates SBOM and Bible data first)
-build: sbom ensure-data vendor-package
+build: sbom vendor-restore ensure-data vendor-package
 	$(HUGO) --minify
 
 # Ensure Bible data exists, prompt for conversion if needed
@@ -164,15 +164,16 @@ vendor-package:
 
 # Restore from compressed packages
 vendor-restore:
-	@echo "Restoring from packages..."
-	@mkdir -p $(DATA_DIR)/bibles_auxiliary
-	@for pkg in $(ASSETS_DIR)/*.tar.xz; do \
-		if [ -f "$$pkg" ]; then \
-			echo "  Extracting $$(basename $$pkg)..."; \
-			tar -xJf "$$pkg" -C $(DATA_DIR) --strip-components=1; \
-		fi; \
-	done
-	@echo "Restore complete!"
+	@if [ -f "$(DATA_DIR)/bibles.json" ] && [ -d "$(DATA_DIR)/bibles_auxiliary" ]; then \
+		echo "Bible data already present in $(DATA_DIR)"; \
+	elif [ -f "$(ASSETS_DIR)/all-bibles.tar.xz" ]; then \
+		echo "Restoring Bible data from packages..."; \
+		mkdir -p $(DATA_DIR); \
+		tar -xJf "$(ASSETS_DIR)/all-bibles.tar.xz" -C $(DATA_DIR); \
+		echo "Restore complete!"; \
+	else \
+		echo "No Bible packages found in $(ASSETS_DIR)"; \
+	fi
 
 # Generate SBOM in all formats (SPDX, CycloneDX, Syft)
 sbom:
