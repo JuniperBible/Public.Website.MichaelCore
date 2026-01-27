@@ -90,14 +90,15 @@ mkdir -p "$OUTPUT_DIR"
 # Check for required tools — prefer local tools/syft build, then PATH
 SYFT_BIN=""
 SYFT_LOCAL="$PROJECT_ROOT/tools/syft"
-if [[ -x "$SYFT_LOCAL/syft" ]]; then
-    SYFT_BIN="$SYFT_LOCAL/syft"
+SYFT_LOCAL_BIN="$SYFT_LOCAL/syft-bin"
+if [[ -f "$SYFT_LOCAL_BIN" && -x "$SYFT_LOCAL_BIN" ]]; then
+    SYFT_BIN="$SYFT_LOCAL_BIN"
 elif command -v syft &> /dev/null; then
     SYFT_BIN="syft"
 elif [[ -d "$SYFT_LOCAL/cmd/syft" ]]; then
     echo "Building syft from tools/syft..."
-    (cd "$SYFT_LOCAL" && go build -o syft ./cmd/syft/) || { echo "Error: failed to build syft"; exit 1; }
-    SYFT_BIN="$SYFT_LOCAL/syft"
+    (cd "$SYFT_LOCAL" && go build -o syft-bin ./cmd/syft/) || { echo "Error: failed to build syft"; exit 1; }
+    SYFT_BIN="$SYFT_LOCAL_BIN"
 else
     echo "Error: syft not found. Install with: nix-shell -p syft"
     exit 1
