@@ -87,31 +87,54 @@ fi
 # Create output directory
 mkdir -p "$OUTPUT_DIR"
 
-# Check for required tools — prefer local tools/syft build, then PATH
-SYFT_BIN=""
-SYFT_LOCAL="$PROJECT_ROOT/tools/syft"
-SYFT_LOCAL_BIN="$SYFT_LOCAL/syft-bin"
-if [[ -f "$SYFT_LOCAL_BIN" && -x "$SYFT_LOCAL_BIN" ]]; then
-    SYFT_BIN="$SYFT_LOCAL_BIN"
-elif command -v syft &> /dev/null; then
-    SYFT_BIN="syft"
-elif [[ -d "$SYFT_LOCAL/cmd/syft" ]]; then
-    echo "Building syft from tools/syft..."
-    (cd "$SYFT_LOCAL" && go build -o syft-bin ./cmd/syft/) || { echo "Error: failed to build syft"; exit 1; }
-    SYFT_BIN="$SYFT_LOCAL_BIN"
-else
-    echo "Error: syft not found. Install with: nix-shell -p syft"
-    exit 1
-fi
+# ---------------------------------------------------------------------------
+# Tool resolution order: local binary → nix-shell → build from source
+# ---------------------------------------------------------------------------
 
-if ! command -v jq &> /dev/null; then
-    echo "Error: jq not found. Install with: nix-shell -p jq"
+# resolve_tool: find a tool binary in order of preference
+# Usage: resolve_tool NAME LOCAL_BIN NIX_PKG [BUILD_DIR BUILD_CMD]
+resolve_tool() {
+    local name="$1" local_bin="$2" nix_pkg="$3" build_dir="${4:-}" build_cmd="${5:-}"
+
+    # 1. Local binary (pre-built in tools/)
+    if [[ -n "$local_bin" && -f "$local_bin" && -x "$local_bin" ]]; then
+        printf '%s' "$local_bin"; return 0
+    fi
+    # 2. nix-shell (resolve to actual binary path)
+    if command -v nix-shell &> /dev/null; then
+        local nix_bin
+        nix_bin="$(nix-shell -p "$nix_pkg" --run "command -v $name" 2>/dev/null)"
+        if [[ -n "$nix_bin" ]]; then
+            printf '%s' "$nix_bin"; return 0
+        fi
+    fi
+    # 3. System PATH
+    if command -v "$name" &> /dev/null; then
+        printf '%s' "$(command -v "$name")"; return 0
+    fi
+    # 4. Build from source
+    if [[ -n "$build_dir" && -d "$build_dir" ]]; then
+        echo "Building $name from source..." >&2
+        (cd "$build_dir" && eval "$build_cmd") || { echo "Error: failed to build $name" >&2; exit 1; }
+        if [[ -n "$local_bin" && -f "$local_bin" && -x "$local_bin" ]]; then
+            printf '%s' "$local_bin"; return 0
+        fi
+    fi
+    echo "Error: $name not found. Install with: nix-shell -p $nix_pkg" >&2
     exit 1
-fi
+}
+
+SYFT_BIN="$(resolve_tool syft \
+    "$PROJECT_ROOT/tools/syft/syft-bin" \
+    syft \
+    "$PROJECT_ROOT/tools/syft" \
+    "go build -o syft-bin ./cmd/syft/")"
+
+JQ_BIN="$(resolve_tool jq "" jq)"
 
 # Validate manual deps JSON file
 if [[ -f "$MANUAL_DEPS" ]]; then
-    if ! jq empty "$MANUAL_DEPS" 2>/dev/null; then
+    if ! "$JQ_BIN" empty "$MANUAL_DEPS" 2>/dev/null; then
         echo "Error: $MANUAL_DEPS is not valid JSON"
         exit 1
     fi
@@ -146,7 +169,7 @@ merge_spdx_json() {
     local output_file="$2"
 
     # Convert software_deps.json to SPDX packages format and merge
-    jq --slurpfile manual "$MANUAL_DEPS" '
+    "$JQ_BIN" --slurpfile manual "$MANUAL_DEPS" '
         # Convert manual deps to SPDX package format
         def to_spdx_package:
             {
@@ -172,7 +195,7 @@ merge_cdx_json() {
     local syft_file="$1"
     local output_file="$2"
 
-    jq --slurpfile manual "$MANUAL_DEPS" '
+    "$JQ_BIN" --slurpfile manual "$MANUAL_DEPS" '
         # Convert manual deps to CycloneDX component format
         def to_cdx_component:
             {
@@ -199,7 +222,7 @@ merge_syft_json() {
     local syft_file="$1"
     local output_file="$2"
 
-    jq --slurpfile manual "$MANUAL_DEPS" '
+    "$JQ_BIN" --slurpfile manual "$MANUAL_DEPS" '
         # Convert manual deps to Syft artifact format
         def to_syft_artifact:
             {
@@ -283,9 +306,9 @@ echo ""
 echo "SBOM generation complete!"
 echo ""
 echo "Manual dependencies merged from: $MANUAL_DEPS"
-echo "  Tools: $(jq '.tools | length' "$MANUAL_DEPS")"
-echo "  Libraries: $(jq '.libraries | length' "$MANUAL_DEPS")"
-echo "  Data sources: $(jq '.data_sources | length' "$MANUAL_DEPS")"
+echo "  Tools: $("$JQ_BIN" '.tools | length' "$MANUAL_DEPS")"
+echo "  Libraries: $("$JQ_BIN" '.libraries | length' "$MANUAL_DEPS")"
+echo "  Data sources: $("$JQ_BIN" '.data_sources | length' "$MANUAL_DEPS")"
 echo ""
 echo "Generated files:"
 ls -la "$OUTPUT_DIR"/*.{json,xml} 2>/dev/null || true
