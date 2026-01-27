@@ -450,4 +450,78 @@ PROGRESS LOG
   [x] 100% viewport in standalone mode
   [x] Safe area insets for notched devices
 
+[2026-01-27] CSS Modularization COMPLETED
+  - Split theme.css into modular files:
+    * theme-colors.css — Color tokens
+    * theme-compare.css — Compare/diff page styles
+    * theme-share.css — Share menu and toast notifications
+    * theme-strongs.css — Strong's concordance styles
+    * theme-pwa.css — PWA-specific styles
+    * theme-offline.css — Offline settings styles
+    * theme-print.css — Print styles
+    * theme-custom.css — Site-specific overrides (loaded last)
+  - Fixed CSS bundling: Hugo's minify doesn't resolve @import,
+    switched to resources.Concat in baseof.html and sw.js
+  - Removed 181 lines of duplicate compare styles from theme.css
+
+[2026-01-27] Bible Override System COMPLETED
+  - Created data/example/bibles_override.json for field overrides
+    without touching auto-generated bibles.json
+  - Created layouts/partials/michael/bible-data.html merge partial
+  - Updated 11 templates to use the partial
+  - Populated overrides for all 10 Bibles (short titles, descriptions)
+  - Bible overview pages show override title and description
+
+[2026-01-27] Juniperbible.org Theme COMPLETED
+  - Applied juniperbible.org color palette via theme-custom.css:
+    * Brand: muted purple (#6b4c6b)
+    * Chrome: dark teal (#1a3230)
+    * Surface/panel: warm parchment (#e6ddc0)
+    * Text, borders, shadows matched
+  - Self-hosted Patrick Hand font (OFL-1.1, woff2 latin + latin-ext)
+  - Applied handwritten font to headings, buttons, badges, nav
+  - Doubled header/footer nav size and site title size
+  - Updated theme-color meta tag and manifest.json
+  - Added font to SBOM (software_deps.json)
+
+[2026-01-27] Verse Typography COMPLETED
+  - Changed content pipeline from **N** (markdown bold) to
+    <span class="verse" data-verse="N"><sup>N</sup> text</span>
+  - Each verse now displays as its own paragraph block
+  - Verse numbers styled as superscript with brand color
+  - Added highlight-verse CSS for ?v= URL scroll-to
+  - Updated share.js for modern .verse[data-verse] + legacy fallback
+  - Added bible-text class to chapter content div for JS selectors
+  - Verified all JS files: bible-api.js already supports new format,
+    parallel.js/sss-mode.js use own verse markup, all others unaffected
+  - Added card descriptions and footer to home page and Bible list page
+
+================================================================================
+CURRENT / PLANNED TASKS
+================================================================================
+
+[ ] Dark mode support
+    - juniperbible.org has dark mode variables already defined
+    - Add [data-theme="dark"] overrides to theme-custom.css
+    - Add theme toggle button to header
+
+[ ] Integrate _content.gotmpl with bible-data.html partial
+    - Content adapter currently reads raw bibles.json for titles
+    - Could use override titles in page generation for HTML <title> tags
+    - Would fix "King James Version (1769) with Strongs..." in browser tab
+
+[ ] Deprecate legacy <strong> verse format in bible-api.js
+    - Strategy 2 (strong elements) and Strategy 5 (regex) can be removed
+    - All content now uses modern .verse[data-verse] format
+    - Keep legacy fallback for cached pages until cache expires
+
+[ ] Review and clean up theme-colors.css defaults
+    - Default values are now overridden by theme-custom.css
+    - Consider whether defaults should match juniperbible or stay generic
+
+[ ] Performance optimization
+    - Audit CSS bundle size after modularization
+    - Consider lazy-loading non-critical CSS (print, compare, strongs)
+    - Profile font loading impact
+
 ================================================================================

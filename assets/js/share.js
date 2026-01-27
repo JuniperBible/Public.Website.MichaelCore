@@ -215,21 +215,47 @@
    * @fires click - Opens share menu when share button is clicked
    */
   function addVerseShareButtons(container) {
-    // Verses are marked with <strong>N</strong> for verse numbers
+    // Modern format: <span class="verse" data-verse="N"><sup>N</sup> text</span>
+    const verseSpans = container.querySelectorAll('.verse[data-verse]');
+
+    if (verseSpans.length > 0) {
+      verseSpans.forEach(span => {
+        const num = span.dataset.verse;
+        const sup = span.querySelector('sup');
+        if (!sup) return;
+
+        const btn = document.createElement('button');
+        btn.className = 'verse-share-btn';
+        btn.setAttribute('aria-label', `${UI.shareVerse} ${num}`);
+        btn.setAttribute('title', `${UI.shareVerse} ${num}`);
+        btn.setAttribute('data-verse', num);
+        btn.innerHTML = `<svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/>
+        </svg>`;
+
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          showShareMenu(btn, num);
+        });
+
+        sup.parentNode.insertBefore(btn, sup.nextSibling);
+      });
+      return;
+    }
+
+    // Legacy fallback: <strong>N</strong> format
     const verses = container.querySelectorAll('strong');
 
     verses.forEach(verseNum => {
       const num = verseNum.textContent.trim();
-      // Only process elements that contain purely numeric verse numbers
       if (!/^\d+$/.test(num)) return;
 
-      // Create share button with share icon SVG
       const btn = document.createElement('button');
       btn.className = 'verse-share-btn';
       btn.setAttribute('aria-label', `${UI.shareVerse} ${num}`);
       btn.setAttribute('title', `${UI.shareVerse} ${num}`);
       btn.setAttribute('data-verse', num);
-      // Share icon: connected nodes representing sharing/network
       btn.innerHTML = `<svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/>
       </svg>`;
@@ -240,7 +266,6 @@
         showShareMenu(btn, num);
       });
 
-      // Insert share button immediately after verse number
       verseNum.parentNode.insertBefore(btn, verseNum.nextSibling);
     });
   }
@@ -390,7 +415,25 @@
     const bibleText = document.querySelector('.bible-text');
     if (!bibleText) return '';
 
-    // Find the verse number element (<strong> tag)
+    const title = document.querySelector('article header h1')?.textContent || '';
+
+    // Modern format: <span class="verse" data-verse="N">
+    const verseSpan = bibleText.querySelector(`.verse[data-verse="${verseNum}"]`);
+    if (verseSpan) {
+      let text = '';
+      verseSpan.childNodes.forEach(node => {
+        if (node.nodeType === Node.TEXT_NODE) {
+          text += node.textContent;
+        } else if (node.nodeType === Node.ELEMENT_NODE &&
+                   node.tagName !== 'SUP' &&
+                   !node.classList.contains('verse-share-btn')) {
+          text += node.textContent;
+        }
+      });
+      return `${title}:${verseNum} - ${text.trim()}`;
+    }
+
+    // Legacy fallback: <strong>N</strong> format
     const verses = bibleText.querySelectorAll('strong');
     let verseEl = null;
     for (const v of verses) {
@@ -402,18 +445,14 @@
 
     if (!verseEl) return '';
 
-    // Extract text until next verse number or end of content
     let text = '';
     let node = verseEl.nextSibling;
     while (node) {
       if (node.nodeType === Node.TEXT_NODE) {
-        // Include plain text nodes
         text += node.textContent;
       } else if (node.nodeName === 'STRONG') {
-        // Stop at next verse number
         break;
       } else if (node.nodeType === Node.ELEMENT_NODE) {
-        // Skip share buttons but include other element text (e.g., <i>, <em>)
         if (!node.classList.contains('verse-share-btn')) {
           text += node.textContent;
         }
@@ -421,8 +460,6 @@
       node = node.nextSibling;
     }
 
-    // Format with chapter reference prefix
-    const title = document.querySelector('article header h1')?.textContent || '';
     return `${title}:${verseNum} - ${text.trim()}`;
   }
 
@@ -532,15 +569,20 @@
     if (verse) {
       const bibleText = document.querySelector('.bible-text');
       if (bibleText) {
-        const verses = bibleText.querySelectorAll('strong');
-        // Find matching verse number
-        for (const v of verses) {
-          if (v.textContent.trim() === verse) {
-            // Scroll to verse with smooth animation, centered in viewport
-            v.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            // Add highlight class for CSS styling (persistent)
-            v.classList.add('highlight-verse');
-            break;
+        // Modern format: <span class="verse" data-verse="N">
+        const verseSpan = bibleText.querySelector(`.verse[data-verse="${verse}"]`);
+        if (verseSpan) {
+          verseSpan.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          verseSpan.classList.add('highlight-verse');
+        } else {
+          // Legacy fallback: <strong>N</strong>
+          const verses = bibleText.querySelectorAll('strong');
+          for (const v of verses) {
+            if (v.textContent.trim() === verse) {
+              v.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              v.classList.add('highlight-verse');
+              break;
+            }
           }
         }
       }

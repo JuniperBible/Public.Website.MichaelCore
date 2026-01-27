@@ -89,7 +89,7 @@
         <!-- Navigation with dropdowns -->
         {{ partial "michael/bible-nav.html" (dict "page" . "bible" .Params.bible "book" .Params.book "chapter" .Params.chapter "basePath" $basePath) }}
 
-        <div class="prose" id="chapter-content">
+        <div class="prose bible-text" id="chapter-content">
           {{ .Content }}
         </div>
 

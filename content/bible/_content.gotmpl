@@ -137,10 +137,10 @@
           {{- if $chapterHasContent -}}
             {{- $chapterContent := "" -}}
 
-            {{/* Verse content */}}
+            {{/* Verse content — each verse wrapped for CSS styling */}}
             {{- range .verses -}}
               {{- $verseNum := int .number -}}
-              {{- $chapterContent = printf "%s**%d** %s " $chapterContent $verseNum .text -}}
+              {{- $chapterContent = printf "%s<span class=\"verse\" data-verse=\"%d\"><sup>%d</sup> %s</span>\n" $chapterContent $verseNum $verseNum .text -}}
             {{- end -}}
 
             {{- $chapterParams := dict
