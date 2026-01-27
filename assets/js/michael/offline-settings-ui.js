@@ -207,13 +207,17 @@
         const status = await OfflineManager.getBibleCacheStatus(bibleId, basePath);
 
         if (status.isFullyCached) {
-          // Disable checkbox and show cached status
+          // Disable checkbox, check it to show it's downloaded, show cached status
           checkbox.disabled = true;
-          checkbox.checked = false;
-          updateBibleStatus(bibleId, 'Cached', 'is-cached');
+          checkbox.checked = true;
+          updateBibleStatus(bibleId, '100% Cached', 'is-cached');
         } else if (status.cachedChapters > 0) {
-          // Show partial cache status but allow re-download
-          updateBibleStatus(bibleId, `${status.cachedChapters} chapters`, 'is-partial');
+          // Show partial cache status with percentage
+          const percent = Math.round((status.cachedChapters / status.totalChapters) * 100);
+          updateBibleStatus(bibleId, `${percent}% (${status.cachedChapters}/${status.totalChapters})`, 'is-partial');
+        } else {
+          // Not cached - clear any previous status
+          updateBibleStatus(bibleId, '', '');
         }
       } catch (error) {
         console.warn(`[Offline Settings] Failed to get cache status for ${bibleId}:`, error);
@@ -280,14 +284,14 @@
    */
   async function handleDownloadComplete(detail, OfflineManager) {
     if (detail.success) {
-      updateBibleStatus(detail.bible, 'Cached', 'is-cached');
+      updateBibleStatus(detail.bible, '100% Cached', 'is-cached');
       showMessage(`${detail.bible.toUpperCase()} downloaded successfully`, 'success');
 
-      // Disable the checkbox for this Bible since it's now cached
+      // Disable the checkbox and check it to show it's downloaded
       const checkbox = document.querySelector(`.bible-download-checkbox[data-bible-id="${detail.bible}"]`);
       if (checkbox) {
         checkbox.disabled = true;
-        checkbox.checked = false;
+        checkbox.checked = true;
       }
     } else {
       updateBibleStatus(detail.bible, 'Failed', 'is-error');

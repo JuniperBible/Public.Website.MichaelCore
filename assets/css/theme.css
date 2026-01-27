@@ -2255,6 +2255,11 @@ a:focus-visible {
 /* Status variants */
 .bible-download-status.is-cached {
   color: var(--success-500);
+  font-weight: 600;
+}
+
+.bible-download-status.is-cached::before {
+  content: "✓ ";
 }
 
 .bible-download-status.is-downloading {
