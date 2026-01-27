@@ -113,11 +113,10 @@ These are loaded with defer to avoid blocking page rendering.
         <h2 class="card__title">
           <a href="{{ printf "%s/%s/" $basePath $bible.id | relLangURL }}">{{ $bible.title }}</a>
         </h2>
-        <p class="card__meta">{{ $bible.abbrev }}</p>
-        <div class="row mt-1">
-          {{ with $bible.language }}
-          <span class="badge">{{ . }}</span>
-          {{ end }}
+        {{ with $bible.description }}<p class="card__description">{{ . }}</p>{{ end }}
+        <div class="card__footer">
+          <span class="badge">{{ $bible.abbrev }}</span>
+          {{ with $bible.language }}<span class="badge">{{ . }}</span>{{ end }}
           {{ with $bible.license }}
           <a href="{{ printf "/license/%s/" (. | lower) | relLangURL }}" class="badge">{{ . }}</a>
           {{ end }}

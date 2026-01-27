@@ -348,6 +348,25 @@ a:focus-visible {
   font-size: 0.92rem;
 }
 
+.card__description {
+  color: var(--text-700);
+  font-size: 0.88rem;
+  line-height: 1.55;
+  margin: 8px 0 0 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.card__footer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: auto;
+  padding-top: 10px;
+}
+
 /* -----------------------------
    7) Forms (Contact page)
 ------------------------------ */
