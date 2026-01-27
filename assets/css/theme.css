@@ -92,16 +92,16 @@ body {
 /* PWA Standalone Mode - when installed as app */
 @media all and (display-mode: standalone) {
   html, body {
-    height: 90vh;
-    height: 90dvh;
+    height: 100vh;
+    height: 100dvh;
     overflow: hidden;
   }
 
   body {
-    min-height: 90vh;
-    min-height: 90dvh;
-    max-height: 90vh;
-    max-height: 90dvh;
+    min-height: 100vh;
+    min-height: 100dvh;
+    max-height: 100vh;
+    max-height: 100dvh;
   }
 
   body > main {
@@ -137,10 +137,10 @@ body {
 
 /* PWA Standalone class (set via JS for immediate effect) */
 body.pwa-standalone {
-  height: 90vh;
-  height: 90dvh; /* Dynamic viewport height for mobile - 90% of screen */
-  max-height: 90vh;
-  max-height: 90dvh;
+  height: 100vh;
+  height: 100dvh; /* Dynamic viewport height for mobile - 100% of screen */
+  max-height: 100vh;
+  max-height: 100dvh;
   overflow: hidden;
 }
 
@@ -149,8 +149,8 @@ body.pwa-standalone > main {
   overflow-y: auto;
   overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
-  /* Ensure scrollable content stays within 90% viewport */
-  max-height: calc(90dvh - var(--header-height, 48px) - var(--footer-height, 40px));
+  /* Ensure scrollable content stays within viewport */
+  max-height: calc(100dvh - var(--header-height, 48px) - var(--footer-height, 40px));
 }
 
 body.pwa-standalone .chrome {
