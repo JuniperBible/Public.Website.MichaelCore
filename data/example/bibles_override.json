@@ -1,0 +1,4 @@
+{
+  "_comment": "Override any field for any Bible translation without touching the auto-generated bibles.json. Keyed by Bible ID. Only fields present here will override bibles.json values.",
+  "overrides": {}
+}

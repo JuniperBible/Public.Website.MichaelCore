@@ -41,7 +41,7 @@
         <div class="compare-controls__row">
           <a href="{{ printf "%s/" $basePath | relLangURL }}" class="btn btn--sm" title="Back to Bibles">&larr;</a>
           <div class="compare-controls__translations" id="translation-checkboxes" role="group" aria-label="{{ i18n "selectTranslations" | default "Select Translations" }}">
-            {{- range .Site.Data.bibles.bibles -}}
+            {{- range (partial "michael/bible-data.html" .Site) -}}
             <label class="chip chip--compact cursor-pointer">
               <input type="checkbox" class="translation-checkbox" value="{{ .id }}" data-abbrev="{{ .abbrev }}" data-title="{{ .title }}" aria-label="{{ .abbrev }} - {{ .title }}">
               <span>{{ .abbrev }}</span>
@@ -127,10 +127,11 @@
 <!-- Bible Data for JavaScript - book structure only, verses loaded on-demand -->
 <script id="bible-data" type="application/json">
 {{- $biblesMeta := slice -}}
-{{- range .Site.Data.bibles.bibles -}}
+{{- $allBibles := partial "michael/bible-data.html" .Site -}}
+{{- range $allBibles -}}
 {{- $biblesMeta = $biblesMeta | append (dict "id" .id "title" .title "abbrev" .abbrev "description" .description "language" .language) -}}
 {{- end -}}
-{{- $firstBible := index .Site.Data.bibles.bibles 0 -}}
+{{- $firstBible := index $allBibles 0 -}}
 {{- $aux := index .Site.Data.bibles_auxiliary $firstBible.id -}}
 {{- $booksList := slice -}}
 {{- range $aux.books -}}

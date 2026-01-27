@@ -61,7 +61,7 @@
             {{ i18n "selectBible" | default "Select Bible" }}:
           </label>
           <select id="bible-select" name="bible" class="select">
-            {{ range .Site.Data.bibles.bibles }}
+            {{ range (partial "michael/bible-data.html" .Site) }}
             <option value="{{ .id }}">{{ .abbrev }} - {{ .title }}</option>
             {{ end }}
           </select>
@@ -109,7 +109,7 @@
 
 <!-- Bible Index Data for JavaScript - generated at build time -->
 {{- $bibleIndex := dict -}}
-{{- range $bible := .Site.Data.bibles.bibles -}}
+{{- range $bible := (partial "michael/bible-data.html" .Site) -}}
   {{- $aux := index $.Site.Data.bibles_auxiliary $bible.id -}}
   {{- $books := slice -}}
   {{- with $aux -}}

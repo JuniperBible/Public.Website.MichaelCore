@@ -3,7 +3,7 @@
 
 {{- /* Collect Bibles using this license */ -}}
 {{- $bibles := slice -}}
-{{- range .Site.Data.bibles.bibles -}}
+{{- range (partial "michael/bible-data.html" .Site) -}}
   {{- if eq .license $licenseId -}}
     {{- $bibles = $bibles | append . -}}
   {{- end -}}

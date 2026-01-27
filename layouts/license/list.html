@@ -12,7 +12,7 @@
       <h2 style="margin-top: 0;">SBOM Summary</h2>
       <div class="row" style="gap: var(--pad-2); flex-wrap: wrap;">
         <div>
-          <strong>{{ len .Site.Data.bibles.bibles }}</strong> Bible Translations
+          <strong>{{ len (partial "michael/bible-data.html" .Site) }}</strong> Bible Translations
         </div>
         <div>
           <strong>{{ len .Pages }}</strong> Unique Licenses
@@ -124,7 +124,7 @@
     {{ range .Pages }}
     {{ $licenseId := .Params.licenseId }}
     {{ $bibles := slice }}
-    {{ range $.Site.Data.bibles.bibles }}
+    {{ range (partial "michael/bible-data.html" $.Site) }}
       {{ if eq .license $licenseId }}
         {{ $bibles = $bibles | append . }}
       {{ end }}

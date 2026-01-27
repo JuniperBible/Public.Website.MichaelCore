@@ -19,7 +19,7 @@
 <label for="{{ $id }}" class="sr-only">{{ i18n "selectBible" | default "Select Bible" }}</label>
 <select id="{{ $id }}" class="{{ $class }}" aria-label="{{ i18n "selectBible" | default "Select Bible" }}">
   <option value="">{{ $label }}</option>
-  {{- range $site.Data.bibles.bibles -}}
+  {{- range (partial "michael/bible-data.html" $site) -}}
   <option value="{{ .id }}">{{ .title }} ({{ .abbrev }})</option>
   {{- end -}}
 </select>

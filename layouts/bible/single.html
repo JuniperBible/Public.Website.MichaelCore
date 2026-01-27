@@ -53,7 +53,7 @@
       <div class="row row--center mt-1">
         {{/* Look up language and license from bibles.json */}}
         {{ $bibleId := .Params.bible | default .Params.abbrev | default .File.ContentBaseName }}
-        {{ range .Site.Data.bibles.bibles }}
+        {{ range (partial "michael/bible-data.html" .Site) }}
           {{ if eq .id $bibleId }}
             {{ with .language }}
             <span class="badge">{{ . }}</span>

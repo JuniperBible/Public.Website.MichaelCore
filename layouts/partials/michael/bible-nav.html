@@ -82,7 +82,7 @@
   <select id="bible-select"
           class="select bible-nav__select"
           aria-label="{{ i18n "selectBibleTranslation" | default "Select Bible Translation" }}">
-    {{ range $page.Site.Data.bibles.bibles }}
+    {{ range (partial "michael/bible-data.html" $page.Site) }}
       {{/* Only show bibles that have auxiliary data */}}
       {{ $hasAuxData := index $page.Site.Data.bibles_auxiliary .id }}
       {{ if $hasAuxData }}

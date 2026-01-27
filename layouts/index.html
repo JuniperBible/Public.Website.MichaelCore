@@ -17,7 +17,7 @@
     <section>
       <h2>Bible Translations</h2>
       <div class="grid-2 bible-grid">
-        {{ range .Site.Data.bibles.bibles }}
+        {{ range (partial "michael/bible-data.html" .Site) }}
         <div class="card">
           <h3 class="card__title">
             <a href="{{ printf "/bible/%s/" .id | relLangURL }}">{{ .title }}</a>
