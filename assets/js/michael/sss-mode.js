@@ -18,6 +18,9 @@
   let sssVerse = 0;
   let sssHighlightEnabled = true;
 
+  // AbortController for cancelling in-flight fetch requests
+  let currentFetchController = null;
+
   // DOM elements
   let normalModeEl, sssModeEl, sssBibleLeft, sssBibleRight;
   let sssBookSelect, sssChapterSelect, sssLeftPane, sssRightPane;
@@ -173,10 +176,26 @@
     if (canLoadSSSComparison()) loadSSSComparison();
   }
 
+  /**
+   * Escape HTML special characters to prevent XSS
+   * @private
+   */
+  function escapeHtml(str) {
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
   /** Populate SSS chapter dropdown */
   function populateSSSChapterDropdown() {
     if (!sssChapterSelect) return;
-    sssChapterSelect.innerHTML = '<option value="">...</option>';
+
+    // Clear and add default option safely
+    sssChapterSelect.innerHTML = '';
+    const defaultOption = document.createElement('option');
+    defaultOption.value = '';
+    defaultOption.textContent = '...';
+    sssChapterSelect.appendChild(defaultOption);
 
     if (!sssBook || !bibleData?.books) {
       sssChapterSelect.disabled = true;
@@ -202,36 +221,69 @@
   async function loadSSSComparison() {
     if (!canLoadSSSComparison()) return;
 
-    // Show loading
+    // Cancel any previous fetch to prevent race conditions
+    if (currentFetchController) {
+      currentFetchController.abort();
+    }
+
+    // Create new AbortController for this fetch
+    currentFetchController = new AbortController();
+    const signal = currentFetchController.signal;
+
+    // Show loading - DomUtils.createLoadingIndicator() returns safe HTML
+    const loadingHtml = window.Michael.DomUtils.createLoadingIndicator();
     if (sssLeftPane) {
-      sssLeftPane.innerHTML = '<article aria-busy="true" style="text-align: center; padding: 2rem 0;">Loading...</article>';
+      sssLeftPane.innerHTML = loadingHtml;
     }
     if (sssRightPane) {
-      sssRightPane.innerHTML = '<article aria-busy="true" style="text-align: center; padding: 2rem 0;">Loading...</article>';
+      sssRightPane.innerHTML = loadingHtml;
     }
 
-    // Fetch both chapters
-    const [leftVerses, rightVerses] = await Promise.all([
-      window.Michael.BibleAPI.fetchChapter(basePath, sssLeftBible, sssBook, sssChapter),
-      window.Michael.BibleAPI.fetchChapter(basePath, sssRightBible, sssBook, sssChapter)
-    ]);
+    try {
+      // Fetch both chapters with abort signal
+      const [leftVerses, rightVerses] = await Promise.all([
+        window.Michael.BibleAPI.fetchChapter(basePath, sssLeftBible, sssBook, sssChapter, signal),
+        window.Michael.BibleAPI.fetchChapter(basePath, sssRightBible, sssBook, sssChapter, signal)
+      ]);
 
-    populateSSSVerseGrid(leftVerses || rightVerses);
+      // Check if request was aborted before rendering
+      if (signal.aborted) return;
 
-    const leftBible = bibleData.bibles.find(b => b.id === sssLeftBible);
-    const rightBible = bibleData.bibles.find(b => b.id === sssRightBible);
-    const bookInfo = bibleData.books.find(b => b.id === sssBook);
-    const bookName = bookInfo?.name || sssBook;
+      populateSSSVerseGrid(leftVerses || rightVerses);
 
-    // Filter verses if specific verse selected
-    const leftFiltered = sssVerse > 0 ? leftVerses?.filter(v => v.number === sssVerse) : leftVerses;
-    const rightFiltered = sssVerse > 0 ? rightVerses?.filter(v => v.number === sssVerse) : rightVerses;
+      const leftBible = bibleData.bibles.find(b => b.id === sssLeftBible);
+      const rightBible = bibleData.bibles.find(b => b.id === sssRightBible);
+      const bookInfo = bibleData.books.find(b => b.id === sssBook);
+      const bookName = bookInfo?.name || sssBook;
 
-    if (sssLeftPane) {
-      sssLeftPane.innerHTML = buildSSSPaneHTML(leftFiltered, leftBible, bookName, rightFiltered, rightBible);
-    }
-    if (sssRightPane) {
-      sssRightPane.innerHTML = buildSSSPaneHTML(rightFiltered, rightBible, bookName, leftFiltered, leftBible);
+      // Filter verses if specific verse selected
+      const leftFiltered = sssVerse > 0 ? leftVerses?.filter(v => v.number === sssVerse) : leftVerses;
+      const rightFiltered = sssVerse > 0 ? rightVerses?.filter(v => v.number === sssVerse) : rightVerses;
+
+      if (sssLeftPane) {
+        sssLeftPane.innerHTML = buildSSSPaneHTML(leftFiltered, leftBible, bookName, rightFiltered, rightBible);
+      }
+      if (sssRightPane) {
+        sssRightPane.innerHTML = buildSSSPaneHTML(rightFiltered, rightBible, bookName, leftFiltered, leftBible);
+      }
+    } catch (err) {
+      // Handle abort gracefully
+      if (err.name === 'AbortError') {
+        console.log('[SSS] Fetch cancelled');
+        return;
+      }
+      console.error('[SSS] Error loading comparison:', err);
+      if (sssLeftPane) {
+        sssLeftPane.innerHTML = '<article><p style="text-align: center; color: var(--michael-text-muted);">Error loading content</p></article>';
+      }
+      if (sssRightPane) {
+        sssRightPane.innerHTML = '<article><p style="text-align: center; color: var(--michael-text-muted);">Error loading content</p></article>';
+      }
+    } finally {
+      // Clear controller reference if this was the active one
+      if (currentFetchController && currentFetchController.signal === signal) {
+        currentFetchController = null;
+      }
     }
   }
 
@@ -239,12 +291,14 @@
   function populateSSSVerseGrid(verses) {
     if (!verses || verses.length === 0) {
       if (sssVerseGrid) sssVerseGrid.classList.add('hidden');
-      if (sssVerseButtons) sssVerseButtons.innerHTML = '';
+      if (sssVerseButtons) {
+        sssVerseButtons.textContent = '';
+      }
       return;
     }
 
     if (sssVerseButtons) {
-      sssVerseButtons.innerHTML = '';
+      sssVerseButtons.textContent = '';
       verses.forEach(verse => {
         const btn = document.createElement('button');
         btn.type = 'button';
@@ -301,11 +355,12 @@
     // Versification warning
     const versificationWarning = (compareBible && bible?.versification && compareBible?.versification &&
       bible.versification !== compareBible.versification)
-      ? `<small style="color: var(--michael-text-muted); display: block; font-size: 0.7rem;">${bible.versification} versification</small>`
+      ? `<small style="color: var(--michael-text-muted); display: block; font-size: 0.7rem;">${escapeHtml(bible.versification)} versification</small>`
       : '';
 
+    const bibleAbbrev = escapeHtml(bible?.abbrev || 'Unknown');
     let html = `<header class="translation-label" style="text-align: center; padding-bottom: 0.5rem;">
-      <strong>${bible?.abbrev || 'Unknown'}</strong>${versificationWarning}
+      <strong>${bibleAbbrev}</strong>${versificationWarning}
     </header>`;
 
     verses.forEach(verse => {

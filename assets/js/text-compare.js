@@ -617,8 +617,13 @@ function renderWithHighlights(text, diffs, side, options = {}) {
 
 /**
  * Escape HTML special characters
+ * Uses shared utility from DomUtils module
  */
 function escapeHtml(text) {
+  if (window.Michael?.DomUtils?.escapeHtml) {
+    return window.Michael.DomUtils.escapeHtml(text);
+  }
+  // Fallback if DomUtils not loaded
   return text
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')

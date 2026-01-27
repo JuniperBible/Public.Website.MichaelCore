@@ -2,22 +2,104 @@
  * Bible Navigation Handler
  *
  * Handles dropdown navigation for Bible translation, book, and chapter selectors.
- * This is loaded externally to comply with CSP script-src 'self' policy.
+ * The Bible selector preserves book/chapter context when switching translations,
+ * showing a "not available" message if the target content doesn't exist.
  */
 (function() {
   'use strict';
 
   function initBibleNav() {
-    // Get all navigation selects
-    const selects = document.querySelectorAll('.bible-nav select');
+    const navs = document.querySelectorAll('.bible-nav');
 
-    selects.forEach(function(select) {
-      select.addEventListener('change', function() {
-        if (this.value) {
-          window.location.href = this.value;
-        }
+    navs.forEach(function(nav) {
+      const bibleSelect = nav.querySelector('#bible-select');
+      const bookSelect = nav.querySelector('#book-select');
+      const chapterSelect = nav.querySelector('#chapter-select');
+
+      // Bible selector — preserve book/chapter context
+      if (bibleSelect) {
+        bibleSelect.addEventListener('change', function() {
+          var bibleId = this.value;
+          if (!bibleId) return;
+
+          var basePath = this.dataset.basePath || '/bible';
+          var book = this.dataset.book || '';
+          var chapter = this.dataset.chapter || '';
+
+          // Build the most specific URL possible
+          var url = basePath + '/' + bibleId + '/';
+          if (book) url += book + '/';
+          if (book && chapter) url += chapter + '/';
+
+          // If we have book/chapter context, check if the page exists
+          if (book) {
+            checkAndNavigate(url, basePath + '/' + bibleId + '/', this);
+          } else {
+            window.location.href = url;
+          }
+        });
+      }
+
+      // Book and chapter selectors — direct navigation (values are full URLs)
+      [bookSelect, chapterSelect].forEach(function(select) {
+        if (!select) return;
+        select.addEventListener('change', function() {
+          if (this.value) {
+            window.location.href = this.value;
+          }
+        });
       });
     });
+  }
+
+  /**
+   * Check if URL exists, navigate there if so, otherwise show unavailable message
+   * and navigate to the fallback URL.
+   */
+  function checkAndNavigate(url, fallbackUrl, selectEl) {
+    // Disable selector during check
+    selectEl.disabled = true;
+
+    fetch(url, { method: 'HEAD' })
+      .then(function(response) {
+        if (response.ok) {
+          window.location.href = url;
+        } else {
+          showUnavailable(selectEl, url, fallbackUrl);
+        }
+      })
+      .catch(function() {
+        // Network error — try navigating directly
+        window.location.href = url;
+      });
+  }
+
+  /**
+   * Show a notice that the content is not available in the selected translation,
+   * then navigate to the Bible overview for that translation.
+   */
+  function showUnavailable(selectEl, attemptedUrl, fallbackUrl) {
+    selectEl.disabled = false;
+
+    // Extract bible name from the selected option
+    var selectedOption = selectEl.options[selectEl.selectedIndex];
+    var bibleName = selectedOption ? selectedOption.textContent.trim() : 'this translation';
+
+    // Show message in the content area
+    var content = document.getElementById('chapter-content');
+    if (content) {
+      content.innerHTML =
+        '<div class="notice" role="alert">' +
+        '<strong>Not available</strong> — this book or chapter is not available in ' +
+        bibleName + '.' +
+        ' <a href="' + fallbackUrl + '">Browse available books</a>.' +
+        '</div>';
+
+      content.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    } else {
+      // No content area — navigate to fallback
+      window.location.href = fallbackUrl;
+    }
   }
 
   // Initialize when DOM is ready

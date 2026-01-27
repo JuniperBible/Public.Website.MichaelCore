@@ -15,6 +15,9 @@
   {{- $bible := . -}}
   {{- $id := .id -}}
   {{- $aux := index $auxData $id -}}
+  {{- if not $aux -}}
+    {{- warnf "No auxiliary data found for Bible '%s' at .Site.Data.bibles_auxiliary.%s" .title $id -}}
+  {{- end -}}
 
   {{/* Build markdown content from JSON structure and collect valid books */}}
   {{- $content := "" -}}

@@ -47,6 +47,13 @@ window.Michael.OfflineManager = (function() {
   let swRegistration = null;
 
   /**
+   * Service worker message handler reference for cleanup
+   * @private
+   * @type {Function|null}
+   */
+  let swMessageHandler = null;
+
+  /**
    * Initializes the offline manager by registering the service worker
    * and setting up message listeners.
    *
@@ -70,8 +77,12 @@ window.Michael.OfflineManager = (function() {
       swRegistration = await navigator.serviceWorker.register(swPath);
       console.log('Service Worker registered:', swRegistration);
 
+      // Store handler reference for potential cleanup
+      swMessageHandler = handleServiceWorkerMessage;
+
       // Listen for messages from the service worker
-      navigator.serviceWorker.addEventListener('message', handleServiceWorkerMessage);
+      // This listener persists for the page lifetime - no cleanup needed
+      navigator.serviceWorker.addEventListener('message', swMessageHandler);
 
       // Wait for service worker to be ready
       await navigator.serviceWorker.ready;

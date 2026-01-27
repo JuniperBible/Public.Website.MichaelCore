@@ -26,7 +26,19 @@
   'use strict';
 
   /* ========================================================================
-     CONFIGURATION & STATE
+     CONFIGURATION & CONSTANTS
+     ======================================================================== */
+
+  /**
+   * Timing constants for UI interactions
+   */
+  const TIMING = {
+    SCROLL_SAVE_DEBOUNCE: 500,      // Delay before saving scroll position (ms)
+    HIGHLIGHT_ANIMATION: 1500       // Duration of highlight flash animation (ms)
+  };
+
+  /* ========================================================================
+     STATE
      ======================================================================== */
 
   /**
@@ -328,6 +340,18 @@
    */
   function getContrastColor(hexColor) {
     return window.Michael.DomUtils.getContrastColor(hexColor);
+  }
+
+  /**
+   * Escape HTML special characters to prevent XSS
+   * @private
+   * @param {string} str - String to escape
+   * @returns {string} Escaped string safe for HTML insertion
+   */
+  function escapeHtml(str) {
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
   }
 
   /**
@@ -650,7 +674,13 @@
    * @private
    */
   function populateChapterDropdown() {
-    chapterSelect.innerHTML = '<option value="">Select Chapter</option>';
+    // Clear existing options safely
+    chapterSelect.innerHTML = '';
+
+    const defaultOption = document.createElement('option');
+    defaultOption.value = '';
+    defaultOption.textContent = 'Select Chapter';
+    chapterSelect.appendChild(defaultOption);
 
     if (!currentBook || !bibleData || !bibleData.books) {
       chapterSelect.disabled = true;
@@ -723,25 +753,21 @@
 
     // Handle no translations selected
     if (selectedTranslations.length === 0) {
-      parallelContent.innerHTML = `
-        <article>
-          <p style="text-align: center; color: var(--michael-text-muted);  padding: 2rem 0;">
-            Select at least one translation to view.
-          </p>
-        </article>
-      `;
+      parallelContent.textContent = '';
+      const article = document.createElement('article');
+      const p = document.createElement('p');
+      p.style.cssText = 'text-align: center; color: var(--michael-text-muted); padding: 2rem 0;';
+      p.textContent = 'Select at least one translation to view.';
+      article.appendChild(p);
+      parallelContent.appendChild(article);
       return Promise.resolve();
     }
 
     // Update URL with current state
     updateURL();
 
-    // Show loading state
-    parallelContent.innerHTML = `
-      <article aria-busy="true" style="text-align: center;  padding: 2rem 0;">
-        Loading...
-      </article>
-    `;
+    // Show loading state - DomUtils.createLoadingIndicator() returns safe HTML
+    parallelContent.innerHTML = window.Michael.DomUtils.createLoadingIndicator();
 
     // Fetch chapter data for all selected translations in parallel
     const chapterDataPromises = selectedTranslations.map(bibleId =>
@@ -938,12 +964,13 @@
 
     // Compact header showing current reference
     const verseRef = currentVerse > 0 ? `:${currentVerse}` : '';
-    html += `<header style="text-align: center; margin-bottom: 1.5rem;">
-      <h2 style=" margin-bottom: 0.25rem;">${bookName} ${currentChapter}${verseRef}</h2>
-      <p style="color: var(--michael-text-muted);  font-size: 0.875rem; margin: 0;">${selectedTranslations.map(id => {
+    const abbrevList = selectedTranslations.map(id => {
         const bible = bibleData.bibles.find(b => b.id === id);
-        return bible?.abbrev || id;
-      }).join(', ')}</p>
+        return escapeHtml(bible?.abbrev || id);
+      }).join(', ');
+    html += `<header style="text-align: center; margin-bottom: 1.5rem;">
+      <h2 style=" margin-bottom: 0.25rem;">${escapeHtml(bookName)} ${currentChapter}${verseRef}</h2>
+      <p style="color: var(--michael-text-muted);  font-size: 0.875rem; margin: 0;">${abbrevList}</p>
     </header>`;
 
     // Filter verses if specific verse selected
@@ -957,7 +984,7 @@
 
       html += `<article class="parallel-verse" data-verse="${verseNum}">
         <header>
-          <h3 style=" font-weight: bold; color: var(--michael-accent); margin-bottom: 0.5rem; font-size: 1rem;">${bookName} ${currentChapter}:${verseNum}</h3>
+          <h3 style=" font-weight: bold; color: var(--michael-accent); margin-bottom: 0.5rem; font-size: 1rem;">${escapeHtml(bookName)} ${currentChapter}:${verseNum}</h3>
         </header>
         <div>`;
 
@@ -982,8 +1009,9 @@
           text = highlightNormalDifferences(v.text, otherTexts);
         }
 
+        const bibleAbbrev = escapeHtml(bible?.abbrev || translationId);
         html += `<div class="translation-label" style="margin-top: 0.75rem;">
-          <strong style="color: var(--michael-accent);  font-size: 0.75rem;">${bible?.abbrev || translationId}</strong>
+          <strong style="color: var(--michael-accent);  font-size: 0.75rem;">${bibleAbbrev}</strong>
           <p style="margin: 0.25rem 0 0 0; line-height: 1.8;">${text}</p>
         </div>`;
       });
@@ -1319,7 +1347,12 @@
   function populateSSSChapterDropdown() {
     if (!sssChapterSelect) return;
 
-    sssChapterSelect.innerHTML = '<option value="">...</option>';
+    // Clear and add default option safely
+    sssChapterSelect.innerHTML = '';
+    const defaultOption = document.createElement('option');
+    defaultOption.value = '';
+    defaultOption.textContent = '...';
+    sssChapterSelect.appendChild(defaultOption);
 
     if (!sssBook || !bibleData || !bibleData.books) {
       sssChapterSelect.disabled = true;
@@ -1389,11 +1422,12 @@
     }
 
     // Show loading
+    const loadingHtml = window.Michael.DomUtils.createLoadingIndicator();
     if (sssLeftPane) {
-      sssLeftPane.innerHTML = '<article aria-busy="true" style="text-align: center;  padding: 2rem 0;">Loading...</article>';
+      sssLeftPane.innerHTML = loadingHtml;
     }
     if (sssRightPane) {
-      sssRightPane.innerHTML = '<article aria-busy="true" style="text-align: center;  padding: 2rem 0;">Loading...</article>';
+      sssRightPane.innerHTML = loadingHtml;
     }
 
     // Fetch both chapters
@@ -1643,11 +1677,12 @@
     // Display warning when comparing Bibles with different verse numbering systems
     const versificationWarning = (compareBible && bible?.versification && compareBible?.versification &&
       bible.versification !== compareBible.versification)
-      ? `<small style="color: var(--michael-text-muted); display: block; font-size: 0.7rem;">${bible.versification} versification</small>`
+      ? `<small style="color: var(--michael-text-muted); display: block; font-size: 0.7rem;">${escapeHtml(bible.versification)} versification</small>`
       : '';
 
+    const bibleAbbrev = escapeHtml(bible?.abbrev || 'Unknown');
     let html = `<header class="translation-label" style="text-align: center; padding-bottom: 0.5rem;">
-      <strong>${bible?.abbrev || 'Unknown'}</strong>${versificationWarning}
+      <strong>${bibleAbbrev}</strong>${versificationWarning}
     </header>`;
 
     // Render each verse with highlighting based on comparison

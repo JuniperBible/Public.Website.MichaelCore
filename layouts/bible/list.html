@@ -104,7 +104,7 @@ These are loaded with defer to avoid blocking page rendering.
     Data source: .Site.Data.bibles.bibles array from data/bible.json
     ============================================================================
     */}}
-    {{ $bibles := partial "michael/bible-data.html" .Site }}
+    {{ $bibles := partialCached "michael/bible-data.html" .Site }}
     {{ $pageSize := 9 }}
     {{ $total := len $bibles }}
     <section class="grid-2" id="bible-grid">

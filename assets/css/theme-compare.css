@@ -90,7 +90,7 @@
 }
 
 .compare-pane {
-  background: var(--surface);
+  background: var(--surface-1);
   border: 1px solid var(--border);
   border-radius: var(--radius-1);
   padding: var(--pad-2);
@@ -153,7 +153,7 @@
 .chapter-notes-row h2 {
   font-size: 1rem;
   margin: 0 0 var(--pad-1) 0;
-  color: var(--michael-accent);
+  color: var(--brand-500);
 }
 
 .strongs-notes-section ol,
@@ -192,7 +192,7 @@
 
 .color-picker-dropdown {
   position: absolute;
-  background: var(--surface);
+  background: var(--surface-2);
   border: 1px solid var(--border);
   border-radius: var(--radius-1);
   padding: 6px;
@@ -220,34 +220,35 @@
 /* -----------------------------
    Diff Highlighting
 ------------------------------ */
-.diff-insert {
-  background: var(--diff-add);
+/* Base diff class - shared styles */
+.diff-insert,
+.diff-punct,
+.diff-spelling,
+.diff-subst,
+.diff-omit {
   padding: 2px 0;
   border-radius: 3px;
+}
+
+/* Individual diff colors */
+.diff-insert {
+  background: var(--diff-add);
 }
 
 .diff-punct {
   background: var(--diff-punct);
-  padding: 2px 0;
-  border-radius: 3px;
 }
 
 .diff-spelling {
   background: var(--diff-spelling);
-  padding: 2px 0;
-  border-radius: 3px;
 }
 
 .diff-subst {
   background: var(--diff-subst);
-  padding: 2px 0;
-  border-radius: 3px;
 }
 
 .diff-omit {
   background: var(--diff-omit);
-  padding: 2px 0;
-  border-radius: 3px;
   text-decoration: line-through;
   color: var(--text-500);
 }

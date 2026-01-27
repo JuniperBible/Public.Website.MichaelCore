@@ -79,7 +79,7 @@
     {
       "name": "FocuswithJustin Data",
       "version": "1.0.0",
-      "license": "Proprietary",
+      "license": "LicenseRef-Proprietary",
       "supplier": "PERSON: Justin",
       "downloadLocation": "NOASSERTION",
       "description": "Book mappings and Bible data structures",

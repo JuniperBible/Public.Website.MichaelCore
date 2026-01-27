@@ -27,8 +27,15 @@
   'use strict';
 
   // ============================================================================
-  // CONFIGURATION
+  // CONFIGURATION & CONSTANTS
   // ============================================================================
+
+  /**
+   * Timing constants for UI interactions
+   */
+  const TIMING = {
+    HIGHLIGHT_ANIMATION: 1500  // Duration of highlight flash animation (ms)
+  };
 
   // Strong's definitions are served locally — no external links needed
 
@@ -79,6 +86,19 @@
    * @type {Object|null}
    */
   const localGreekData = hasLocalData ? window.Michael.StrongsData.greek : null;
+
+  /**
+   * Normalize a Strong's number to canonical form: strip leading zeros, pad to 4 digits.
+   * OSIS sources use inconsistent padding (e.g., "01", "0127", "01004", "07650").
+   * JSON lookup keys use 4-digit padding (e.g., "0001", "0127", "1004", "7650").
+   * @param {string} number - Raw numeric part (e.g., "07650", "01", "0127")
+   * @returns {string} Normalized number (e.g., "7650", "0001", "0127")
+   */
+  function normalizeStrongsNumber(number) {
+    // Strip leading zeros, then pad to at least 4 digits
+    const stripped = number.replace(/^0+/, '') || '0';
+    return stripped.padStart(4, '0');
+  }
 
   // ============================================================================
   // TOOLTIP MANAGEMENT
@@ -167,12 +187,16 @@
     element.setAttribute('aria-describedby', 'strongs-tooltip');
     tip.setAttribute('aria-hidden', 'false');
 
+    // Normalize number for display and lookup (strip leading zeros)
+    const normalized = normalizeStrongsNumber(number);
+    const displayNumber = parseInt(normalized, 10).toString();
+
     // Populate tooltip header with language type and number
     const typeName = type === 'H' ? 'Hebrew' : 'Greek';
-    tip.querySelector('.strongs-number').textContent = `${typeName} ${number}`;
+    tip.querySelector('.strongs-number').textContent = `${typeName} ${displayNumber}`;
 
     // Load and display definition content
-    loadDefinition(number, type, tip);
+    loadDefinition(normalized, type, tip);
   }
 
   /**
@@ -234,16 +258,17 @@
       if (existingEntry) {
         existingEntry.scrollIntoView({ behavior: 'smooth', block: 'center' });
         existingEntry.style.backgroundColor = 'var(--brand-100)';
-        setTimeout(() => { existingEntry.style.backgroundColor = ''; }, 1500);
+        setTimeout(() => { existingEntry.style.backgroundColor = ''; }, TIMING.HIGHLIGHT_ANIMATION);
       }
       return;
     }
 
     addedStrongsNotes.add(cacheKey);
 
-    // Build the note HTML
+    // Build the note HTML (display number without leading zeros)
     const typeName = type === 'H' ? 'Hebrew' : 'Greek';
-    let html = `<strong>${typeName} ${number}</strong>`;
+    const displayNumber = parseInt(number, 10).toString();
+    let html = `<strong>${typeName} ${displayNumber}</strong>`;
 
     if (def.source === 'local') {
       if (def.lemma) {
@@ -272,7 +297,7 @@
     // Scroll to the new entry
     li.scrollIntoView({ behavior: 'smooth', block: 'center' });
     li.style.backgroundColor = 'var(--brand-100)';
-    setTimeout(() => { li.style.backgroundColor = ''; }, 1500);
+    setTimeout(() => { li.style.backgroundColor = ''; }, TIMING.HIGHLIGHT_ANIMATION);
   }
 
   /**
@@ -329,10 +354,11 @@
 
     // Fallback: Show unavailable message
     const typeName = type === 'H' ? 'Hebrew' : 'Greek';
+    const displayNumber = parseInt(number, 10).toString();
     const definition = {
       number: `${type}${number}`,
       type: typeName,
-      note: `${typeName} ${number} — definition not available in local data.`,
+      note: `${typeName} ${displayNumber} — definition not available in local data.`,
       offline: !navigator.onLine
     };
 
@@ -354,9 +380,8 @@
     const data = type === 'H' ? localHebrewData : localGreekData;
     if (!data) return null;
 
-    // Pad number to 4 digits (e.g., "1" -> "0001")
-    const paddedNumber = number.padStart(4, '0');
-    const key = `${type}${paddedNumber}`;
+    // Number should already be normalized by caller, but ensure consistency
+    const key = `${type}${number}`;
 
     const entry = data[key];
     if (!entry) return null;
@@ -427,11 +452,16 @@
 
   /**
    * Escape HTML special characters to prevent XSS
+   * Uses shared utility from DomUtils module
    *
    * @param {string} str - String to escape
    * @returns {string} Escaped string safe for HTML insertion
    */
   function escapeHtml(str) {
+    if (window.Michael?.DomUtils?.escapeHtml) {
+      return window.Michael.DomUtils.escapeHtml(str);
+    }
+    // Fallback if DomUtils not loaded
     const div = document.createElement('div');
     div.textContent = str;
     return div.innerHTML;
@@ -471,7 +501,7 @@
 
       if (strongsMatch) {
         const type = strongsMatch[1].toUpperCase();
-        const number = strongsMatch[2];
+        const number = normalizeStrongsNumber(strongsMatch[2]);
 
         // Add interactive attributes to the <w> element
         wElement.classList.add('strongs-word');
@@ -482,10 +512,11 @@
         }
 
         // Accessibility attributes
+        const displayNum = parseInt(number, 10).toString();
         wElement.setAttribute('role', 'button');
         wElement.setAttribute('tabindex', '0');
         wElement.setAttribute('aria-label',
-          `${wElement.textContent} - Strong's ${type === 'H' ? 'Hebrew' : 'Greek'} ${number}`
+          `${wElement.textContent} - Strong's ${type === 'H' ? 'Hebrew' : 'Greek'} ${displayNum}`
         );
       }
     });
@@ -588,16 +619,20 @@
             fragment.appendChild(document.createTextNode(text.slice(lastIndex, match.index)));
           }
 
+          // Normalize number for consistent lookup and display
+          const normalizedNum = normalizeStrongsNumber(match[2]);
+          const displayNum = parseInt(normalizedNum, 10).toString();
+
           // Create accessible button for the Strong's number
           const span = document.createElement('span');
           span.className = 'strongs-ref';
-          span.dataset.strongsType = match[1];  // Store language type (H/G)
-          span.dataset.strongsNumber = match[2]; // Store numeric part
-          span.textContent = match[0];           // Display full number (e.g., "H430")
+          span.dataset.strongsType = match[1];       // Store language type (H/G)
+          span.dataset.strongsNumber = normalizedNum; // Store normalized number for lookup
+          span.textContent = `${match[1]}${displayNum}`; // Display without leading zeros (e.g., "H430")
 
           // Accessibility attributes
           span.setAttribute('role', 'button');
-          span.setAttribute('aria-label', `Strong's ${match[1] === 'H' ? 'Hebrew' : 'Greek'} ${match[2]}`);
+          span.setAttribute('aria-label', `Strong's ${match[1] === 'H' ? 'Hebrew' : 'Greek'} ${displayNum}`);
           span.setAttribute('tabindex', '0');
 
           fragment.appendChild(span);

@@ -312,7 +312,10 @@ window.Michael.ShareMenu = (function() {
           const text = this.options.getShareText();
           const url = this.options.getShareUrl();
           const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`;
-          window.open(twitterUrl, '_blank', 'width=550,height=420,noopener,noreferrer');
+          // Validate URL before opening (must be https://twitter.com)
+          if (twitterUrl.startsWith('https://twitter.com/')) {
+            window.open(twitterUrl, '_blank', 'width=550,height=420,noopener,noreferrer');
+          }
         }
         break;
 
@@ -320,7 +323,10 @@ window.Michael.ShareMenu = (function() {
         {
           const url = this.options.getShareUrl();
           const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`;
-          window.open(facebookUrl, '_blank', 'width=550,height=420,noopener,noreferrer');
+          // Validate URL before opening (must be https://www.facebook.com)
+          if (facebookUrl.startsWith('https://www.facebook.com/')) {
+            window.open(facebookUrl, '_blank', 'width=550,height=420,noopener,noreferrer');
+          }
         }
         break;
     }

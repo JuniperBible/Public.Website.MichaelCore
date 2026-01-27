@@ -5,6 +5,7 @@
 # 1. As a Hugo module: imported by consuming sites via go.mod
 # 2. Standalone: run `make dev` to start a local development server
 
+# Base URL for local development - override this in production (e.g., via --baseURL flag or environment variable)
 baseURL = "http://localhost:1313/"
 title = "Michael Bible Module"
 languageCode = "en"
@@ -19,6 +20,24 @@ languageCode = "en"
 # Enable raw HTML in markdown (required for Bible verse formatting)
 [markup.goldmark.renderer]
   unsafe = true
+
+# Minification settings for optimized output
+[minify]
+  minifyOutput = true
+  [minify.tdewolff]
+    [minify.tdewolff.html]
+      keepWhitespace = false
+    [minify.tdewolff.css]
+      version = 4
+    [minify.tdewolff.js]
+      keepVarNames = false
+
+# Security settings for Hugo's security policy
+[security]
+  [security.exec]
+    allow = ['^go$', '^npx$', '^postcss$']
+  [security.funcs]
+    getenv = ['^HUGO_', '^CI$']
 
 # Output formats for SBOM
 [outputFormats.JSON]
@@ -69,11 +88,11 @@ languageCode = "en"
     target = "data/strongs"
     includeFiles = ["*.json"]
 
-  # Mount SPDX license data (only JSON files)
+  # Mount SPDX license data (maintained locally)
   [[module.mounts]]
-    source = "tools/juniper/vendor_external/spdx"
+    source = "data/spdx"
     target = "data/spdx"
-    includeFiles = ["licenses.json"]
+    includeFiles = ["*.json"]
 
   # Mount choosealicense.com data for license rights
   [[module.mounts]]

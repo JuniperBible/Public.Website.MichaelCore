@@ -112,11 +112,18 @@
       return;
     }
 
-    const selectedBibles = Array.from(checkboxes).map(cb => ({
-      id: cb.dataset.bibleId,
-      abbrev: cb.dataset.bibleAbbrev,
-      title: cb.dataset.bibleTitle
-    }));
+    const selectedBibles = Array.from(checkboxes)
+      .map(cb => ({
+        id: cb.dataset.bibleId,
+        abbrev: cb.dataset.bibleAbbrev,
+        title: cb.dataset.bibleTitle
+      }))
+      .filter(bible => bible.id && bible.abbrev); // Validate required fields
+
+    if (selectedBibles.length === 0) {
+      showMessage('Invalid Bible selection', 'error');
+      return;
+    }
 
     // Get base path from the page
     const basePath = window.location.pathname.split('/')[1] === 'bibles'
@@ -128,6 +135,9 @@
 
     // Show progress container
     showProgressContainer(true);
+
+    let successCount = 0;
+    let failCount = 0;
 
     // Download each Bible sequentially
     for (let i = 0; i < selectedBibles.length; i++) {
@@ -142,11 +152,24 @@
 
         // Download the Bible
         await OfflineManager.downloadBible(bible.id, basePath);
+        successCount++;
 
       } catch (error) {
         console.error(`[Offline Settings] Failed to download ${bible.abbrev}:`, error);
         updateBibleStatus(bible.id, 'Failed', 'is-error');
         showMessage(`Failed to download ${bible.abbrev}: ${error.message}`, 'error');
+        failCount++;
+      }
+    }
+
+    // Show summary message if multiple downloads
+    if (selectedBibles.length > 1) {
+      if (failCount === 0) {
+        showMessage(`Successfully downloaded ${successCount} Bible(s)`, 'success');
+      } else if (successCount === 0) {
+        showMessage(`Failed to download all ${failCount} Bible(s)`, 'error');
+      } else {
+        showMessage(`Downloaded ${successCount} Bible(s), ${failCount} failed`, 'info');
       }
     }
 
@@ -215,12 +238,15 @@
           // Disable checkbox, check it to show it's downloaded, show cached status
           checkbox.disabled = true;
           checkbox.checked = true;
+          checkbox.setAttribute('data-keep-disabled', 'true');
           updateBibleStatus(bibleId, '', 'is-cached');
           if (chip) {
             chip.classList.add('is-cached');
             cachedBibles.push(chip);
           }
         } else if (status.cachedChapters > 0) {
+          // Remove keep-disabled flag for partial caches
+          checkbox.removeAttribute('data-keep-disabled');
           // Show partial cache status with percentage if we know total, otherwise just count
           if (status.totalChapters > 0) {
             const percent = Math.round((status.cachedChapters / status.totalChapters) * 100);
@@ -234,6 +260,7 @@
           }
         } else {
           // Not cached - clear any previous status
+          checkbox.removeAttribute('data-keep-disabled');
           updateBibleStatus(bibleId, '', '');
           if (chip) {
             chip.classList.remove('is-cached');
@@ -344,29 +371,45 @@
    * @param {Object} OfflineManager - The OfflineManager instance
    */
   async function handleCacheCleared(detail, OfflineManager) {
-    // Clear all Bible status indicators
-    const statusElements = document.querySelectorAll('.bible-download-status');
-    statusElements.forEach(el => {
-      el.textContent = '';
-      el.className = 'bible-download-status';
-    });
+    try {
+      // Clear all Bible status indicators
+      const statusElements = document.querySelectorAll('.bible-download-status, .bible-chip__status');
+      statusElements.forEach(el => {
+        el.textContent = '';
+        el.className = el.classList.contains('bible-chip__status')
+          ? 'bible-chip__status'
+          : 'bible-download-status';
+      });
 
-    // Re-enable all checkboxes
-    const checkboxes = document.querySelectorAll('.bible-download-checkbox');
-    checkboxes.forEach(cb => {
-      cb.disabled = false;
-    });
+      // Clear cached classes from chips
+      const chips = document.querySelectorAll('.bible-chip.is-cached');
+      chips.forEach(chip => chip.classList.remove('is-cached'));
 
-    // Re-enable clear button
-    const clearBtn = document.getElementById('clear-cache-btn');
-    clearBtn.disabled = false;
-    clearBtn.innerHTML = '<span aria-hidden="true">🗑</span> Clear Cache';
+      // Re-enable all checkboxes and clear disabled markers
+      const checkboxes = document.querySelectorAll('.bible-download-checkbox');
+      checkboxes.forEach(cb => {
+        cb.disabled = false;
+        cb.checked = false;
+        cb.removeAttribute('data-keep-disabled');
+      });
 
-    // Update cache status
-    await updateCacheStatus(OfflineManager);
+      // Re-enable clear button
+      const clearBtn = document.getElementById('clear-cache-btn');
+      if (clearBtn) {
+        clearBtn.disabled = false;
+        clearBtn.innerHTML = '<span aria-hidden="true">🗑</span> Clear Cache';
+      }
 
-    // Show success message
-    showMessage('Cache cleared successfully', 'success');
+      // Update cache status
+      await updateCacheStatus(OfflineManager);
+
+      // Show success message
+      const itemsCleared = detail?.itemsCleared || 0;
+      showMessage(`Cache cleared successfully (${itemsCleared} items removed)`, 'success');
+    } catch (error) {
+      console.error('[Offline Settings] Error handling cache cleared:', error);
+      showMessage('Cache was cleared but there was an error updating the UI', 'info');
+    }
   }
 
   /**
@@ -423,13 +466,27 @@
   function setDownloadControlsEnabled(enabled) {
     const downloadBtn = document.getElementById('download-offline-btn');
     const clearBtn = document.getElementById('clear-cache-btn');
-    const checkboxes = document.querySelectorAll('.bible-download-checkbox');
+    const checkboxes = document.querySelectorAll('.bible-download-checkbox:not([data-keep-disabled])');
 
-    if (downloadBtn) downloadBtn.disabled = !enabled;
-    if (clearBtn) clearBtn.disabled = !enabled;
+    if (downloadBtn) {
+      downloadBtn.disabled = !enabled;
+      if (!enabled) {
+        downloadBtn.setAttribute('aria-busy', 'true');
+      } else {
+        downloadBtn.removeAttribute('aria-busy');
+      }
+    }
 
+    if (clearBtn) {
+      clearBtn.disabled = !enabled;
+    }
+
+    // Only enable/disable checkboxes that aren't marked to stay disabled
     checkboxes.forEach(cb => {
-      cb.disabled = !enabled;
+      // Don't re-enable cached Bibles
+      if (!cb.hasAttribute('data-keep-disabled')) {
+        cb.disabled = !enabled;
+      }
     });
   }
 

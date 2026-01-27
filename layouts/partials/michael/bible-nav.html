@@ -77,16 +77,20 @@
 
 <nav class="reader-bar row bible-nav" aria-label="{{ i18n "bibleNavigation" | default "Bible Navigation" }}">
   <!-- Bible selector (always shown when bible is set) -->
+  {{/* Preserve book/chapter context when switching translations */}}
   {{ with $bible }}
   <label for="bible-select" class="sr-only">{{ i18n "selectBibleTranslation" | default "Select Bible Translation" }}</label>
   <select id="bible-select"
           class="select bible-nav__select"
+          data-base-path="{{ $basePath }}"
+          {{ with $book }}data-book="{{ . }}"{{ end }}
+          {{ with $chapter }}data-chapter="{{ . }}"{{ end }}
           aria-label="{{ i18n "selectBibleTranslation" | default "Select Bible Translation" }}">
-    {{ range (partial "michael/bible-data.html" $page.Site) }}
+    {{ range (partialCached "michael/bible-data.html" $page.Site) }}
       {{/* Only show bibles that have auxiliary data */}}
       {{ $hasAuxData := index $page.Site.Data.bibles_auxiliary .id }}
       {{ if $hasAuxData }}
-    <option value="{{ printf "%s/%s/" $basePath .id | relLangURL }}" {{ if eq .id $bible }}selected{{ end }}>
+    <option value="{{ .id }}" {{ if eq .id $bible }}selected{{ end }}>
       {{ .abbrev }}
     </option>
       {{ end }}

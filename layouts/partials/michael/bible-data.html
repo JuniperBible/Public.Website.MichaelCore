@@ -9,7 +9,7 @@
   Output: slice of Bible dicts with overrides applied
 
   Usage:
-    {{ $bibles := partial "michael/bible-data.html" .Site }}
+    {{ $bibles := partialCached "michael/bible-data.html" .Site }}
 */}}
 {{- $bibles := .Data.bibles.bibles -}}
 {{- $overrides := dict -}}

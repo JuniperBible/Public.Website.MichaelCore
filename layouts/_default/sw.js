@@ -219,15 +219,22 @@ async function cacheFirstStrategy(request, cacheName) {
     console.log(`[Service Worker] Cache miss, fetching: ${request.url}`);
     const networkResponse = await fetch(request);
 
-    // Cache the new response for future use
-    if (networkResponse && networkResponse.status === 200) {
-      cache.put(request, networkResponse.clone());
+    // Cache the new response for future use (only on success)
+    if (networkResponse && networkResponse.ok) {
+      cache.put(request, networkResponse.clone()).catch(error => {
+        console.warn(`[Service Worker] Failed to cache ${request.url}:`, error);
+      });
     }
 
     return networkResponse;
   } catch (error) {
     console.error(`[Service Worker] Cache-first failed for ${request.url}:`, error);
-    throw error;
+    // Return a basic error response instead of throwing
+    return new Response('Network error', {
+      status: 408,
+      statusText: 'Request Timeout',
+      headers: { 'Content-Type': 'text/plain' }
+    });
   }
 }
 
@@ -241,10 +248,12 @@ async function networkFirstStrategy(request, cacheName) {
     // Try network first
     const networkResponse = await fetch(request);
 
-    // Cache the response for offline use
-    if (networkResponse && networkResponse.status === 200) {
+    // Cache the response for offline use (only on success)
+    if (networkResponse && networkResponse.ok) {
       const cache = await caches.open(cacheName);
-      cache.put(request, networkResponse.clone());
+      cache.put(request, networkResponse.clone()).catch(error => {
+        console.warn(`[Service Worker] Failed to cache ${request.url}:`, error);
+      });
       console.log(`[Service Worker] Cached from network: ${request.url}`);
     }
 
@@ -252,17 +261,25 @@ async function networkFirstStrategy(request, cacheName) {
   } catch (error) {
     // Network failed, try cache
     console.log(`[Service Worker] Network failed, trying cache: ${request.url}`);
-    const cache = await caches.open(cacheName);
-    const cachedResponse = await cache.match(request);
+    try {
+      const cache = await caches.open(cacheName);
+      const cachedResponse = await cache.match(request);
 
-    if (cachedResponse) {
-      console.log(`[Service Worker] Serving from cache: ${request.url}`);
-      return cachedResponse;
+      if (cachedResponse) {
+        console.log(`[Service Worker] Serving from cache: ${request.url}`);
+        return cachedResponse;
+      }
+    } catch (cacheError) {
+      console.error(`[Service Worker] Cache access failed for ${request.url}:`, cacheError);
     }
 
-    // Both network and cache failed
+    // Both network and cache failed - return error response
     console.error(`[Service Worker] Network-first failed for ${request.url}:`, error);
-    throw error;
+    return new Response('Network error and no cache available', {
+      status: 503,
+      statusText: 'Service Unavailable',
+      headers: { 'Content-Type': 'text/plain' }
+    });
   }
 }
 
@@ -276,29 +293,35 @@ async function navigationStrategy(request) {
     const networkResponse = await fetch(request);
 
     // Cache successful navigation responses
-    if (networkResponse && networkResponse.status === 200) {
+    if (networkResponse && networkResponse.ok) {
       const cache = await caches.open(CHAPTERS_CACHE);
-      cache.put(request, networkResponse.clone());
+      cache.put(request, networkResponse.clone()).catch(error => {
+        console.warn(`[Service Worker] Failed to cache navigation ${request.url}:`, error);
+      });
     }
 
     return networkResponse;
   } catch (error) {
     // Network failed, try cache
-    const cache = await caches.open(CHAPTERS_CACHE);
-    const cachedResponse = await cache.match(request);
+    try {
+      const cache = await caches.open(CHAPTERS_CACHE);
+      const cachedResponse = await cache.match(request);
 
-    if (cachedResponse) {
-      console.log(`[Service Worker] Serving cached page: ${request.url}`);
-      return cachedResponse;
-    }
+      if (cachedResponse) {
+        console.log(`[Service Worker] Serving cached page: ${request.url}`);
+        return cachedResponse;
+      }
 
-    // Both failed, show offline page
-    console.log('[Service Worker] Serving offline page');
-    const offlineCache = await caches.open(SHELL_CACHE);
-    const offlinePage = await offlineCache.match(OFFLINE_URL);
+      // Cache miss, show offline page
+      console.log('[Service Worker] Serving offline page');
+      const offlineCache = await caches.open(SHELL_CACHE);
+      const offlinePage = await offlineCache.match(OFFLINE_URL);
 
-    if (offlinePage) {
-      return offlinePage;
+      if (offlinePage) {
+        return offlinePage;
+      }
+    } catch (cacheError) {
+      console.error('[Service Worker] Cache access failed:', cacheError);
     }
 
     // Last resort: return a basic error response
@@ -346,87 +369,107 @@ self.addEventListener('message', (event) => {
   const { type, data } = event.data || {};
   const port = event.ports[0];
 
-  if (type === 'SKIP_WAITING') {
-    console.log('[Service Worker] Received SKIP_WAITING message');
-    self.skipWaiting();
-    return;
-  }
+  // Helper to send response
+  const sendResponse = (response) => {
+    if (port) port.postMessage(response);
+  };
 
-  if (type === 'CACHE_URLS') {
-    console.log('[Service Worker] Received CACHE_URLS message');
-    const urls = data?.urls || event.data.urls || [];
+  switch (type) {
+    case 'SKIP_WAITING':
+      console.log('[Service Worker] Received SKIP_WAITING message');
+      self.skipWaiting();
+      break;
 
-    caches.open(CHAPTERS_CACHE).then(cache => {
-      urls.forEach(url => {
-        cache.add(url).then(() => {
-          console.log(`[Service Worker] Cached on demand: ${url}`);
-        }).catch(error => {
-          console.warn(`[Service Worker] Failed to cache ${url}:`, error);
-        });
-      });
-    });
-    return;
-  }
+    case 'CACHE_URLS':
+      console.log('[Service Worker] Received CACHE_URLS message');
+      handleCacheUrls(data, event.data);
+      break;
 
-  if (type === 'GET_CACHE_STATUS') {
-    console.log('[Service Worker] Received GET_CACHE_STATUS message');
-    getCacheStatus().then(status => {
-      if (port) port.postMessage(status);
-    }).catch(error => {
-      if (port) port.postMessage({ error: error.message });
-    });
-    return;
-  }
+    case 'GET_CACHE_STATUS':
+      console.log('[Service Worker] Received GET_CACHE_STATUS message');
+      getCacheStatus()
+        .then(sendResponse)
+        .catch(error => sendResponse({ error: error.message }));
+      break;
 
-  if (type === 'CACHE_BIBLE') {
-    console.log('[Service Worker] Received CACHE_BIBLE message', data);
-    cacheBible(data.bibleId, data.basePath).then(() => {
-      if (port) port.postMessage({ success: true });
-    }).catch(error => {
-      if (port) port.postMessage({ error: error.message });
-    });
-    return;
-  }
+    case 'CACHE_BIBLE':
+      console.log('[Service Worker] Received CACHE_BIBLE message', data);
+      if (!data?.bibleId || !data?.basePath) {
+        sendResponse({ error: 'Missing bibleId or basePath' });
+        break;
+      }
+      cacheBible(data.bibleId, data.basePath)
+        .then(() => sendResponse({ success: true }))
+        .catch(error => sendResponse({ error: error.message }));
+      break;
 
-  if (type === 'CLEAR_CACHE') {
-    console.log('[Service Worker] Received CLEAR_CACHE message');
-    clearBibleCache().then(itemsCleared => {
-      if (port) port.postMessage({ success: true, itemsCleared });
-      // Notify all clients
-      self.clients.matchAll().then(clients => {
-        clients.forEach(client => {
-          client.postMessage({ type: 'CACHE_CLEARED', data: { itemsCleared } });
-        });
-      });
-    }).catch(error => {
-      if (port) port.postMessage({ error: error.message });
-    });
-    return;
-  }
+    case 'CLEAR_CACHE':
+      console.log('[Service Worker] Received CLEAR_CACHE message');
+      clearBibleCache()
+        .then(itemsCleared => {
+          sendResponse({ success: true, itemsCleared });
+          notifyClients('CACHE_CLEARED', { itemsCleared });
+        })
+        .catch(error => sendResponse({ error: error.message }));
+      break;
 
-  if (type === 'GET_BIBLE_CACHE_STATUS') {
-    console.log('[Service Worker] Received GET_BIBLE_CACHE_STATUS message', data);
-    getBibleCacheStatus(data.bibleId, data.basePath).then(status => {
-      if (port) port.postMessage(status);
-    }).catch(error => {
-      if (port) port.postMessage({ error: error.message });
-    });
-    return;
-  }
+    case 'GET_BIBLE_CACHE_STATUS':
+      console.log('[Service Worker] Received GET_BIBLE_CACHE_STATUS message', data);
+      if (!data?.bibleId || !data?.basePath) {
+        sendResponse({ error: 'Missing bibleId or basePath' });
+        break;
+      }
+      getBibleCacheStatus(data.bibleId, data.basePath)
+        .then(sendResponse)
+        .catch(error => sendResponse({ error: error.message }));
+      break;
 
-  if (type === 'CANCEL_DOWNLOAD') {
-    console.log('[Service Worker] Received CANCEL_DOWNLOAD message', data);
-    const bibleId = data?.bibleId;
-    if (bibleId && activeDownloads.has(bibleId)) {
-      activeDownloads.get(bibleId).abort();
-      activeDownloads.delete(bibleId);
-      if (port) port.postMessage({ success: true, cancelled: bibleId });
-    } else {
-      if (port) port.postMessage({ success: false, error: 'No active download found' });
-    }
-    return;
+    case 'CANCEL_DOWNLOAD':
+      console.log('[Service Worker] Received CANCEL_DOWNLOAD message', data);
+      handleCancelDownload(data, sendResponse);
+      break;
+
+    default:
+      console.warn('[Service Worker] Unknown message type:', type);
   }
 });
+
+/**
+ * Handle CACHE_URLS message
+ */
+function handleCacheUrls(data, fallbackData) {
+  const urls = data?.urls || fallbackData?.urls || [];
+  if (urls.length === 0) return;
+
+  caches.open(CHAPTERS_CACHE).then(cache => {
+    urls.forEach(url => {
+      cache.add(url)
+        .then(() => console.log(`[Service Worker] Cached on demand: ${url}`))
+        .catch(error => console.warn(`[Service Worker] Failed to cache ${url}:`, error));
+    });
+  }).catch(error => {
+    console.error('[Service Worker] Failed to open cache:', error);
+  });
+}
+
+/**
+ * Handle CANCEL_DOWNLOAD message
+ */
+function handleCancelDownload(data, sendResponse) {
+  const bibleId = data?.bibleId;
+  if (!bibleId) {
+    sendResponse({ success: false, error: 'Missing bibleId' });
+    return;
+  }
+
+  if (activeDownloads.has(bibleId)) {
+    activeDownloads.get(bibleId).abort();
+    activeDownloads.delete(bibleId);
+    sendResponse({ success: true, cancelled: bibleId });
+  } else {
+    sendResponse({ success: false, error: 'No active download found' });
+  }
+}
 
 /**
  * Get cache status information
@@ -468,171 +511,168 @@ async function cacheBible(bibleId, basePath) {
   // Set up abort controller for cancellation
   const abortController = new AbortController();
   activeDownloads.set(bibleId, abortController);
-  const signal = abortController.signal;
-
-  // Helper to check if cancelled
-  const checkCancelled = () => {
-    if (signal.aborted) {
-      throw new Error('Download cancelled');
-    }
-  };
 
   try {
-    // Get the Bible's book/chapter structure from the auxiliary data
-    // We need to fetch this from the page or construct URLs
     const cache = await caches.open(CHAPTERS_CACHE);
 
-    // First, fetch the Bible overview page to discover books
-    const bibleUrl = `${basePath}/${bibleId}/`;
-    let bibleResponse;
-    try {
-      bibleResponse = await fetch(bibleUrl, { signal });
-    } catch (error) {
-      if (error.name === 'AbortError') {
-        throw new Error('Download cancelled');
-      }
-      throw new Error(`Failed to fetch Bible page: ${error.message}`);
+    // Phase 1: Fetch and cache Bible overview, discover books
+    const { bibleUrl, bookLinks } = await fetchBibleOverview(bibleId, basePath, cache, abortController.signal);
+
+    if (bookLinks.length === 0) {
+      notifyClients('CACHE_COMPLETE', { bible: bibleId, itemCount: 1 });
+      return;
     }
 
+    // Phase 2: Discover all chapters from books
+    const { chapterUrls, failedBooks } = await discoverChapters(bibleId, basePath, bookLinks, cache, abortController.signal);
+
+    // Calculate totals and store metadata
+    const totalItems = 1 + bookLinks.length + chapterUrls.length;
+    let completedItems = 1 + bookLinks.length;
+
+    await saveAndNotifyMetadata(bibleId, chapterUrls.length, bookLinks.length, completedItems, totalItems);
+
+    // Phase 3: Cache all chapters with progress updates
+    const failedChapters = await cacheAllChapters(bibleId, chapterUrls, cache, abortController.signal, completedItems, totalItems);
+
+    // Notify final completion
+    const successCount = totalItems - failedBooks - failedChapters;
+    console.log(`[Service Worker] Cached ${successCount}/${totalItems} items for ${bibleId}`);
+    notifyClients('CACHE_COMPLETE', {
+      bible: bibleId,
+      itemCount: successCount,
+      totalItems: totalItems,
+      failedCount: failedBooks + failedChapters
+    });
+
+  } finally {
+    activeDownloads.delete(bibleId);
+  }
+}
+
+/**
+ * Fetch Bible overview page and extract book links
+ */
+async function fetchBibleOverview(bibleId, basePath, cache, signal) {
+  const bibleUrl = `${basePath}/${bibleId}/`;
+
+  try {
+    const bibleResponse = await fetch(bibleUrl, { signal });
     if (!bibleResponse.ok) {
       throw new Error(`Bible page returned ${bibleResponse.status}`);
     }
 
-    // Cache the Bible overview page
     await cache.put(bibleUrl, bibleResponse.clone());
-
-    // Parse the page to find book links
     const html = await bibleResponse.text();
     const bookLinks = extractBookLinks(html, basePath, bibleId);
 
-    if (bookLinks.length === 0) {
-      // Notify completion with what we have
-      self.clients.matchAll().then(clients => {
-        clients.forEach(client => {
-          client.postMessage({
-            type: 'CACHE_COMPLETE',
-            data: { bible: bibleId, itemCount: 1 }
-          });
-        });
-      });
-      return;
+    return { bibleUrl, bookLinks };
+  } catch (error) {
+    if (error.name === 'AbortError') {
+      throw new Error('Download cancelled');
     }
+    throw new Error(`Failed to fetch Bible page: ${error.message}`);
+  }
+}
 
-    // Phase 1: Discover all chapters first (to get accurate total)
-    console.log(`[Service Worker] Discovering chapters for ${bibleId}...`);
-    const chapterUrls = [];
-    let failedBooks = 0;
+/**
+ * Discover all chapters from book pages
+ */
+async function discoverChapters(bibleId, basePath, bookLinks, cache, signal) {
+  console.log(`[Service Worker] Discovering chapters for ${bibleId}...`);
+  const chapterUrls = [];
+  let failedBooks = 0;
 
-    for (const bookUrl of bookLinks) {
-      checkCancelled();
-      try {
-        const bookResponse = await fetch(bookUrl, { signal });
-        if (bookResponse.ok) {
-          await cache.put(bookUrl, bookResponse.clone());
-          const bookHtml = await bookResponse.text();
-          const chapters = extractChapterLinks(bookHtml, basePath, bibleId);
-          chapterUrls.push(...chapters);
-        } else {
-          failedBooks++;
-        }
-      } catch (error) {
-        if (error.name === 'AbortError' || error.message === 'Download cancelled') {
-          throw new Error('Download cancelled');
-        }
-        console.warn(`[Service Worker] Failed to fetch book ${bookUrl}:`, error);
+  for (const bookUrl of bookLinks) {
+    if (signal.aborted) throw new Error('Download cancelled');
+
+    try {
+      const bookResponse = await fetch(bookUrl, { signal });
+      if (bookResponse.ok) {
+        await cache.put(bookUrl, bookResponse.clone());
+        const bookHtml = await bookResponse.text();
+        const chapters = extractChapterLinks(bookHtml, basePath, bibleId);
+        chapterUrls.push(...chapters);
+      } else {
         failedBooks++;
       }
+    } catch (error) {
+      if (error.name === 'AbortError' || error.message === 'Download cancelled') {
+        throw new Error('Download cancelled');
+      }
+      console.warn(`[Service Worker] Failed to fetch book ${bookUrl}:`, error);
+      failedBooks++;
     }
+  }
 
-    // Calculate total upfront (1 overview + books + chapters)
-    const totalItems = 1 + bookLinks.length + chapterUrls.length;
-    let completedItems = 1 + bookLinks.length; // Overview and books already cached
+  return { chapterUrls, failedBooks };
+}
 
-    console.log(`[Service Worker] Found ${chapterUrls.length} chapters to cache`);
+/**
+ * Save metadata and notify clients of initial progress
+ */
+async function saveAndNotifyMetadata(bibleId, totalChapters, totalBooks, completedItems, totalItems) {
+  console.log(`[Service Worker] Found ${totalChapters} chapters to cache`);
 
-    // Store Bible metadata for later retrieval (total chapters known after discovery)
-    bibleMetadata.set(bibleId, {
-      totalChapters: chapterUrls.length,
-      totalBooks: bookLinks.length
-    });
-    // Also persist to metadata cache
-    await saveBibleMetadata(bibleId, chapterUrls.length, bookLinks.length);
+  bibleMetadata.set(bibleId, { totalChapters, totalBooks });
+  await saveBibleMetadata(bibleId, totalChapters, totalBooks);
 
-    // Send initial progress with accurate total
-    self.clients.matchAll().then(clients => {
-      clients.forEach(client => {
-        client.postMessage({
-          type: 'CACHE_PROGRESS',
-          data: {
-            bible: bibleId,
-            completed: completedItems,
-            total: totalItems,
-            currentItem: 'Starting chapter downloads...'
-          }
-        });
-      });
-    });
+  notifyClients('CACHE_PROGRESS', {
+    bible: bibleId,
+    completed: completedItems,
+    total: totalItems,
+    currentItem: 'Starting chapter downloads...'
+  });
+}
 
-    // Phase 2: Cache all chapters
-    let failedChapters = 0;
-    for (const chapterUrl of chapterUrls) {
-      checkCancelled();
-      try {
-        const chapterResponse = await fetch(chapterUrl, { signal });
-        if (chapterResponse.ok) {
-          await cache.put(chapterUrl, chapterResponse.clone());
-        } else {
-          failedChapters++;
-        }
-      } catch (error) {
-        if (error.name === 'AbortError' || error.message === 'Download cancelled') {
-          throw new Error('Download cancelled');
-        }
-        console.warn(`[Service Worker] Failed to cache chapter ${chapterUrl}:`, error);
+/**
+ * Cache all chapters with progress updates
+ */
+async function cacheAllChapters(bibleId, chapterUrls, cache, signal, startCompleted, totalItems) {
+  let failedChapters = 0;
+  let completedItems = startCompleted;
+
+  for (const chapterUrl of chapterUrls) {
+    if (signal.aborted) throw new Error('Download cancelled');
+
+    try {
+      const chapterResponse = await fetch(chapterUrl, { signal });
+      if (chapterResponse.ok) {
+        await cache.put(chapterUrl, chapterResponse.clone());
+      } else {
         failedChapters++;
       }
-
-      completedItems++;
-      // Send progress update every 10 chapters to reduce message overhead
-      if (completedItems % 10 === 0 || completedItems === totalItems) {
-        self.clients.matchAll().then(clients => {
-          clients.forEach(client => {
-            client.postMessage({
-              type: 'CACHE_PROGRESS',
-              data: {
-                bible: bibleId,
-                completed: completedItems,
-                total: totalItems,
-                currentItem: chapterUrl
-              }
-            });
-          });
-        });
+    } catch (error) {
+      if (error.name === 'AbortError' || error.message === 'Download cancelled') {
+        throw new Error('Download cancelled');
       }
+      console.warn(`[Service Worker] Failed to cache chapter ${chapterUrl}:`, error);
+      failedChapters++;
     }
 
-    // Notify completion (include failure count if any)
-    const successCount = totalItems - failedBooks - failedChapters;
-    console.log(`[Service Worker] Cached ${successCount}/${totalItems} items for ${bibleId}`);
-
-    self.clients.matchAll().then(clients => {
-      clients.forEach(client => {
-        client.postMessage({
-          type: 'CACHE_COMPLETE',
-          data: {
-            bible: bibleId,
-            itemCount: successCount,
-            totalItems: totalItems,
-            failedCount: failedBooks + failedChapters
-          }
-        });
+    completedItems++;
+    if (completedItems % 10 === 0 || completedItems === totalItems) {
+      notifyClients('CACHE_PROGRESS', {
+        bible: bibleId,
+        completed: completedItems,
+        total: totalItems,
+        currentItem: chapterUrl
       });
-    });
-
-  } finally {
-    // Clean up the abort controller
-    activeDownloads.delete(bibleId);
+    }
   }
+
+  return failedChapters;
+}
+
+/**
+ * Helper to notify all clients with a message
+ */
+function notifyClients(type, data) {
+  self.clients.matchAll().then(clients => {
+    clients.forEach(client => {
+      client.postMessage({ type, data });
+    });
+  });
 }
 
 /**

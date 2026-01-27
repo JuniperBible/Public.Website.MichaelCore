@@ -6,15 +6,28 @@
 #   0 - All checks passed
 #   1 - One or more checks failed
 
-set -e
+set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
 README="$PROJECT_ROOT/README.md"
 UPDATE_README=false
+HUGO_PID=""
+
+# Cleanup function to kill background processes
+cleanup() {
+    if [[ -n "$HUGO_PID" ]] && kill -0 "$HUGO_PID" 2>/dev/null; then
+        echo "Cleaning up Hugo server (PID: $HUGO_PID)..."
+        kill "$HUGO_PID" 2>/dev/null || true
+        wait "$HUGO_PID" 2>/dev/null || true
+    fi
+}
+
+# Set trap to cleanup on exit
+trap cleanup EXIT INT TERM
 
 # Parse arguments
-if [[ "$1" == "--update-readme" ]]; then
+if [[ "${1:-}" == "--update-readme" ]]; then
     UPDATE_README=true
 fi
 
@@ -95,10 +108,23 @@ if [ -d "tests" ] && [ -f "tests/go.mod" ]; then
     # Start Hugo server in background
     hugo server --port 1313 --buildDrafts &>/dev/null &
     HUGO_PID=$!
-    sleep 3
 
-    # Check if Hugo started
-    if curl -s http://localhost:1313/ &>/dev/null; then
+    # Wait for Hugo to start with retry logic
+    RETRY_COUNT=0
+    MAX_RETRIES=10
+    HUGO_READY=false
+
+    while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
+        if curl -s http://localhost:1313/ &>/dev/null; then
+            HUGO_READY=true
+            break
+        fi
+        sleep 1
+        RETRY_COUNT=$((RETRY_COUNT + 1))
+    done
+
+    # Check if Hugo started successfully
+    if [ "$HUGO_READY" = true ]; then
         cd tests
         if go test -v ./regression/... -count=1 2>&1 | grep -q "PASS"; then
             pass "Regression Tests"
@@ -107,11 +133,11 @@ if [ -d "tests" ] && [ -f "tests/go.mod" ]; then
         fi
         cd "$PROJECT_ROOT"
     else
-        skip "Regression Tests" "Hugo server failed to start"
+        skip "Regression Tests" "Hugo server failed to start within ${MAX_RETRIES} seconds"
     fi
 
-    # Stop Hugo
-    kill $HUGO_PID 2>/dev/null || true
+    # Stop Hugo (cleanup trap will handle this, but try anyway)
+    kill "$HUGO_PID" 2>/dev/null || true
 else
     skip "Regression Tests" "tests directory not found"
 fi
@@ -149,9 +175,16 @@ if $UPDATE_README; then
     TABLE=$(echo "$TABLE" | sed 's/| fail |/| ❌ Fail |/g')
     TABLE=$(echo "$TABLE" | sed 's/| skip |/| ⊘ Skip |/g')
 
-    # Update README using sed
+    # Update README using sed (with macOS compatibility)
+    # Detect macOS vs Linux
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+        SED_INPLACE=(-i '')
+    else
+        SED_INPLACE=(-i)
+    fi
+
     # Match from AUTO-GENERATED to END AUTO-GENERATED and replace
-    sed -i "/<!-- AUTO-GENERATED: Do not edit manually/,/<!-- END AUTO-GENERATED -->/c\\
+    sed "${SED_INPLACE[@]}" "/<!-- AUTO-GENERATED: Do not edit manually/,/<!-- END AUTO-GENERATED -->/c\\
 <!-- AUTO-GENERATED: Do not edit manually. Run \`make check\` to update. -->\\
 \\
 $TABLE\\
@@ -159,7 +192,7 @@ $TABLE\\
 <!-- END AUTO-GENERATED -->" "$README"
 
     # Update last verified date
-    sed -i "s/\*Last verified: [0-9-]*\*/\*Last verified: $TODAY\*/" "$README"
+    sed "${SED_INPLACE[@]}" "s/\\*Last verified: [0-9-]*\\*/\\*Last verified: $TODAY\\*/" "$README"
 
     echo "README.md updated with check results"
 fi

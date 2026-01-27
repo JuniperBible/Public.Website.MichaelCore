@@ -241,6 +241,56 @@ window.Michael.DomUtils = (function() {
   }
 
   // ============================================================================
+  // HTML UTILITIES
+  // ============================================================================
+
+  /**
+   * Escape HTML special characters to prevent XSS
+   *
+   * Converts HTML special characters to their entity equivalents:
+   * - & becomes &amp;
+   * - < becomes &lt;
+   * - > becomes &gt;
+   * - " becomes &quot;
+   * - ' becomes &#039;
+   *
+   * @param {string} text - Text to escape
+   * @returns {string} Escaped text safe for HTML insertion
+   *
+   * @example
+   * const userInput = '<script>alert("XSS")</script>';
+   * const safe = escapeHtml(userInput);
+   * // Returns: &lt;script&gt;alert(&quot;XSS&quot;)&lt;/script&gt;
+   */
+  function escapeHtml(text) {
+    return text
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
+
+  /**
+   * Create a loading indicator element
+   *
+   * Creates a semantic loading indicator using the aria-busy pattern
+   * for screen reader accessibility.
+   *
+   * @param {string} [message='Loading...'] - Loading message to display
+   * @returns {string} HTML string for loading indicator
+   *
+   * @example
+   * element.innerHTML = createLoadingIndicator();
+   *
+   * @example
+   * element.innerHTML = createLoadingIndicator('Fetching chapter data...');
+   */
+  function createLoadingIndicator(message = 'Loading...') {
+    return `<article aria-busy="true" style="text-align: center; padding: 2rem 0;">${escapeHtml(message)}</article>`;
+  }
+
+  // ============================================================================
   // PUBLIC API
   // ============================================================================
 
@@ -248,6 +298,8 @@ window.Michael.DomUtils = (function() {
     addTapListener,
     getContrastColor,
     showMessage,
-    dismissToast
+    dismissToast,
+    escapeHtml,
+    createLoadingIndicator
   };
 })();

@@ -21,6 +21,13 @@ window.Michael.BibleAPI = (function() {
   const chapterCache = new Map();
 
   /**
+   * Active fetch requests with AbortControllers for cancellation
+   * Key format: "{bibleId}/{bookId}/{chapterNum}"
+   * @type {Map<string, AbortController>}
+   */
+  const activeFetches = new Map();
+
+  /**
    * Fetches chapter data from a Bible translation page.
    *
    * This function fetches the HTML page for a specific chapter, parses the verses,
@@ -54,12 +61,27 @@ window.Michael.BibleAPI = (function() {
       return chapterCache.get(cacheKey);
     }
 
+    // Cancel any existing fetch for this same chapter to prevent race conditions
+    if (activeFetches.has(cacheKey)) {
+      activeFetches.get(cacheKey).abort();
+      activeFetches.delete(cacheKey);
+    }
+
+    // Create AbortController if not provided
+    const controller = signal ? null : new AbortController();
+    const fetchSignal = signal || controller.signal;
+
+    // Track this fetch
+    if (controller) {
+      activeFetches.set(cacheKey, controller);
+    }
+
     // Construct URL (bookId should be lowercase in URL)
     const url = `${basePath}/${bibleId}/${bookId.toLowerCase()}/${chapterNum}/`;
 
     try {
       // Fetch chapter HTML page
-      const response = await fetch(url, { signal });
+      const response = await fetch(url, { signal: fetchSignal });
 
       if (!response.ok) {
         console.warn(`Failed to fetch ${url}: ${response.status}`);
@@ -80,6 +102,11 @@ window.Michael.BibleAPI = (function() {
       }
       console.error(`Error fetching ${url}:`, err);
       return null;
+    } finally {
+      // Clean up active fetch tracking
+      if (controller && activeFetches.get(cacheKey) === controller) {
+        activeFetches.delete(cacheKey);
+      }
     }
   }
 
@@ -260,12 +287,17 @@ window.Michael.BibleAPI = (function() {
    *
    * This can be useful to free memory or force fresh fetches of chapter data.
    * Call this function when you want to invalidate all cached chapters.
+   * Also cancels any active fetches.
    *
    * @example
    * clearCache();
    * console.log('Chapter cache cleared');
    */
   function clearCache() {
+    // Cancel all active fetches
+    activeFetches.forEach(controller => controller.abort());
+    activeFetches.clear();
+
     chapterCache.clear();
   }
 

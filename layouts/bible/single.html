@@ -25,8 +25,8 @@
 */}}
 
 {{ define "scripts" }}
-{{/* Inject Strong's definitions data for offline use */}}
-{{ partial "michael/strongs-data.html" . }}
+{{/* Inject Strong's definitions data (cached — identical across all pages) */}}
+{{ partialCached "michael/strongs-data.html" . }}
 {{ $bibleNav := resources.Get "js/michael/bible-nav.js" }}
 {{ if $bibleNav }}<script src="{{ $bibleNav.RelPermalink }}" defer></script>{{ end }}
 {{ $shareMenu := resources.Get "js/michael/share-menu.js" }}
@@ -46,7 +46,7 @@
     {{/* Look up Bible metadata from bibles-data partial (includes overrides) */}}
     {{ $bibleId := .Params.bible | default .Params.abbrev | default .File.ContentBaseName }}
     {{ $bibleData := dict }}
-    {{ range (partial "michael/bible-data.html" .Site) }}
+    {{ range (partialCached "michael/bible-data.html" .Site) }}
       {{ if eq .id $bibleId }}
         {{ $bibleData = . }}
       {{ end }}

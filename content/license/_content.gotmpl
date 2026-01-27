@@ -5,8 +5,15 @@
 
 {{- $spdxLicenses := .Site.Data.spdx.licenses.licenses -}}
 
+{{- if not $spdxLicenses -}}
+  {{- warnf "No SPDX license data found at .Site.Data.spdx.licenses.licenses" -}}
+{{- end -}}
+
 {{/* Get unique licenses used by Bibles */}}
 {{- $usedLicenses := slice -}}
+{{- if not .Site.Data.bibles.bibles -}}
+  {{- warnf "No bibles data found at .Site.Data.bibles.bibles" -}}
+{{- end -}}
 {{- range .Site.Data.bibles.bibles -}}
   {{- with .license -}}
     {{- if not (in $usedLicenses .) -}}
@@ -15,12 +22,19 @@
   {{- end -}}
 {{- end -}}
 
+{{/* Build a map of SPDX licenses for O(1) lookup */}}
+{{- $spdxMap := dict -}}
+{{- range $spdxLicenses -}}
+  {{- $spdxMap = merge $spdxMap (dict (lower .licenseId) .) -}}
+{{- end -}}
+
 {{/* Generate a page for each used license */}}
 {{- range $licenseId := $usedLicenses -}}
-  {{- $licenseData := dict -}}
-  {{- range $spdxLicenses -}}
-    {{- if eq (lower .licenseId) (lower $licenseId) -}}
-      {{- $licenseData = . -}}
+  {{- $licenseData := index $spdxMap (lower $licenseId) -}}
+  {{- if not $licenseData -}}
+    {{/* LicenseRef-* are custom SPDX identifiers — not expected in official list */}}
+    {{- if not (hasPrefix $licenseId "LicenseRef-") -}}
+      {{- warnf "License '%s' not found in SPDX data" $licenseId -}}
     {{- end -}}
   {{- end -}}
 

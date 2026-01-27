@@ -43,6 +43,9 @@
     // Set up banner UI if it exists
     setupBannerUI();
 
+    // Set up iOS dismiss button
+    setupIOSDismissButton();
+
     // Check if we should show iOS instructions
     if (isIOS() && !isDismissed()) {
       showIOSInstructions();
@@ -233,6 +236,25 @@
   }
 
   /**
+   * Set up iOS dismiss button event listener
+   */
+  function setupIOSDismissButton() {
+    const iosDismissBtn = document.getElementById('pwa-ios-dismiss');
+    if (iosDismissBtn) {
+      iosDismissBtn.addEventListener('click', function() {
+        const banner = document.getElementById('pwa-ios-instructions');
+        if (banner) {
+          banner.classList.add('hidden');
+          banner.setAttribute('aria-hidden', 'true');
+        }
+        // Store dismissal
+        localStorage.setItem(STORAGE_KEY_DISMISSED, 'true');
+        localStorage.setItem(STORAGE_KEY_DISMISSED_TIME, Date.now().toString());
+      });
+    }
+  }
+
+  /**
    * Show the install banner
    */
   function showInstallBanner() {
@@ -306,12 +328,26 @@
     return deferredPrompt !== null;
   }
 
+  /**
+   * Cleanup event listeners when page unloads
+   */
+  function cleanup() {
+    window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    window.removeEventListener('appinstalled', handleAppInstalled);
+
+    // Clear deferred prompt
+    deferredPrompt = null;
+  }
+
   // Initialize when DOM is ready
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initialize);
   } else {
     initialize();
   }
+
+  // Clean up on page unload
+  window.addEventListener('beforeunload', cleanup);
 
   // Expose public API
   window.Michael = window.Michael || {};
@@ -321,7 +357,8 @@
     isPWAInstalled,
     isIOS,
     requestNotificationPermission,
-    requestRunOnLogin
+    requestRunOnLogin,
+    cleanup
   };
 
 })();

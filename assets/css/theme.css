@@ -150,7 +150,7 @@ a:focus-visible {
   text-decoration: none;
 }
 
-.chrome a:hover { color: #fff; }
+.chrome a:hover { color: var(--surface-2); }
 
 .footer-copyright {
   background: var(--chrome-900);
@@ -161,7 +161,7 @@ a:focus-visible {
   color: rgba(255,255,255,.92);
   text-decoration: underline;
 }
-.footer-copyright a:hover { color: #fff; }
+.footer-copyright a:hover { color: var(--surface-2); }
 
 .nav {
   display: flex;
@@ -224,12 +224,12 @@ a:focus-visible {
 .btn--primary {
   background: var(--brand-500);
   border-color: rgba(0,0,0,.2);
-  color: #fff;
+  color: var(--surface-2);
 }
 
 .btn--primary:hover {
   background: var(--brand-600);
-  color: #fff;
+  color: var(--surface-2);
   text-decoration: none;
 }
 
@@ -289,7 +289,7 @@ a:focus-visible {
 .chip[aria-selected="true"] {
   background: var(--brand-500);
   border-color: rgba(0,0,0,.25);
-  color: #fff;
+  color: var(--surface-2);
 }
 
 /* Softer active (optional): use instead of purple fill if you prefer */
@@ -480,7 +480,8 @@ a:focus-visible {
   max-width: 90ch;
   margin: 0 auto;
   color: var(--text-900);
-  line-height: 1.65;
+  line-height: 1.8;
+  font-size: 1.08rem;
 }
 
 /* -----------------------------
@@ -631,38 +632,55 @@ a:focus-visible {
   margin: 0 0 1em 0;
 }
 
-/* Bible chapter text — paragraph-style verse layout */
-.prose {
-  line-height: 1.9;
-  font-size: 1.08rem;
-}
-
 .prose .verse {
-  display: block;
-  margin-bottom: 1em;
-  padding-bottom: 0.4em;
-  border-bottom: 1px solid var(--border);
-}
-
-.prose .verse:last-child {
-  border-bottom: none;
-  margin-bottom: 0;
+  display: inline;
 }
 
 .prose .verse sup {
   color: var(--brand-500);
   font-weight: 700;
-  font-size: 0.75em;
-  margin-right: 0.3em;
+  font-size: 0.7em;
+  margin-right: 0.15em;
+  margin-left: 0.3em;
+}
+
+.prose .verse:first-child sup {
+  margin-left: 0;
 }
 
 /* Verse highlight (from ?v= URL parameter or share link) */
 .prose .verse.highlight-verse {
   background: var(--brand-100);
-  border-radius: 4px;
-  padding: 2px 6px;
-  margin-left: -6px;
-  margin-right: -6px;
+  border-radius: 3px;
+  padding: 1px 3px;
+}
+
+/* Share button — unobtrusive, appears on verse hover */
+.verse-share-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  padding: 0 2px;
+  margin: 0;
+  cursor: pointer;
+  opacity: 0;
+  font-size: 0.7em;
+  color: var(--text-400);
+  vertical-align: super;
+  transition: opacity 0.15s ease;
+}
+
+.prose .verse:hover .verse-share-btn,
+.prose .verse:focus-within .verse-share-btn,
+.verse-share-btn:focus-visible {
+  opacity: 0.5;
+}
+
+.verse-share-btn:hover {
+  opacity: 1 !important;
+  color: var(--brand-500);
 }
 
 /* Strong's number markers */
@@ -898,5 +916,142 @@ a:focus-visible {
 *:focus-visible:not(.btn):not(.chip):not(.verse-btn):not(.book-link):not(.chapter-link):not(.tile):not(a):not(.input):not(.select):not(.textarea):not(.strongs-ref):not(.share-menu-item):not(.offline-settings__summary) {
   outline: 3px solid var(--brand-500);
   outline-offset: 2px;
+}
+
+/* ==========================================================================
+   18) License Pages - Extracted from inline styles
+   ========================================================================== */
+
+/* License page wrapper */
+.license-content {
+  /* No specific styles needed, uses existing panel/section classes */
+}
+
+/* Gap utilities for flexbox/grid */
+.gap-1 {
+  gap: var(--pad-1);
+}
+
+.gap-2 {
+  gap: var(--pad-2);
+}
+
+/* Spacing utilities */
+.mb-1 {
+  margin-bottom: var(--pad-1);
+}
+
+.mb-2 {
+  margin-bottom: var(--pad-2);
+}
+
+.mt-0 {
+  margin-top: 0;
+}
+
+/* License section with inner padding */
+.license-section {
+  padding: var(--pad-2);
+  margin-bottom: var(--pad-2);
+}
+
+/* License rights grid - 3 columns on desktop, responsive */
+.license-rights-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--pad-2);
+}
+
+/* License rights columns */
+.license-rights-col h3 {
+  margin-top: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.license-rights-col ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.license-rights-col li {
+  padding: 4px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+/* License rights type colors */
+.license-rights-col--permissions h3 {
+  color: var(--color-success, #22c55e);
+}
+
+.license-rights-col--conditions h3 {
+  color: var(--color-warning, #eab308);
+}
+
+.license-rights-col--limitations h3 {
+  color: var(--color-error, #ef4444);
+}
+
+/* License text display - pre-formatted with wrapping */
+.license-text-display {
+  background: var(--bg-alt);
+  padding: var(--pad-2);
+  border-radius: var(--radius-1);
+  font-size: 0.875rem;
+  white-space: pre-wrap;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  margin-top: 8px;
+}
+
+/* Details/summary for license texts */
+.license-details {
+  margin-bottom: var(--pad-1);
+}
+
+.license-details summary {
+  cursor: pointer;
+  font-weight: 600;
+  padding: 8px 0;
+}
+
+/* Table styles for license pages */
+.license-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: var(--pad-2);
+}
+
+.license-table:last-child {
+  margin-bottom: 0;
+}
+
+.license-table thead tr {
+  border-bottom: 1px solid var(--border);
+}
+
+.license-table tbody tr {
+  border-bottom: 1px solid var(--border);
+}
+
+.license-table th,
+.license-table td {
+  text-align: left;
+  padding: 8px 12px;
+}
+
+/* Row with space-between alignment */
+.row--space-between {
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+/* Offline settings spacing class */
+.offline-settings--spacing {
+  padding: var(--pad-2);
+  margin-bottom: var(--pad-2);
 }
 

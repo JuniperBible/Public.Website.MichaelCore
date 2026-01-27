@@ -21,6 +21,21 @@ OUTPUT_DIR="${PROJECT_ROOT}/assets/downloads/sbom"
 MANUAL_DEPS="${PROJECT_ROOT}/data/example/software_deps.json"
 GENERATE_ALL=true
 FORMATS=()
+TEMP_FILES=()
+
+# Cleanup function to remove temporary files
+cleanup() {
+    if [[ ${#TEMP_FILES[@]} -gt 0 ]]; then
+        for temp_file in "${TEMP_FILES[@]}"; do
+            if [[ -f "$temp_file" ]]; then
+                rm -f "$temp_file"
+            fi
+        done
+    fi
+}
+
+# Set trap to cleanup on exit
+trap cleanup EXIT INT TERM
 
 # Parse arguments
 while [[ $# -gt 0 ]]; do
@@ -83,9 +98,31 @@ if ! command -v jq &> /dev/null; then
     exit 1
 fi
 
+# Validate manual deps JSON file
+if [[ -f "$MANUAL_DEPS" ]]; then
+    if ! jq empty "$MANUAL_DEPS" 2>/dev/null; then
+        echo "Error: $MANUAL_DEPS is not valid JSON"
+        exit 1
+    fi
+else
+    echo "Warning: Manual deps file not found: $MANUAL_DEPS"
+    echo "Continuing without manual dependencies..."
+fi
+
 # Project metadata
 PROJECT_NAME="michael"
-PROJECT_VERSION=$(git describe --tags --always 2>/dev/null || echo "0.0.0")
+# Handle git describe failures gracefully (e.g., shallow clones)
+if PROJECT_VERSION=$(git describe --tags --always 2>/dev/null); then
+    : # Success, use the version
+elif [[ -d "$PROJECT_ROOT/.git" ]]; then
+    # Git repo exists but describe failed (shallow clone?)
+    PROJECT_VERSION=$(git rev-parse --short HEAD 2>/dev/null || echo "unknown")
+    echo "Warning: Unable to get version from git tags, using commit: $PROJECT_VERSION"
+else
+    # Not a git repo
+    PROJECT_VERSION="0.0.0"
+    echo "Warning: Not a git repository, using version: $PROJECT_VERSION"
+fi
 
 echo "Generating SBOM for $PROJECT_NAME v$PROJECT_VERSION"
 echo "Output directory: $OUTPUT_DIR"
@@ -184,6 +221,7 @@ for format in "${FORMATS[@]}"; do
         spdx-json)
             output_file="$OUTPUT_DIR/sbom.spdx.json"
             temp_file=$(mktemp)
+            TEMP_FILES+=("$temp_file")
             echo "Generating SPDX 2.3 JSON -> $output_file"
             syft scan "$PROJECT_ROOT" \
                 --source-name "$PROJECT_NAME" \
@@ -191,11 +229,11 @@ for format in "${FORMATS[@]}"; do
                 -o "spdx-json=$temp_file" \
                 --quiet
             merge_spdx_json "$temp_file" "$output_file"
-            rm "$temp_file"
             ;;
         cyclonedx-json)
             output_file="$OUTPUT_DIR/sbom.cdx.json"
             temp_file=$(mktemp)
+            TEMP_FILES+=("$temp_file")
             echo "Generating CycloneDX JSON -> $output_file"
             syft scan "$PROJECT_ROOT" \
                 --source-name "$PROJECT_NAME" \
@@ -203,7 +241,6 @@ for format in "${FORMATS[@]}"; do
                 -o "cyclonedx-json=$temp_file" \
                 --quiet
             merge_cdx_json "$temp_file" "$output_file"
-            rm "$temp_file"
             ;;
         cyclonedx-xml)
             output_file="$OUTPUT_DIR/sbom.cdx.xml"
@@ -219,6 +256,7 @@ for format in "${FORMATS[@]}"; do
         syft-json)
             output_file="$OUTPUT_DIR/sbom.syft.json"
             temp_file=$(mktemp)
+            TEMP_FILES+=("$temp_file")
             echo "Generating Syft JSON -> $output_file"
             syft scan "$PROJECT_ROOT" \
                 --source-name "$PROJECT_NAME" \
@@ -226,7 +264,6 @@ for format in "${FORMATS[@]}"; do
                 -o "syft-json=$temp_file" \
                 --quiet
             merge_syft_json "$temp_file" "$output_file"
-            rm "$temp_file"
             ;;
     esac
 done

@@ -15,6 +15,15 @@ window.Michael = window.Michael || {};
 window.Michael.ReadingTracker = (function() {
   'use strict';
 
+  /**
+   * Timing and duration constants
+   */
+  const TIMING = {
+    SCROLL_SAVE_DEBOUNCE: 500,       // Delay before saving scroll position (ms)
+    SCROLL_RESTORE_WINDOW: 24,       // Hours within which to restore scroll position
+    MILLISECONDS_PER_DAY: 86400000   // Milliseconds in 24 hours (for streak calculation)
+  };
+
   // Debounce timer for scroll saving
   let scrollDebounceTimer = null;
 
@@ -124,7 +133,7 @@ window.Michael.ReadingTracker = (function() {
 
       scrollDebounceTimer = setTimeout(async () => {
         await saveCurrentProgress();
-      }, 500); // Save after 500ms of no scrolling
+      }, TIMING.SCROLL_SAVE_DEBOUNCE);
     }, { passive: true });
 
     // Save progress when leaving the page
@@ -190,10 +199,10 @@ window.Michael.ReadingTracker = (function() {
           progress.chapter === currentPage.chapter &&
           progress.scrollPos > 0) {
         // Only restore if we're returning to the same chapter
-        // and within a reasonable time (last 24 hours)
+        // and within a reasonable time window
         const hoursSinceLastRead = (Date.now() - progress.lastRead) / (1000 * 60 * 60);
 
-        if (hoursSinceLastRead < 24) {
+        if (hoursSinceLastRead < TIMING.SCROLL_RESTORE_WINDOW) {
           // Delay scroll restoration to ensure page is fully rendered
           requestAnimationFrame(() => {
             window.scrollTo({
@@ -234,7 +243,7 @@ window.Michael.ReadingTracker = (function() {
 
       if (lastReadDate !== today) {
         // Check if this is a consecutive day
-        const yesterday = new Date(Date.now() - 86400000).toDateString();
+        const yesterday = new Date(Date.now() - TIMING.MILLISECONDS_PER_DAY).toDateString();
 
         if (lastReadDate === yesterday) {
           // Consecutive day - increment streak
@@ -304,7 +313,12 @@ window.Michael.ReadingTracker = (function() {
             link.href = url;
             link.textContent = displayText;
           } else {
-            display.innerHTML = `<a href="${url}">${displayText}</a>`;
+            // Use DOM methods to safely create link element
+            const anchor = document.createElement('a');
+            anchor.href = url;
+            anchor.textContent = displayText;
+            display.innerHTML = '';
+            display.appendChild(anchor);
           }
           display.classList.remove('hidden');
         });
@@ -333,6 +347,19 @@ window.Michael.ReadingTracker = (function() {
       console.warn('[ReadingTracker] Failed to navigate:', error);
       window.location.href = '/bible/';
     }
+  }
+
+  /**
+   * Escape HTML special characters to prevent XSS
+   *
+   * @private
+   * @param {string} str - String to escape
+   * @returns {string} Escaped string safe for HTML insertion
+   */
+  function escapeHtml(str) {
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
   }
 
   /**
