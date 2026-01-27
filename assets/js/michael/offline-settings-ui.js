@@ -192,16 +192,21 @@
 
   /**
    * Checks and updates cache status for all Bible checkboxes
+   * Also sorts the chips to show cached Bibles first
    *
    * @param {Object} OfflineManager - The OfflineManager instance
    */
   async function updateBibleCacheStatuses(OfflineManager) {
     const checkboxes = document.querySelectorAll('.bible-download-checkbox');
     const basePath = '/bible';
+    const cachedBibles = [];
+    const uncachedBibles = [];
 
     for (const checkbox of checkboxes) {
       const bibleId = checkbox.dataset.bibleId;
       if (!bibleId) continue;
+
+      const chip = checkbox.closest('.bible-chip');
 
       try {
         const status = await OfflineManager.getBibleCacheStatus(bibleId, basePath);
@@ -210,22 +215,42 @@
           // Disable checkbox, check it to show it's downloaded, show cached status
           checkbox.disabled = true;
           checkbox.checked = true;
-          updateBibleStatus(bibleId, '100% Cached', 'is-cached');
+          updateBibleStatus(bibleId, '', 'is-cached');
+          if (chip) {
+            chip.classList.add('is-cached');
+            cachedBibles.push(chip);
+          }
         } else if (status.cachedChapters > 0) {
           // Show partial cache status with percentage if we know total, otherwise just count
           if (status.totalChapters > 0) {
             const percent = Math.round((status.cachedChapters / status.totalChapters) * 100);
-            updateBibleStatus(bibleId, `${percent}% (${status.cachedChapters}/${status.totalChapters})`, 'is-partial');
+            updateBibleStatus(bibleId, `${percent}%`, 'is-partial');
           } else {
-            updateBibleStatus(bibleId, `${status.cachedChapters} chapters`, 'is-partial');
+            updateBibleStatus(bibleId, `${status.cachedChapters}ch`, 'is-partial');
+          }
+          if (chip) {
+            chip.classList.remove('is-cached');
+            uncachedBibles.push(chip);
           }
         } else {
           // Not cached - clear any previous status
           updateBibleStatus(bibleId, '', '');
+          if (chip) {
+            chip.classList.remove('is-cached');
+            uncachedBibles.push(chip);
+          }
         }
       } catch (error) {
         console.warn(`[Offline Settings] Failed to get cache status for ${bibleId}:`, error);
+        if (chip) uncachedBibles.push(chip);
       }
+    }
+
+    // Sort: cached Bibles first, then uncached
+    const container = document.querySelector('.bible-download-chips');
+    if (container && (cachedBibles.length > 0 || uncachedBibles.length > 0)) {
+      // Move cached Bibles to the front
+      cachedBibles.forEach(chip => container.prepend(chip));
     }
   }
 
@@ -288,7 +313,7 @@
    */
   async function handleDownloadComplete(detail, OfflineManager) {
     if (detail.success) {
-      updateBibleStatus(detail.bible, '100% Cached', 'is-cached');
+      updateBibleStatus(detail.bible, '', 'is-cached');
       showMessage(`${detail.bible.toUpperCase()} downloaded successfully`, 'success');
 
       // Disable the checkbox and check it to show it's downloaded
@@ -296,6 +321,12 @@
       if (checkbox) {
         checkbox.disabled = true;
         checkbox.checked = true;
+
+        // Add cached class to chip
+        const chip = checkbox.closest('.bible-chip');
+        if (chip) {
+          chip.classList.add('is-cached');
+        }
       }
     } else {
       updateBibleStatus(detail.bible, 'Failed', 'is-error');
@@ -349,7 +380,10 @@
     const statusElement = document.getElementById(`status-${bibleId}`);
     if (statusElement) {
       statusElement.textContent = text;
-      statusElement.className = `bible-download-status ${className}`;
+      // Support both old class name and new chip class name
+      statusElement.className = statusElement.classList.contains('bible-chip__status')
+        ? `bible-chip__status ${className}`
+        : `bible-download-status ${className}`;
     }
   }
 

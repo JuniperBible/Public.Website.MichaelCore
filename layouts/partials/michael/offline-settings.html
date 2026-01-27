@@ -84,36 +84,24 @@
 
       <!-- Bible Download Selection -->
       <section class="bible-download-section">
-        <h3 class="bible-download-section__title">
-          {{ i18n "selectBiblesForOffline" | default "Select Bibles for Offline Use" }}
-        </h3>
-        <p class="bible-download-section__description muted">
-          {{ i18n "selectBiblesDescription" | default "Choose which Bible translations to download for offline reading. Selected Bibles will be cached in your browser." }}
-        </p>
-
         <form id="offline-download-form" class="bible-download-form">
-          <fieldset class="bible-download-list" role="group" aria-label="{{ i18n "availableBibles" | default "Available Bibles" }}">
+          <fieldset class="bible-download-chips" role="group" aria-label="{{ i18n "availableBibles" | default "Available Bibles" }}">
             <legend class="sr-only">{{ i18n "selectBibles" | default "Select Bibles to Download" }}</legend>
             {{ range $page.Site.Data.bibles.bibles }}
-            <div class="bible-download-item">
-              <label class="bible-download-label">
-                <input
-                  type="checkbox"
-                  name="bible"
-                  value="{{ .id }}"
-                  class="bible-download-checkbox"
-                  id="bible-{{ .id }}"
-                  data-bible-id="{{ .id }}"
-                  data-bible-abbrev="{{ .abbrev }}"
-                  data-bible-title="{{ .title }}"
-                />
-                <span class="bible-download-info">
-                  <span class="bible-download-name">{{ .abbrev }}</span>
-                  <span class="bible-download-title muted">{{ .title }}</span>
-                </span>
-              </label>
-              <span class="bible-download-status" id="status-{{ .id }}" aria-live="polite"></span>
-            </div>
+            <label class="bible-chip" data-bible-id="{{ .id }}" title="{{ .title }}">
+              <input
+                type="checkbox"
+                name="bible"
+                value="{{ .id }}"
+                class="bible-download-checkbox sr-only"
+                id="bible-{{ .id }}"
+                data-bible-id="{{ .id }}"
+                data-bible-abbrev="{{ .abbrev }}"
+                data-bible-title="{{ .title }}"
+              />
+              <span class="bible-chip__abbrev">{{ .abbrev }}</span>
+              <span class="bible-chip__status" id="status-{{ .id }}" aria-live="polite"></span>
+            </label>
             {{ end }}
           </fieldset>
 

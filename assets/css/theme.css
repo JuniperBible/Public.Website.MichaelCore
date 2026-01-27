@@ -2207,6 +2207,88 @@ a:focus-visible {
   background: rgba(0,0,0,.02);
 }
 
+/* Compact chip layout for Bible selection */
+.bible-download-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 0;
+  margin: 0 0 var(--pad-2) 0;
+  border: none;
+}
+
+.bible-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border: 2px solid var(--border);
+  border-radius: var(--radius-1);
+  background: var(--surface-2);
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.15s ease;
+  font-size: 0.9rem;
+}
+
+.bible-chip:hover {
+  border-color: var(--brand-400);
+  background: var(--surface-1);
+}
+
+/* Selected state */
+.bible-chip:has(input:checked) {
+  border-color: var(--brand-500);
+  background: var(--brand-100);
+}
+
+/* Cached state - show green border */
+.bible-chip.is-cached {
+  border-color: var(--success-500);
+  background: var(--success-100, #e8f5e9);
+}
+
+.bible-chip.is-cached .bible-chip__abbrev::before {
+  content: "✓ ";
+  color: var(--success-500);
+}
+
+/* Disabled/cached chip */
+.bible-chip:has(input:disabled) {
+  cursor: default;
+  opacity: 0.9;
+}
+
+.bible-chip__abbrev {
+  font-weight: 600;
+  color: var(--text-900);
+}
+
+.bible-chip__status {
+  font-size: 0.75rem;
+  color: var(--text-500);
+}
+
+.bible-chip__status:empty {
+  display: none;
+}
+
+.bible-chip__status.is-cached {
+  color: var(--success-500);
+}
+
+.bible-chip__status.is-partial {
+  color: var(--text-400);
+}
+
+.bible-chip__status.is-downloading {
+  color: var(--brand-500);
+}
+
+.bible-chip__status.is-error {
+  color: var(--state-error);
+}
+
 .bible-download-label {
   display: flex;
   align-items: center;
