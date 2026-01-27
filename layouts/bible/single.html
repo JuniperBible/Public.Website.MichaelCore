@@ -43,25 +43,31 @@
 {{ $basePath := .Site.Params.michael.basePath | default "/bible" }}
 <main class="container pad-3-2">
   <article class="panel">
+    {{/* Look up Bible metadata from bibles-data partial (includes overrides) */}}
+    {{ $bibleId := .Params.bible | default .Params.abbrev | default .File.ContentBaseName }}
+    {{ $bibleData := dict }}
+    {{ range (partial "michael/bible-data.html" .Site) }}
+      {{ if eq .id $bibleId }}
+        {{ $bibleData = . }}
+      {{ end }}
+    {{ end }}
+
     <header class="page-header">
       <h1>{{ .Title }}</h1>
-      {{ with .Params.description }}
-      <p>{{ . }}</p>
+      {{/* On Bible overview pages, prefer override description; otherwise use front matter */}}
+      {{ if not (or .Params.chapter .Params.book) }}
+        {{ with $bibleData.description }}<p>{{ . }}</p>{{ end }}
+      {{ else }}
+        {{ with .Params.description }}<p>{{ . }}</p>{{ end }}
       {{ end }}
 
       <!-- Features/tags -->
       <div class="row row--center mt-1">
-        {{/* Look up language and license from bibles.json */}}
-        {{ $bibleId := .Params.bible | default .Params.abbrev | default .File.ContentBaseName }}
-        {{ range (partial "michael/bible-data.html" .Site) }}
-          {{ if eq .id $bibleId }}
-            {{ with .language }}
-            <span class="badge">{{ . }}</span>
-            {{ end }}
-            {{ with .license }}
-            <a href="{{ printf "/license/%s/" (. | lower) | relLangURL }}" class="badge" title="SPDX License: {{ . }}">{{ . }}</a>
-            {{ end }}
-          {{ end }}
+        {{ with $bibleData.language }}
+        <span class="badge">{{ . }}</span>
+        {{ end }}
+        {{ with $bibleData.license }}
+        <a href="{{ printf "/license/%s/" (. | lower) | relLangURL }}" class="badge" title="SPDX License: {{ . }}">{{ . }}</a>
         {{ end }}
         {{/* Fallback to params if not in bibles.json */}}
         {{ if not .Site.Data.bibles.bibles }}
