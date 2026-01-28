@@ -32,13 +32,21 @@
    * Initialize the chapter reader module
    */
   function init() {
+    console.log('[ChapterReader] init called');
+
     // Get DOM elements
     fullWidthToggle = document.getElementById('fullwidth-toggle');
     sssToggle = document.getElementById('sss-chapter-toggle');
     singleContent = document.querySelector('.chapter-content-single');
     sssContainer = document.querySelector('.chapter-sss-container');
 
-    if (!fullWidthToggle && !sssToggle) return;
+    console.log('[ChapterReader] fullWidthToggle:', fullWidthToggle);
+    console.log('[ChapterReader] sssToggle:', sssToggle);
+
+    if (!fullWidthToggle && !sssToggle) {
+      console.log('[ChapterReader] No toggles found, exiting');
+      return;
+    }
 
     // Get current chapter context from page data
     const bibleSelect = document.getElementById('bible-select');
@@ -62,10 +70,12 @@
 
     // Set up event listeners
     if (fullWidthToggle) {
+      console.log('[ChapterReader] Adding click listener to fullWidthToggle');
       fullWidthToggle.addEventListener('click', toggleFullWidth);
     }
 
     if (sssToggle) {
+      console.log('[ChapterReader] Adding click listener to sssToggle');
       sssToggle.addEventListener('click', toggleSSS);
     }
 
@@ -79,6 +89,7 @@
    * Toggle full-width mode
    */
   function toggleFullWidth() {
+    console.log('[ChapterReader] toggleFullWidth called');
     fullWidthMode = !fullWidthMode;
     document.body.classList.toggle('full-width-mode', fullWidthMode);
     fullWidthToggle.setAttribute('aria-pressed', fullWidthMode ? 'true' : 'false');
