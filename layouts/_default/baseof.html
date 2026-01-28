@@ -13,7 +13,14 @@
   Note: For production with custom domains, consider moving CSP to HTTP headers
 */}}
 <!doctype html>
-<html lang="{{ .Site.Language.Lang | default "en" }}" data-hugo-env="{{ hugo.Environment }}">
+<html lang="{{ .Site.Language.Lang | default "en" }}" data-hugo-env="{{ hugo.Environment }}" data-theme="">
+<script>
+(function(){
+  var e=localStorage.getItem("theme");
+  if(e){document.documentElement.setAttribute("data-theme",e)}
+  else if(window.matchMedia("(prefers-color-scheme: dark)").matches){document.documentElement.setAttribute("data-theme","dark")}
+})()
+</script>
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -116,6 +123,32 @@
         document.body.classList.add('pwa-standalone');
       }
     })();
+  </script>
+
+  {{/* Theme Toggle Script */}}
+  <script>
+  (function(){
+    var e=document.getElementById("theme-toggle"),
+        n=document.getElementById("theme-icon-light"),
+        s=document.getElementById("theme-icon-dark");
+    function t(){
+      var e=document.documentElement.getAttribute("data-theme"),
+          t=e==="dark"||!e&&window.matchMedia("(prefers-color-scheme: dark)").matches;
+      if(n)n.style.display=t?"block":"none";
+      if(s)s.style.display=t?"none":"block";
+    }
+    t();
+    if(e){
+      e.addEventListener("click",function(){
+        var e=document.documentElement.getAttribute("data-theme"),
+            s=e==="dark"||!e&&window.matchMedia("(prefers-color-scheme: dark)").matches,
+            n=s?"light":"dark";
+        document.documentElement.setAttribute("data-theme",n);
+        localStorage.setItem("theme",n);
+        t();
+      });
+    }
+  })();
   </script>
 </body>
 </html>

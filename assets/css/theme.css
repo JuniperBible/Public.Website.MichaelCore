@@ -218,6 +218,35 @@ a:focus-visible {
   width: auto;
 }
 
+/* Icon button (theme toggle, etc.) */
+.btn-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: var(--touch-min);
+  min-height: var(--touch-min);
+  padding: 10px;
+  margin-left: auto;
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-1);
+  cursor: pointer;
+  color: inherit;
+}
+
+.btn-icon:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.btn-icon:focus-visible {
+  outline: 2px solid var(--brand-500);
+  outline-offset: 2px;
+}
+
+.btn-icon svg {
+  display: block;
+}
+
 /* -----------------------------
    4) Buttons (ONLY TWO TIERS)
    .btn, .btn--primary, .btn--secondary
