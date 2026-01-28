@@ -186,8 +186,8 @@ a:focus-visible {
 .footer-copyright a:hover { color: var(--surface-2); }
 
 .footer-copyright__text {
-  padding: 10px 0;
-  font-size: 0.85rem;
+  padding: 6px 0;
+  font-size: 0.65rem;
 }
 
 .nav {
