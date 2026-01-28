@@ -138,7 +138,7 @@
   background: var(--surface-2);
   cursor: pointer;
   user-select: none;
-  transition: all 0.15s ease;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
   font-size: 0.9rem;
 }
 
@@ -216,8 +216,8 @@
 }
 
 .bible-download-checkbox:focus-visible {
-  outline: 2px solid var(--brand-500);
-  outline-offset: 2px;
+  outline: none;
+  box-shadow: var(--focus-ring);
 }
 
 .bible-download-status {
@@ -311,7 +311,7 @@
   padding: var(--pad-2);
   border-radius: var(--radius-1);
   margin-bottom: var(--pad-1);
-  border: 1px solid;
+  border: 1px solid var(--border);
   animation: slideIn 0.3s ease;
 }
 

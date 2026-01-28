@@ -656,11 +656,12 @@
    */
   function showMessage(msg) {
     statusEl.classList.add('hidden');
-    resultsEl.innerHTML = `
-      <p style="text-align: center; color: var(--michael-text-muted); padding: 3rem 0;">
-        ${msg}
-      </p>
-    `;
+    resultsEl.innerHTML = '';
+    const p = document.createElement('p');
+    p.className = 'center muted';
+    p.style.padding = '3rem 0';
+    p.textContent = msg;
+    resultsEl.appendChild(p);
   }
 
   // ============================================================================

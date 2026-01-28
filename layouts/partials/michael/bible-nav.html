@@ -149,7 +149,7 @@
     ←
   </a>
   {{ else }}
-  <span class="btn btn--sm is-disabled" aria-disabled="true" aria-label="{{ i18n "previousChapter" | default "Previous Chapter" }} {{ i18n "disabled" | default "(disabled)" }}">←</span>
+  <button type="button" class="btn btn--sm" disabled aria-label="{{ i18n "previousChapter" | default "Previous Chapter" }} {{ i18n "disabled" | default "(disabled)" }}">&larr;</button>
   {{ end }}
 
   {{ if lt $chapter $chapterCount }}
@@ -160,7 +160,7 @@
     →
   </a>
   {{ else }}
-  <span class="btn btn--sm is-disabled" aria-disabled="true" aria-label="{{ i18n "nextChapter" | default "Next Chapter" }} {{ i18n "disabled" | default "(disabled)" }}">→</span>
+  <button type="button" class="btn btn--sm" disabled aria-label="{{ i18n "nextChapter" | default "Next Chapter" }} {{ i18n "disabled" | default "(disabled)" }}">&rarr;</button>
   {{ end }}
   {{ end }}
 </nav>

@@ -683,7 +683,8 @@ window.Michael.OfflineManager = (function() {
           const data = JSON.parse(localStorage.getItem(key));
           pending.push(data);
         } catch (e) {
-          // Invalid data, skip
+          // Invalid data, remove corrupted entry
+          localStorage.removeItem(key);
         }
       }
     }
