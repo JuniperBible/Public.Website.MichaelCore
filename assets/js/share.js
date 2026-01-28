@@ -163,8 +163,14 @@
    * @returns {void}
    */
   function init() {
+    console.log('[Share] init() called');
     const bibleText = document.querySelector('.bible-text');
-    if (!bibleText) return;
+    if (!bibleText) {
+      console.log('[Share] No .bible-text found, exiting');
+      return;
+    }
+
+    console.log('[Share] Found .bible-text, adding buttons');
 
     // Add share buttons to each verse
     addVerseShareButtons(bibleText);
@@ -174,6 +180,8 @@
 
     // Setup online/offline event listeners
     setupNetworkListeners();
+
+    console.log('[Share] init() completed');
   }
 
   /**
@@ -389,7 +397,9 @@
    * @returns {Michael.ShareMenu|null}
    */
   function getVerseMenu() {
+    console.log('[Share] getVerseMenu() called, verseMenu:', !!verseMenu, 'Michael:', !!window.Michael, 'ShareMenu:', !!(window.Michael && window.Michael.ShareMenu));
     if (!verseMenu && window.Michael && window.Michael.ShareMenu) {
+      console.log('[Share] Creating new verse ShareMenu');
       verseMenu = new window.Michael.ShareMenu({
         includeTextCopy: true, // Verses are short enough to copy as formatted text
         offline: !isOnline(),
@@ -413,10 +423,15 @@
    * @returns {void}
    */
   function showShareMenu(anchorBtn, verseNum) {
+    console.log('[Share] showShareMenu() called for verse', verseNum);
     currentVerseNum = verseNum;
     const menu = getVerseMenu();
+    console.log('[Share] Got menu:', !!menu);
     if (menu) {
+      console.log('[Share] Calling menu.show()');
       menu.show(anchorBtn);
+    } else {
+      console.log('[Share] No menu available');
     }
   }
 

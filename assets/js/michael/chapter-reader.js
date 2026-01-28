@@ -32,17 +32,23 @@
    * Initialize the chapter reader module
    */
   function init() {
+    console.log('[ChapterReader] init() called');
+
     // Get DOM elements - use querySelectorAll since there may be multiple nav bars
     const fullWidthToggles = document.querySelectorAll('#fullwidth-toggle');
     const sssToggles = document.querySelectorAll('#sss-chapter-toggle');
     singleContent = document.querySelector('.chapter-content-single');
     sssContainer = document.querySelector('.chapter-sss-container');
 
+    console.log('[ChapterReader] Found', fullWidthToggles.length, 'fullwidth toggles,', sssToggles.length, 'sss toggles');
+    console.log('[ChapterReader] singleContent:', !!singleContent, 'sssContainer:', !!sssContainer);
+
     // Store first toggle reference for state updates
     fullWidthToggle = fullWidthToggles[0] || null;
     sssToggle = sssToggles[0] || null;
 
     if (fullWidthToggles.length === 0 && sssToggles.length === 0) {
+      console.log('[ChapterReader] No toggle buttons found, exiting');
       return;
     }
 
@@ -61,18 +67,26 @@
     comparisonBible = localStorage.getItem(STORAGE_KEY_SSS_BIBLE) || '';
 
     // Apply saved state and add listeners to ALL toggle buttons
-    fullWidthToggles.forEach(btn => {
+    fullWidthToggles.forEach((btn, i) => {
+      console.log('[ChapterReader] Adding listener to fullwidth toggle', i);
       if (fullWidthMode) {
         btn.setAttribute('aria-pressed', 'true');
       }
-      btn.addEventListener('click', toggleFullWidth);
+      btn.addEventListener('click', function(e) {
+        console.log('[ChapterReader] Fullwidth toggle clicked');
+        toggleFullWidth();
+      });
     });
 
-    sssToggles.forEach(btn => {
+    sssToggles.forEach((btn, i) => {
+      console.log('[ChapterReader] Adding listener to sss toggle', i);
       if (sssMode) {
         btn.setAttribute('aria-pressed', 'true');
       }
-      btn.addEventListener('click', toggleSSS);
+      btn.addEventListener('click', function(e) {
+        console.log('[ChapterReader] SSS toggle clicked');
+        toggleSSS();
+      });
     });
 
     // Apply full-width mode to body if saved

@@ -7,8 +7,10 @@
  * Copyright (c) 2025, Focus with Justin
  */
 window.Michael = window.Michael || {};
+console.log('[ShareMenu] Module loaded, window.Michael:', window.Michael);
 window.Michael.ShareMenu = (function() {
   'use strict';
+  console.log('[ShareMenu] IIFE executing');
 
   // UI strings (can be overridden via options)
   const DEFAULT_UI = {
@@ -590,5 +592,7 @@ window.Michael.ShareMenu = (function() {
   };
 
   // Export the constructor
+  console.log('[ShareMenu] Exporting ShareMenu constructor');
   return ShareMenu;
 })();
+console.log('[ShareMenu] Module complete, window.Michael.ShareMenu:', typeof window.Michael.ShareMenu);
