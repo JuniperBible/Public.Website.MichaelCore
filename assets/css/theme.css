@@ -337,6 +337,14 @@ a:focus-visible {
   color: var(--brand-600);
 }
 
+/* Filter group (row of chips) */
+.filter-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 1rem;
+}
+
 /* Badge (metadata) */
 .badge {
   display: inline-flex;
@@ -357,6 +365,13 @@ a:focus-visible {
   border-color: var(--success-border);
   color: var(--success-text);
   background: var(--success-bg-light);
+}
+
+.badge--tag {
+  border-color: var(--brand-400);
+  color: var(--brand-600);
+  background: var(--brand-100);
+  font-size: 0.75rem;
 }
 
 /* -----------------------------

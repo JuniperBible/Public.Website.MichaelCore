@@ -52,6 +52,8 @@ These are loaded with defer to avoid blocking page rendering.
 {{ define "scripts" }}
 {{ $showMore := resources.Get "js/michael/show-more.js" }}
 {{ if $showMore }}<script src="{{ $showMore.RelPermalink }}" defer></script>{{ end }}
+{{ $bibleFilter := resources.Get "js/michael/bible-filter.js" }}
+{{ if $bibleFilter }}<script src="{{ $bibleFilter.RelPermalink }}" defer></script>{{ end }}
 {{ $offlineManager := resources.Get "js/michael/offline-manager.js" }}
 {{ if $offlineManager }}<script src="{{ $offlineManager.RelPermalink }}" defer></script>{{ end }}
 {{ $offlineUI := resources.Get "js/michael/offline-settings-ui.js" }}
@@ -91,25 +93,43 @@ These are loaded with defer to avoid blocking page rendering.
 
     {{/*
     ============================================================================
-    BIBLE TRANSLATIONS GRID
-    Renders available Bible translations as clickable cards in a 2-column
-    responsive grid with pagination (9 items initially, "Show More" for rest).
-    Each card displays:
-      - Title: Full translation name
-      - Abbreviation: Short form (e.g., KJV, NIV)
-      - Language badge: If .language is set
-      - License badge: If .license is set
-
-    Cards link to the individual translation's chapter browser page.
-    Data source: .Site.Data.bibles.bibles array from data/bible.json
+    TAG FILTER
+    Collects unique tags from all bibles and renders filter buttons.
+    Clicking a tag filters the bible grid to show only matching cards.
     ============================================================================
     */}}
     {{ $bibles := partialCached "michael/bible-data.html" .Site }}
+    {{- $allTags := slice -}}
+    {{- range $bibles -}}
+      {{- range .tags -}}
+        {{- $allTags = $allTags | append . -}}
+      {{- end -}}
+    {{- end -}}
+    {{- $uniqueTags := $allTags | uniq | sort -}}
+    {{ if $uniqueTags }}
+    <div class="filter-group" id="bible-filters" role="group" aria-label="{{ i18n "filterByTag" | default "Filter by Tag" }}">
+      <button type="button" class="chip is-active" data-tag="all" aria-pressed="true">{{ i18n "all" | default "All" }}</button>
+      {{- range $uniqueTags }}
+      <button type="button" class="chip" data-tag="{{ . | urlize }}" aria-pressed="false">{{ . }}</button>
+      {{- end }}
+    </div>
+    {{ end }}
+
+    {{/*
+    ============================================================================
+    BIBLE TRANSLATIONS GRID
+    Renders available Bible translations as clickable cards in a 2-column
+    responsive grid. Each card includes data-tags for JS filtering and
+    displays tag badges in the footer.
+    ============================================================================
+    */}}
     {{ $pageSize := 9 }}
     {{ $total := len $bibles }}
     <section class="grid-2" id="bible-grid">
       {{ range $index, $bible := $bibles }}
-      <div class="card{{ if ge $index $pageSize }} hidden bible-extra{{ end }}">
+      {{- $tagSlugs := slice -}}
+      {{- range $bible.tags }}{{ $tagSlugs = $tagSlugs | append (. | urlize) }}{{ end -}}
+      <div class="card{{ if ge $index $pageSize }} hidden bible-extra{{ end }}" data-tags="{{ delimit $tagSlugs " " }}">
         <h2 class="card__title">
           <a href="{{ printf "%s/%s/" $basePath $bible.id | relLangURL }}">{{ $bible.title }}</a>
         </h2>
@@ -120,10 +140,14 @@ These are loaded with defer to avoid blocking page rendering.
           {{ with $bible.license }}
           <a href="{{ printf "/license/%s/" (. | lower) | relLangURL }}" class="badge">{{ . }}</a>
           {{ end }}
+          {{- range $bible.tags }}
+          <span class="badge badge--tag">{{ . }}</span>
+          {{- end }}
         </div>
       </div>
       {{ end }}
     </section>
+    <p id="no-results" class="center muted hidden">{{ i18n "noResults" | default "No Bibles match this filter." }}</p>
     {{ if gt $total $pageSize }}
     <nav class="actions mt-2">
       <button id="show-more-bibles" class="btn btn--secondary">
