@@ -1,7 +1,7 @@
 <footer class="chrome">
   <div class="container">
     <nav class="nav" aria-label="Footer">
-      {{- range .Site.Menus.main }}
+      {{- range .Site.Menus.footer }}
       <a href="{{ with .Page }}{{ .RelPermalink }}{{ else }}{{ .URL | relLangURL }}{{ end }}">{{ .Name }}</a>
       {{- end }}
     </nav>
