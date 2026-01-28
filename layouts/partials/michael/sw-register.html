@@ -36,12 +36,9 @@
       return;
     }
 
-    // Environment check - only register in production
-    {{ if not (or (eq (getenv "HUGO_ENVIRONMENT") "production") (.Site.Params.michael.enableSW | default false)) }}
-    console.log('[SW] Service worker disabled in development environment');
-    {{ if not (.Site.Params.michael.enableSW | default false) }}
-    console.log('[SW] To enable in development, set params.michael.enableSW = true in config');
-    {{ end }}
+    // Environment check - skip if explicitly disabled
+    {{ if .Site.Params.michael.disableSW }}
+    console.log('[SW] Service worker explicitly disabled via params.michael.disableSW');
     return;
     {{ end }}
 
