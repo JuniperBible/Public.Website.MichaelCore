@@ -108,6 +108,26 @@
   }
 
   /**
+   * Strips OSIS/XML markup from verse text, extracting only the plain text content.
+   * This handles verses that contain Strong's number markup like:
+   * <w lemma="strong:H518">If</w> thou doest <w lemma="strong:H3190">well</w>
+   *
+   * @private
+   * @param {string} text - The verse text potentially containing OSIS markup
+   * @returns {string} Plain text with all XML/HTML tags removed
+   *
+   * @example
+   * stripOsisMarkup('<w lemma="strong:H518">If</w> thou doest')
+   * // Returns: 'If thou doest'
+   */
+  function stripOsisMarkup(text) {
+    // Use DOMParser to safely extract text content from HTML/XML
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(`<div>${text}</div>`, 'text/html');
+    return doc.body.textContent || '';
+  }
+
+  /**
    * Announces a message to screen readers via the aria-live region.
    * Updates the announcer element which has aria-live="polite" for accessibility.
    *
@@ -328,29 +348,32 @@
     const parsed = parseQuery(query);
 
     if (parsed.type === 'strongs') {
-      // Strong's number search - look for the exact pattern
-      // Strong's numbers in text appear as H1234 or G5678
+      // Strong's number search - search in raw text to find lemma attributes
+      // Strong's numbers in OSIS markup appear as lemma="strong:H1234"
       // Always case-insensitive since Strong's numbers are standardized
-      const strongsRegex = new RegExp(`\\b${escapeRegex(parsed.value)}\\b`, 'i');
+      const strongsRegex = new RegExp(`strong:${escapeRegex(parsed.value)}`, 'i');
       return strongsRegex.test(text);
     }
+
+    // Strip OSIS markup for text/phrase searches
+    const plainText = stripOsisMarkup(text);
 
     if (parsed.type === 'phrase') {
       // Phrase search - exact substring match
       // More efficient than regex for simple substring search
-      let searchText = caseSensitive ? text : text.toLowerCase();
+      let searchText = caseSensitive ? plainText : plainText.toLowerCase();
       let searchPhrase = caseSensitive ? parsed.value : parsed.value.toLowerCase();
       return searchText.includes(searchPhrase);
     }
 
     // Default text search
-    let searchText = caseSensitive ? text : text.toLowerCase();
+    let searchText = caseSensitive ? plainText : plainText.toLowerCase();
     let searchQuery = caseSensitive ? query : query.toLowerCase();
 
     if (wholeWord) {
       // Word-boundary regex: \bword\b ensures complete word match
       const regex = new RegExp(`\\b${escapeRegex(searchQuery)}\\b`, caseSensitive ? '' : 'i');
-      return regex.test(text);
+      return regex.test(plainText);
     }
 
     // Simple substring search - fastest option
@@ -399,10 +422,14 @@
     const parsed = parseQuery(query);
     let searchTerm = parsed.value;
 
+    // Strip OSIS/XML markup from verse text to get plain text
+    // This handles verses with Strong's number markup like <w lemma="strong:H518">If</w>
+    const plainText = stripOsisMarkup(text);
+
     // CRITICAL XSS FIX: Escape HTML BEFORE applying regex highlighting
     // This prevents malicious verse content or search terms from injecting HTML/JS
     // The escapeHtml() function converts characters like < > & " to entities
-    const escapedText = escapeHtml(text);
+    const escapedText = escapeHtml(plainText);
     const escapedTerm = escapeHtml(searchTerm);
 
     // For Strong's numbers, use case-insensitive matching (Strong's are standardized)
