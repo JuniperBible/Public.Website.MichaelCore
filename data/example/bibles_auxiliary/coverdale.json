@@ -1,0 +1,76 @@
+{
+  "books": [
+    {
+      "id": "Gen",
+      "name": "Genesis",
+      "abbrev": "Gen",
+      "testament": "OT",
+      "chapters": [
+        {
+          "number": 1,
+          "verses": [
+            { "number": 1, "text": "In ye begynnynge God created heauen and earth." },
+            { "number": 2, "text": "And ye earth was voyde and emptie, and darcknes was vpon the depe, and the sprete of God moued vpon the water." },
+            { "number": 3, "text": "And God sayde: let there be light, and there was light." },
+            { "number": 4, "text": "And God sawe the light that it was good. Then God deuyded the light from the darcknes," },
+            { "number": 5, "text": "and called the light, Daye: and the darcknes, Night. Then of the euenynge and mornynge was made the first daye." }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Ps",
+      "name": "Psalms",
+      "abbrev": "Ps",
+      "testament": "OT",
+      "chapters": [
+        {
+          "number": 23,
+          "verses": [
+            { "number": 1, "text": "The LORDE is my shepherde, I can wante nothinge." },
+            { "number": 2, "text": "He fedeth me in a grene pasture, and ledeth me to a fresh water." },
+            { "number": 3, "text": "He quickeneth my soule, and bringeth me forth in the waye of righteousnes for his names sake." },
+            { "number": 4, "text": "Though I shulde walke now in the valley of the shadowe of death, yet I feare no euell, for thou art with me: thy staffe and thy shepehoke comforte me." },
+            { "number": 5, "text": "Thou preparest a table before me agaynst myne enemies: thou anoyntest my heade with oyle, and fyllest my cuppe full." },
+            { "number": 6, "text": "Oh let thy louynge kyndnes and mercy folowe me all the dayes of my life, that I maye dwell in the house of the LORDE for euer." }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "John",
+      "name": "The Gospell of S. Iohn",
+      "abbrev": "John",
+      "testament": "NT",
+      "chapters": [
+        {
+          "number": 1,
+          "verses": [
+            { "number": 1, "text": "In the begynnynge was the worde, and the worde was with God, and God was the worde." },
+            { "number": 2, "text": "The same was in the begynnynge with God." },
+            { "number": 3, "text": "All thinges were made by the same, and without the same was made nothinge that was made." },
+            { "number": 4, "text": "In him was the life, and the life was the light of men:" },
+            { "number": 5, "text": "and the light shyneth in the darcknes, and the darcknes comprehended it not." }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "Rom",
+      "name": "The Epistle to the Romayns",
+      "abbrev": "Rom",
+      "testament": "NT",
+      "chapters": [
+        {
+          "number": 8,
+          "verses": [
+            { "number": 28, "text": "For we knowe, that all thinges worke for the best vnto them that loue God, which are called of purpose." },
+            { "number": 29, "text": "For those which he knewe before, he also ordeyned before, that they shulde be like fashioned vnto the shappe of his sonne, that he might be the first begotte sonne amoge many brethren." },
+            { "number": 30, "text": "As for those whom he ordeyned before, them also he called. And whom he called, the also he iustified. And whom he iustified, them also he glorified." },
+            { "number": 31, "text": "What shal we the saye to these thinges? Yf God be on oure syde, who can be agaynst vs?" }
+          ]
+        }
+      ]
+    }
+  ]
+}
