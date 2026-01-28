@@ -77,6 +77,16 @@ These are loaded with defer to avoid blocking page rendering.
 
     {{/*
     ============================================================================
+    QUICK BIBLE SELECT DROPDOWN
+    Allows users to jump directly to a Bible translation.
+    ============================================================================
+    */}}
+    <div class="row row--center mb-2">
+      {{ partial "michael/bible-select.html" (dict "site" .Site "id" "quick-bible-select" "label" (i18n "selectBible" | default "Select a Bible...")) }}
+    </div>
+
+    {{/*
+    ============================================================================
     QUICK NAVIGATION LINKS
     Provides shortcuts to comparison and search features.
     Links use relLangURL for multilingual support.

@@ -5,9 +5,23 @@
  *   #bible-filters  — container with <button data-tag="..."> chips
  *   #bible-grid     — grid of .card[data-tags="slug1 slug2 ..."]
  *   #no-results     — hidden paragraph shown when no cards match
+ *   #quick-bible-select — optional select dropdown for quick navigation
  */
 (function () {
   "use strict";
+
+  // Quick Bible select dropdown — navigates directly to Bible page
+  var quickSelect = document.getElementById("quick-bible-select");
+  if (quickSelect) {
+    quickSelect.addEventListener("change", function () {
+      var bibleId = quickSelect.value;
+      if (bibleId) {
+        // Navigate to the Bible page (basePath is determined from current URL)
+        var basePath = window.location.pathname.replace(/\/$/, "");
+        window.location.href = basePath + "/" + bibleId + "/";
+      }
+    });
+  }
 
   var filters = document.getElementById("bible-filters");
   var grid = document.getElementById("bible-grid");
