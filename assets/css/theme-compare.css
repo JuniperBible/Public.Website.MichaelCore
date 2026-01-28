@@ -43,9 +43,7 @@
 }
 
 .compare-controls__row + .compare-controls__row {
-  margin-top: 8px;
-  padding-top: 8px;
-  border-top: 1px solid var(--border);
+  margin-top: 6px;
 }
 
 .compare-controls__translations {
@@ -382,4 +380,34 @@
 
 .footnote-literal {
   font-style: italic;
+}
+
+/* -----------------------------
+   SSS Verse Grid (compact)
+------------------------------ */
+/* Make the verse grid row in SSS mode more compact to match row 1 height */
+#sss-verse-grid {
+  margin-top: 6px;
+}
+
+#sss-verse-grid .verse-grid-row {
+  gap: 6px;
+}
+
+#sss-verse-grid .verse-grid-row > .muted {
+  line-height: 32px;
+  font-size: 0.85rem;
+}
+
+#sss-verse-grid .verse-buttons-row {
+  gap: 3px;
+}
+
+/* Compact verse buttons in SSS mode */
+#sss-verse-grid .verse-btn,
+#sss-verse-grid .chip {
+  min-width: 32px;
+  min-height: 32px;
+  padding: 6px 10px;
+  font-size: 0.85rem;
 }
