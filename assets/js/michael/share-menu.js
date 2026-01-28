@@ -142,7 +142,14 @@ window.Michael.ShareMenu = (function() {
    * @returns {string} Escaped string safe for HTML insertion
    */
   ShareMenu.prototype.escapeHtml = function(str) {
-    return window.Michael.DomUtils.escapeHtml(str);
+    // Use DomUtils if available, otherwise inline fallback
+    if (window.Michael && window.Michael.DomUtils && window.Michael.DomUtils.escapeHtml) {
+      return window.Michael.DomUtils.escapeHtml(str);
+    }
+    // Fallback implementation
+    var div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
   };
 
   /**

@@ -191,11 +191,13 @@
     showToast(UI.onlineNotice);
 
     // Update menus if they're initialized
-    if (chapterMenu) {
-      chapterMenu.setOfflineMode(false);
+    const cm = getChapterMenu();
+    const vm = getVerseMenu();
+    if (cm) {
+      cm.setOfflineMode(false);
     }
-    if (verseMenu) {
-      verseMenu.setOfflineMode(false);
+    if (vm) {
+      vm.setOfflineMode(false);
     }
   }
 
@@ -206,11 +208,13 @@
     showToast(UI.offlineNotice, 4000);
 
     // Update menus if they're initialized
-    if (chapterMenu) {
-      chapterMenu.setOfflineMode(true);
+    const cm = getChapterMenu();
+    const vm = getVerseMenu();
+    if (cm) {
+      cm.setOfflineMode(true);
     }
-    if (verseMenu) {
-      verseMenu.setOfflineMode(true);
+    if (vm) {
+      vm.setOfflineMode(true);
     }
   }
 
@@ -329,16 +333,27 @@
   // ============================================================================
 
   /**
-   * Chapter share menu instance
-   * @type {Michael.ShareMenu}
+   * Chapter share menu instance (lazy-initialized)
+   * @type {Michael.ShareMenu|null}
    * @description Configured for chapter-level sharing (no text copy option)
    */
-  const chapterMenu = new window.Michael.ShareMenu({
-    includeTextCopy: false, // Chapters are too long to copy as text
-    offline: !isOnline(),
-    getShareUrl: () => window.location.href,
-    getShareTitle: () => document.querySelector('article header h1')?.textContent || document.title
-  });
+  let chapterMenu = null;
+
+  /**
+   * Get or create the chapter share menu
+   * @returns {Michael.ShareMenu|null}
+   */
+  function getChapterMenu() {
+    if (!chapterMenu && window.Michael && window.Michael.ShareMenu) {
+      chapterMenu = new window.Michael.ShareMenu({
+        includeTextCopy: false, // Chapters are too long to copy as text
+        offline: !isOnline(),
+        getShareUrl: () => window.location.href,
+        getShareTitle: () => document.querySelector('article header h1')?.textContent || document.title
+      });
+    }
+    return chapterMenu;
+  }
 
   /**
    * Show share menu for the chapter
@@ -348,7 +363,10 @@
    * @returns {void}
    */
   function showChapterShareMenu(anchorBtn) {
-    chapterMenu.show(anchorBtn);
+    const menu = getChapterMenu();
+    if (menu) {
+      menu.show(anchorBtn);
+    }
   }
 
   /**
@@ -360,19 +378,30 @@
   let currentVerseNum = null;
 
   /**
-   * Verse share menu instance
-   * @type {Michael.ShareMenu}
+   * Verse share menu instance (lazy-initialized)
+   * @type {Michael.ShareMenu|null}
    * @description Configured for verse-level sharing (includes text copy option)
    */
-  const verseMenu = new window.Michael.ShareMenu({
-    includeTextCopy: true, // Verses are short enough to copy as formatted text
-    offline: !isOnline(),
-    getShareUrl: () => getVerseUrl(currentVerseNum),
-    getShareText: () => getVerseText(currentVerseNum),
-    getOfflineText: () => formatOfflineShareText(currentVerseNum),
-    getShareTitle: () => document.querySelector('article header h1')?.textContent || document.title,
-    onOfflineCopy: () => showToast(UI.offlineCopied)
-  });
+  let verseMenu = null;
+
+  /**
+   * Get or create the verse share menu
+   * @returns {Michael.ShareMenu|null}
+   */
+  function getVerseMenu() {
+    if (!verseMenu && window.Michael && window.Michael.ShareMenu) {
+      verseMenu = new window.Michael.ShareMenu({
+        includeTextCopy: true, // Verses are short enough to copy as formatted text
+        offline: !isOnline(),
+        getShareUrl: () => getVerseUrl(currentVerseNum),
+        getShareText: () => getVerseText(currentVerseNum),
+        getOfflineText: () => formatOfflineShareText(currentVerseNum),
+        getShareTitle: () => document.querySelector('article header h1')?.textContent || document.title,
+        onOfflineCopy: () => showToast(UI.offlineCopied)
+      });
+    }
+    return verseMenu;
+  }
 
   /**
    * Show share menu for a specific verse
@@ -385,7 +414,10 @@
    */
   function showShareMenu(anchorBtn, verseNum) {
     currentVerseNum = verseNum;
-    verseMenu.show(anchorBtn);
+    const menu = getVerseMenu();
+    if (menu) {
+      menu.show(anchorBtn);
+    }
   }
 
   // ============================================================================
