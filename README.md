@@ -84,6 +84,7 @@ make dev
 ```bash
 make dev              # Start Hugo development server
 make build            # Build static site
+make icons            # Generate PNG icons from assets/images/logo.svg
 make check            # Run all quality checks
 make push             # Push after checks (main requires 'RELEASE' confirmation)
 make sync-submodules  # Sync submodules to match current branch

@@ -39,15 +39,17 @@
   {{ $theme := slice $colors $main $compare $share $strongs $pwa $offline $print $custom | resources.Concat "css/theme.bundle.css" | minify | fingerprint }}
   <link rel="stylesheet" href="{{ $theme.RelPermalink }}" integrity="{{ $theme.Data.Integrity }}">
 
-  {{/* PWA Support */}}
+  {{/* PWA Support — icons resolved via partial (supports site logo override) */}}
+  {{ partial "michael/icons.html" . }}
+  {{- $icons := .Scratch.Get "michael-icons" -}}
   <link rel="manifest" href="/manifest.json">
   <meta name="theme-color" content="#1a3230">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="{{ .Site.Title }}">
-  <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
-  <link rel="icon" type="image/png" sizes="32x32" href="/icons/icon-32.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="/icons/icon-16.png">
+  <link rel="apple-touch-icon" href="{{ $icons.apple }}">
+  <link rel="icon" type="image/png" sizes="32x32" href="{{ $icons.icon32 }}">
+  <link rel="icon" type="image/png" sizes="16x16" href="{{ $icons.icon16 }}">
 </head>
 <body>
   <a href="#main-content" class="skip-link">{{ i18n "skipToContent" | default "Skip to content" }}</a>

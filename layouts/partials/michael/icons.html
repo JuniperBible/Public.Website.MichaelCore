@@ -1,0 +1,54 @@
+{{/*
+  Partial: icons.html
+  Purpose: Generate site icons from a source image at build time
+
+  If the consuming site provides assets/images/logo.png (≥512px),
+  Hugo's image processing generates all required icon sizes.
+  Otherwise, falls back to the module's static /icons/ defaults.
+
+  Returns a dict with icon paths via $.Scratch "michael-icons".
+
+  Usage in templates:
+    {{ partial "michael/icons.html" . }}
+    {{ $icons := .Scratch.Get "michael-icons" }}
+    {{ $icons.icon16 }}     → path to 16x16 favicon
+    {{ $icons.icon32 }}     → path to 32x32 favicon
+    {{ $icons.icon192 }}    → path to 192x192 PWA icon
+    {{ $icons.icon512 }}    → path to 512x512 PWA icon
+    {{ $icons.apple }}      → path to apple-touch-icon (180x180)
+    {{ $icons.maskable512 }}→ path to maskable 512x512 icon
+*/}}
+
+{{- $icons := dict
+  "icon16" "/icons/icon-16.png"
+  "icon32" "/icons/icon-32.png"
+  "icon192" "/icons/icon-192.png"
+  "icon512" "/icons/icon-512.png"
+  "apple" "/icons/apple-touch-icon.png"
+  "maskable512" "/icons/icon-maskable-512.png"
+-}}
+
+{{- with resources.Get "images/logo.png" -}}
+  {{- $src := . -}}
+  {{- $i16 := $src.Resize "16x16 png" -}}
+  {{- $i32 := $src.Resize "32x32 png" -}}
+  {{- $i192 := $src.Resize "192x192 png" -}}
+  {{- $i512 := $src.Resize "512x512 png" -}}
+  {{- $apple := $src.Resize "180x180 png" -}}
+  {{/* Maskable: use logo-maskable.png if provided, else same source */}}
+  {{- $maskSrc := $src -}}
+  {{- with resources.Get "images/logo-maskable.png" -}}
+    {{- $maskSrc = . -}}
+  {{- end -}}
+  {{- $maskable := $maskSrc.Resize "512x512 png" -}}
+  {{- $icons = dict
+    "icon16" $i16.RelPermalink
+    "icon32" $i32.RelPermalink
+    "icon192" $i192.RelPermalink
+    "icon512" $i512.RelPermalink
+    "apple" $apple.RelPermalink
+    "maskable512" $maskable.RelPermalink
+  -}}
+{{- end -}}
+
+{{- .Scratch.Set "michael-icons" $icons -}}

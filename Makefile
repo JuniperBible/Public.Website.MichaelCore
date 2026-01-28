@@ -1,7 +1,7 @@
 # Michael - Hugo Bible Module
 # https://github.com/FocuswithJustin/michael
 
-.PHONY: dev dev-hugo dev-caddy kill-dev build clean help vendor vendor-fetch vendor-convert vendor-package vendor-restore juniper caddy hugo sbom ensure-data test test-compare test-search test-single test-offline test-mobile test-keyboard test-pwa check push sync-submodules fmt lint info
+.PHONY: dev dev-hugo dev-caddy kill-dev build clean help vendor vendor-fetch vendor-convert vendor-package vendor-restore juniper caddy hugo sbom ensure-data test test-compare test-search test-single test-offline test-mobile test-keyboard test-pwa check push sync-submodules fmt lint info icons
 
 # Bible modules to vendor
 BIBLES := KJVA DRC Tyndale Coverdale Geneva1599 WEB Vulgate SBLGNT LXX ASV OSMHB
@@ -44,6 +44,10 @@ help:
 	@echo "  make test-mobile   Run mobile touch tests"
 	@echo "  make test-keyboard Run keyboard navigation tests"
 	@echo "  make test-pwa      Run PWA-specific tests (manifest, SW, install)"
+	@echo ""
+	@echo "Icons:"
+	@echo "  make icons          Generate PNG icons from assets/images/logo.svg"
+	@echo "  make icons SVG=path Use a custom SVG source file"
 	@echo ""
 	@echo "Tools & Vendor:"
 	@echo "  make vendor         Full vendor workflow (fetch + convert + package)"
@@ -320,6 +324,43 @@ lint:
 	@echo "Checking for common issues..."
 	@grep -rn "TODO" --include="*.go" tests/ 2>/dev/null | head -10 || true
 	@echo "Done."
+
+# ============================================================================
+# Icon Generation
+# ============================================================================
+
+# Source SVG — defaults to assets/images/logo.svg
+SVG ?= assets/images/logo.svg
+ICON_DIR := static/icons
+
+# Generate all PNG icon sizes from an SVG source
+# Requires ImageMagick 7 (magick) — available in the nix shell
+# Also copies the SVG into the icon directory for the header partial
+icons:
+	@if [ ! -f "$(SVG)" ]; then \
+		echo "Error: SVG source not found at $(SVG)"; \
+		echo "Usage: make icons SVG=path/to/logo.svg"; \
+		exit 1; \
+	fi
+	@command -v magick >/dev/null 2>&1 || { echo "Error: ImageMagick 7 (magick) is required"; exit 1; }
+	@echo "Generating icons from $(SVG)..."
+	@mkdir -p $(ICON_DIR)
+	@mkdir -p assets/images
+	magick -background none "$(SVG)" -resize 512x512 assets/images/logo.png
+	magick -background none "$(SVG)" -resize 16x16   $(ICON_DIR)/icon-16.png
+	magick -background none "$(SVG)" -resize 32x32   $(ICON_DIR)/icon-32.png
+	magick -background none "$(SVG)" -resize 180x180 $(ICON_DIR)/apple-touch-icon.png
+	magick -background none "$(SVG)" -resize 192x192 $(ICON_DIR)/icon-192.png
+	magick -background none "$(SVG)" -resize 512x512 $(ICON_DIR)/icon-512.png
+	magick -background none "$(SVG)" -resize 512x512 $(ICON_DIR)/icon-maskable-512.png
+	cp "$(SVG)" $(ICON_DIR)/logo.svg
+	cp "$(SVG)" assets/images/logo.svg
+	@echo "Generated icons:"
+	@ls -lh assets/images/logo.png assets/images/logo.svg $(ICON_DIR)/*.png
+
+# ============================================================================
+# Project Info
+# ============================================================================
 
 # Show project info and tool versions
 info:

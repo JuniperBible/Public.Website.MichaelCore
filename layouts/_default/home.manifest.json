@@ -1,15 +1,18 @@
+{{- partial "michael/icons.html" . -}}
+{{- $icons := .Scratch.Get "michael-icons" -}}
+{{- $basePath := .Site.Params.michael.basePath | default "/bible" -}}
 {
-  "name": "Bible Reader",
-  "short_name": "Bible",
-  "description": "Offline Bible reading and comparison",
-  "start_url": "/bible/",
+  "name": {{ .Site.Title | jsonify }},
+  "short_name": {{ .Site.Title | jsonify }},
+  "description": {{ (.Site.Params.description | default "Offline Bible reading and comparison") | jsonify }},
+  "start_url": "{{ $basePath }}/",
   "scope": "/",
   "display": "standalone",
   "display_override": ["standalone", "minimal-ui"],
   "orientation": "any",
   "theme_color": "#1a3230",
   "background_color": "#e6ddc0",
-  "lang": "en",
+  "lang": {{ .Site.Language.Lang | jsonify }},
   "dir": "ltr",
   "categories": ["books", "education", "lifestyle"],
   "launch_handler": {
@@ -23,19 +26,19 @@
   },
   "icons": [
     {
-      "src": "/icons/icon-192.png",
+      "src": {{ $icons.icon192 | jsonify }},
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/icons/icon-512.png",
+      "src": {{ $icons.icon512 | jsonify }},
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/icons/icon-maskable-512.png",
+      "src": {{ $icons.maskable512 | jsonify }},
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
@@ -45,13 +48,13 @@
     {
       "name": "Read Bible",
       "short_name": "Read",
-      "url": "/bible/",
+      "url": "{{ $basePath }}/",
       "description": "Open Bible reader"
     },
     {
       "name": "Compare Translations",
       "short_name": "Compare",
-      "url": "/bible/?mode=compare",
+      "url": "{{ $basePath }}/?mode=compare",
       "description": "Compare Bible translations side by side"
     }
   ]

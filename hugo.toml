@@ -39,6 +39,10 @@ languageCode = "en"
   [security.funcs]
     getenv = ['^HUGO_', '^CI$']
 
+# Custom media types
+[mediaTypes."application/manifest+json"]
+  suffixes = ["json"]
+
 # Output formats for SBOM
 [outputFormats.JSON]
   mediaType = "application/json"
@@ -52,8 +56,15 @@ languageCode = "en"
   isPlainText = true
   notAlternative = true
 
+# Output format for PWA manifest (generated with dynamic icon paths and site title)
+[outputFormats.Manifest]
+  mediaType = "application/manifest+json"
+  baseName = "manifest"
+  isPlainText = true
+  notAlternative = true
+
 [outputs]
-  home = ["HTML", "RSS", "SW"]
+  home = ["HTML", "RSS", "SW", "Manifest"]
   section = ["HTML", "RSS"]
   page = ["HTML"]
 

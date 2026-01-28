@@ -17,6 +17,8 @@
 {{- $custom := resources.Get "css/theme-custom.css" -}}
 {{- $theme := slice $colors $main $compare $share $strongs $pwa $offline $print $custom | resources.Concat "css/theme.bundle.css" | minify | fingerprint -}}
 {{- $hash := substr $theme.Data.Integrity 0 12 | replaceRE "[^a-zA-Z0-9]" "" -}}
+{{- partial "michael/icons.html" . -}}
+{{- $icons := .Scratch.Get "michael-icons" -}}
 /**
  * Service Worker for Michael Bible Module
  *
@@ -56,9 +58,9 @@ const SHELL_ASSETS = [
   '/',
   OFFLINE_URL,
   '/manifest.json',
-  '/icons/icon-192.png',
-  '/icons/icon-512.png',
-  '/icons/apple-touch-icon.png',
+  '{{ $icons.icon192 }}',
+  '{{ $icons.icon512 }}',
+  '{{ $icons.apple }}',
   // CSS with fingerprinted path from Hugo
   '{{ $theme.RelPermalink }}',
   // Core JS files (only those referenced in templates)
