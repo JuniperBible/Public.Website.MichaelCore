@@ -207,6 +207,17 @@ a:focus-visible {
   border-bottom-color: var(--brand-500);
 }
 
+.site-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.site-logo {
+  height: 1.5em;
+  width: auto;
+}
+
 /* -----------------------------
    4) Buttons (ONLY TWO TIERS)
    .btn, .btn--primary, .btn--secondary
