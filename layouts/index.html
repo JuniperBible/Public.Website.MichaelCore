@@ -6,7 +6,7 @@
   <div class="panel">
     <header class="page-header">
       <h1>{{ .Site.Title }}</h1>
-      {{ with .Site.Params.description }}<p>{{ . }}</p>{{ end }}
+      {{ with .Site.Params.michael.subtitle }}<p>{{ . }}</p>{{ else }}{{ with .Site.Params.description }}<p>{{ . }}</p>{{ end }}{{ end }}
     </header>
 
     {{/* Try /bible first (standalone), then /religion/bible (module) */}}
