@@ -69,6 +69,8 @@
             {{ partial "michael/bible-select.html" (dict "site" $.Site "id" "sss-bible-left" "label" "Left Bible..." "class" "select select--compact") }}
             {{ partial "michael/bible-select.html" (dict "site" $.Site "id" "sss-bible-right" "label" "Right Bible..." "class" "select select--compact") }}
           </span>
+        </div>
+        <div class="compare-controls__row">
           {{ partial "michael/book-chapter-selects.html" (dict "site" $.Site "bookId" "sss-book-select" "chapterId" "sss-chapter-select") }}
           {{ partial "michael/compare-diff-control.html" (dict "toggleId" "sss-highlight-toggle" "colorId" "sss-highlight" "optionClass" "sss-color-option" "checked" false "hideColorPicker" true) }}
           <button id="sss-toggle-btn" class="btn btn--sm" aria-controls="normal-mode" aria-label="Switch to Vertical Verse View mode" title="Switch to Vertical Verse View (VVV)">

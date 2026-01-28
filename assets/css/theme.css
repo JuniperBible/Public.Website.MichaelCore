@@ -701,12 +701,9 @@ a:focus-visible {
   margin-left: 0;
 }
 
-/* On verse hover, hide the verse number and show the share icon in its place */
+/* On verse hover, fade the verse number but keep its space */
 .prose .verse:hover sup {
   opacity: 0;
-  width: 0;
-  overflow: hidden;
-  margin: 0;
 }
 
 /* Verse highlight (from ?v= URL parameter or share link) */
@@ -716,33 +713,31 @@ a:focus-visible {
   padding: 1px 3px;
 }
 
-/* Share button — replaces verse number on hover */
+/* Share button — overlays verse number on hover (no layout shift) */
 .verse-share-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   background: none;
   border: none;
-  padding: 0 2px;
+  padding: 0;
   margin: 0;
+  width: 0;
+  overflow: visible;
   cursor: pointer;
   opacity: 0;
-  width: 0;
-  overflow: hidden;
+  pointer-events: none;
   font-size: 0.7em;
   color: var(--brand-500);
   vertical-align: super;
-  transition: opacity 0.15s ease, width 0.15s ease;
+  transition: opacity 0.15s ease;
 }
 
 .prose .verse:hover .verse-share-btn,
 .prose .verse:focus-within .verse-share-btn,
 .verse-share-btn:focus-visible {
   opacity: 0.7;
-  width: auto;
-  overflow: visible;
-  margin-left: 0.2em;
-  margin-right: 0.15em;
+  pointer-events: auto;
 }
 
 .verse-share-btn:hover {

@@ -59,9 +59,6 @@
 
   {{ partial "footer.html" . }}
 
-  {{/* Page-specific scripts */}}
-  {{ block "scripts" . }}{{ end }}
-
   {{/* Service Worker registration */}}
   {{ partial "michael/sw-register.html" . }}
 
@@ -74,6 +71,9 @@
   {{ if $userStorage }}<script src="{{ $userStorage.RelPermalink }}" defer></script>{{ end }}
   {{ $readingTracker := resources.Get "js/michael/reading-tracker.js" }}
   {{ if $readingTracker }}<script src="{{ $readingTracker.RelPermalink }}" defer></script>{{ end }}
+
+  {{/* Page-specific scripts (after shared utilities) */}}
+  {{ block "scripts" . }}{{ end }}
 
   {{/* PWA Install Banner */}}
   {{ partial "michael/pwa-install-banner.html" . }}
