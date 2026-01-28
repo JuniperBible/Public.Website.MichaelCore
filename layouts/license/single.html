@@ -95,7 +95,7 @@
           {{ with $licenseRights.permissions }}
           <div class="license-rights-col license-rights-col--permissions">
             <h3>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                 <circle cx="12" cy="12" r="10"/>
                 <path d="m9 12 2 2 4-4"/>
               </svg>
@@ -116,7 +116,7 @@
           {{ with $licenseRights.conditions }}
           <div class="license-rights-col license-rights-col--conditions">
             <h3>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                 <circle cx="12" cy="12" r="10"/>
                 <path d="M12 8v4M12 16h.01"/>
               </svg>
@@ -137,7 +137,7 @@
           {{ with $licenseRights.limitations }}
           <div class="license-rights-col license-rights-col--limitations">
             <h3>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                 <circle cx="12" cy="12" r="10"/>
                 <path d="m15 9-6 6M9 9l6 6"/>
               </svg>
@@ -179,7 +179,7 @@
       {{- /* Additional resources from SPDX */ -}}
       {{ with $spdxInfo.seeAlso }}
       <section class="panel--inner license-section">
-        <h3 class="mt-0">{{ i18n "additionalResources" | default "Additional Resources" }}</h3>
+        <h2 class="mt-0">{{ i18n "additionalResources" | default "Additional Resources" }}</h2>
         <ul class="mb-0">
           {{ range . }}
           <li><a href="{{ . }}" target="_blank" rel="noopener">{{ . }}</a></li>

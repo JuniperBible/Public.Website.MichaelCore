@@ -135,7 +135,7 @@
 
 .toast--warning {
   background: var(--toast-warning-bg);
-  border-left: 4px solid #ffc107;
+  border-left: 4px solid var(--warning-500);
 }
 
 .toast--error {

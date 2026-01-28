@@ -7,7 +7,7 @@
 
   Usage: {{ partial "michael/continue-reading.html" . }}
 */}}
-<div id="continue-reading" class="continue-reading hidden" role="region" aria-label="Continue reading">
+<div id="continue-reading" class="continue-reading hidden" aria-live="polite" aria-label="{{ i18n "continueReading" | default "Continue Reading" }}">
   <div class="continue-reading__content">
     <span class="continue-reading__label">{{ i18n "continueReading" | default "Continue Reading" }}</span>
     <a id="continue-reading-link" href="#" class="continue-reading__chapter">
@@ -65,9 +65,6 @@
       link.href = url;
       title.textContent = displayTitle;
       container.classList.remove('hidden');
-
-      // Announce to screen readers
-      container.setAttribute('aria-live', 'polite');
     }).catch(err => {
       console.debug('Continue reading not available:', err);
     });

@@ -223,6 +223,11 @@
   border-color: var(--text-900);
 }
 
+.color-option-btn:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
 /* -----------------------------
    Diff Highlighting
 ------------------------------ */

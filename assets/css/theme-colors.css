@@ -53,6 +53,9 @@
   --diff-spelling: #ffe0b3;   /* spelling modernization - orange */
   --diff-subst: #ffcccc;      /* word substitution - red */
 
+  /* Warning - Yellow/Amber */
+  --warning-500: #eab308;
+
   /* State colors */
   --state-error: #d32f2f;
   --state-error-bg: #ffebee;

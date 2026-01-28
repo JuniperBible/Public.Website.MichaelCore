@@ -36,8 +36,8 @@
 // Cache version - derived from theme CSS hash for automatic invalidation
 const CACHE_VERSION = '{{ $hash }}';
 const SHELL_CACHE = `michael-shell-v${CACHE_VERSION}`;
-const CHAPTERS_CACHE = 'michael-chapters-v3';
-const METADATA_CACHE = 'michael-metadata-v1';
+const CHAPTERS_CACHE = `michael-chapters-v${CACHE_VERSION}`;
+const METADATA_CACHE = `michael-metadata-v${CACHE_VERSION}`;
 const OFFLINE_URL = '/offline.html';
 
 // Track active download operations for cancellation

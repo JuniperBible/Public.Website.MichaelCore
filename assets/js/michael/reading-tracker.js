@@ -350,17 +350,6 @@ window.Michael.ReadingTracker = (function() {
   }
 
   /**
-   * Escape HTML special characters to prevent XSS
-   *
-   * @private
-   * @param {string} str - String to escape
-   * @returns {string} Escaped string safe for HTML insertion
-   */
-  function escapeHtml(str) {
-    return window.Michael.DomUtils.escapeHtml(str);
-  }
-
-  /**
    * Formats a book ID into a display name.
    *
    * @private

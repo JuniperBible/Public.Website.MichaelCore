@@ -67,6 +67,9 @@
   padding: var(--pad-3) var(--pad-1);
 }
 
+/* Flex utility */
+.flex-1 { flex: 1; }
+
 /* -----------------------------
    1) Base / Layout Helpers
 ------------------------------ */
@@ -1027,7 +1030,7 @@ a:focus-visible {
 }
 
 .license-rights-col--conditions h3 {
-  color: #eab308;
+  color: var(--warning-500);
 }
 
 .license-rights-col--limitations h3 {

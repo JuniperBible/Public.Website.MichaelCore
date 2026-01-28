@@ -203,6 +203,11 @@ html.pwa-standalone .continue-reading { padding: var(--pad-1); margin-bottom: va
   background: var(--brand-600);
 }
 
+.pwa-install-button:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
 .pwa-install-dismiss {
   padding: 6px 10px;
   border-radius: var(--radius-1);
@@ -217,6 +222,11 @@ html.pwa-standalone .continue-reading { padding: var(--pad-1); margin-bottom: va
 
 .pwa-install-dismiss:hover {
   background: rgba(255,255,255,.1);
+}
+
+.pwa-install-dismiss:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.5);
 }
 
 /* Responsive: stack on small screens */
@@ -305,6 +315,11 @@ html.pwa-standalone .continue-reading { padding: var(--pad-1); margin-bottom: va
   background: var(--brand-100);
 }
 
+.sw-update-banner__reload-btn:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
 .sw-update-banner__dismiss-btn {
   padding: 6px 10px;
   border-radius: var(--radius-1);
@@ -319,6 +334,11 @@ html.pwa-standalone .continue-reading { padding: var(--pad-1); margin-bottom: va
 
 .sw-update-banner__dismiss-btn:hover {
   background: rgba(255,255,255,.1);
+}
+
+.sw-update-banner__dismiss-btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.5);
 }
 
 /* ==========================================================================

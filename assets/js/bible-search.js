@@ -460,6 +460,11 @@
       return;
     }
 
+    if (query.length > 256) {
+      showMessage('Search query too long (max 256 characters).');
+      return;
+    }
+
     // Cancel any previous search to prevent race conditions and wasted resources
     if (searchAbortController) {
       searchAbortController.abort();
