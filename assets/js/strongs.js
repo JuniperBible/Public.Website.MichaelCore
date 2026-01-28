@@ -253,10 +253,9 @@
 
     // Check if already added (avoid duplicates)
     if (addedStrongsNotes.has(cacheKey)) {
-      // Scroll to existing entry and highlight
+      // Highlight existing entry briefly
       const existingEntry = document.getElementById(`strongs-note-${cacheKey}`);
       if (existingEntry) {
-        existingEntry.scrollIntoView({ behavior: 'smooth', block: 'center' });
         existingEntry.style.backgroundColor = 'var(--brand-100)';
         setTimeout(() => { existingEntry.style.backgroundColor = ''; }, TIMING.HIGHLIGHT_ANIMATION);
       }
@@ -294,8 +293,6 @@
       notesRow.classList.remove('hidden');
     }
 
-    // Scroll to the new entry
-    li.scrollIntoView({ behavior: 'smooth', block: 'center' });
     li.style.backgroundColor = 'var(--brand-100)';
     setTimeout(() => { li.style.backgroundColor = ''; }, TIMING.HIGHLIGHT_ANIMATION);
   }
