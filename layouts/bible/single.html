@@ -37,6 +37,8 @@
 {{ if $strongs }}<script src="{{ $strongs.RelPermalink }}" defer></script>{{ end }}
 {{ $footnotes := resources.Get "js/michael/footnotes.js" }}
 {{ if $footnotes }}<script src="{{ $footnotes.RelPermalink }}" defer></script>{{ end }}
+{{ $chapterReader := resources.Get "js/michael/chapter-reader.js" }}
+{{ if $chapterReader }}<script src="{{ $chapterReader.RelPermalink }}" defer></script>{{ end }}
 {{ end }}
 
 {{ define "main" }}
@@ -89,8 +91,40 @@
         <!-- Navigation with dropdowns -->
         {{ partial "michael/bible-nav.html" (dict "page" . "bible" .Params.bible "book" .Params.book "chapter" .Params.chapter "basePath" $basePath) }}
 
-        <div class="prose bible-text" id="chapter-content">
-          {{ .Content }}
+        <!-- Single column view (default) -->
+        <div class="chapter-content-single">
+          <div class="prose bible-text" id="chapter-content">
+            {{ .Content }}
+          </div>
+        </div>
+
+        <!-- Side-by-side view (shown when SSS toggle active) -->
+        <div class="chapter-sss-container">
+          <div class="chapter-sss-pane" id="sss-left-pane">
+            <div class="pane-header">
+              <strong>{{ $bibleData.abbrev }}</strong>
+            </div>
+            <div class="pane-content prose bible-text">
+              {{ .Content }}
+            </div>
+          </div>
+          <div class="chapter-sss-pane" id="sss-right-pane">
+            <div class="pane-header">
+              <label for="sss-comparison-bible" class="sr-only">{{ i18n "selectComparisonBible" | default "Select Comparison Bible" }}</label>
+              <select id="sss-comparison-bible" class="select" aria-label="{{ i18n "selectComparisonBible" | default "Select Comparison Bible" }}">
+                <option value="">{{ i18n "selectBible" | default "Select Bible..." }}</option>
+                {{ range (partialCached "michael/bible-data.html" .Site) }}
+                  {{ $hasAuxData := index $.Site.Data.bibles_auxiliary .id }}
+                  {{ if and $hasAuxData (ne .id $.Params.bible) }}
+                <option value="{{ .id }}">{{ .abbrev }}</option>
+                  {{ end }}
+                {{ end }}
+              </select>
+            </div>
+            <div class="pane-content">
+              <div class="loading">{{ i18n "selectBibleToCompare" | default "Select a Bible to compare" }}</div>
+            </div>
+          </div>
         </div>
 
         <!-- Notes sections (side by side) -->

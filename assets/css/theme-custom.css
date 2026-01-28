@@ -199,3 +199,105 @@ h1, h2, h3, h4, h5, h6 {
   border-radius: var(--radius-2, 12px);
 }
 
+/* -----------------------------
+   Reader Toggles
+   Full-width and side-by-side controls
+------------------------------ */
+.reader-toggles {
+  display: inline-flex;
+  gap: 4px;
+  margin-left: auto;
+}
+
+.reader-toggles .btn {
+  padding: 6px 8px;
+}
+
+.reader-toggles .btn[aria-pressed="true"] {
+  background: var(--brand-500);
+  color: var(--surface-0);
+  border-color: var(--brand-500);
+}
+
+/* Full-width mode */
+body.full-width-mode main.container {
+  max-width: 100%;
+  padding-left: var(--pad-2);
+  padding-right: var(--pad-2);
+}
+
+body.full-width-mode .panel {
+  max-width: 100%;
+}
+
+body.full-width-mode .reader-bar {
+  max-width: 100%;
+}
+
+/* SSS (Side-by-Side Scripture) mode for chapter pages */
+.chapter-sss-container {
+  display: none;
+}
+
+body.sss-chapter-mode .chapter-content-single {
+  display: none;
+}
+
+body.sss-chapter-mode .chapter-sss-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--pad-2);
+}
+
+.chapter-sss-pane {
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-1);
+  padding: var(--pad-2);
+  min-height: 400px;
+  overflow: auto;
+}
+
+.chapter-sss-pane .pane-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-bottom: var(--pad-1);
+  margin-bottom: var(--pad-1);
+  border-bottom: 1px solid var(--border);
+}
+
+.chapter-sss-pane .pane-header select {
+  flex: 1;
+}
+
+.chapter-sss-pane .pane-content {
+  min-height: 300px;
+}
+
+.chapter-sss-pane .pane-content .loading {
+  text-align: center;
+  color: var(--text-500);
+  padding: var(--pad-3);
+}
+
+/* SSS verse alignment */
+.chapter-sss-pane .verse {
+  border-bottom: 1px solid var(--border);
+  padding-bottom: var(--pad-1);
+  margin-bottom: var(--pad-1);
+}
+
+/* Mobile: stack SSS panes vertically */
+@media (max-width: 768px) {
+  body.sss-chapter-mode .chapter-sss-container {
+    grid-template-columns: 1fr;
+  }
+
+  .reader-toggles {
+    width: 100%;
+    justify-content: flex-end;
+    margin-top: 8px;
+  }
+}
+
