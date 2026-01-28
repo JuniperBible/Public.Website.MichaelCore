@@ -525,3 +525,59 @@ CURRENT / PLANNED TASKS
     - Profile font loading impact
 
 ================================================================================
+
+================================================================================
+CODE REVIEW LOG
+================================================================================
+
+[2026-01-27] Code Review Round 6 COMPLETED (commit 0357c5d)
+  Fixes applied (8 items):
+  [x] XSS fix: bible-search.js showMessage() innerHTML → textContent DOM construction
+  [x] Semantic buttons: bible-nav.html disabled <span> → <button disabled>
+  [x] CSS: theme-offline.css .offline-message border color → var(--border)
+  [x] Defensive: offline-manager.js remove corrupted localStorage entries
+  [x] CSS: theme-offline.css focus ring aligned to var(--focus-ring) pattern
+  [x] CSS: theme-offline.css .bible-chip transition: all → specific properties
+  [x] Script: check-all.sh hardcoded port → ${PORT:-1313}
+  [x] A11y: offline-settings.html remove redundant aria-label from fieldset
+
+[2026-01-27] Code Review Round 7 COMPLETED
+  11 parallel review agents examined all JS, CSS, templates, service worker,
+  content adapter, config/scripts, i18n, accessibility, and security.
+  17 fixes across 13 files:
+
+  Group 1 — Race Conditions & State Management:
+  [x] 1a. user-storage.js: ensureDB() race condition — cache init promise
+  [x] 1b. offline-settings-ui.js: clear cache button stuck after success — reset on success
+  [x] 1c. parallel.js: nested RAF handle not tracked — update pendingSyncRAF to inner RAF
+  [x] 1d. pwa-install.js: parseInt NaN guard — handle corrupted localStorage
+
+  Group 2 — Accessibility (Templates):
+  [x] 2a. verse-grid.html: "All" button missing type="button"
+  [x] 2b. color-picker.html: picker + option buttons missing type="button"
+  [x] 2c. notes-section.html: hidden footnotes missing aria-hidden="true"
+  [x] 2d. compare.html: mode toggle buttons missing aria-controls
+  [x] 2e. SVGs missing focusable="false" (license/single.html ×3, sw-register.html,
+       continue-reading.html, sss-toggle.html)
+
+  Group 3 — CSS Consistency:
+  [x] 3a. theme-pwa.css: dismiss button focus rings → var(--focus-ring) (2 selectors)
+  [x] 3b. theme-print.css: consolidated duplicate @page rules
+
+  Group 4 — Security Hardening:
+  [x] 4a. license/single.html: external links rel="noopener" → rel="noopener noreferrer"
+
+  False positives excluded (11 items verified):
+  - bible-nav.js innerHTML: textContent strips HTML (safe)
+  - reading-tracker.js open redirect: hardcoded /bible/ path + internal data
+  - user-storage.js prototype pollution: trusted internal callers only
+  - bible-search.js null DOM refs: script only on search page
+  - share-menu.js null check: all paths guarded
+  - SW update message color: explicit var(--surface-2) on parent
+  - generate-sbom.sh --quiet: already present on all calls
+  - manifest.json scope: broader scope intentional
+  - offline-manager.js download race: state cleanup acceptable
+  - content adapter HTML injection: trusted OSIS build-time data
+  - Makefile test target: || pattern works correctly
+
+================================================================================

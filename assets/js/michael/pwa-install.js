@@ -206,9 +206,15 @@
     // Check if enough time has passed to show again
     const dismissedTime = localStorage.getItem(STORAGE_KEY_DISMISSED_TIME);
     if (dismissedTime) {
-      const daysSinceDismissed = (Date.now() - parseInt(dismissedTime, 10)) / (1000 * 60 * 60 * 24);
+      const parsedTime = parseInt(dismissedTime, 10);
+      if (isNaN(parsedTime)) {
+        // Corrupted data — clear and allow showing again
+        localStorage.removeItem(STORAGE_KEY_DISMISSED);
+        localStorage.removeItem(STORAGE_KEY_DISMISSED_TIME);
+        return false;
+      }
+      const daysSinceDismissed = (Date.now() - parsedTime) / (1000 * 60 * 60 * 24);
       if (daysSinceDismissed >= DAYS_BEFORE_RESHOWING) {
-        // Clear the dismissed state and allow showing again
         localStorage.removeItem(STORAGE_KEY_DISMISSED);
         localStorage.removeItem(STORAGE_KEY_DISMISSED_TIME);
         return false;

@@ -12,7 +12,7 @@
 {{- $hidden := .hidden | default false -}}
 {{- $hiddenClass := cond $hidden " hidden" "" -}}
 {{- if or (eq $type "footnotes") (eq $type "both") -}}
-<aside id="{{ $prefix }}footnotes-section" class="footnotes-section{{ $hiddenClass }}">
+<aside id="{{ $prefix }}footnotes-section" class="footnotes-section{{ $hiddenClass }}"{{ if $hidden }} aria-hidden="true"{{ end }}>
   <h2>{{ i18n "footnotes" | default "Footnotes" }}</h2>
   <ol class="footnotes-list" id="{{ $prefix }}footnotes-list"></ol>
 </aside>

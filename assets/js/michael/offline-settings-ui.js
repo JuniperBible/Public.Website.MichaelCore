@@ -194,22 +194,25 @@
       return;
     }
 
+    const clearBtn = document.getElementById('clear-cache-btn');
+    const originalHtml = clearBtn.innerHTML;
+
     try {
-      // Disable clear button
-      const clearBtn = document.getElementById('clear-cache-btn');
       clearBtn.disabled = true;
       clearBtn.textContent = 'Clearing...';
 
       await OfflineManager.clearCache();
 
+      // Reset button on success
+      clearBtn.disabled = false;
+      clearBtn.innerHTML = originalHtml;
     } catch (error) {
       console.error('[Offline Settings] Failed to clear cache:', error);
       showMessage('Failed to clear cache: ' + error.message, 'error');
 
-      // Re-enable button
-      const clearBtn = document.getElementById('clear-cache-btn');
+      // Reset button on error
       clearBtn.disabled = false;
-      clearBtn.innerHTML = '<span aria-hidden="true">🗑</span> Clear Cache';
+      clearBtn.innerHTML = originalHtml;
     }
   }
 

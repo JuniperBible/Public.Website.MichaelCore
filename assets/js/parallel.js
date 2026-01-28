@@ -1568,7 +1568,8 @@
       rightVerses.forEach(v => v.style.minHeight = '');
 
       // Use another frame to ensure reset is applied before measuring
-      requestAnimationFrame(() => {
+      // Track the inner RAF so it can be cancelled if syncSSSVerseHeights is called again
+      pendingSyncRAF = requestAnimationFrame(() => {
         leftVerses.forEach((leftVerse, index) => {
           const rightVerse = rightVerses[index];
           if (rightVerse) {

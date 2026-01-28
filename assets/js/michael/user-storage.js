@@ -33,6 +33,9 @@ window.Michael.UserStorage = (function() {
    */
   let db = null;
 
+  /** @private */
+  let initPromise = null;
+
   /**
    * Initializes the IndexedDB database.
    *
@@ -107,9 +110,11 @@ window.Michael.UserStorage = (function() {
    * @returns {Promise<IDBDatabase>}
    */
   async function ensureDB() {
-    if (!db) {
-      await init();
+    if (db) return db;
+    if (!initPromise) {
+      initPromise = init();
     }
+    await initPromise;
     return db;
   }
 

@@ -84,6 +84,9 @@
   @page {
     margin: 0.75in 0.5in;
     size: letter portrait;
+    @bottom-right {
+      content: "Printed: " counter(page);
+    }
   }
 
   html,
@@ -393,15 +396,7 @@
     clip: auto !important;
   }
 
-  /* ===== 17) FOOTER / WATERMARK ===== */
-
-  @page {
-    @bottom-right {
-      content: "Printed: " counter(page);
-    }
-  }
-
-  /* ===== 18) COMPARISON VIEW SPECIFIC ===== */
+  /* ===== 17) COMPARISON VIEW SPECIFIC ===== */
 
   #sss-mode,
   #normal-mode {

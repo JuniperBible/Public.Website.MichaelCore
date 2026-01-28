@@ -226,7 +226,7 @@ html.pwa-standalone .continue-reading { padding: var(--pad-1); margin-bottom: va
 
 .pwa-install-dismiss:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.5);
+  box-shadow: var(--focus-ring);
 }
 
 /* Responsive: stack on small screens */
@@ -338,7 +338,7 @@ html.pwa-standalone .continue-reading { padding: var(--pad-1); margin-bottom: va
 
 .sw-update-banner__dismiss-btn:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.5);
+  box-shadow: var(--focus-ring);
 }
 
 /* ==========================================================================
