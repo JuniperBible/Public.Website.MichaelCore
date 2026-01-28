@@ -32,19 +32,17 @@
    * Initialize the chapter reader module
    */
   function init() {
-    console.log('[ChapterReader] init called');
-
-    // Get DOM elements
-    fullWidthToggle = document.getElementById('fullwidth-toggle');
-    sssToggle = document.getElementById('sss-chapter-toggle');
+    // Get DOM elements - use querySelectorAll since there may be multiple nav bars
+    const fullWidthToggles = document.querySelectorAll('#fullwidth-toggle');
+    const sssToggles = document.querySelectorAll('#sss-chapter-toggle');
     singleContent = document.querySelector('.chapter-content-single');
     sssContainer = document.querySelector('.chapter-sss-container');
 
-    console.log('[ChapterReader] fullWidthToggle:', fullWidthToggle);
-    console.log('[ChapterReader] sssToggle:', sssToggle);
+    // Store first toggle reference for state updates
+    fullWidthToggle = fullWidthToggles[0] || null;
+    sssToggle = sssToggles[0] || null;
 
-    if (!fullWidthToggle && !sssToggle) {
-      console.log('[ChapterReader] No toggles found, exiting');
+    if (fullWidthToggles.length === 0 && sssToggles.length === 0) {
       return;
     }
 
@@ -62,21 +60,24 @@
     sssMode = localStorage.getItem(STORAGE_KEY_SSS) === 'true';
     comparisonBible = localStorage.getItem(STORAGE_KEY_SSS_BIBLE) || '';
 
-    // Apply saved state
+    // Apply saved state and add listeners to ALL toggle buttons
+    fullWidthToggles.forEach(btn => {
+      if (fullWidthMode) {
+        btn.setAttribute('aria-pressed', 'true');
+      }
+      btn.addEventListener('click', toggleFullWidth);
+    });
+
+    sssToggles.forEach(btn => {
+      if (sssMode) {
+        btn.setAttribute('aria-pressed', 'true');
+      }
+      btn.addEventListener('click', toggleSSS);
+    });
+
+    // Apply full-width mode to body if saved
     if (fullWidthMode) {
       document.body.classList.add('full-width-mode');
-      if (fullWidthToggle) fullWidthToggle.setAttribute('aria-pressed', 'true');
-    }
-
-    // Set up event listeners
-    if (fullWidthToggle) {
-      console.log('[ChapterReader] Adding click listener to fullWidthToggle');
-      fullWidthToggle.addEventListener('click', toggleFullWidth);
-    }
-
-    if (sssToggle) {
-      console.log('[ChapterReader] Adding click listener to sssToggle');
-      sssToggle.addEventListener('click', toggleSSS);
     }
 
     // If SSS was previously enabled and we have the elements, restore it
@@ -89,10 +90,12 @@
    * Toggle full-width mode
    */
   function toggleFullWidth() {
-    console.log('[ChapterReader] toggleFullWidth called');
     fullWidthMode = !fullWidthMode;
     document.body.classList.toggle('full-width-mode', fullWidthMode);
-    fullWidthToggle.setAttribute('aria-pressed', fullWidthMode ? 'true' : 'false');
+    // Update all toggle buttons
+    document.querySelectorAll('#fullwidth-toggle').forEach(btn => {
+      btn.setAttribute('aria-pressed', fullWidthMode ? 'true' : 'false');
+    });
     localStorage.setItem(STORAGE_KEY_FULLWIDTH, fullWidthMode);
   }
 
@@ -115,7 +118,10 @@
 
     sssMode = true;
     document.body.classList.add('sss-chapter-mode');
-    sssToggle.setAttribute('aria-pressed', 'true');
+    // Update all toggle buttons
+    document.querySelectorAll('#sss-chapter-toggle').forEach(btn => {
+      btn.setAttribute('aria-pressed', 'true');
+    });
     localStorage.setItem(STORAGE_KEY_SSS, 'true');
 
     // Get panes
@@ -153,7 +159,10 @@
   function disableSSSMode() {
     sssMode = false;
     document.body.classList.remove('sss-chapter-mode');
-    sssToggle.setAttribute('aria-pressed', 'false');
+    // Update all toggle buttons
+    document.querySelectorAll('#sss-chapter-toggle').forEach(btn => {
+      btn.setAttribute('aria-pressed', 'false');
+    });
     localStorage.setItem(STORAGE_KEY_SSS, 'false');
   }
 
