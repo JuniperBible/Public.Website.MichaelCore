@@ -84,6 +84,15 @@ window.Michael.OfflineManager = (function() {
       // This listener persists for the page lifetime - no cleanup needed
       navigator.serviceWorker.addEventListener('message', swMessageHandler);
 
+      // Auto-activate updated service workers: when a new SW is found and
+      // finishes installing, reload the page so the fresh SW takes control.
+      // The SW already calls skipWaiting() on install, so the new controller
+      // will be active after reload.
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        console.log('[Offline Manager] New service worker activated, reloading...');
+        window.location.reload();
+      });
+
       // Wait for service worker to be ready
       await navigator.serviceWorker.ready;
       console.log('Service Worker is ready');
