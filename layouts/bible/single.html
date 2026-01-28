@@ -27,18 +27,19 @@
 {{ define "scripts" }}
 {{/* Inject Strong's definitions data (cached — identical across all pages) */}}
 {{ partialCached "michael/strongs-data.html" . }}
+{{/* Load JS with fingerprinting for cache busting */}}
 {{ $bibleNav := resources.Get "js/michael/bible-nav.js" }}
-{{ if $bibleNav }}<script src="{{ $bibleNav.RelPermalink }}" defer></script>{{ end }}
+{{ if $bibleNav }}{{ $bibleNav = $bibleNav | fingerprint }}<script src="{{ $bibleNav.RelPermalink }}" defer></script>{{ end }}
 {{ $shareMenu := resources.Get "js/michael/share-menu.js" }}
-{{ if $shareMenu }}<script src="{{ $shareMenu.RelPermalink }}" defer></script>{{ end }}
+{{ if $shareMenu }}{{ $shareMenu = $shareMenu | fingerprint }}<script src="{{ $shareMenu.RelPermalink }}" defer></script>{{ end }}
 {{ $share := resources.Get "js/share.js" }}
-{{ if $share }}<script src="{{ $share.RelPermalink }}" defer></script>{{ end }}
+{{ if $share }}{{ $share = $share | fingerprint }}<script src="{{ $share.RelPermalink }}" defer></script>{{ end }}
 {{ $strongs := resources.Get "js/strongs.js" }}
-{{ if $strongs }}<script src="{{ $strongs.RelPermalink }}" defer></script>{{ end }}
+{{ if $strongs }}{{ $strongs = $strongs | fingerprint }}<script src="{{ $strongs.RelPermalink }}" defer></script>{{ end }}
 {{ $footnotes := resources.Get "js/michael/footnotes.js" }}
-{{ if $footnotes }}<script src="{{ $footnotes.RelPermalink }}" defer></script>{{ end }}
+{{ if $footnotes }}{{ $footnotes = $footnotes | fingerprint }}<script src="{{ $footnotes.RelPermalink }}" defer></script>{{ end }}
 {{ $chapterReader := resources.Get "js/michael/chapter-reader.js" }}
-{{ if $chapterReader }}<script src="{{ $chapterReader.RelPermalink }}" defer></script>{{ end }}
+{{ if $chapterReader }}{{ $chapterReader = $chapterReader | fingerprint }}<script src="{{ $chapterReader.RelPermalink }}" defer></script>{{ end }}
 {{ end }}
 
 {{ define "main" }}
