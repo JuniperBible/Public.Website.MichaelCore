@@ -1299,15 +1299,47 @@
 
   /**
    * Exit SSS mode and return to normal comparison view
-   * Restores the multi-translation comparison interface
+   * Syncs SSS selections (Bibles, book, chapter) to VVV mode
    * @private
    */
   function exitSSSMode() {
     sssMode = false;
     updateSSSModeStatus();
+
+    // Sync SSS Bible selections to VVV translation checkboxes
+    if (sssLeftBible || sssRightBible) {
+      const biblesToSelect = [sssLeftBible, sssRightBible].filter(Boolean);
+      // Clear existing selections
+      selectedTranslations = [];
+      translationCheckboxes.forEach(cb => {
+        const shouldSelect = biblesToSelect.includes(cb.value);
+        cb.checked = shouldSelect;
+        if (shouldSelect && !selectedTranslations.includes(cb.value)) {
+          selectedTranslations.push(cb.value);
+        }
+      });
+    }
+
+    // Sync SSS book/chapter to VVV selectors
+    if (sssBook && bookSelect) {
+      bookSelect.value = sssBook;
+      currentBook = sssBook;
+      // Populate chapter dropdown for the book
+      populateChapterDropdown();
+      if (sssChapter && chapterSelect) {
+        chapterSelect.value = String(sssChapter);
+        currentChapter = sssChapter;
+      }
+    }
+
     if (normalModeEl) normalModeEl.classList.remove('hidden');
     if (sssModeEl) sssModeEl.classList.add('hidden');
     document.getElementById('parallel-content')?.classList.remove('hidden');
+
+    // Load comparison with synced selections
+    if (canLoadComparison()) {
+      loadComparison();
+    }
   }
 
   /**

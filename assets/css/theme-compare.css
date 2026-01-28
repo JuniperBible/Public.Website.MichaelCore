@@ -39,6 +39,7 @@
   flex-wrap: wrap;
   align-items: center;
   gap: 8px;
+  min-height: 38px;
 }
 
 .compare-controls__row + .compare-controls__row {
