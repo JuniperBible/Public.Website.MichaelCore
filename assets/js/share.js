@@ -148,7 +148,7 @@
       ? translationEl.getAttribute('data-translation')
       : 'Translation';
 
-    return `${title}:${verseNum} - ${translation}\n\n${content}\n\nShared from Michael Bible Module`;
+    return `${title}:${verseNum} - ${translation}\n\n${content}`;
   }
 
   // ============================================================================

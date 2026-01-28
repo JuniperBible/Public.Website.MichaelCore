@@ -11,7 +11,7 @@
   <div class="pwa-install-content">
     <img src="/icons/icon-192.png" alt="" class="pwa-install-icon" width="48" height="48" role="presentation">
     <div class="pwa-install-text">
-      <strong>{{ i18n "installApp" | default "Install Michael Bible" }}</strong>
+      <strong>{{ i18n "installApp" | default (printf "Install %s" .Site.Title) }}</strong>
       <span>{{ i18n "installSubtext" | default "Read offline, anytime" }}</span>
     </div>
   </div>
@@ -30,7 +30,7 @@
   <div class="pwa-install-content">
     <img src="/icons/icon-192.png" alt="" class="pwa-install-icon" width="48" height="48" role="presentation">
     <div class="pwa-install-text">
-      <strong>{{ i18n "installApp" | default "Install Michael Bible" }}</strong>
+      <strong>{{ i18n "installApp" | default (printf "Install %s" .Site.Title) }}</strong>
       <span>{{ i18n "iosInstallInstructions" | default "Tap Share then \"Add to Home Screen\"" }}</span>
     </div>
   </div>

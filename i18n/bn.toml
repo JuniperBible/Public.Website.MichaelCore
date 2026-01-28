@@ -124,7 +124,7 @@ other = "All Licenses"
 
 # PWA Installation
 [installApp]
-other = "Install Michael Bible"
+other = "Install App"
 
 [installSubtext]
 other = "Read offline, anytime"

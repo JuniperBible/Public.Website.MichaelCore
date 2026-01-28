@@ -1,6 +1,6 @@
 {
-  "name": "Michael Bible Reader",
-  "short_name": "Michael",
+  "name": "Bible Reader",
+  "short_name": "Bible",
   "description": "Offline Bible reading and comparison",
   "start_url": "/bible/",
   "scope": "/",
