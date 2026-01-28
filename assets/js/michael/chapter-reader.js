@@ -26,7 +26,7 @@
   // DOM elements
   let fullWidthToggle, sssToggle;
   let singleContent, sssContainer;
-  let leftPane, rightPane;
+  let leftPane, rightPane, rightPaneContent;
 
   /**
    * Initialize the chapter reader module
@@ -141,6 +141,7 @@
     // Get panes
     leftPane = document.getElementById('sss-left-pane');
     rightPane = document.getElementById('sss-right-pane');
+    rightPaneContent = rightPane ? rightPane.querySelector('.pane-content') : null;
 
     // Set up comparison bible selector
     const comparisonSelect = document.getElementById('sss-comparison-bible');
@@ -149,12 +150,28 @@
       if (comparisonBible && comparisonSelect.querySelector(`option[value="${comparisonBible}"]`)) {
         comparisonSelect.value = comparisonBible;
       } else {
-        // Default to a different translation than current
-        const options = Array.from(comparisonSelect.options);
-        const different = options.find(opt => opt.value && opt.value !== currentBible);
-        if (different) {
-          comparisonBible = different.value;
-          comparisonSelect.value = comparisonBible;
+        // Default pairing: KJVA ↔ DRC, otherwise KJVA first, then DRC
+        var defaults = currentBible === 'kjva' ? ['drc', 'kjva']
+                     : currentBible === 'drc'  ? ['kjva', 'drc']
+                     : ['kjva', 'drc'];
+        var found = false;
+        for (var i = 0; i < defaults.length; i++) {
+          var opt = comparisonSelect.querySelector('option[value="' + defaults[i] + '"]');
+          if (opt && defaults[i] !== currentBible) {
+            comparisonBible = defaults[i];
+            comparisonSelect.value = comparisonBible;
+            found = true;
+            break;
+          }
+        }
+        // Fallback: first available different translation
+        if (!found) {
+          const options = Array.from(comparisonSelect.options);
+          const different = options.find(opt => opt.value && opt.value !== currentBible);
+          if (different) {
+            comparisonBible = different.value;
+            comparisonSelect.value = comparisonBible;
+          }
         }
       }
 
@@ -193,10 +210,10 @@
    * Load comparison chapter content
    */
   async function loadComparisonContent() {
-    if (!rightPane || !comparisonBible || !currentBook || !currentChapter) return;
+    if (!rightPaneContent || !comparisonBible || !currentBook || !currentChapter) return;
 
     // Show loading state
-    rightPane.innerHTML = '<div class="loading">Loading...</div>';
+    rightPaneContent.innerHTML = '<div class="loading">Loading...</div>';
 
     try {
       // Use BibleAPI if available
@@ -211,7 +228,7 @@
         if (verses && verses.length > 0) {
           renderComparisonContent(verses);
         } else {
-          rightPane.innerHTML = '<div class="loading">Chapter not available in this translation</div>';
+          rightPaneContent.innerHTML = '<div class="loading">Chapter not available in this translation</div>';
         }
       } else {
         // Fallback: fetch HTML directly
@@ -223,17 +240,17 @@
           const doc = parser.parseFromString(html, 'text/html');
           const content = doc.querySelector('.bible-text');
           if (content) {
-            rightPane.innerHTML = content.innerHTML;
+            rightPaneContent.innerHTML = content.innerHTML;
           } else {
-            rightPane.innerHTML = '<div class="loading">Content not found</div>';
+            rightPaneContent.innerHTML = '<div class="loading">Content not found</div>';
           }
         } else {
-          rightPane.innerHTML = '<div class="loading">Chapter not available</div>';
+          rightPaneContent.innerHTML = '<div class="loading">Chapter not available</div>';
         }
       }
     } catch (err) {
       console.error('[ChapterReader] Error loading comparison:', err);
-      rightPane.innerHTML = '<div class="loading">Error loading content</div>';
+      rightPaneContent.innerHTML = '<div class="loading">Error loading content</div>';
     }
   }
 
@@ -241,15 +258,20 @@
    * Render comparison content from verses array
    */
   function renderComparisonContent(verses) {
-    if (!rightPane) return;
+    if (!rightPaneContent) return;
 
     let html = '';
     verses.forEach(verse => {
-      const text = escapeHtml(verse.text);
-      html += `<span class="verse" data-verse="${verse.number}"><sup>${verse.number}</sup> ${text}</span> `;
+      html += `<span class="verse" data-verse="${verse.number}"><sup>${verse.number}</sup> ${verse.text}</span> `;
     });
 
-    rightPane.innerHTML = `<div class="prose bible-text">${html}</div>`;
+    rightPaneContent.innerHTML = `<div class="prose bible-text">${html}</div>`;
+
+    // Process Strong's numbers in the new content
+    const newBibleText = rightPaneContent.querySelector('.bible-text');
+    if (newBibleText && window.Michael && window.Michael.processStrongsContent) {
+      window.Michael.processStrongsContent(newBibleText);
+    }
   }
 
   /**

@@ -37,9 +37,15 @@
 {{ $strongs := resources.Get "js/strongs.js" }}
 {{ if $strongs }}{{ $strongs = $strongs | fingerprint }}<script src="{{ $strongs.RelPermalink }}" defer></script>{{ end }}
 {{ $footnotes := resources.Get "js/michael/footnotes.js" }}
+<<<<<<< HEAD
 {{ if $footnotes }}{{ $footnotes = $footnotes | fingerprint }}<script src="{{ $footnotes.RelPermalink }}" defer></script>{{ end }}
 {{ $chapterReader := resources.Get "js/michael/chapter-reader.js" }}
 {{ if $chapterReader }}{{ $chapterReader = $chapterReader | fingerprint }}<script src="{{ $chapterReader.RelPermalink }}" defer></script>{{ end }}
+=======
+{{ if $footnotes }}<script src="{{ $footnotes.RelPermalink }}" defer></script>{{ end }}
+{{ $chapterReader := resources.Get "js/michael/chapter-reader.js" }}
+{{ if $chapterReader }}<script src="{{ $chapterReader.RelPermalink }}" defer></script>{{ end }}
+>>>>>>> 8d2bc0a (Add full-width and side-by-side scripture toggles to chapter pages)
 {{ end }}
 
 {{ define "main" }}
@@ -111,7 +117,6 @@
           </div>
           <div class="chapter-sss-pane" id="sss-right-pane">
             <div class="pane-header">
-              <label for="sss-comparison-bible" class="sr-only">{{ i18n "selectComparisonBible" | default "Select Comparison Bible" }}</label>
               <select id="sss-comparison-bible" class="select" aria-label="{{ i18n "selectComparisonBible" | default "Select Comparison Bible" }}">
                 <option value="">{{ i18n "selectBible" | default "Select Bible..." }}</option>
                 {{ range (partialCached "michael/bible-data.html" .Site) }}
