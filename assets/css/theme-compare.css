@@ -21,6 +21,22 @@
 
 .compare-controls--compact .compare-controls__row {
   gap: 6px;
+  min-height: 32px;
+}
+
+/* Make all selects and chips compact in SSS mode */
+.compare-controls--compact .select {
+  padding: 6px 10px;
+  font-size: 0.85rem;
+}
+
+.compare-controls--compact .chip {
+  padding: 4px 8px;
+  font-size: 0.85rem;
+}
+
+.compare-controls--compact .btn--sm {
+  padding: 6px 10px;
 }
 
 .sss-bible-pair {
