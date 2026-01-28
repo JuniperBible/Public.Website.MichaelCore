@@ -407,9 +407,14 @@ self.addEventListener('message', async (event) => {
         sendResponse({ error: 'Missing bibleId or basePath' });
         break;
       }
+      // Acknowledge immediately so the MessageChannel doesn't timeout.
+      // Progress and completion are reported via notifyClients().
+      sendResponse({ success: true, acknowledged: true });
       cacheBible(data.bibleId, data.basePath)
-        .then(() => sendResponse({ success: true }))
-        .catch(error => sendResponse({ error: error.message }));
+        .catch(error => {
+          console.error(`[Service Worker] cacheBible failed for ${data.bibleId}:`, error);
+          notifyClients('CACHE_ERROR', { bible: data.bibleId, error: error.message });
+        });
       break;
 
     case 'CLEAR_CACHE':
