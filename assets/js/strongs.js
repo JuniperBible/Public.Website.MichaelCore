@@ -591,7 +591,7 @@
       let node;
       while (node = walker.nextNode()) {
         // Quick regex test before adding to processing queue
-        if (/[HG]\d{1,5}/g.test(node.textContent)) {
+        if (/[HG]\d{1,5}/.test(node.textContent)) {
           nodesToProcess.push(node);
         }
       }

@@ -85,7 +85,7 @@
       <!-- Bible Download Selection -->
       <section class="bible-download-section">
         <form id="offline-download-form" class="bible-download-form">
-          <fieldset class="bible-download-chips" role="group" aria-label="{{ i18n "availableBibles" | default "Available Bibles" }}">
+          <fieldset class="bible-download-chips" aria-label="{{ i18n "availableBibles" | default "Available Bibles" }}">
             <legend class="sr-only">{{ i18n "selectBibles" | default "Select Bibles to Download" }}</legend>
             {{ range (partialCached "michael/bible-data.html" $page.Site) }}
             <label class="bible-chip" data-bible-id="{{ .id }}" title="{{ .title }}">

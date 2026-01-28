@@ -47,7 +47,7 @@ const activeDownloads = new Map(); // bibleId -> AbortController
 const bibleMetadata = new Map(); // bibleId -> { totalChapters, totalBooks }
 
 // Track metadata loading Promise to avoid race conditions
-let metadataReady = null;
+let metadataReady = Promise.resolve();
 
 // Assets to pre-cache on install
 // CSS files are now embedded with their fingerprinted paths by Hugo

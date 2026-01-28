@@ -147,6 +147,11 @@
   background: var(--surface-1);
 }
 
+.bible-chip:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
 /* Selected state */
 .bible-chip:has(input:checked) {
   border-color: var(--brand-500);
@@ -156,7 +161,7 @@
 /* Cached state - show green border */
 .bible-chip.is-cached {
   border-color: var(--success-500);
-  background: var(--success-100, #e8f5e9);
+  background: var(--success-100);
 }
 
 .bible-chip.is-cached .bible-chip__abbrev::before {

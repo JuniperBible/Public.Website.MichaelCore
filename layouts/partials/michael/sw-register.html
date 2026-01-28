@@ -167,6 +167,10 @@
 
       document.body.appendChild(banner);
 
+      // Move focus to the reload button so screen readers announce the banner
+      var reloadBtn = document.getElementById('sw-update-reload-btn');
+      if (reloadBtn) reloadBtn.focus();
+
       // Handle reload button click
       document.getElementById('sw-update-reload-btn').addEventListener('click', function() {
         // Send skip waiting and reload when the new SW takes control
