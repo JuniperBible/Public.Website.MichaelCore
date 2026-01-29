@@ -285,6 +285,10 @@ body.sss-chapter-mode .sss-comparison-select {
 
 .chapter-sss-container {
   display: none;
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-1);
+  overflow: hidden;
 }
 
 body.sss-chapter-mode .chapter-content-single {
@@ -292,58 +296,94 @@ body.sss-chapter-mode .chapter-content-single {
 }
 
 body.sss-chapter-mode .chapter-sss-container {
+  display: block;
+}
+
+/* SSS Header row */
+.sss-header {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: var(--pad-2);
+  background: var(--surface-2);
+  border-bottom: 2px solid var(--border);
 }
 
-.chapter-sss-pane {
-  background: var(--surface-1);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-1);
-  padding: var(--pad-2);
-  min-height: 400px;
-  overflow: auto;
+.sss-header-left,
+.sss-header-right {
+  padding: var(--pad-1) var(--pad-2);
+  text-align: center;
 }
 
-.chapter-sss-pane .pane-header {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding-bottom: var(--pad-1);
-  margin-bottom: var(--pad-1);
-  border-bottom: 1px solid var(--border);
+.sss-header-left {
+  border-right: 1px solid var(--border);
 }
 
-.chapter-sss-pane .pane-header select {
-  flex: 1;
-}
-
-.chapter-sss-pane .pane-content {
+/* SSS Verses container */
+.sss-verses {
   min-height: 300px;
 }
 
-.chapter-sss-pane .prose {
-  max-width: 100%;
-}
-
-.chapter-sss-pane .pane-content .loading {
+.sss-loading {
   text-align: center;
   color: var(--text-500);
   padding: var(--pad-3);
 }
 
-/* SSS verse alignment */
-.chapter-sss-pane .verse {
+/* SSS Verse row - each row contains left and right verse */
+.sss-verse-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   border-bottom: 1px solid var(--border);
-  padding-bottom: var(--pad-1);
-  margin-bottom: var(--pad-1);
 }
 
-/* Mobile: stack SSS panes vertically */
+.sss-verse-row:last-child {
+  border-bottom: none;
+}
+
+.sss-verse-left,
+.sss-verse-right {
+  padding: var(--pad-1) var(--pad-2);
+  line-height: 1.6;
+}
+
+.sss-verse-left {
+  border-right: 1px solid var(--border);
+}
+
+.sss-verse-num {
+  font-weight: bold;
+  color: var(--text-500);
+  margin-right: 0.5em;
+  font-size: 0.85em;
+}
+
+.sss-verse-text {
+  /* Allow proper wrapping */
+}
+
+.sss-missing {
+  color: var(--text-400);
+  font-style: italic;
+}
+
+/* Mobile: stack verses vertically */
 @media (max-width: 768px) {
-  body.sss-chapter-mode .chapter-sss-container {
+  .sss-header {
     grid-template-columns: 1fr;
+  }
+
+  .sss-header-left {
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .sss-verse-row {
+    grid-template-columns: 1fr;
+  }
+
+  .sss-verse-left {
+    border-right: none;
+    border-bottom: 1px dashed var(--border);
+    background: var(--surface-2);
   }
 
   .reader-toggles {

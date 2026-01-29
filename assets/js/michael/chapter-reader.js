@@ -3,7 +3,7 @@
  * @description Full-width and side-by-side scripture toggles for Bible chapter pages
  * @requires michael/dom-utils.js
  * @requires michael/bible-api.js
- * @version 1.0.0
+ * @version 1.1.0
  * Copyright (c) 2026, Focus with Justin
  */
 (function() {
@@ -23,10 +23,11 @@
   let comparisonBible = '';
   let basePath = '/bible';
 
+  // Cached left-side verses (extracted from page content)
+  let leftVerses = [];
+
   // DOM elements
-  let fullWidthToggle, sssToggle;
-  let singleContent, sssContainer;
-  let leftPane, rightPane, rightPaneContent;
+  let singleContent, sssContainer, sssVersesContainer;
 
   /**
    * Initialize the chapter reader module
@@ -39,13 +40,10 @@
     const sssToggles = document.querySelectorAll('#sss-chapter-toggle');
     singleContent = document.querySelector('.chapter-content-single');
     sssContainer = document.querySelector('.chapter-sss-container');
+    sssVersesContainer = document.getElementById('sss-verses');
 
     console.log('[ChapterReader] Found', fullWidthToggles.length, 'fullwidth toggles,', sssToggles.length, 'sss toggles');
     console.log('[ChapterReader] singleContent:', !!singleContent, 'sssContainer:', !!sssContainer);
-
-    // Store first toggle reference for state updates
-    fullWidthToggle = fullWidthToggles[0] || null;
-    sssToggle = sssToggles[0] || null;
 
     if (fullWidthToggles.length === 0 && sssToggles.length === 0) {
       console.log('[ChapterReader] No toggle buttons found, exiting');
@@ -60,6 +58,9 @@
       currentBook = bibleSelect.dataset.book || '';
       currentChapter = parseInt(bibleSelect.dataset.chapter) || 0;
     }
+
+    // Extract verses from the page content for later use
+    extractLeftVerses();
 
     // Restore saved preferences
     fullWidthMode = localStorage.getItem(STORAGE_KEY_FULLWIDTH) === 'true';
@@ -101,6 +102,46 @@
   }
 
   /**
+   * Extract verses from the single content view for SSS mode
+   */
+  function extractLeftVerses() {
+    leftVerses = [];
+    if (!singleContent) {
+      console.log('[ChapterReader] No singleContent found');
+      return;
+    }
+
+    const bibleText = singleContent.querySelector('.bible-text');
+    if (!bibleText) {
+      console.log('[ChapterReader] No .bible-text found in singleContent');
+      return;
+    }
+
+    // Find all verse spans - they have class "verse" and data-verse attribute
+    const verseElements = bibleText.querySelectorAll('span.verse[data-verse]');
+    console.log('[ChapterReader] Found', verseElements.length, 'verse elements');
+
+    verseElements.forEach(el => {
+      const verseNum = el.dataset.verse;
+      if (verseNum) {
+        // Clone the element to avoid modifying original, and remove share buttons
+        const clone = el.cloneNode(true);
+        // Remove share buttons from clone
+        clone.querySelectorAll('.verse-share-btn').forEach(btn => btn.remove());
+        leftVerses.push({
+          number: parseInt(verseNum),
+          html: clone.innerHTML
+        });
+      }
+    });
+
+    console.log('[ChapterReader] Extracted', leftVerses.length, 'verses from left content');
+    if (leftVerses.length > 0) {
+      console.log('[ChapterReader] First verse html:', leftVerses[0].html.substring(0, 100));
+    }
+  }
+
+  /**
    * Toggle full-width mode
    */
   function toggleFullWidth() {
@@ -137,11 +178,6 @@
       btn.setAttribute('aria-pressed', 'true');
     });
     localStorage.setItem(STORAGE_KEY_SSS, 'true');
-
-    // Get panes
-    leftPane = document.getElementById('sss-left-pane');
-    rightPane = document.getElementById('sss-right-pane');
-    rightPaneContent = rightPane ? rightPane.querySelector('.pane-content') : null;
 
     // Set up comparison bible selectors (may be multiple in different nav bars)
     const comparisonSelects = document.querySelectorAll('#sss-comparison-bible');
@@ -185,9 +221,9 @@
       updateRightPaneLabel();
     }
 
-    // Load comparison content
+    // Load comparison content and build verse rows
     if (comparisonBible && currentBook && currentChapter) {
-      loadComparisonContent();
+      loadAndRenderSSS();
     }
   }
 
@@ -221,7 +257,23 @@
     // Update right pane header label
     updateRightPaneLabel();
 
-    loadComparisonContent();
+    // Reload SSS content
+    loadAndRenderSSS();
+  }
+
+  /**
+   * Get the display name for the comparison Bible
+   */
+  function getComparisonBibleName() {
+    if (!comparisonBible) return 'the selected translation';
+    const select = document.getElementById('sss-comparison-bible');
+    if (select) {
+      const option = select.querySelector(`option[value="${comparisonBible}"]`);
+      if (option) {
+        return option.textContent;
+      }
+    }
+    return comparisonBible.toUpperCase();
   }
 
   /**
@@ -232,31 +284,24 @@
     if (!label) return;
 
     if (comparisonBible) {
-      // Find the abbreviation from the select options
-      const select = document.getElementById('sss-comparison-bible');
-      if (select) {
-        const option = select.querySelector(`option[value="${comparisonBible}"]`);
-        if (option) {
-          label.textContent = option.textContent;
-          return;
-        }
-      }
-      label.textContent = comparisonBible.toUpperCase();
+      label.textContent = getComparisonBibleName();
     } else {
-      label.textContent = 'Select a Bible to compare';
+      label.textContent = 'Select a Bible';
     }
   }
 
   /**
-   * Load comparison chapter content
+   * Load comparison content and render aligned verse rows
    */
-  async function loadComparisonContent() {
-    if (!rightPaneContent || !comparisonBible || !currentBook || !currentChapter) return;
+  async function loadAndRenderSSS() {
+    if (!sssVersesContainer || !comparisonBible || !currentBook || !currentChapter) return;
 
     // Show loading state
-    rightPaneContent.innerHTML = '<div class="loading">Loading...</div>';
+    sssVersesContainer.innerHTML = '<div class="sss-loading">Loading...</div>';
 
     try {
+      let rightVerses = [];
+
       // Use BibleAPI if available
       if (window.Michael && window.Michael.BibleAPI) {
         const verses = await window.Michael.BibleAPI.fetchChapter(
@@ -267,12 +312,13 @@
         );
 
         if (verses && verses.length > 0) {
-          renderComparisonContent(verses);
-        } else {
-          rightPaneContent.innerHTML = '<div class="loading">Chapter not available in this translation</div>';
+          rightVerses = verses.map(v => ({
+            number: parseInt(v.number),
+            html: `<sup>${v.number}</sup> ${v.text}`
+          }));
         }
       } else {
-        // Fallback: fetch HTML directly
+        // Fallback: fetch HTML directly and parse verses
         const url = `${basePath}/${comparisonBible}/${currentBook}/${currentChapter}/`;
         const response = await fetch(url);
         if (response.ok) {
@@ -281,50 +327,75 @@
           const doc = parser.parseFromString(html, 'text/html');
           const content = doc.querySelector('.bible-text');
           if (content) {
-            rightPaneContent.innerHTML = content.innerHTML;
-          } else {
-            rightPaneContent.innerHTML = '<div class="loading">Content not found</div>';
+            const verseElements = content.querySelectorAll('.verse, [data-verse]');
+            verseElements.forEach(el => {
+              const verseNum = el.dataset.verse || el.querySelector('sup')?.textContent;
+              if (verseNum) {
+                rightVerses.push({
+                  number: parseInt(verseNum),
+                  html: el.innerHTML
+                });
+              }
+            });
           }
-        } else {
-          rightPaneContent.innerHTML = '<div class="loading">Chapter not available</div>';
         }
       }
+
+      // Render aligned verses - even if right side is empty, show left with "not available" message
+      renderAlignedVerses(rightVerses);
     } catch (err) {
       console.error('[ChapterReader] Error loading comparison:', err);
-      rightPaneContent.innerHTML = '<div class="loading">Error loading content</div>';
+      const translationName = getComparisonBibleName();
+      sssVersesContainer.innerHTML = `<div class="sss-loading">Error loading content from ${translationName}</div>`;
     }
   }
 
   /**
-   * Render comparison content from verses array
+   * Render aligned verse rows with left and right verses
    */
-  function renderComparisonContent(verses) {
-    if (!rightPaneContent) return;
+  function renderAlignedVerses(rightVerses) {
+    if (!sssVersesContainer) return;
+
+    // Get translation names for messages
+    const leftBibleName = sssContainer?.dataset.leftBible || currentBible.toUpperCase();
+    const rightBibleName = getComparisonBibleName();
+
+    // Create a map for quick lookup
+    const leftMap = new Map();
+    leftVerses.forEach(v => leftMap.set(v.number, v.html));
+
+    const rightMap = new Map();
+    rightVerses.forEach(v => rightMap.set(v.number, v.html));
+
+    // Get all unique verse numbers from both sides, sorted
+    const allVerseNums = new Set([...leftMap.keys(), ...rightMap.keys()]);
+    const sortedNums = Array.from(allVerseNums).sort((a, b) => a - b);
+
+    // Handle case where no verses found at all
+    if (sortedNums.length === 0) {
+      sssVersesContainer.innerHTML = '<div class="sss-loading">No verses found</div>';
+      return;
+    }
 
     let html = '';
-    verses.forEach(verse => {
-      html += `<span class="verse" data-verse="${verse.number}"><sup>${verse.number}</sup> ${verse.text}</span> `;
+    sortedNums.forEach(num => {
+      const leftHtml = leftMap.get(num) || `<em class="sss-missing">(not in ${leftBibleName})</em>`;
+      const rightHtml = rightMap.get(num) || `<em class="sss-missing">(not in ${rightBibleName})</em>`;
+
+      html += `<div class="sss-verse-row" data-verse="${num}">
+        <div class="sss-verse-left">${leftHtml}</div>
+        <div class="sss-verse-right">${rightHtml}</div>
+      </div>`;
     });
 
-    rightPaneContent.innerHTML = `<div class="prose bible-text">${html}</div>`;
+    sssVersesContainer.innerHTML = html;
 
-    // Process Strong's numbers in the new content
-    const newBibleText = rightPaneContent.querySelector('.bible-text');
-    if (newBibleText && window.Michael && window.Michael.processStrongsContent) {
-      window.Michael.processStrongsContent(newBibleText);
+    // Process Strong's numbers in both left and right columns
+    if (window.Michael && window.Michael.processStrongsContent) {
+      window.Michael.processStrongsContent(sssVersesContainer);
     }
-  }
 
-  /**
-   * Escape HTML to prevent XSS
-   */
-  function escapeHtml(str) {
-    if (window.Michael && window.Michael.DomUtils && window.Michael.DomUtils.escapeHtml) {
-      return window.Michael.DomUtils.escapeHtml(str);
-    }
-    const div = document.createElement('div');
-    div.textContent = str;
-    return div.innerHTML;
+    console.log('[ChapterReader] Rendered', sortedNums.length, 'aligned verse rows');
   }
 
   // Initialize on DOM ready

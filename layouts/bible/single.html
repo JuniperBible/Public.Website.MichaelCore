@@ -37,15 +37,9 @@
 {{ $strongs := resources.Get "js/strongs.js" }}
 {{ if $strongs }}{{ $strongs = $strongs | fingerprint }}<script src="{{ $strongs.RelPermalink }}" defer></script>{{ end }}
 {{ $footnotes := resources.Get "js/michael/footnotes.js" }}
-<<<<<<< HEAD
 {{ if $footnotes }}{{ $footnotes = $footnotes | fingerprint }}<script src="{{ $footnotes.RelPermalink }}" defer></script>{{ end }}
 {{ $chapterReader := resources.Get "js/michael/chapter-reader.js" }}
 {{ if $chapterReader }}{{ $chapterReader = $chapterReader | fingerprint }}<script src="{{ $chapterReader.RelPermalink }}" defer></script>{{ end }}
-=======
-{{ if $footnotes }}<script src="{{ $footnotes.RelPermalink }}" defer></script>{{ end }}
-{{ $chapterReader := resources.Get "js/michael/chapter-reader.js" }}
-{{ if $chapterReader }}<script src="{{ $chapterReader.RelPermalink }}" defer></script>{{ end }}
->>>>>>> 8d2bc0a (Add full-width and side-by-side scripture toggles to chapter pages)
 {{ end }}
 
 {{ define "main" }}
@@ -106,22 +100,13 @@
         </div>
 
         <!-- Side-by-side view (shown when SSS toggle active) -->
-        <div class="chapter-sss-container">
-          <div class="chapter-sss-pane" id="sss-left-pane">
-            <div class="pane-header">
-              <strong>{{ $bibleData.abbrev }}</strong>
-            </div>
-            <div class="pane-content prose bible-text">
-              {{ .Content }}
-            </div>
+        <div class="chapter-sss-container" id="sss-container" data-left-bible="{{ $bibleData.abbrev }}">
+          <div class="sss-header">
+            <div class="sss-header-left"><strong>{{ $bibleData.abbrev }}</strong></div>
+            <div class="sss-header-right"><strong id="sss-right-pane-label">{{ i18n "selectBibleToCompare" | default "Select a Bible" }}</strong></div>
           </div>
-          <div class="chapter-sss-pane" id="sss-right-pane">
-            <div class="pane-header">
-              <strong id="sss-right-pane-label">{{ i18n "selectBibleToCompare" | default "Select a Bible to compare" }}</strong>
-            </div>
-            <div class="pane-content">
-              <div class="loading">{{ i18n "selectBibleToCompare" | default "Select a Bible to compare" }}</div>
-            </div>
+          <div class="sss-verses" id="sss-verses">
+            <div class="sss-loading">{{ i18n "selectBibleToCompare" | default "Select a Bible to compare" }}</div>
           </div>
         </div>
 
