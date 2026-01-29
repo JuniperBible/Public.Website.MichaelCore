@@ -728,4 +728,13 @@
       processStrongsNumbers();
     }
   });
+
+  // Expose for dynamic content processing (e.g., SSS comparison pane)
+  window.Michael = window.Michael || {};
+  window.Michael.processStrongsContent = function(container) {
+    if (container) {
+      delete container.dataset.strongsProcessed;
+      processOsisWordElements(container);
+    }
+  };
 })();
