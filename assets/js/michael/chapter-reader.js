@@ -143,12 +143,14 @@
     rightPane = document.getElementById('sss-right-pane');
     rightPaneContent = rightPane ? rightPane.querySelector('.pane-content') : null;
 
-    // Set up comparison bible selector
-    const comparisonSelect = document.getElementById('sss-comparison-bible');
-    if (comparisonSelect) {
+    // Set up comparison bible selectors (may be multiple in different nav bars)
+    const comparisonSelects = document.querySelectorAll('#sss-comparison-bible');
+    if (comparisonSelects.length > 0) {
+      const firstSelect = comparisonSelects[0];
+
       // Set previously selected comparison bible if available
-      if (comparisonBible && comparisonSelect.querySelector(`option[value="${comparisonBible}"]`)) {
-        comparisonSelect.value = comparisonBible;
+      if (comparisonBible && firstSelect.querySelector(`option[value="${comparisonBible}"]`)) {
+        // Value already set, just sync all selects
       } else {
         // Default pairing: KJVA ↔ DRC, otherwise KJVA first, then DRC
         var defaults = currentBible === 'kjva' ? ['drc', 'kjva']
@@ -156,26 +158,31 @@
                      : ['kjva', 'drc'];
         var found = false;
         for (var i = 0; i < defaults.length; i++) {
-          var opt = comparisonSelect.querySelector('option[value="' + defaults[i] + '"]');
+          var opt = firstSelect.querySelector('option[value="' + defaults[i] + '"]');
           if (opt && defaults[i] !== currentBible) {
             comparisonBible = defaults[i];
-            comparisonSelect.value = comparisonBible;
             found = true;
             break;
           }
         }
         // Fallback: first available different translation
         if (!found) {
-          const options = Array.from(comparisonSelect.options);
+          const options = Array.from(firstSelect.options);
           const different = options.find(opt => opt.value && opt.value !== currentBible);
           if (different) {
             comparisonBible = different.value;
-            comparisonSelect.value = comparisonBible;
           }
         }
       }
 
-      comparisonSelect.addEventListener('change', handleComparisonBibleChange);
+      // Sync all selects and add listeners
+      comparisonSelects.forEach(sel => {
+        sel.value = comparisonBible;
+        sel.addEventListener('change', handleComparisonBibleChange);
+      });
+
+      // Update the right pane label with the selected Bible
+      updateRightPaneLabel();
     }
 
     // Load comparison content
@@ -203,7 +210,41 @@
   function handleComparisonBibleChange(e) {
     comparisonBible = e.target.value;
     localStorage.setItem(STORAGE_KEY_SSS_BIBLE, comparisonBible);
+
+    // Sync all comparison selectors (multiple nav bars may exist)
+    document.querySelectorAll('#sss-comparison-bible').forEach(sel => {
+      if (sel !== e.target) {
+        sel.value = comparisonBible;
+      }
+    });
+
+    // Update right pane header label
+    updateRightPaneLabel();
+
     loadComparisonContent();
+  }
+
+  /**
+   * Update the right pane header label with the selected Bible abbreviation
+   */
+  function updateRightPaneLabel() {
+    const label = document.getElementById('sss-right-pane-label');
+    if (!label) return;
+
+    if (comparisonBible) {
+      // Find the abbreviation from the select options
+      const select = document.getElementById('sss-comparison-bible');
+      if (select) {
+        const option = select.querySelector(`option[value="${comparisonBible}"]`);
+        if (option) {
+          label.textContent = option.textContent;
+          return;
+        }
+      }
+      label.textContent = comparisonBible.toUpperCase();
+    } else {
+      label.textContent = 'Select a Bible to compare';
+    }
   }
 
   /**

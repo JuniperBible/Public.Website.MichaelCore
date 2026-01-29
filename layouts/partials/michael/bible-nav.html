@@ -177,5 +177,16 @@
       </svg>
     </button>
   </span>
+
+  <!-- SSS Comparison Bible selector (hidden until SSS mode active) -->
+  <select id="sss-comparison-bible" class="select bible-nav__select sss-comparison-select" aria-label="{{ i18n "selectComparisonBible" | default "Select Comparison Bible" }}">
+    <option value="">{{ i18n "selectBible" | default "Select Bible..." }}</option>
+    {{ range (partialCached "michael/bible-data.html" $page.Site) }}
+      {{ $hasAuxData := index $page.Site.Data.bibles_auxiliary .id }}
+      {{ if and $hasAuxData (ne .id $bible) }}
+    <option value="{{ .id }}">{{ .abbrev }}</option>
+      {{ end }}
+    {{ end }}
+  </select>
   {{ end }}
 </nav>

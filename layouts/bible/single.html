@@ -117,15 +117,7 @@
           </div>
           <div class="chapter-sss-pane" id="sss-right-pane">
             <div class="pane-header">
-              <select id="sss-comparison-bible" class="select" aria-label="{{ i18n "selectComparisonBible" | default "Select Comparison Bible" }}">
-                <option value="">{{ i18n "selectBible" | default "Select Bible..." }}</option>
-                {{ range (partialCached "michael/bible-data.html" .Site) }}
-                  {{ $hasAuxData := index $.Site.Data.bibles_auxiliary .id }}
-                  {{ if and $hasAuxData (ne .id $.Params.bible) }}
-                <option value="{{ .id }}">{{ .abbrev }}</option>
-                  {{ end }}
-                {{ end }}
-              </select>
+              <strong id="sss-right-pane-label">{{ i18n "selectBibleToCompare" | default "Select a Bible to compare" }}</strong>
             </div>
             <div class="pane-content">
               <div class="loading">{{ i18n "selectBibleToCompare" | default "Select a Bible to compare" }}</div>

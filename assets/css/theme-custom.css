@@ -105,9 +105,9 @@
   --font-hand: "Patrick Hand", cursive;
 }
 
-/* Light mode (for users who prefer it) */
+/* Light mode (OS preference, no explicit toggle) */
 @media (prefers-color-scheme: light) {
-  :root {
+  :root:not([data-theme="dark"]) {
     /* Brand - Muted purple (juniperbible accent) */
     --brand-100: #f0e0f0;
     --brand-400: #7d5c7d;
@@ -159,6 +159,39 @@
     /* Subtle backgrounds */
     --bg-light: rgba(0, 0, 0, 0.04);
   }
+}
+
+/* Light mode (explicit toggle override) */
+:root[data-theme="light"] {
+  --brand-100: #f0e0f0;
+  --brand-400: #7d5c7d;
+  --brand-500: #6b4c6b;
+  --brand-600: #684580;
+  --success-100: #e8f5e9;
+  --success-500: #16a34a;
+  --bg-0: #b8a080;
+  --surface-0: #e6ddc0;
+  --surface-1: #ebe5d8;
+  --surface-2: #ffffff;
+  --text-900: #1a1a1a;
+  --text-700: #4a4540;
+  --text-500: #6b6560;
+  --text-400: #857f78;
+  --border: #d4cfc5;
+  --border-strong: #b8b2a6;
+  --border-hover: rgba(0, 0, 0, 0.55);
+  --shadow-0: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-1: 0 4px 6px rgba(0, 0, 0, 0.07), 0 1px 3px rgba(0, 0, 0, 0.05);
+  --focus-ring: 0 0 0 3px rgba(107, 76, 107, 0.35);
+  --diff-add: #ccffcc;
+  --diff-omit: #e6e6e6;
+  --diff-punct: #ffeb99;
+  --diff-spelling: #ffe0b3;
+  --diff-subst: #ffcccc;
+  --state-error: #d32f2f;
+  --state-error-bg: #ffebee;
+  --surface-alpha: rgba(255, 255, 255, 0.55);
+  --bg-light: rgba(0, 0, 0, 0.04);
 }
 
 /* -----------------------------
@@ -234,7 +267,22 @@ body.full-width-mode .reader-bar {
   max-width: 100%;
 }
 
+body.full-width-mode .prose {
+  max-width: 100%;
+}
+
 /* SSS (Side-by-Side Scripture) mode for chapter pages */
+
+/* Hide comparison Bible selector by default */
+.sss-comparison-select {
+  display: none;
+}
+
+/* Show comparison Bible selector when SSS mode is active */
+body.sss-chapter-mode .sss-comparison-select {
+  display: inline-block;
+}
+
 .chapter-sss-container {
   display: none;
 }
@@ -273,6 +321,10 @@ body.sss-chapter-mode .chapter-sss-container {
 
 .chapter-sss-pane .pane-content {
   min-height: 300px;
+}
+
+.chapter-sss-pane .prose {
+  max-width: 100%;
 }
 
 .chapter-sss-pane .pane-content .loading {
