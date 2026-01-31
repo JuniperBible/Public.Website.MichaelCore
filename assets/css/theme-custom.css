@@ -210,6 +210,43 @@ h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-hand);
 }
 
+/* Header — sticky at top, 89% width, rounded bottom corners */
+header.chrome {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  width: 89%;
+  max-width: 1400px;
+  margin-left: auto;
+  margin-right: auto;
+  border-radius: 0 0 1rem 1rem;
+  box-shadow: var(--shadow-2);
+}
+
+/* Footer wrapper — pushed to bottom */
+.site-footer-wrapper {
+  margin-top: auto;
+}
+
+/* Footer — 89% width, rounded top corners */
+footer.chrome {
+  width: 89%;
+  max-width: 1400px;
+  margin-left: auto;
+  margin-right: auto;
+  border-radius: 1rem 1rem 0 0;
+}
+
+/* Footer copyright — 89% width, centered */
+.footer-copyright {
+  width: 89%;
+  max-width: 1400px;
+  margin-left: auto;
+  margin-right: auto;
+  font-size: 0.65rem;
+  text-align: center;
+}
+
 /* Header/footer nav and site title — doubled from default */
 .nav a {
   font-size: 2rem;
@@ -218,10 +255,6 @@ h1, h2, h3, h4, h5, h6 {
 
 .nav a:first-child strong {
   font-size: 2rem;
-}
-
-.footer-copyright {
-  font-size: 0.65rem;
 }
 
 /* Compare controls - match header width and rounded corners */

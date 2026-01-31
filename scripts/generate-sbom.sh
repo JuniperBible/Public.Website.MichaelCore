@@ -101,9 +101,10 @@ resolve_tool() {
         printf '%s' "$local_bin"; return 0
     fi
     # 2. nix-shell (resolve to actual binary path)
+    # Use --pure to avoid shellHook output from local shell.nix
     if command -v nix-shell &> /dev/null; then
         local nix_bin
-        nix_bin="$(nix-shell -p "$nix_pkg" --run "command -v $name" 2>/dev/null)"
+        nix_bin="$(nix-shell --pure -p "$nix_pkg" --run "command -v $name" 2>/dev/null)"
         if [[ -n "$nix_bin" ]]; then
             printf '%s' "$nix_bin"; return 0
         fi
