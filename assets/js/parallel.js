@@ -791,8 +791,9 @@
     parallelContent.innerHTML = window.Michael.DomUtils.createLoadingIndicator();
 
     // Fetch chapter data for all selected translations in parallel
+    // Use BibleLoader to read from compressed archives (works for all Bibles)
     const chapterDataPromises = selectedTranslations.map(bibleId =>
-      window.Michael.BibleAPI.fetchChapter(basePath, bibleId, currentBook, currentChapter)
+      window.Michael.BibleLoader.getChapter(bibleId, currentBook, currentChapter)
     );
 
     const chaptersData = await Promise.all(chapterDataPromises);
@@ -863,13 +864,12 @@
    */
   async function populateVerseGrid() {
     // Find first translation with valid data for this chapter
+    // Use BibleLoader which already has all loaded Bibles cached in memory
     let verses = null;
     for (const translationId of selectedTranslations) {
-      if (window.Michael.BibleAPI.hasInCache(translationId, currentBook, currentChapter)) {
-        verses = await window.Michael.BibleAPI.fetchChapter(basePath, translationId, currentBook, currentChapter);
-        if (verses && verses.length > 0) {
-          break;
-        }
+      verses = await window.Michael.BibleLoader.getChapter(translationId, currentBook, currentChapter);
+      if (verses && verses.length > 0) {
+        break;
       }
     }
 
@@ -1488,10 +1488,10 @@
       sssRightPane.innerHTML = loadingHtml;
     }
 
-    // Fetch both chapters
+    // Fetch both chapters using BibleLoader (works for all Bibles)
     const [leftVerses, rightVerses] = await Promise.all([
-      window.Michael.BibleAPI.fetchChapter(basePath, sssLeftBible, sssBook, sssChapter),
-      window.Michael.BibleAPI.fetchChapter(basePath, sssRightBible, sssBook, sssChapter)
+      window.Michael.BibleLoader.getChapter(sssLeftBible, sssBook, sssChapter),
+      window.Michael.BibleLoader.getChapter(sssRightBible, sssBook, sssChapter)
     ]);
 
     // If right Bible has no verses, try to pick another one automatically
