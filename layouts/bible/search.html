@@ -60,11 +60,14 @@
           <label for="bible-select" class="label">
             {{ i18n "selectBible" | default "Select Bible" }}:
           </label>
-          <select id="bible-select" name="bible" class="select">
-            {{ range (partialCached "michael/bible-data.html" .Site) }}
-            <option value="{{ .id }}">{{ .abbrev }} - {{ .title }}</option>
-            {{ end }}
-          </select>
+          {{ partial "michael/bible-select.html" (dict
+              "site" .Site
+              "id" "bible-select"
+              "name" "bible"
+              "class" "select"
+              "format" "abbrev-title"
+              "showPlaceholder" false
+          ) }}
         </div>
       </div>
       <div class="row">

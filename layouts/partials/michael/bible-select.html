@@ -1,25 +1,114 @@
 {{/*
   Bible Select Dropdown Partial
 
-  Generates a <select> element populated with Bible translations.
+  Generates a reusable <select> element populated with Bible translations.
+  Supports multiple display formats and filtering options.
 
   Parameters (via dict):
     - site (object, required): Site object for data access
     - id (string, required): Element ID for the select
     - label (string, optional): Placeholder text (default: "Bible...")
-    - class (string, optional): Additional CSS classes
+    - class (string, optional): CSS classes (default: "select w-auto")
+    - format (string, optional): Display format for options:
+        - "abbrev" - Just abbreviation (e.g., "KJV")
+        - "title" - Just title (e.g., "King James Version")
+        - "abbrev-title" - Abbrev - Title (e.g., "KJV - King James Version")
+        - "title-abbrev" - Title (Abbrev) (e.g., "King James Version (KJV)") [default]
+    - selected (string, optional): Bible ID to mark as selected
+    - exclude (string, optional): Bible ID to exclude from list
+    - auxOnly (bool, optional): Only show Bibles with auxiliary data (default: false)
+    - name (string, optional): Form field name attribute
+    - basePath (string, optional): Data attribute for base path
+    - book (string, optional): Data attribute for current book
+    - chapter (int, optional): Data attribute for current chapter
+    - showPlaceholder (bool, optional): Show placeholder option (default: true)
 
-  Usage:
-    {{ partial "michael/bible-select.html" (dict "site" $.Site "id" "sss-bible-left" "label" "Left Bible...") }}
+  Usage Examples:
+
+    # Basic usage with defaults:
+    {{ partial "michael/bible-select.html" (dict "site" $.Site "id" "bible-select") }}
+
+    # For navigation (abbrev only, with context):
+    {{ partial "michael/bible-select.html" (dict
+        "site" $.Site
+        "id" "bible-select"
+        "format" "abbrev"
+        "selected" .Params.bible
+        "auxOnly" true
+        "basePath" "/bible"
+        "book" .Params.book
+        "chapter" .Params.chapter
+    ) }}
+
+    # For search page (abbrev - title format):
+    {{ partial "michael/bible-select.html" (dict
+        "site" $.Site
+        "id" "bible-select"
+        "name" "bible"
+        "format" "abbrev-title"
+    ) }}
+
+    # For SSS mode (exclude current Bible):
+    {{ partial "michael/bible-select.html" (dict
+        "site" $.Site
+        "id" "sss-comparison-bible"
+        "exclude" .Params.bible
+        "auxOnly" true
+    ) }}
 */}}
+
 {{- $site := .site -}}
 {{- $id := .id -}}
 {{- $label := .label | default (i18n "biblePlaceholder" | default "Bible...") -}}
 {{- $class := .class | default "select w-auto" -}}
+{{- $format := .format | default "title-abbrev" -}}
+{{- $selected := .selected -}}
+{{- $exclude := .exclude -}}
+{{- $auxOnly := .auxOnly | default false -}}
+{{- $name := .name -}}
+{{- $basePath := .basePath -}}
+{{- $book := .book -}}
+{{- $chapter := .chapter -}}
+{{- $showPlaceholder := true -}}
+{{- if isset . "showPlaceholder" -}}
+  {{- $showPlaceholder = .showPlaceholder -}}
+{{- end -}}
+
 <label for="{{ $id }}" class="sr-only">{{ i18n "selectBible" | default "Select Bible" }}</label>
-<select id="{{ $id }}" class="{{ $class }}" aria-label="{{ i18n "selectBible" | default "Select Bible" }}">
+<select id="{{ $id }}"
+        class="{{ $class }}"
+        {{- with $name }} name="{{ . }}"{{ end -}}
+        {{- with $basePath }} data-base-path="{{ . }}"{{ end -}}
+        {{- with $book }} data-book="{{ . }}"{{ end -}}
+        {{- with $chapter }} data-chapter="{{ . }}"{{ end -}}
+        aria-label="{{ i18n "selectBible" | default "Select Bible" }}">
+  {{- if $showPlaceholder }}
   <option value="">{{ $label }}</option>
+  {{- end -}}
   {{- range (partialCached "michael/bible-data.html" $site) -}}
-  <option value="{{ .id }}">{{ .title }} ({{ .abbrev }})</option>
+    {{- $show := true -}}
+    {{- if $auxOnly -}}
+      {{- $hasAuxData := index $site.Data.bibles_auxiliary .id -}}
+      {{- if not $hasAuxData -}}
+        {{- $show = false -}}
+      {{- end -}}
+    {{- end -}}
+    {{- if and $exclude (eq .id $exclude) -}}
+      {{- $show = false -}}
+    {{- end -}}
+    {{- if $show -}}
+      {{- $optionText := "" -}}
+      {{- if eq $format "abbrev" -}}
+        {{- $optionText = .abbrev -}}
+      {{- else if eq $format "title" -}}
+        {{- $optionText = .title -}}
+      {{- else if eq $format "abbrev-title" -}}
+        {{- $optionText = printf "%s - %s" .abbrev .title -}}
+      {{- else -}}
+        {{- /* Default: title-abbrev */ -}}
+        {{- $optionText = printf "%s (%s)" .title .abbrev -}}
+      {{- end -}}
+  <option value="{{ .id }}"{{ if eq .id $selected }} selected{{ end }}>{{ $optionText }}</option>
+    {{- end -}}
   {{- end -}}
 </select>
