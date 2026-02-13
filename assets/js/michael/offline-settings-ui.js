@@ -9,20 +9,12 @@
  * SPDX-License-Identifier: MIT
  */
 
-(function() {
-  'use strict';
+'use strict';
 
-  // Wait for DOM and dependencies to be ready
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initializeOfflineSettings);
-  } else {
-    initializeOfflineSettings();
-  }
-
-  /**
-   * Initializes the offline settings UI and connects it to OfflineManager
-   */
-  async function initializeOfflineSettings() {
+/**
+ * Initializes the offline settings UI and connects it to OfflineManager
+ */
+async function initializeOfflineSettings() {
     // Check if we're on a page with offline settings
     const offlineForm = document.getElementById('offline-download-form');
     if (!offlineForm) {
@@ -63,12 +55,12 @@
     }
   }
 
-  /**
-   * Sets up all event listeners for the offline settings UI
-   *
-   * @param {Object} OfflineManager - The OfflineManager instance
-   */
-  function setupEventListeners(OfflineManager) {
+/**
+ * Sets up all event listeners for the offline settings UI
+ *
+ * @param {Object} OfflineManager - The OfflineManager instance
+ */
+function setupEventListeners(OfflineManager) {
     // Form submission - download selected Bibles
     const form = document.getElementById('offline-download-form');
     form.addEventListener('submit', async (e) => {
@@ -98,12 +90,12 @@
     });
   }
 
-  /**
-   * Handles the download Bibles action
-   *
-   * @param {Object} OfflineManager - The OfflineManager instance
-   */
-  async function handleDownloadBibles(OfflineManager) {
+/**
+ * Handles the download Bibles action
+ *
+ * @param {Object} OfflineManager - The OfflineManager instance
+ */
+async function handleDownloadBibles(OfflineManager) {
     // Get all selected Bibles
     const checkboxes = document.querySelectorAll('.bible-download-checkbox:checked');
 
@@ -183,12 +175,12 @@
     showProgressContainer(false);
   }
 
-  /**
-   * Handles the clear cache action
-   *
-   * @param {Object} OfflineManager - The OfflineManager instance
-   */
-  async function handleClearCache(OfflineManager) {
+/**
+ * Handles the clear cache action
+ *
+ * @param {Object} OfflineManager - The OfflineManager instance
+ */
+async function handleClearCache(OfflineManager) {
     // Confirm with user
     if (!confirm('Are you sure you want to clear all cached Bible content? This cannot be undone.')) {
       return;
@@ -216,13 +208,13 @@
     }
   }
 
-  /**
-   * Checks and updates cache status for all Bible checkboxes
-   * Also sorts the chips to show cached Bibles first
-   *
-   * @param {Object} OfflineManager - The OfflineManager instance
-   */
-  async function updateBibleCacheStatuses(OfflineManager) {
+/**
+ * Checks and updates cache status for all Bible checkboxes
+ * Also sorts the chips to show cached Bibles first
+ *
+ * @param {Object} OfflineManager - The OfflineManager instance
+ */
+async function updateBibleCacheStatuses(OfflineManager) {
     const checkboxes = document.querySelectorAll('.bible-download-checkbox');
     const basePath = '/bible';
     const cachedBibles = [];
@@ -279,12 +271,12 @@
     }
   }
 
-  /**
-   * Updates the cache status display
-   *
-   * @param {Object} OfflineManager - The OfflineManager instance
-   */
-  async function updateCacheStatus(OfflineManager) {
+/**
+ * Updates the cache status display
+ *
+ * @param {Object} OfflineManager - The OfflineManager instance
+ */
+async function updateCacheStatus(OfflineManager) {
     try {
       const status = await OfflineManager.getCacheStatus();
 
@@ -312,12 +304,12 @@
     }
   }
 
-  /**
-   * Updates the download progress display
-   *
-   * @param {Object} detail - Progress event detail
-   */
-  function updateDownloadProgress(detail) {
+/**
+ * Updates the download progress display
+ *
+ * @param {Object} detail - Progress event detail
+ */
+function updateDownloadProgress(detail) {
     const progressBar = document.getElementById('download-progress-bar');
     const progressText = document.getElementById('download-progress-text');
 
@@ -330,13 +322,13 @@
     }
   }
 
-  /**
-   * Handles download completion
-   *
-   * @param {Object} detail - Completion event detail
-   * @param {Object} OfflineManager - The OfflineManager instance
-   */
-  async function handleDownloadComplete(detail, OfflineManager) {
+/**
+ * Handles download completion
+ *
+ * @param {Object} detail - Completion event detail
+ * @param {Object} OfflineManager - The OfflineManager instance
+ */
+async function handleDownloadComplete(detail, OfflineManager) {
     if (detail.success) {
       updateBibleStatus(detail.bible, '', 'is-cached');
       showMessage(`${detail.bible.toUpperCase()} downloaded successfully`, 'success');
@@ -361,13 +353,13 @@
     await updateCacheStatus(OfflineManager);
   }
 
-  /**
-   * Handles cache cleared event
-   *
-   * @param {Object} detail - Clear event detail
-   * @param {Object} OfflineManager - The OfflineManager instance
-   */
-  async function handleCacheCleared(detail, OfflineManager) {
+/**
+ * Handles cache cleared event
+ *
+ * @param {Object} detail - Clear event detail
+ * @param {Object} OfflineManager - The OfflineManager instance
+ */
+async function handleCacheCleared(detail, OfflineManager) {
     try {
       // Clear all Bible status indicators
       const statusElements = document.querySelectorAll('.bible-download-status, .bible-chip__status');
@@ -408,14 +400,14 @@
     }
   }
 
-  /**
-   * Updates the status indicator for a specific Bible
-   *
-   * @param {string} bibleId - Bible ID
-   * @param {string} text - Status text to display
-   * @param {string} className - CSS class for status styling
-   */
-  function updateBibleStatus(bibleId, text, className) {
+/**
+ * Updates the status indicator for a specific Bible
+ *
+ * @param {string} bibleId - Bible ID
+ * @param {string} text - Status text to display
+ * @param {string} className - CSS class for status styling
+ */
+function updateBibleStatus(bibleId, text, className) {
     const statusElement = document.getElementById(`status-${bibleId}`);
     if (statusElement) {
       statusElement.textContent = text;
@@ -426,24 +418,24 @@
     }
   }
 
-  /**
-   * Updates the progress label text
-   *
-   * @param {string} text - Label text
-   */
-  function updateProgressLabel(text) {
+/**
+ * Updates the progress label text
+ *
+ * @param {string} text - Label text
+ */
+function updateProgressLabel(text) {
     const label = document.getElementById('download-progress-label');
     if (label) {
       label.textContent = text;
     }
   }
 
-  /**
-   * Shows or hides the progress container
-   *
-   * @param {boolean} show - Whether to show the container
-   */
-  function showProgressContainer(show) {
+/**
+ * Shows or hides the progress container
+ *
+ * @param {boolean} show - Whether to show the container
+ */
+function showProgressContainer(show) {
     const container = document.getElementById('download-progress-container');
     if (container) {
       if (show) {
@@ -454,12 +446,12 @@
     }
   }
 
-  /**
-   * Enables or disables download controls
-   *
-   * @param {boolean} enabled - Whether controls should be enabled
-   */
-  function setDownloadControlsEnabled(enabled) {
+/**
+ * Enables or disables download controls
+ *
+ * @param {boolean} enabled - Whether controls should be enabled
+ */
+function setDownloadControlsEnabled(enabled) {
     const downloadBtn = document.getElementById('download-offline-btn');
     const clearBtn = document.getElementById('clear-cache-btn');
     const checkboxes = document.querySelectorAll('.bible-download-checkbox');
@@ -482,10 +474,10 @@
     });
   }
 
-  /**
-   * Disables all offline controls (when not supported)
-   */
-  function disableOfflineControls() {
+/**
+ * Disables all offline controls (when not supported)
+ */
+function disableOfflineControls() {
     setDownloadControlsEnabled(false);
 
     const form = document.getElementById('offline-download-form');
@@ -495,13 +487,13 @@
     }
   }
 
-  /**
-   * Displays a message to the user
-   *
-   * @param {string} message - Message text
-   * @param {string} type - Message type: 'success', 'error', or 'info'
-   */
-  function showMessage(message, type = 'info') {
+/**
+ * Displays a message to the user
+ *
+ * @param {string} message - Message text
+ * @param {string} type - Message type: 'success', 'error', or 'info'
+ */
+function showMessage(message, type = 'info') {
     const messagesContainer = document.getElementById('offline-messages');
     if (!messagesContainer) return;
 
@@ -519,5 +511,11 @@
       messageEl.remove();
     }, 5000);
   }
+}
 
-})();
+// Self-invoking initialization with DOMContentLoaded
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initializeOfflineSettings);
+} else {
+  initializeOfflineSettings();
+}

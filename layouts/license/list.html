@@ -1,6 +1,6 @@
 {{ define "main" }}
 {{- $softwareDeps := .Site.Data.software_deps -}}
-<main class="container pad-3-2">
+<main id="main-content" class="container pad-3-2">
   <div class="panel">
     <header class="page-header">
       <h1>{{ .Title }}</h1>
@@ -54,7 +54,7 @@
           {{ range . }}
           <tr>
             <td>
-              <a href="{{ .downloadLocation }}" target="_blank" rel="noopener">{{ .name }}</a>
+              {{ with .downloadLocation }}<a href="{{ . }}" target="_blank" rel="noopener noreferrer">{{ $.name }}</a>{{ else }}{{ .name }}{{ end }}
             </td>
             <td><code>{{ .version }}</code></td>
             <td><span class="badge">{{ .license }}</span></td>
@@ -80,7 +80,7 @@
           {{ range . }}
           <tr>
             <td>
-              <a href="{{ .downloadLocation }}" target="_blank" rel="noopener">{{ .name }}</a>
+              {{ with .downloadLocation }}<a href="{{ . }}" target="_blank" rel="noopener noreferrer">{{ $.name }}</a>{{ else }}{{ .name }}{{ end }}
             </td>
             <td><code>{{ .version }}</code></td>
             <td><span class="badge">{{ .license }}</span></td>
@@ -106,7 +106,7 @@
           {{ range . }}
           <tr>
             <td>
-              <a href="{{ .downloadLocation }}" target="_blank" rel="noopener">{{ .name }}</a>
+              {{ with .downloadLocation }}<a href="{{ . }}" target="_blank" rel="noopener noreferrer">{{ $.name }}</a>{{ else }}{{ .name }}{{ end }}
             </td>
             <td><code>{{ .version }}</code></td>
             <td><span class="badge">{{ .license }}</span></td>

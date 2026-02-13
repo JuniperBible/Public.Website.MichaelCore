@@ -10,6 +10,8 @@
  * Copyright (c) 2026, Focus with Justin
  */
 
+'use strict';
+
 // ==================== Token Types ====================
 
 const TokenType = {
@@ -634,9 +636,28 @@ function escapeHtml(text) {
 .diff-move { background: var(--diff-move); }
 */
 
+// ==================== ES6 Exports ====================
+
+// Export core functions
+export {
+  tokenize,
+  compareTexts,
+  renderWithHighlights,
+  normalizeText,
+  unicodeNormalize,
+  normalizeQuotes,
+  normalizeDashes,
+  normalizeWhitespace,
+  TokenType,
+  DiffOp,
+  DiffCategory,
+  escapeHtml,
+  classifyDifference
+};
+
 // ==================== Export for use in parallel.js ====================
 
-// Make available globally for use in parallel.js
+// Make available globally for backwards compatibility
 window.TextCompare = {
   // Core functions
   tokenize,

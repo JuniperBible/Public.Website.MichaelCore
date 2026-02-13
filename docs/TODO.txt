@@ -1,30 +1,105 @@
 ================================================================================
 MICHAEL BIBLE PWA - PLANNED TASKS
 ================================================================================
-Updated: 2026-01-27
+Updated: 2026-02-13
+
+================================================================================
+COMPLETED SPRINT: ES6 Module Migration & Bug Fixes (2026-02-13)
+================================================================================
+
+### Batch 1: Critical Template Fixes [COMPLETED]
+[x] Add id="main-content" to 9 layout files (skip-link target)
+    - layouts/index.html
+    - layouts/_default/list.html
+    - layouts/_default/single.html
+    - layouts/bible/list.html
+    - layouts/bible/compare.html
+    - layouts/bible/search.html
+    - layouts/bible/single.html
+    - layouts/license/list.html
+    - layouts/license/single.html
+[x] Fix undefined CSS variable (--shadow-2 → --shadow-1)
+[x] Fix external link security (add noreferrer to rel attribute)
+[x] Add bible-data-map.html partial (O(1) Bible lookup)
+
+### Batch 2: ES6 Foundation Modules [COMPLETED]
+[x] Add dom-ready.js - DOM ready utility
+[x] Add core.js - Module registry (Michael.register/get/init/cleanup)
+[x] Add config.js - Centralized configuration
+[x] Add listener-registry.js - Event listener cleanup tracking
+[x] Add clipboard-utils.js - Clipboard copy with fallback
+[x] Extract theme-init.js from baseof.html inline script
+[x] Extract theme-toggle.js from baseof.html inline script
+[x] Update baseof.html to use <script type="module">
+
+### Batch 3: Core Module ES6 Conversion [COMPLETED]
+[x] Convert dom-utils.js to ES6 module
+[x] Convert bible-api.js to ES6 module
+[x] Convert user-storage.js to ES6 module
+[x] Convert verse-grid.js to ES6 module
+[x] Convert chapter-dropdown.js to ES6 module
+
+### Batch 4: Feature Module ES6 Conversion [COMPLETED]
+[x] Convert bible-nav.js to ES6 module
+[x] Convert bible-search.js to ES6 module + fix race condition
+[x] Convert sss-mode.js to ES6 module + fix race condition
+[x] Convert share-menu.js to ES6 module
+[x] Convert share.js to ES6 module
+[x] Convert footnotes.js to ES6 module + fix duplicate listeners
+
+### Batch 5: Remaining Module Conversions [COMPLETED]
+[x] Convert parallel.js to ES6 module
+[x] Convert strongs.js to ES6 module
+[x] Convert text-compare.js to ES6 module
+[x] Convert diff-highlight.js to ES6 module
+[x] Convert show-more.js to ES6 module
+[x] Convert reading-tracker.js to ES6 module + fix scroll listener
+[x] Convert pwa-install.js to ES6 module
+[x] Convert offline-manager.js to ES6 module
+[x] Convert offline-settings-ui.js to ES6 module
+
+### Batch 6: Cleanup & Memory Fixes [COMPLETED]
+[x] Add Michael.addCleanup() to all modules with event listeners
+[x] Add null checks and validation throughout
+[x] Handle QuotaExceededError in user-storage.js
+[x] Add SW ready timeout in offline-manager.js
+[x] Remove inline onclick handler from bible-nav.html
+
+### Batch 7: CSS & Code Quality [COMPLETED]
+[x] Remove duplicate light mode CSS block
+[x] Remove obsolete clip property from sr-only
+[x] Add dark mode focus states
+[x] Remove all debug console.log statements
+
+### Batch 8: Documentation & Final [COMPLETED]
+[x] Update CHANGELOG.md with all changes
+[ ] Run make test to verify
+[ ] Commit and push
+
+================================================================================
+COMPLETED FEATURES
+================================================================================
+
+[x] Dark mode support (2026-02-13)
+    - Theme toggle button in header
+    - CSS variables for light/dark themes
+    - localStorage persistence
+    - Respects prefers-color-scheme
 
 ================================================================================
 FUTURE FEATURES
 ================================================================================
 
-[ ] Dark mode support
-    - juniperbible.org has dark mode variables already defined
-    - Add [data-theme="dark"] overrides to theme-custom.css
-    - Add theme toggle button to header
-
 [ ] Integrate _content.gotmpl with bible-data.html partial
     - Content adapter currently reads raw bibles.json for titles
     - Could use override titles in page generation for HTML <title> tags
-    - Would fix "King James Version (1769) with Strongs..." in browser tab
 
 [ ] Deprecate legacy <strong> verse format in bible-api.js
     - Strategy 2 (strong elements) and Strategy 5 (regex) can be removed
     - All content now uses modern .verse[data-verse] format
-    - Keep legacy fallback for cached pages until cache expires
 
 [ ] Review and clean up theme-colors.css defaults
     - Default values are now overridden by theme-custom.css
-    - Consider whether defaults should match juniperbible or stay generic
 
 [ ] Performance optimization
     - Audit CSS bundle size after modularization

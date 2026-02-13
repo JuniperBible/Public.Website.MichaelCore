@@ -161,39 +161,6 @@
   }
 }
 
-/* Light mode (explicit toggle override) */
-:root[data-theme="light"] {
-  --brand-100: #f0e0f0;
-  --brand-400: #7d5c7d;
-  --brand-500: #6b4c6b;
-  --brand-600: #684580;
-  --success-100: #e8f5e9;
-  --success-500: #16a34a;
-  --bg-0: #b8a080;
-  --surface-0: #e6ddc0;
-  --surface-1: #ebe5d8;
-  --surface-2: #ffffff;
-  --text-900: #1a1a1a;
-  --text-700: #4a4540;
-  --text-500: #6b6560;
-  --text-400: #857f78;
-  --border: #d4cfc5;
-  --border-strong: #b8b2a6;
-  --border-hover: rgba(0, 0, 0, 0.55);
-  --shadow-0: 0 1px 2px rgba(0, 0, 0, 0.05);
-  --shadow-1: 0 4px 6px rgba(0, 0, 0, 0.07), 0 1px 3px rgba(0, 0, 0, 0.05);
-  --focus-ring: 0 0 0 3px rgba(107, 76, 107, 0.35);
-  --diff-add: #ccffcc;
-  --diff-omit: #e6e6e6;
-  --diff-punct: #ffeb99;
-  --diff-spelling: #ffe0b3;
-  --diff-subst: #ffcccc;
-  --state-error: #d32f2f;
-  --state-error-bg: #ffebee;
-  --surface-alpha: rgba(255, 255, 255, 0.55);
-  --bg-light: rgba(0, 0, 0, 0.04);
-}
-
 /* -----------------------------
    Custom Component Overrides
    Apply handwritten font to UI elements
@@ -220,7 +187,7 @@ header.chrome {
   margin-left: auto;
   margin-right: auto;
   border-radius: 0 0 1rem 1rem;
-  box-shadow: var(--shadow-2);
+  box-shadow: var(--shadow-1);
 }
 
 /* Footer wrapper — pushed to bottom */

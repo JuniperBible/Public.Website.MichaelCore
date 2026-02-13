@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * ShareMenu Component
  *
@@ -6,13 +8,8 @@
  *
  * Copyright (c) 2025, Focus with Justin
  */
-window.Michael = window.Michael || {};
-console.log('[ShareMenu] Module loaded, window.Michael:', window.Michael);
-window.Michael.ShareMenu = (function() {
-  'use strict';
-  console.log('[ShareMenu] IIFE executing');
 
-  // UI strings (can be overridden via options)
+// UI strings (can be overridden via options)
   const DEFAULT_UI = {
     copyLink: 'Copy link',
     copyText: 'Copy text',
@@ -387,7 +384,7 @@ window.Michael.ShareMenu = (function() {
       this.anchorBtn.classList.add('copied');
 
       setTimeout(() => {
-        if (this.anchorBtn) {
+        if (this.anchorBtn && this.anchorBtn.setAttribute && this.anchorBtn.classList) {
           this.anchorBtn.setAttribute('title', originalTitle);
           if (originalAriaLabel) {
             this.anchorBtn.setAttribute('aria-label', originalAriaLabel);
@@ -591,8 +588,12 @@ window.Michael.ShareMenu = (function() {
     this.setOfflineMode(!online, true);
   };
 
-  // Export the constructor
-  console.log('[ShareMenu] Exporting ShareMenu constructor');
-  return ShareMenu;
-})();
-console.log('[ShareMenu] Module complete, window.Michael.ShareMenu:', typeof window.Michael.ShareMenu);
+// ============================================================================
+// EXPORTS
+// ============================================================================
+
+export default ShareMenu;
+
+// Backwards compatibility with window.Michael namespace
+window.Michael = window.Michael || {};
+window.Michael.ShareMenu = ShareMenu;

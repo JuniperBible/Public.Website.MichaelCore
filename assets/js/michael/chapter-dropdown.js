@@ -6,129 +6,132 @@
  *
  * Copyright (c) 2025, Focus with Justin
  */
-window.Michael = window.Michael || {};
-window.Michael.ChapterDropdown = (function() {
-  'use strict';
 
-  /**
-   * ChapterDropdown constructor
-   * @param {HTMLSelectElement} selectElement - The <select> element to populate
-   * @param {Object} bibleData - Bible metadata object containing books array
-   * @param {Object} options - Configuration options
-   * @param {string} options.placeholder - Placeholder text (default: "Select Chapter")
-   * @param {string} options.labelPrefix - Prefix for chapter labels (default: "Chapter ")
-   */
-  function ChapterDropdown(selectElement, bibleData, options) {
-    if (!selectElement) {
-      throw new Error('ChapterDropdown requires a valid select element');
-    }
+'use strict';
 
-    this.selectElement = selectElement;
-    this.bibleData = bibleData;
-
-    // Merge options with defaults
-    this.options = Object.assign({
-      placeholder: 'Select Chapter',
-      labelPrefix: 'Chapter '
-    }, options || {});
-
-    // Initialize with placeholder
-    this.clear();
+/**
+ * ChapterDropdown constructor
+ * @param {HTMLSelectElement} selectElement - The <select> element to populate
+ * @param {Object} bibleData - Bible metadata object containing books array
+ * @param {Object} options - Configuration options
+ * @param {string} options.placeholder - Placeholder text (default: "Select Chapter")
+ * @param {string} options.labelPrefix - Prefix for chapter labels (default: "Chapter ")
+ */
+export function ChapterDropdown(selectElement, bibleData, options) {
+  if (!selectElement) {
+    throw new Error('ChapterDropdown requires a valid select element');
   }
 
-  /**
-   * Clear dropdown and set to disabled state
-   */
-  ChapterDropdown.prototype.clear = function() {
-    this.selectElement.innerHTML = '<option value="">' + this.options.placeholder + '</option>';
-    this.selectElement.disabled = true;
-  };
+  this.selectElement = selectElement;
+  this.bibleData = bibleData;
 
-  /**
-   * Populate chapter dropdown for a given book
-   * @param {string} bookId - Book ID (e.g., "Gen", "Isa")
-   * @returns {boolean} - True if successfully populated, false otherwise
-   */
-  ChapterDropdown.prototype.populate = function(bookId) {
-    // Clear first
-    this.clear();
+  // Merge options with defaults
+  this.options = Object.assign({
+    placeholder: 'Select Chapter',
+    labelPrefix: 'Chapter '
+  }, options || {});
 
-    if (!bookId || !this.bibleData || !this.bibleData.books) {
-      return false;
-    }
+  // Initialize with placeholder
+  this.clear();
+}
 
-    // Find book in bibleData.books array
-    const book = this.bibleData.books.find(function(b) {
-      return b.id === bookId;
-    });
+/**
+ * Clear dropdown and set to disabled state
+ */
+ChapterDropdown.prototype.clear = function() {
+  this.selectElement.innerHTML = '<option value="">' + this.options.placeholder + '</option>';
+  this.selectElement.disabled = true;
+};
 
-    if (!book || !book.chapters) {
-      return false;
-    }
+/**
+ * Populate chapter dropdown for a given book
+ * @param {string} bookId - Book ID (e.g., "Gen", "Isa")
+ * @returns {boolean} - True if successfully populated, false otherwise
+ */
+ChapterDropdown.prototype.populate = function(bookId) {
+  // Clear first
+  this.clear();
 
-    // Populate chapter options
-    for (let i = 1; i <= book.chapters; i++) {
-      const option = document.createElement('option');
-      option.value = i;
-      option.textContent = this.options.labelPrefix + i;
-      this.selectElement.appendChild(option);
-    }
+  if (!bookId || !this.bibleData || !this.bibleData.books) {
+    return false;
+  }
 
-    // Enable dropdown
-    this.selectElement.disabled = false;
-    return true;
-  };
+  // Find book in bibleData.books array
+  const book = this.bibleData.books.find(function(b) {
+    return b.id === bookId;
+  });
 
-  /**
-   * Get current selected chapter value
-   * @returns {number} - Selected chapter number (0 if none selected)
-   */
-  ChapterDropdown.prototype.getValue = function() {
-    return parseInt(this.selectElement.value) || 0;
-  };
+  if (!book || !book.chapters) {
+    return false;
+  }
 
-  /**
-   * Set chapter value
-   * @param {number} chapter - Chapter number to select
-   * @returns {boolean} - True if value was set, false if invalid
-   */
-  ChapterDropdown.prototype.setValue = function(chapter) {
-    const chapterNum = parseInt(chapter);
-    if (isNaN(chapterNum) || chapterNum < 1) {
-      return false;
-    }
+  // Populate chapter options
+  for (let i = 1; i <= book.chapters; i++) {
+    const option = document.createElement('option');
+    option.value = i;
+    option.textContent = this.options.labelPrefix + i;
+    this.selectElement.appendChild(option);
+  }
 
-    // Check if option exists
-    const option = this.selectElement.querySelector('option[value="' + chapterNum + '"]');
-    if (!option) {
-      return false;
-    }
+  // Enable dropdown
+  this.selectElement.disabled = false;
+  return true;
+};
 
-    this.selectElement.value = chapterNum;
-    return true;
-  };
+/**
+ * Get current selected chapter value
+ * @returns {number} - Selected chapter number (0 if none selected)
+ */
+ChapterDropdown.prototype.getValue = function() {
+  return parseInt(this.selectElement.value) || 0;
+};
 
-  /**
-   * Check if dropdown is disabled
-   * @returns {boolean}
-   */
-  ChapterDropdown.prototype.isDisabled = function() {
-    return this.selectElement.disabled;
-  };
+/**
+ * Set chapter value
+ * @param {number} chapter - Chapter number to select
+ * @returns {boolean} - True if value was set, false if invalid
+ */
+ChapterDropdown.prototype.setValue = function(chapter) {
+  const chapterNum = parseInt(chapter);
+  if (isNaN(chapterNum) || chapterNum < 1) {
+    return false;
+  }
 
-  /**
-   * Enable dropdown
-   */
-  ChapterDropdown.prototype.enable = function() {
-    this.selectElement.disabled = false;
-  };
+  // Check if option exists
+  const option = this.selectElement.querySelector('option[value="' + chapterNum + '"]');
+  if (!option) {
+    return false;
+  }
 
-  /**
-   * Disable dropdown
-   */
-  ChapterDropdown.prototype.disable = function() {
-    this.selectElement.disabled = true;
-  };
+  this.selectElement.value = chapterNum;
+  return true;
+};
 
-  return ChapterDropdown;
-})();
+/**
+ * Check if dropdown is disabled
+ * @returns {boolean}
+ */
+ChapterDropdown.prototype.isDisabled = function() {
+  return this.selectElement.disabled;
+};
+
+/**
+ * Enable dropdown
+ */
+ChapterDropdown.prototype.enable = function() {
+  this.selectElement.disabled = false;
+};
+
+/**
+ * Disable dropdown
+ */
+ChapterDropdown.prototype.disable = function() {
+  this.selectElement.disabled = true;
+};
+
+// ============================================================================
+// BACKWARDS COMPATIBILITY
+// ============================================================================
+
+window.Michael = window.Michael || {};
+window.Michael.ChapterDropdown = ChapterDropdown;

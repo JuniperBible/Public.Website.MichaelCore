@@ -44,7 +44,7 @@
 
 {{ define "main" }}
 {{ $basePath := .Site.Params.michael.basePath | default "/bible" }}
-<main class="container pad-3-2">
+<main id="main-content" class="container pad-3-2">
   <article class="panel">
     {{/* Look up Bible metadata from bibles-data partial (includes overrides) */}}
     {{ $bibleId := .Params.bible | default .Params.abbrev | default .File.ContentBaseName }}

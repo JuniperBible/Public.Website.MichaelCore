@@ -11,72 +11,67 @@
  * SPDX-License-Identifier: MIT
  */
 
-window.Michael = window.Michael || {};
-window.Michael.ReadingTracker = (function() {
-  'use strict';
+'use strict';
 
-  /**
-   * Timing and duration constants
-   */
-  const TIMING = {
-    SCROLL_SAVE_DEBOUNCE: 500,       // Delay before saving scroll position (ms)
-    SCROLL_RESTORE_WINDOW: 24,       // Hours within which to restore scroll position
-    MILLISECONDS_PER_DAY: 86400000   // Milliseconds in 24 hours (for streak calculation)
-  };
+/**
+ * Timing and duration constants
+ */
+const TIMING = {
+  SCROLL_SAVE_DEBOUNCE: 500,       // Delay before saving scroll position (ms)
+  SCROLL_RESTORE_WINDOW: 24,       // Hours within which to restore scroll position
+  MILLISECONDS_PER_DAY: 86400000   // Milliseconds in 24 hours (for streak calculation)
+};
 
-  // Debounce timer for scroll saving
-  let scrollDebounceTimer = null;
+// Debounce timer for scroll saving
+let scrollDebounceTimer = null;
 
-  // Current page info
-  let currentPage = null;
+// Current page info
+let currentPage = null;
 
-  /**
-   * Initializes the reading tracker.
-   *
-   * Automatically detects if on a chapter page and sets up tracking.
-   *
-   * @returns {Promise<void>}
-   */
-  async function init() {
-    // Check if UserStorage is available
-    if (!window.Michael?.UserStorage?.isSupported()) {
-      console.log('[ReadingTracker] IndexedDB not supported');
-      return;
-    }
-
-    // Initialize storage
-    await window.Michael.UserStorage.init();
-
-    // Parse current page info
-    currentPage = parseCurrentPage();
-
-    if (currentPage && currentPage.type === 'chapter') {
-      // We're on a chapter page - set up tracking
-      setupChapterTracking();
-
-      // Save initial progress
-      await saveCurrentProgress();
-
-      // Restore scroll position if returning to this chapter
-      await restoreScrollPosition();
-    }
-
-    // Update reading streak
-    await updateReadingStreak();
-
-    // Set up "Continue Reading" buttons
-    setupContinueReading();
-
-    console.log('[ReadingTracker] Initialized', currentPage);
+/**
+ * Initializes the reading tracker.
+ *
+ * Automatically detects if on a chapter page and sets up tracking.
+ *
+ * @returns {Promise<void>}
+ */
+async function init() {
+  // Check if UserStorage is available
+  if (!window.Michael?.UserStorage?.isSupported()) {
+    return;
   }
 
-  /**
-   * Parses the current page URL to extract Bible, book, and chapter info.
-   *
-   * @private
-   * @returns {{type: string, bibleId: string, bookId?: string, chapter?: number}|null}
-   */
-  function parseCurrentPage() {
+  // Initialize storage
+  await window.Michael.UserStorage.init();
+
+  // Parse current page info
+  currentPage = parseCurrentPage();
+
+  if (currentPage && currentPage.type === 'chapter') {
+    // We're on a chapter page - set up tracking
+    setupChapterTracking();
+
+    // Save initial progress
+    await saveCurrentProgress();
+
+    // Restore scroll position if returning to this chapter
+    await restoreScrollPosition();
+  }
+
+  // Update reading streak
+  await updateReadingStreak();
+
+  // Set up "Continue Reading" buttons
+  setupContinueReading();
+}
+
+/**
+ * Parses the current page URL to extract Bible, book, and chapter info.
+ *
+ * @private
+ * @returns {{type: string, bibleId: string, bookId?: string, chapter?: number}|null}
+ */
+function parseCurrentPage() {
     const path = window.location.pathname;
 
     // Chapter page: /bible/{bibleId}/{bookId}/{chapter}/
@@ -119,12 +114,12 @@ window.Michael.ReadingTracker = (function() {
     return null;
   }
 
-  /**
-   * Sets up scroll tracking for chapter pages.
-   *
-   * @private
-   */
-  function setupChapterTracking() {
+/**
+ * Sets up scroll tracking for chapter pages.
+ *
+ * @private
+ */
+function setupChapterTracking() {
     // Save scroll position with debounce
     window.addEventListener('scroll', () => {
       if (scrollDebounceTimer) {
@@ -157,13 +152,13 @@ window.Michael.ReadingTracker = (function() {
     });
   }
 
-  /**
-   * Saves current reading progress.
-   *
-   * @private
-   * @returns {Promise<void>}
-   */
-  async function saveCurrentProgress() {
+/**
+ * Saves current reading progress.
+ *
+ * @private
+ * @returns {Promise<void>}
+ */
+async function saveCurrentProgress() {
     if (!currentPage || currentPage.type !== 'chapter') {
       return;
     }
@@ -180,13 +175,13 @@ window.Michael.ReadingTracker = (function() {
     }
   }
 
-  /**
-   * Restores scroll position when returning to a chapter.
-   *
-   * @private
-   * @returns {Promise<void>}
-   */
-  async function restoreScrollPosition() {
+/**
+ * Restores scroll position when returning to a chapter.
+ *
+ * @private
+ * @returns {Promise<void>}
+ */
+async function restoreScrollPosition() {
     if (!currentPage || currentPage.type !== 'chapter') {
       return;
     }
@@ -217,13 +212,13 @@ window.Michael.ReadingTracker = (function() {
     }
   }
 
-  /**
-   * Updates the reading streak.
-   *
-   * @private
-   * @returns {Promise<void>}
-   */
-  async function updateReadingStreak() {
+/**
+ * Updates the reading streak.
+ *
+ * @private
+ * @returns {Promise<void>}
+ */
+async function updateReadingStreak() {
     if (!currentPage || currentPage.type !== 'chapter') {
       return;
     }
@@ -262,20 +257,18 @@ window.Michael.ReadingTracker = (function() {
         streakData.lastReadDate = today;
 
         await UserStorage.setSetting('readingStreak', streakData);
-
-        console.log('[ReadingTracker] Streak updated:', streakData);
       }
     } catch (error) {
       console.warn('[ReadingTracker] Failed to update streak:', error);
     }
   }
 
-  /**
-   * Sets up "Continue Reading" functionality.
-   *
-   * @private
-   */
-  function setupContinueReading() {
+/**
+ * Sets up "Continue Reading" functionality.
+ *
+ * @private
+ */
+function setupContinueReading() {
     const continueButtons = document.querySelectorAll('[data-continue-reading]');
 
     continueButtons.forEach(button => {
@@ -289,12 +282,12 @@ window.Michael.ReadingTracker = (function() {
     populateContinueReadingDisplay();
   }
 
-  /**
-   * Populates "Continue Reading" display elements.
-   *
-   * @private
-   */
-  async function populateContinueReadingDisplay() {
+/**
+ * Populates "Continue Reading" display elements.
+ *
+ * @private
+ */
+async function populateContinueReadingDisplay() {
     const displays = document.querySelectorAll('[data-continue-reading-display]');
     if (displays.length === 0) {
       return;
@@ -328,12 +321,12 @@ window.Michael.ReadingTracker = (function() {
     }
   }
 
-  /**
-   * Navigates to the last read location.
-   *
-   * @returns {Promise<void>}
-   */
-  async function navigateToContinueReading() {
+/**
+ * Navigates to the last read location.
+ *
+ * @returns {Promise<void>}
+ */
+async function navigateToContinueReading() {
     try {
       const lastRead = await window.Michael.UserStorage.getLastRead();
 
@@ -349,14 +342,14 @@ window.Michael.ReadingTracker = (function() {
     }
   }
 
-  /**
-   * Formats a book ID into a display name.
-   *
-   * @private
-   * @param {string} bookId - Book ID (e.g., "gen", "matt")
-   * @returns {string} Formatted name
-   */
-  function formatBookName(bookId) {
+/**
+ * Formats a book ID into a display name.
+ *
+ * @private
+ * @param {string} bookId - Book ID (e.g., "gen", "matt")
+ * @returns {string} Formatted name
+ */
+function formatBookName(bookId) {
     const bookNames = {
       'gen': 'Genesis', 'exo': 'Exodus', 'lev': 'Leviticus', 'num': 'Numbers',
       'deut': 'Deuteronomy', 'josh': 'Joshua', 'judg': 'Judges', 'ruth': 'Ruth',
@@ -380,12 +373,12 @@ window.Michael.ReadingTracker = (function() {
     return bookNames[bookId.toLowerCase()] || bookId;
   }
 
-  /**
-   * Gets the current reading streak information.
-   *
-   * @returns {Promise<{currentStreak: number, longestStreak: number, lastReadDate: string|null}>}
-   */
-  async function getStreakInfo() {
+/**
+ * Gets the current reading streak information.
+ *
+ * @returns {Promise<{currentStreak: number, longestStreak: number, lastReadDate: string|null}>}
+ */
+async function getStreakInfo() {
     try {
       return await window.Michael.UserStorage.getSetting('readingStreak', {
         currentStreak: 0,
@@ -401,12 +394,12 @@ window.Michael.ReadingTracker = (function() {
     }
   }
 
-  /**
-   * Gets the last read location.
-   *
-   * @returns {Promise<{bibleId: string, bookId: string, chapter: number, scrollPos: number, lastRead: number}|null>}
-   */
-  async function getLastRead() {
+/**
+ * Gets the last read location.
+ *
+ * @returns {Promise<{bibleId: string, bookId: string, chapter: number, scrollPos: number, lastRead: number}|null>}
+ */
+async function getLastRead() {
     try {
       return await window.Michael.UserStorage.getLastRead();
     } catch (error) {
@@ -414,18 +407,26 @@ window.Michael.ReadingTracker = (function() {
     }
   }
 
-  // Initialize when DOM is ready
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', init);
-  } else {
-    init();
-  }
+// Initialize when DOM is ready
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', init);
+} else {
+  init();
+}
 
-  // Public API
-  return {
-    init,
-    getStreakInfo,
-    getLastRead,
-    navigateToContinueReading
-  };
-})();
+// ES6 exports
+export {
+  init,
+  getStreakInfo,
+  getLastRead,
+  navigateToContinueReading
+};
+
+// Backwards compatibility: expose on window.Michael
+window.Michael = window.Michael || {};
+window.Michael.ReadingTracker = {
+  init,
+  getStreakInfo,
+  getLastRead,
+  navigateToContinueReading
+};

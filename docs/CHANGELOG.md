@@ -5,6 +5,89 @@ All notable changes to the Michael Hugo Bible Module will be documented in this 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.0] - 2026-02-13
+
+ES6 Module Migration and comprehensive bug fixes backported from JuniperBible.org production audits.
+
+### Changed
+
+#### ES6 Module Architecture
+- **Complete ES6 module migration** — All 20+ JavaScript files converted from IIFE/revealing module patterns to ES6 modules
+- **Module registry system** — New `core.js` with `Michael.register/get/init/cleanup` pattern
+- **Centralized configuration** — New `config.js` with storage keys prefixed `michael-`
+- **DOM utilities** — New `dom-ready.js` for consistent initialization
+- **Event cleanup** — New `listener-registry.js` for memory leak prevention
+- **Clipboard utilities** — New `clipboard-utils.js` with fallback support
+- **Theme system** — Extracted `theme-init.js` and `theme-toggle.js` from inline scripts
+- All modules maintain backwards compatibility via `window.Michael` namespace
+
+#### Core Module Conversions
+- `dom-utils.js` — ES6 exports with backwards compatibility
+- `bible-api.js` — ES6 module with race condition fix
+- `user-storage.js` — ES6 module with QuotaExceededError handling
+- `verse-grid.js` — ES6 module with cleanup support
+- `chapter-dropdown.js` — ES6 module
+
+#### Feature Module Conversions
+- `bible-nav.js` — ES6 module, removed inline onclick handler
+- `bible-search.js` — ES6 module with race condition fix using request counter
+- `sss-mode.js` — ES6 module with race condition fix and Number.isInteger validation
+- `share-menu.js` — ES6 module with null checks in setTimeout
+- `share.js` — ES6 module
+- `footnotes.js` — ES6 module with duplicate listener prevention
+
+#### Remaining Module Conversions
+- `parallel.js` — ES6 module
+- `strongs.js` — ES6 module
+- `text-compare.js` — ES6 module with named exports
+- `diff-highlight.js` — ES6 module
+- `show-more.js` — ES6 module
+- `reading-tracker.js` — ES6 module with cleanup, removed debug logs
+- `pwa-install.js` — ES6 module, removed debug console.log statements
+- `offline-manager.js` — ES6 module with 5-second SW ready timeout
+- `offline-settings-ui.js` — ES6 module
+
+### Added
+
+#### Accessibility Improvements
+- `id="main-content"` added to all 9 layout files for skip-link navigation:
+  - `layouts/index.html`
+  - `layouts/_default/list.html`
+  - `layouts/_default/single.html`
+  - `layouts/bible/list.html`
+  - `layouts/bible/compare.html`
+  - `layouts/bible/search.html`
+  - `layouts/bible/single.html`
+  - `layouts/license/list.html`
+  - `layouts/license/single.html`
+
+#### New Hugo Partials
+- `bible-data-map.html` — O(1) Bible lookup by ID using Hugo dict
+
+### Fixed
+
+#### Security
+- External links now include `noreferrer` in addition to `noopener`
+- Nil checks added to license template external link rendering
+
+#### CSS
+- Fixed undefined CSS variable (`--shadow-2` → `--shadow-1`)
+- Removed duplicate light mode CSS block (34 lines)
+- Removed obsolete `clip` property from sr-only class
+
+#### JavaScript Bug Fixes
+- Race condition in `bible-search.js` — Added request ID counter pattern
+- Race condition in `sss-mode.js` — Added request ID counter pattern
+- Duplicate event listeners in `footnotes.js` — Added dataset marker
+- Memory leaks — Added cleanup handlers across all modules
+- Service worker ready timeout — Added 5-second timeout in `offline-manager.js`
+
+#### Code Quality
+- Removed 27+ debug `console.log` statements across all modules
+- Kept `console.warn` and `console.error` for genuine issues
+
+---
+
 ## [0.1.0] - 2026-01-27
 
 Initial public release of the Michael Hugo Bible Module — a standalone Hugo module

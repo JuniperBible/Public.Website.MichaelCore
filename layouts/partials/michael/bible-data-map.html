@@ -1,0 +1,17 @@
+{{/*
+  Partial: bible-data-map.html
+  Purpose: Create a map of Bible IDs to Bible objects for O(1) lookup
+
+  Returns a dict with Bible IDs as keys and Bible objects as values.
+  Use with partialCached for best performance.
+
+  Usage:
+    {{ $bibleMap := partialCached "michael/bible-data-map.html" .Site }}
+    {{ $bible := index $bibleMap "kjva" }}
+*/}}
+{{- $bibles := partialCached "michael/bible-data.html" . -}}
+{{- $map := dict -}}
+{{- range $bibles -}}
+  {{- $map = merge $map (dict .id .) -}}
+{{- end -}}
+{{- return $map -}}

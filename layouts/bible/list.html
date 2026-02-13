@@ -62,7 +62,7 @@ These are loaded with defer to avoid blocking page rendering.
 
 {{ define "main" }}
 {{ $basePath := .Site.Params.michael.basePath | default "/bible" }}
-<main class="container pad-3-2">
+<main id="main-content" class="container pad-3-2">
   <div class="panel">
     {{/*
     ============================================================================
