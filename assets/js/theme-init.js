@@ -14,10 +14,16 @@
  * This executes immediately to prevent FOUC
  */
 function initTheme() {
-  const theme = localStorage.getItem('theme');
-  if (theme) {
-    document.documentElement.setAttribute('data-theme', theme);
-  } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+  try {
+    const theme = localStorage.getItem('theme');
+    if (theme) {
+      document.documentElement.setAttribute('data-theme', theme);
+      return;
+    }
+  } catch (e) {
+    // localStorage unavailable (private browsing) - fall through to system preference
+  }
+  if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
     document.documentElement.setAttribute('data-theme', 'dark');
   }
 }

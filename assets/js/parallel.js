@@ -1043,7 +1043,11 @@ function updateURL() {
  * @private
  */
 function saveState() {
-  localStorage.setItem('bible-compare-translations', JSON.stringify(selectedTranslations));
+  try {
+    localStorage.setItem('bible-compare-translations', JSON.stringify(selectedTranslations));
+  } catch (e) {
+    // localStorage unavailable (private browsing)
+  }
 }
 
 /**
@@ -1136,17 +1140,21 @@ function restoreState() {
       }
     }
   } else {
-    // Try localStorage
-    const saved = localStorage.getItem('bible-compare-translations');
-    if (saved) {
-      try {
-        selectedTranslations = JSON.parse(saved).filter(id =>
-          bibleData?.bibles?.some(b => b.id === id)
-        );
-        translationCheckboxes.forEach(cb => {
-          cb.checked = selectedTranslations.includes(cb.value);
-        });
-      } catch (e) {}
+    // Try localStorage (wrapped for private browsing mode)
+    try {
+      const saved = localStorage.getItem('bible-compare-translations');
+      if (saved) {
+        try {
+          selectedTranslations = JSON.parse(saved).filter(id =>
+            bibleData?.bibles?.some(b => b.id === id)
+          );
+          translationCheckboxes.forEach(cb => {
+            cb.checked = selectedTranslations.includes(cb.value);
+          });
+        } catch (e) {}
+      }
+    } catch (e) {
+      // localStorage unavailable
     }
   }
 
@@ -1230,12 +1238,13 @@ function enterSSSMode() {
 
   // Check if we should reset to defaults (once per day)
   const today = new Date().toDateString();
-  const lastSSSDate = localStorage.getItem('sss-last-date');
+  let lastSSSDate = null;
+  try { lastSSSDate = localStorage.getItem('sss-last-date'); } catch (e) {}
   const shouldResetDefaults = lastSSSDate !== today;
 
   if (shouldResetDefaults) {
     // Reset to Isaiah 42:16 defaults once per day
-    localStorage.setItem('sss-last-date', today);
+    try { localStorage.setItem('sss-last-date', today); } catch (e) {}
     sssLeftBible = '';
     sssRightBible = '';
     sssBook = '';

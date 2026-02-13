@@ -111,9 +111,10 @@ function enterSSSMode() {
 
   // Check if we should reset to defaults (once per day)
   const today = new Date().toDateString();
-  const lastSSSDate = localStorage.getItem('sss-last-date');
+  let lastSSSDate = null;
+  try { lastSSSDate = localStorage.getItem('sss-last-date'); } catch (e) {}
   if (lastSSSDate !== today) {
-    localStorage.setItem('sss-last-date', today);
+    try { localStorage.setItem('sss-last-date', today); } catch (e) {}
     sssLeftBible = '';
     sssRightBible = '';
     sssBook = '';
@@ -254,6 +255,10 @@ async function loadSSSComparison() {
   }
 
   try {
+    // Check BibleAPI is loaded
+    if (!window.Michael?.BibleAPI?.fetchChapter) {
+      throw new Error('BibleAPI not loaded');
+    }
     // Fetch both chapters with abort signal
     const [leftVerses, rightVerses] = await Promise.all([
       window.Michael.BibleAPI.fetchChapter(basePath, sssLeftBible, sssBook, sssChapter, signal),

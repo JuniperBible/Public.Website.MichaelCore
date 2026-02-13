@@ -74,9 +74,13 @@ function handleAppInstalled(event) {
   // Hide the banner
   hideInstallBanner();
 
-  // Clear dismissed state
-  localStorage.removeItem(STORAGE_KEY_DISMISSED);
-  localStorage.removeItem(STORAGE_KEY_DISMISSED_TIME);
+  // Clear dismissed state (wrapped for private browsing mode)
+  try {
+    localStorage.removeItem(STORAGE_KEY_DISMISSED);
+    localStorage.removeItem(STORAGE_KEY_DISMISSED_TIME);
+  } catch (e) {
+    // localStorage unavailable
+  }
 
   // Request permissions after install (notifications, run on login)
   showPostInstallPermissions();

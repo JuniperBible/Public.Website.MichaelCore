@@ -63,10 +63,17 @@
     // Extract verses from the page content for later use
     extractLeftVerses();
 
-    // Restore saved preferences
-    fullWidthMode = localStorage.getItem(STORAGE_KEY_FULLWIDTH) === 'true';
-    sssMode = localStorage.getItem(STORAGE_KEY_SSS) === 'true';
-    comparisonBible = localStorage.getItem(STORAGE_KEY_SSS_BIBLE) || '';
+    // Restore saved preferences (wrapped for private browsing mode)
+    try {
+      fullWidthMode = localStorage.getItem(STORAGE_KEY_FULLWIDTH) === 'true';
+      sssMode = localStorage.getItem(STORAGE_KEY_SSS) === 'true';
+      comparisonBible = localStorage.getItem(STORAGE_KEY_SSS_BIBLE) || '';
+    } catch (e) {
+      // localStorage unavailable - use defaults
+      fullWidthMode = false;
+      sssMode = false;
+      comparisonBible = '';
+    }
 
     // Apply saved state and add listeners to ALL toggle buttons
     fullWidthToggles.forEach((btn, i) => {
@@ -147,7 +154,7 @@
     document.querySelectorAll('#fullwidth-toggle').forEach(btn => {
       btn.setAttribute('aria-pressed', fullWidthMode ? 'true' : 'false');
     });
-    localStorage.setItem(STORAGE_KEY_FULLWIDTH, fullWidthMode);
+    try { localStorage.setItem(STORAGE_KEY_FULLWIDTH, fullWidthMode); } catch (e) {}
   }
 
   /**
@@ -173,7 +180,7 @@
     document.querySelectorAll('#sss-chapter-toggle').forEach(btn => {
       btn.setAttribute('aria-pressed', 'true');
     });
-    localStorage.setItem(STORAGE_KEY_SSS, 'true');
+    try { localStorage.setItem(STORAGE_KEY_SSS, 'true'); } catch (e) {}
 
     // Set up comparison bible selectors (may be multiple in different nav bars)
     const comparisonSelects = document.querySelectorAll('#sss-comparison-bible');
@@ -233,7 +240,7 @@
     document.querySelectorAll('#sss-chapter-toggle').forEach(btn => {
       btn.setAttribute('aria-pressed', 'false');
     });
-    localStorage.setItem(STORAGE_KEY_SSS, 'false');
+    try { localStorage.setItem(STORAGE_KEY_SSS, 'false'); } catch (e) {}
   }
 
   /**
@@ -241,7 +248,7 @@
    */
   function handleComparisonBibleChange(e) {
     comparisonBible = e.target.value;
-    localStorage.setItem(STORAGE_KEY_SSS_BIBLE, comparisonBible);
+    try { localStorage.setItem(STORAGE_KEY_SSS_BIBLE, comparisonBible); } catch (e) {}
 
     // Sync all comparison selectors (multiple nav bars may exist)
     document.querySelectorAll('#sss-comparison-bible').forEach(sel => {

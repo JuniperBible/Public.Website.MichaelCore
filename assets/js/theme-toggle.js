@@ -34,7 +34,11 @@ function toggleTheme() {
   const newTheme = isDark ? 'light' : 'dark';
 
   document.documentElement.setAttribute('data-theme', newTheme);
-  localStorage.setItem('theme', newTheme);
+  try {
+    localStorage.setItem('theme', newTheme);
+  } catch (e) {
+    // localStorage unavailable (private browsing) - theme still applied to current page
+  }
   updateIcons();
 }
 

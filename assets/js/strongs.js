@@ -455,7 +455,9 @@ function showDefinition(tip, def) {
  * @returns {string} Escaped string safe for HTML insertion
  */
 function escapeHtml(str) {
-  return window.Michael.DomUtils.escapeHtml(str);
+  return window.Michael?.DomUtils?.escapeHtml?.(str) ?? String(str).replace(/[&<>"']/g, m => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+  })[m]);
 }
 
 // ============================================================================

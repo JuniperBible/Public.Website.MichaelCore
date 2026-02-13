@@ -99,7 +99,9 @@ let searchAbortController = null;
  * // Returns: '&lt;script&gt;alert("xss")&lt;/script&gt;'
  */
 function escapeHtml(str) {
-  return window.Michael.DomUtils.escapeHtml(str);
+  return window.Michael?.DomUtils?.escapeHtml?.(str) ?? String(str).replace(/[&<>"']/g, m => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+  })[m]);
 }
 
 /**
@@ -241,6 +243,10 @@ function updateUrl(query, bible, caseSensitive, wholeWord) {
  * // Returns: [{ num: '1', text: 'In the beginning...' }, ...]
  */
 async function fetchChapter(bible, bookId, chapterNum, signal) {
+  if (!window.Michael?.BibleAPI?.fetchChapter) {
+    console.error('[BibleSearch] BibleAPI not loaded');
+    return null;
+  }
   const verses = await window.Michael.BibleAPI.fetchChapter(basePath, bible, bookId, chapterNum, signal);
 
   // Convert from BibleAPI format { number: int, text: string }
