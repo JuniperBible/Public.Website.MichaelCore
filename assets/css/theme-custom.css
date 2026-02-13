@@ -82,7 +82,7 @@
   --shadow-1: 0 4px 6px rgba(0, 0, 0, 0.4), 0 1px 3px rgba(0, 0, 0, 0.3);
 
   /* Focus ring */
-  --focus-ring: 0 0 0 3px rgba(196, 168, 196, 0.45);
+  --focus-ring: 0 0 0 3px rgba(196, 168, 196, 0.6);
 
   /* Diff highlighting colors (darker variants for dark mode) */
   --diff-add: #1a3d1a;
@@ -248,7 +248,7 @@ footer.chrome {
 
 .reader-toggles .btn[aria-pressed="true"] {
   background: var(--brand-500);
-  color: var(--surface-0);
+  color: var(--text-900);
   border-color: var(--brand-500);
 }
 
@@ -333,6 +333,11 @@ body.sss-chapter-mode .chapter-sss-container {
   display: grid;
   grid-template-columns: 1fr 1fr;
   border-bottom: 1px solid var(--border);
+  transition: background-color 0.15s ease;
+}
+
+.sss-verse-row:hover {
+  background-color: var(--bg-light);
 }
 
 .sss-verse-row:last-child {
@@ -351,7 +356,7 @@ body.sss-chapter-mode .chapter-sss-container {
 
 .sss-verse-num {
   font-weight: bold;
-  color: var(--text-500);
+  color: var(--text-700);
   margin-right: 0.5em;
   font-size: 0.85em;
 }

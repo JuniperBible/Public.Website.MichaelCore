@@ -118,10 +118,15 @@
 {{- $biblesMeta = $biblesMeta | append (dict "id" .id "title" .title "abbrev" .abbrev "description" .description "language" .language) -}}
 {{- end -}}
 {{- $firstBible := index $allBibles 0 -}}
-{{- $aux := index .Site.Data.bibles_auxiliary $firstBible.id -}}
+{{- $aux := dict -}}
+{{- if $firstBible -}}
+  {{- $aux = index .Site.Data.bibles_auxiliary $firstBible.id -}}
+{{- end -}}
 {{- $booksList := slice -}}
+{{- if $aux -}}
 {{- range $aux.books -}}
 {{- $booksList = $booksList | append (dict "id" .id "name" .name "chapters" (len .chapters)) -}}
+{{- end -}}
 {{- end -}}
 {{- dict "bibles" $biblesMeta "books" $booksList "basePath" ($basePath | relLangURL) | jsonify | safeJS -}}
 </script>

@@ -5,6 +5,59 @@ All notable changes to the Michael Hugo Bible Module will be documented in this 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.0] - 2026-02-13
+
+Post-ES6 cleanup sprint addressing null safety, accessibility, and configuration centralization.
+
+### Changed
+
+#### Complete ES6 Migration
+- `chapter-reader.js` — Converted from IIFE to ES6 module with exports
+- `bible-filter.js` — Converted from IIFE to ES6 module with exports
+- `theme-toggle.js` — Converted from IIFE to ES6 module with exports
+- `theme-init.js` — Converted from IIFE to ES6 module (immediate execution preserved)
+
+#### Configuration Centralization
+- Added `serviceWorkerPath`, `pwaInstallReshowDays`, `toastAnimationMs` to `config.js`
+- Updated `offline-manager.js`, `pwa-install.js`, `dom-utils.js` to use centralized config
+- Removed hardcoded paths and magic numbers throughout codebase
+
+### Added
+
+#### Null/Undefined Safety
+- AbortController in `chapter-reader.js` for SSS loading race conditions
+- Null checks for DOM elements in `offline-settings-ui.js`
+- `CSS.escape()` for querySelector security in `chapter-dropdown.js`
+- `cleanup()` function in `offline-manager.js` for SW message handler lifecycle
+- Improved error handling with proper `error.message` checks
+
+#### Accessibility Improvements
+- `role="presentation" aria-hidden="true"` on logo image in header
+- `aria-label` on continue reading placeholder link
+- `required` attribute on search input
+
+### Fixed
+
+#### Hugo Template Nil Safety
+- Added `$bibleData` condition check in `bible-nav.html`
+- Added nil check for `$firstBible` in `book-chapter-selects.html`
+- Changed to proper `{{ with }}` statement in `bible-select.html`
+- Added nil checks for `$firstBible` and `$aux` in `compare.html`
+
+#### CSS Dark Mode & Accessibility
+- `.sss-verse-num` contrast ratio improved to 4.5:1 (WCAG AA)
+- `.reader-toggles` button contrast fixed for dark mode pressed states
+- Focus ring opacity increased from 0.35/0.45 to 0.6 in `theme-colors.css`
+- Added hover states for `.sss-verse-row`
+- Added SSS header focus styles
+
+#### Service Worker & PWA
+- Extended cache hash from 12 to 32 characters (reduced collision risk)
+- Standardized AbortError checking to `error.name === 'AbortError'`
+- Fixed chapter page regex to handle query params (`?v=1`)
+
+---
+
 ## [0.2.0] - 2026-02-13
 
 ES6 Module Migration and comprehensive bug fixes backported from JuniperBible.org production audits.

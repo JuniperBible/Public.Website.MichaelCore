@@ -16,7 +16,7 @@
 {{- $print := resources.Get "css/theme-print.css" -}}
 {{- $custom := resources.Get "css/theme-custom.css" -}}
 {{- $theme := slice $colors $main $compare $share $strongs $pwa $offline $print $custom | resources.Concat "css/theme.bundle.css" | minify | fingerprint -}}
-{{- $hash := substr $theme.Data.Integrity 0 12 | replaceRE "[^a-zA-Z0-9]" "" -}}
+{{- $hash := substr $theme.Data.Integrity 0 32 | replaceRE "[^a-zA-Z0-9]" "" -}}
 {{- partial "michael/icons.html" . -}}
 {{- $icons := .Scratch.Get "michael-icons" -}}
 /**
@@ -351,9 +351,9 @@ function isStaticAsset(url) {
  * Helper: Check if URL is a Bible chapter page
  */
 function isChapterPage(url) {
-  // Pattern: /bible/{bible}/{book}/{chapter}/
-  const chapterPattern = /^\/bible\/[^/]+\/[^/]+\/\d+\/?$/;
-  return chapterPattern.test(url.pathname);
+  // Pattern: /bible/{bible}/{book}/{chapter}/ with optional query params
+  const chapterPattern = /^\/bible\/[^/]+\/[^/]+\/\d+\/?(?:\?.*)?$/;
+  return chapterPattern.test(url.pathname + url.search);
 }
 
 /**
@@ -584,7 +584,7 @@ async function fetchBibleOverview(bibleId, basePath, cache, signal) {
 
     return { bibleUrl, bookLinks };
   } catch (error) {
-    if (error.name === 'AbortError') {
+    if (error.name === 'AbortError' || error.message === 'Download cancelled') {
       throw new Error('Download cancelled');
     }
     throw new Error(`Failed to fetch Bible page: ${error.message}`);
@@ -613,7 +613,7 @@ async function discoverChapters(bibleId, basePath, bookLinks, cache, signal) {
         failedBooks++;
       }
     } catch (error) {
-      if (error.name === 'AbortError' || error.message === 'Download cancelled') {
+      if (error.name === 'AbortError') {
         throw new Error('Download cancelled');
       }
       console.warn(`[Service Worker] Failed to fetch book ${bookUrl}:`, error);
@@ -659,7 +659,7 @@ async function cacheAllChapters(bibleId, chapterUrls, cache, signal, startComple
         failedChapters++;
       }
     } catch (error) {
-      if (error.name === 'AbortError' || error.message === 'Download cancelled') {
+      if (error.name === 'AbortError') {
         throw new Error('Download cancelled');
       }
       console.warn(`[Service Worker] Failed to cache chapter ${chapterUrl}:`, error);

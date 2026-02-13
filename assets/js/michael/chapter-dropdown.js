@@ -98,7 +98,7 @@ ChapterDropdown.prototype.setValue = function(chapter) {
   }
 
   // Check if option exists
-  const option = this.selectElement.querySelector('option[value="' + chapterNum + '"]');
+  const option = this.selectElement.querySelector('option[value="' + CSS.escape(chapterNum.toString()) + '"]');
   if (!option) {
     return false;
   }

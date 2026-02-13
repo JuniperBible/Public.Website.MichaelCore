@@ -66,7 +66,7 @@
 {{/* Find current book data once (used by chapter selector and navigation) */}}
 {{ $bookData := dict }}
 {{ $chapterCount := 0 }}
-{{ if and $book $chapter }}
+{{ if and $book $chapter $bibleData }}
   {{ range $bibleData.books }}
     {{ if eq (.id | lower) $book }}
       {{ $bookData = . }}
@@ -110,7 +110,7 @@
         {{ .name }}
       </option>
       {{ end }}
-    {{ else }}
+    {{ else if $bibleData }}
       {{/* Show all books from auxiliary data */}}
       {{ range $bibleData.books }}
         {{ $bookIdLower := .id | lower }}

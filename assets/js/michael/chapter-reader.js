@@ -21,13 +21,19 @@
   let currentBook = '';
   let currentChapter = 0;
   let comparisonBible = '';
-  let basePath = '/bible';
+  let basePath = window.Michael?.Config?.basePath || '/bible';
 
   // Cached left-side verses (extracted from page content)
   let leftVerses = [];
 
   // DOM elements
   let singleContent, sssContainer, sssVersesContainer;
+
+  /**
+   * AbortController for loadAndRenderSSS to handle race conditions
+   * @type {AbortController|null}
+   */
+  let loadSSSAbortController = null;
 
   /**
    * Initialize the chapter reader module
@@ -286,6 +292,15 @@
   async function loadAndRenderSSS() {
     if (!sssVersesContainer || !comparisonBible || !currentBook || !currentChapter) return;
 
+    // Cancel any pending load operation
+    if (loadSSSAbortController) {
+      loadSSSAbortController.abort();
+    }
+
+    // Create new AbortController for this operation
+    loadSSSAbortController = new AbortController();
+    const signal = loadSSSAbortController.signal;
+
     // Show loading state
     sssVersesContainer.innerHTML = '<div class="sss-loading">Loading...</div>';
 
@@ -301,6 +316,9 @@
           currentChapter
         );
 
+        // Check if operation was aborted
+        if (signal.aborted) return;
+
         if (verses && verses.length > 0) {
           rightVerses = verses.map(v => ({
             number: parseInt(v.number),
@@ -310,9 +328,17 @@
       } else {
         // Fallback: fetch HTML directly and parse verses
         const url = `${basePath}/${comparisonBible}/${currentBook}/${currentChapter}/`;
-        const response = await fetch(url);
+        const response = await fetch(url, { signal });
+
+        // Check if operation was aborted
+        if (signal.aborted) return;
+
         if (response.ok) {
           const html = await response.text();
+
+          // Check if operation was aborted
+          if (signal.aborted) return;
+
           const parser = new DOMParser();
           const doc = parser.parseFromString(html, 'text/html');
           const content = doc.querySelector('.bible-text');
@@ -331,12 +357,25 @@
         }
       }
 
+      // Check if operation was aborted before rendering
+      if (signal.aborted) return;
+
       // Render aligned verses - even if right side is empty, show left with "not available" message
       renderAlignedVerses(rightVerses);
     } catch (err) {
+      // Ignore abort errors
+      if (err.name === 'AbortError') return;
+
       console.error('Error loading comparison:', err);
       const translationName = getComparisonBibleName();
-      sssVersesContainer.innerHTML = `<div class="sss-loading">Error loading content from ${translationName}</div>`;
+      if (sssVersesContainer) {
+        sssVersesContainer.innerHTML = `<div class="sss-loading">Error loading content from ${translationName}</div>`;
+      }
+    } finally {
+      // Clear the abort controller when operation completes
+      if (loadSSSAbortController && !loadSSSAbortController.signal.aborted) {
+        loadSSSAbortController = null;
+      }
     }
   }
 
@@ -347,7 +386,9 @@
     if (!sssVersesContainer) return;
 
     // Get translation names for messages
-    const leftBibleName = sssContainer?.dataset.leftBible || currentBible.toUpperCase();
+    const leftBibleName = (sssContainer && sssContainer.dataset && sssContainer.dataset.leftBible)
+      ? sssContainer.dataset.leftBible
+      : currentBible.toUpperCase();
     const rightBibleName = getComparisonBibleName();
 
     // Create a map for quick lookup

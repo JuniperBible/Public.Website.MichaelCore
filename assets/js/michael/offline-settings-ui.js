@@ -51,7 +51,7 @@ async function initializeOfflineSettings() {
       await updateBibleCacheStatuses(OfflineManager);
     } catch (error) {
       console.error('[Offline Settings] Initialization failed:', error);
-      showMessage('Failed to initialize offline functionality: ' + error.message, 'error');
+      showMessage('Failed to initialize offline functionality: ' + (error?.message || error || 'Unknown error'), 'error');
     }
   }
 
@@ -63,6 +63,7 @@ async function initializeOfflineSettings() {
 function setupEventListeners(OfflineManager) {
     // Form submission - download selected Bibles
     const form = document.getElementById('offline-download-form');
+    if (!form) return;
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
       await handleDownloadBibles(OfflineManager);
@@ -70,6 +71,7 @@ function setupEventListeners(OfflineManager) {
 
     // Clear cache button
     const clearBtn = document.getElementById('clear-cache-btn');
+    if (!clearBtn) return;
     clearBtn.addEventListener('click', async () => {
       await handleClearCache(OfflineManager);
     });

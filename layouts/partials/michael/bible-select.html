@@ -88,8 +88,9 @@
   {{- range (partialCached "michael/bible-data.html" $site) -}}
     {{- $show := true -}}
     {{- if $auxOnly -}}
-      {{- $hasAuxData := index $site.Data.bibles_auxiliary .id -}}
-      {{- if not $hasAuxData -}}
+      {{- with index $site.Data.bibles_auxiliary .id -}}
+        {{- /* Bible has auxiliary data */ -}}
+      {{- else -}}
         {{- $show = false -}}
       {{- end -}}
     {{- end -}}

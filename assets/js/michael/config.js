@@ -16,6 +16,7 @@ const config = {
   // Base paths
   basePath: '/bible',
   archivePath: '/bible-archives',
+  serviceWorkerPath: '/sw.js',
 
   // Default Bible
   defaultBible: 'kjva',
@@ -41,6 +42,12 @@ const config = {
     offlineBibles: 'michael-offline-bibles',
     recentBibles: 'michael-recent-bibles'
   },
+
+  // PWA settings
+  pwaInstallReshowDays: 30,
+
+  // UI settings
+  toastAnimationMs: 300,
 
   // Feature flags
   features: {

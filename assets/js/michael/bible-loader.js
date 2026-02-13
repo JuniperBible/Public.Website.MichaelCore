@@ -23,7 +23,7 @@ window.Michael.BibleLoader = (function() {
   const DB_NAME = 'JuniperBibleDB';
   const DB_VERSION = 1;
   const STORE_NAME = 'bibles';
-  const ARCHIVE_PATH = '/bible-archives';
+  const ARCHIVE_PATH = window.Michael?.Config?.archivePath || '/bible-archives';
 
   // In-memory cache for loaded Bibles
   const memoryCache = new Map();

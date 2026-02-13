@@ -20,7 +20,7 @@
 const TOAST_DEFAULTS = {
   duration: 3000,        // Display duration in milliseconds
   position: 'bottom',    // 'top' or 'bottom'
-  animationMs: 300       // CSS transition duration
+  animationMs: window.Michael?.Config?.toastAnimationMs || 300       // CSS transition duration
 };
 
 /**

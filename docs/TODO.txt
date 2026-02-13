@@ -4,7 +4,59 @@ MICHAEL BIBLE PWA - PLANNED TASKS
 Updated: 2026-02-13
 
 ================================================================================
-COMPLETED SPRINT: ES6 Module Migration & Bug Fixes (2026-02-13)
+COMPLETED SPRINT #2: Post-ES6 Cleanup (2026-02-13)
+================================================================================
+
+### Batch 1: Complete ES6 Migration (4 files) [COMPLETED]
+[x] Convert chapter-reader.js from IIFE to ES6 module
+[x] Convert bible-filter.js from IIFE to ES6 module
+[x] Convert theme-toggle.js from IIFE to ES6 module
+[x] Convert theme-init.js from IIFE to ES6 module
+
+### Batch 2: JavaScript Null/Undefined Safety (12 fixes) [COMPLETED]
+[x] Add AbortController to chapter-reader.js loadAndRenderSSS() for race conditions
+[x] Add null checks for form/clearBtn in offline-settings-ui.js
+[x] Add CSS.escape() for querySelector in chapter-dropdown.js
+[x] Add cleanup() function for SW message handler in offline-manager.js
+[x] Add null checks throughout affected modules
+[x] Improve error handling with proper error.message checks
+
+### Batch 3: Hugo Template Nil Safety (4 fixes) [COMPLETED]
+[x] Add $bibleData condition check in bible-nav.html
+[x] Add nil check for $firstBible in book-chapter-selects.html
+[x] Change to proper `{{ with }}` statement in bible-select.html
+[x] Add nil check for $firstBible and $aux in compare.html
+
+### Batch 4: CSS Dark Mode & Accessibility (10 fixes) [COMPLETED]
+[x] Fix .sss-verse-num contrast ratio to 4.5:1 (var(--text-700))
+[x] Fix .reader-toggles button contrast in dark mode
+[x] Increase focus ring opacity from 0.35/0.45 to 0.6 in theme-colors.css
+[x] Add hover states for .sss-verse-row
+[x] Add SSS header focus styles
+[x] Improve button contrast for dark mode pressed states
+
+### Batch 5: Service Worker & PWA Fixes (5 fixes) [COMPLETED]
+[x] Extend cache hash from 12 to 32 characters in sw.js
+[x] Standardize AbortError checking to use error.name === 'AbortError'
+[x] Fix chapter page regex to handle query params (?v=1)
+[x] Separate metadata cache versioning from shell cache
+
+### Batch 6: Template Accessibility (4 fixes) [COMPLETED]
+[x] Add role="presentation" aria-hidden="true" to logo in header.html
+[x] Add aria-label="Continue reading last chapter" in continue-reading.html
+[x] Add required attribute to search input in search.html
+
+### Batch 7: Code Quality & Configuration (6 fixes) [COMPLETED]
+[x] Add serviceWorkerPath to config.js
+[x] Add pwaInstallReshowDays to config.js
+[x] Add toastAnimationMs to config.js
+[x] Update chapter-reader.js to use config for basePath
+[x] Update offline-manager.js to use config for SW path
+[x] Update pwa-install.js to use config for reshow days
+[x] Update dom-utils.js to use config for animation duration
+
+================================================================================
+COMPLETED SPRINT #1: ES6 Module Migration & Bug Fixes (2026-02-13)
 ================================================================================
 
 ### Batch 1: Critical Template Fixes [COMPLETED]

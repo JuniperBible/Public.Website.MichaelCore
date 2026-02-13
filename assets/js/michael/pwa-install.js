@@ -19,7 +19,7 @@ const STORAGE_KEY_DISMISSED = 'michael-pwa-install-dismissed';
 const STORAGE_KEY_DISMISSED_TIME = 'michael-pwa-install-dismissed-time';
 
 // Show banner after this many days if dismissed
-const DAYS_BEFORE_RESHOWING = 30;
+const DAYS_BEFORE_RESHOWING = window.Michael?.Config?.pwaInstallReshowDays || 30;
 
 /**
  * Initialize the PWA install handler

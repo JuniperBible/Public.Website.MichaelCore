@@ -65,7 +65,7 @@ let swMessageHandler = null;
  * await OfflineManager.initialize('/sw.js');
  * console.log('Offline manager ready');
  */
-async function initialize(swPath = '/sw.js') {
+async function initialize(swPath = window.Michael?.Config?.serviceWorkerPath || '/sw.js') {
   if (!('serviceWorker' in navigator)) {
     console.warn('Service Workers are not supported in this browser');
     return;
@@ -809,7 +809,24 @@ async function cancelDownload(bibleId) {
 }
 
 // ES6 Module Exports
+/**
+ * Cleanup function that removes the service worker message handler.
+ * Should be called when the offline manager is no longer needed.
+ *
+ * @returns {void}
+ *
+ * @example
+ * OfflineManager.cleanup();
+ * console.log('Offline manager cleaned up');
+ */
+function cleanup() {
+  if (swMessageHandler) {
+    navigator.serviceWorker.removeEventListener('message', swMessageHandler);
+    swMessageHandler = null;
+  }
+}
 export {
+  cleanup,
   initialize,
   getCacheStatus,
   getBibleCacheStatus,
@@ -830,6 +847,7 @@ export {
 // Maintain backwards compatibility with window.Michael.OfflineManager
 window.Michael = window.Michael || {};
 window.Michael.OfflineManager = {
+  cleanup,
   initialize,
   getCacheStatus,
   getBibleCacheStatus,
