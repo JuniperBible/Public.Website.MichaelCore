@@ -41,4 +41,4 @@
 </div>
 
 {{ $pwaInstall := resources.Get "js/michael/pwa-install.js" }}
-{{ if $pwaInstall }}<script src="{{ $pwaInstall.RelPermalink }}" defer></script>{{ end }}
+{{ if $pwaInstall }}<script type="module" src="{{ $pwaInstall.RelPermalink }}"></script>{{ end }}

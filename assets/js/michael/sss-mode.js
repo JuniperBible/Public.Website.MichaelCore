@@ -192,7 +192,9 @@ function handleSSSChapterChange() {
  * @private
  */
 function escapeHtml(str) {
-  return window.Michael.DomUtils.escapeHtml(str);
+  return window.Michael?.DomUtils?.escapeHtml?.(str) ?? String(str).replace(/[&<>"']/g, m => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+  })[m]);
 }
 
 /** Populate SSS chapter dropdown */
@@ -243,7 +245,7 @@ async function loadSSSComparison() {
   const signal = currentFetchController.signal;
 
   // Show loading - DomUtils.createLoadingIndicator() returns safe HTML
-  const loadingHtml = window.Michael.DomUtils.createLoadingIndicator();
+  const loadingHtml = window.Michael?.DomUtils?.createLoadingIndicator?.() ?? '<div class="center muted">Loading...</div>';
   if (sssLeftPane) {
     sssLeftPane.innerHTML = loadingHtml;
   }
@@ -320,7 +322,8 @@ function populateSSSVerseGrid(verses) {
       btn.textContent = verse.number;
       btn.dataset.verse = verse.number;
       btn.setAttribute('aria-pressed', 'false');
-      window.Michael.DomUtils.addTapListener(btn, () => handleSSSVerseButtonClick(verse.number));
+      const addListener = window.Michael?.DomUtils?.addTapListener ?? ((el, fn) => el.addEventListener('click', fn));
+      addListener(btn, () => handleSSSVerseButtonClick(verse.number));
       sssVerseButtons.appendChild(btn);
     });
   }

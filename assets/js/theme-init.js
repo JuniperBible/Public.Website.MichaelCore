@@ -25,10 +25,10 @@ function initTheme() {
 // Execute immediately - critical to prevent flash of unstyled content
 initTheme();
 
-// ES6 exports
-export { initTheme };
+// NOTE: No ES6 exports - this script runs synchronously before <head>
+// to prevent FOUC. ES6 modules are deferred which would break this.
 
-// Backwards compatibility - attach to window.Michael namespace
+// Attach to window.Michael namespace for other modules
 if (typeof window !== 'undefined') {
   window.Michael = window.Michael || {};
   window.Michael.ThemeInit = {

@@ -67,13 +67,13 @@
 
   {{/* Shared Utilities (loaded before page-specific scripts) */}}
   {{ $domUtils := resources.Get "js/michael/dom-utils.js" }}
-  {{ if $domUtils }}<script src="{{ $domUtils.RelPermalink }}" defer></script>{{ end }}
+  {{ if $domUtils }}<script type="module" src="{{ $domUtils.RelPermalink }}"></script>{{ end }}
 
   {{/* PWA Core Scripts */}}
   {{ $userStorage := resources.Get "js/michael/user-storage.js" }}
-  {{ if $userStorage }}<script src="{{ $userStorage.RelPermalink }}" defer></script>{{ end }}
+  {{ if $userStorage }}<script type="module" src="{{ $userStorage.RelPermalink }}"></script>{{ end }}
   {{ $readingTracker := resources.Get "js/michael/reading-tracker.js" }}
-  {{ if $readingTracker }}<script src="{{ $readingTracker.RelPermalink }}" defer></script>{{ end }}
+  {{ if $readingTracker }}<script type="module" src="{{ $readingTracker.RelPermalink }}"></script>{{ end }}
 
   {{/* Page-specific scripts (after shared utilities) */}}
   {{ block "scripts" . }}{{ end }}

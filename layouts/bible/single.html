@@ -29,17 +29,17 @@
 {{ partialCached "michael/strongs-data.html" . }}
 {{/* Load JS with fingerprinting for cache busting */}}
 {{ $bibleNav := resources.Get "js/michael/bible-nav.js" }}
-{{ if $bibleNav }}{{ $bibleNav = $bibleNav | fingerprint }}<script src="{{ $bibleNav.RelPermalink }}" defer></script>{{ end }}
+{{ if $bibleNav }}{{ $bibleNav = $bibleNav | fingerprint }}<script type="module" src="{{ $bibleNav.RelPermalink }}"></script>{{ end }}
 {{ $shareMenu := resources.Get "js/michael/share-menu.js" }}
-{{ if $shareMenu }}{{ $shareMenu = $shareMenu | fingerprint }}<script src="{{ $shareMenu.RelPermalink }}" defer></script>{{ end }}
+{{ if $shareMenu }}{{ $shareMenu = $shareMenu | fingerprint }}<script type="module" src="{{ $shareMenu.RelPermalink }}"></script>{{ end }}
 {{ $share := resources.Get "js/share.js" }}
-{{ if $share }}{{ $share = $share | fingerprint }}<script src="{{ $share.RelPermalink }}" defer></script>{{ end }}
+{{ if $share }}{{ $share = $share | fingerprint }}<script type="module" src="{{ $share.RelPermalink }}"></script>{{ end }}
 {{ $strongs := resources.Get "js/strongs.js" }}
-{{ if $strongs }}{{ $strongs = $strongs | fingerprint }}<script src="{{ $strongs.RelPermalink }}" defer></script>{{ end }}
+{{ if $strongs }}{{ $strongs = $strongs | fingerprint }}<script type="module" src="{{ $strongs.RelPermalink }}"></script>{{ end }}
 {{ $footnotes := resources.Get "js/michael/footnotes.js" }}
-{{ if $footnotes }}{{ $footnotes = $footnotes | fingerprint }}<script src="{{ $footnotes.RelPermalink }}" defer></script>{{ end }}
+{{ if $footnotes }}{{ $footnotes = $footnotes | fingerprint }}<script type="module" src="{{ $footnotes.RelPermalink }}"></script>{{ end }}
 {{ $chapterReader := resources.Get "js/michael/chapter-reader.js" }}
-{{ if $chapterReader }}{{ $chapterReader = $chapterReader | fingerprint }}<script src="{{ $chapterReader.RelPermalink }}" defer></script>{{ end }}
+{{ if $chapterReader }}{{ $chapterReader = $chapterReader | fingerprint }}<script type="module" src="{{ $chapterReader.RelPermalink }}"></script>{{ end }}
 {{ end }}
 
 {{ define "main" }}

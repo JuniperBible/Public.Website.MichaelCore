@@ -619,10 +619,12 @@ function renderWithHighlights(text, diffs, side, options = {}) {
 
 /**
  * Escape HTML special characters
- * Uses shared utility from DomUtils module
+ * Uses shared utility from DomUtils module with fallback
  */
 function escapeHtml(text) {
-  return window.Michael.DomUtils.escapeHtml(text);
+  return window.Michael?.DomUtils?.escapeHtml?.(text) ?? String(text).replace(/[&<>"']/g, m => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+  })[m]);
 }
 
 // ==================== CSS Classes (for reference) ====================

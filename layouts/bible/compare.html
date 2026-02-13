@@ -23,7 +23,7 @@
 {{ partial "michael/strongs-data.html" . }}
 {{- range slice "js/michael/bible-loader.js" "js/michael/bible-api.js" "js/michael/footnotes.js" "js/text-compare.js" "js/parallel.js" -}}
 {{- $script := resources.Get . -}}
-{{- if $script }}<script src="{{ $script.RelPermalink }}" defer></script>{{ end -}}
+{{- if $script }}<script type="module" src="{{ $script.RelPermalink }}"></script>{{ end -}}
 {{- end -}}
 {{ end }}
 

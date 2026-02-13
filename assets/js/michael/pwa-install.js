@@ -260,9 +260,13 @@ function setupIOSDismissButton() {
       banner.classList.add('hidden');
       banner.setAttribute('aria-hidden', 'true');
     }
-    // Store dismissal
-    localStorage.setItem(STORAGE_KEY_DISMISSED, 'true');
-    localStorage.setItem(STORAGE_KEY_DISMISSED_TIME, Date.now().toString());
+    // Store dismissal (wrapped in try-catch for private browsing mode)
+    try {
+      localStorage.setItem(STORAGE_KEY_DISMISSED, 'true');
+      localStorage.setItem(STORAGE_KEY_DISMISSED_TIME, Date.now().toString());
+    } catch (e) {
+      // localStorage not available (private browsing) - dismissal won't persist
+    }
   });
 }
 
@@ -313,8 +317,13 @@ function showInstallUnavailableMessage() {
  */
 function dismissInstallBanner() {
   hideInstallBanner();
-  localStorage.setItem(STORAGE_KEY_DISMISSED, 'true');
-  localStorage.setItem(STORAGE_KEY_DISMISSED_TIME, Date.now().toString());
+  // Wrapped in try-catch for private browsing mode
+  try {
+    localStorage.setItem(STORAGE_KEY_DISMISSED, 'true');
+    localStorage.setItem(STORAGE_KEY_DISMISSED_TIME, Date.now().toString());
+  } catch (e) {
+    // localStorage not available (private browsing) - dismissal won't persist
+  }
 }
 
 /**
