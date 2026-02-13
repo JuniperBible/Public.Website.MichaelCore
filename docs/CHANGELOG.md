@@ -5,6 +5,74 @@ All notable changes to the Michael Hugo Bible Module will be documented in this 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.0] - 2026-02-13
+
+Security, accessibility, and robustness sprint with comprehensive fixes across JavaScript, CSS, Hugo templates, and build scripts.
+
+### Changed
+
+#### Service Worker Improvements
+- Moved `skipWaiting()` to execute after successful cache completion
+- Added path validation for static asset caching (whitelist approach)
+- Added retry tracking for background sync with `MAX_SYNC_RETRIES = 3`
+- Returns `offline.html` for HTML requests when network and cache fail
+
+#### PWA & Offline Manager
+- Added `isUserBusy()` check to prevent reload during downloads/form entry
+- Added 7-day TTL for background sync localStorage entries with auto-cleanup
+- Added comprehensive `isNetworkRelatedError()` with multiple detection methods
+- User storage functions now return `false`/`null` on QuotaExceededError
+
+#### Build System
+- Removed `vendor-package` from default build target (now on-demand only)
+- Added Hugo server startup verification in test target
+- Made `pkill` more specific with port matching
+- Made RELEASE confirmation case-insensitive
+- Added `--quiet` flag to `generate-sbom.sh`
+
+### Added
+
+#### JavaScript Null Safety & Memory Leak Prevention
+- Null guards for DOM elements in `theme-toggle.js`, `pwa-install.js`, `share-menu.js`
+- HTML escaping for XSS protection in `chapter-reader.js` verse rendering
+- Try-catch and validation for localStorage in `pwa-install.js`
+- Cleanup handlers registered via `Michael.addCleanup()` in:
+  - `theme-toggle.js` (click listener)
+  - `footnotes.js` (footnote link listeners)
+  - `reading-tracker.js` (scroll/beforeunload listeners)
+  - `dom-utils.js` (tap listeners)
+
+#### Accessibility (WCAG 2.1 AA)
+- Error announcer region with `role="alert"` in search page
+- `role="region"` and `aria-label` on search results container
+- `aria-live` and `aria-atomic` on cache status and progress elements
+- Improved color picker button `aria-label` descriptions
+- `data-pwa-banner` attribute for JavaScript `aria-hidden` toggling
+
+### Fixed
+
+#### Hugo Template Security
+- XSS vulnerability in `sw-register.html` — replaced innerHTML with DOM methods
+- Added `$bibleData` nil checks in `bible/single.html`
+- Added `$bookData` nil check in `bible-nav.html`
+- Made `basePath` configurable via data attribute in `continue-reading.html`
+
+#### CSS Dark Mode & Contrast (WCAG AA Compliance)
+- Toast backgrounds darkened for proper text contrast (`theme-colors.css`)
+- Diff highlight colors adjusted for 4.5:1 ratio
+- Dark mode text colors lightened (`--text-500: #b8b8b8`, `--text-400: #909090`)
+- Added `focus-visible` state for reader toggles
+- Replaced hardcoded `rgba()` with CSS variables in `theme-pwa.css`
+- Added `prefers-reduced-motion` for SSS verse transitions and offline animations
+- Increased tile touch targets from 40px to 44px (WCAG minimum)
+
+#### Build Script Error Handling
+- Added README existence check in `check-all.sh`
+- Captured stderr separately for debugging instead of swallowing
+- Added warning comments for destructive operations
+
+---
+
 ## [0.3.0] - 2026-02-13
 
 Post-ES6 cleanup sprint addressing null safety, accessibility, and configuration centralization.

@@ -22,20 +22,19 @@ async function initializeOfflineSettings() {
     }
 
     // Check if OfflineManager is available
-    if (!window.Michael?.OfflineManager) {
+    const OfflineManager = window.Michael?.OfflineManager;
+    if (!OfflineManager) {
       console.error('[Offline Settings] OfflineManager not found');
       showMessage('Offline functionality is not available', 'error');
       return;
     }
 
     // Check browser support
-    if (!window.Michael.OfflineManager.isSupported()) {
+    if (!OfflineManager.isSupported()) {
       showMessage('Your browser does not support offline functionality', 'error');
       disableOfflineControls();
       return;
     }
-
-    const OfflineManager = window.Michael.OfflineManager;
 
     try {
       // Initialize the offline manager with service worker

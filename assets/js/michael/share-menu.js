@@ -502,40 +502,48 @@
    * Focus next menu item
    */
   ShareMenu.prototype.focusNextItem = function() {
-    if (this.menuItems.length === 0) return;
+    if (!this.menuItems || this.menuItems.length === 0) return;
 
     this.currentFocusIndex = (this.currentFocusIndex + 1) % this.menuItems.length;
-    this.menuItems[this.currentFocusIndex].focus();
+    if (this.menuItems[this.currentFocusIndex]) {
+      this.menuItems[this.currentFocusIndex].focus();
+    }
   };
 
   /**
    * Focus previous menu item
    */
   ShareMenu.prototype.focusPreviousItem = function() {
-    if (this.menuItems.length === 0) return;
+    if (!this.menuItems || this.menuItems.length === 0) return;
 
     this.currentFocusIndex = (this.currentFocusIndex - 1 + this.menuItems.length) % this.menuItems.length;
-    this.menuItems[this.currentFocusIndex].focus();
+    if (this.menuItems[this.currentFocusIndex]) {
+      this.menuItems[this.currentFocusIndex].focus();
+    }
   };
 
   /**
    * Focus first menu item
    */
   ShareMenu.prototype.focusFirstItem = function() {
-    if (this.menuItems.length === 0) return;
+    if (!this.menuItems || this.menuItems.length === 0) return;
 
     this.currentFocusIndex = 0;
-    this.menuItems[0].focus();
+    if (this.menuItems[0]) {
+      this.menuItems[0].focus();
+    }
   };
 
   /**
    * Focus last menu item
    */
   ShareMenu.prototype.focusLastItem = function() {
-    if (this.menuItems.length === 0) return;
+    if (!this.menuItems || this.menuItems.length === 0) return;
 
     this.currentFocusIndex = this.menuItems.length - 1;
-    this.menuItems[this.currentFocusIndex].focus();
+    if (this.menuItems[this.currentFocusIndex]) {
+      this.menuItems[this.currentFocusIndex].focus();
+    }
   };
 
   /**

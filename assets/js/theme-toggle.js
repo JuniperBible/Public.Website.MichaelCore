@@ -7,9 +7,10 @@
 
 'use strict';
 
-const toggleBtn = document.getElementById('theme-toggle');
-const lightIcon = document.getElementById('theme-icon-light');
-const darkIcon = document.getElementById('theme-icon-dark');
+// Module-level references (set after DOM ready)
+let toggleBtn = null;
+let lightIcon = null;
+let darkIcon = null;
 
 /**
  * Update icon visibility based on current theme
@@ -37,12 +38,37 @@ function toggleTheme() {
   updateIcons();
 }
 
-// Initialize icon state
-updateIcons();
+/**
+ * Initialize the theme toggle module
+ */
+function init() {
+  toggleBtn = document.getElementById('theme-toggle');
+  lightIcon = document.getElementById('theme-icon-light');
+  darkIcon = document.getElementById('theme-icon-dark');
 
-// Add toggle functionality
-if (toggleBtn) {
-  toggleBtn.addEventListener('click', toggleTheme);
+  // Initialize icon state
+  updateIcons();
+
+  // Add toggle functionality
+  if (toggleBtn) {
+    toggleBtn.addEventListener('click', toggleTheme);
+
+    // Register cleanup to prevent memory leaks
+    if (window.Michael && typeof window.Michael.addCleanup === 'function') {
+      window.Michael.addCleanup(() => {
+        if (toggleBtn) {
+          toggleBtn.removeEventListener('click', toggleTheme);
+        }
+      });
+    }
+  }
+}
+
+// Initialize on DOM ready
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', init);
+} else {
+  init();
 }
 
 // ES6 exports

@@ -315,6 +315,12 @@
   animation: slideIn 0.3s ease;
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .offline-message {
+    animation: none;
+  }
+}
+
 @keyframes slideIn {
   from {
     opacity: 0;

@@ -72,7 +72,9 @@
       {{ $bookData = . }}
     {{ end }}
   {{ end }}
-  {{ $chapterCount = len $bookData.chapters }}
+  {{ if $bookData }}
+    {{ $chapterCount = len $bookData.chapters }}
+  {{ end }}
 {{ end }}
 
 <nav class="reader-bar row bible-nav" aria-label="{{ i18n "bibleNavigation" | default "Bible Navigation" }}">

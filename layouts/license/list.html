@@ -54,7 +54,7 @@
           {{ range . }}
           <tr>
             <td>
-              {{ with .downloadLocation }}<a href="{{ . }}" target="_blank" rel="noopener noreferrer">{{ $.name }}</a>{{ else }}{{ .name }}{{ end }}
+              {{ $name := .name }}{{ with .downloadLocation }}<a href="{{ . }}" target="_blank" rel="noopener noreferrer">{{ $name }}</a>{{ else }}{{ .name }}{{ end }}
             </td>
             <td><code>{{ .version }}</code></td>
             <td><span class="badge">{{ .license }}</span></td>
@@ -80,7 +80,7 @@
           {{ range . }}
           <tr>
             <td>
-              {{ with .downloadLocation }}<a href="{{ . }}" target="_blank" rel="noopener noreferrer">{{ $.name }}</a>{{ else }}{{ .name }}{{ end }}
+              {{ $name := .name }}{{ with .downloadLocation }}<a href="{{ . }}" target="_blank" rel="noopener noreferrer">{{ $name }}</a>{{ else }}{{ .name }}{{ end }}
             </td>
             <td><code>{{ .version }}</code></td>
             <td><span class="badge">{{ .license }}</span></td>
@@ -106,7 +106,7 @@
           {{ range . }}
           <tr>
             <td>
-              {{ with .downloadLocation }}<a href="{{ . }}" target="_blank" rel="noopener noreferrer">{{ $.name }}</a>{{ else }}{{ .name }}{{ end }}
+              {{ $name := .name }}{{ with .downloadLocation }}<a href="{{ . }}" target="_blank" rel="noopener noreferrer">{{ $name }}</a>{{ else }}{{ .name }}{{ end }}
             </td>
             <td><code>{{ .version }}</code></td>
             <td><span class="badge">{{ .license }}</span></td>

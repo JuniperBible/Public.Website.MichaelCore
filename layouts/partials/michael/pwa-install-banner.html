@@ -8,7 +8,7 @@
 
 {{/* Standard install banner (Chrome, Edge, etc.) */}}
 {{- $icons := .Scratch.Get "michael-icons" -}}
-<div id="pwa-install-banner" class="pwa-install-banner hidden" role="banner" aria-hidden="true">
+<div id="pwa-install-banner" class="pwa-install-banner hidden" role="banner" aria-hidden="true" data-pwa-banner>
   <div class="pwa-install-content">
     <img src="{{ $icons.icon192 }}" alt="" class="pwa-install-icon" width="48" height="48" role="presentation">
     <div class="pwa-install-text">
@@ -27,7 +27,7 @@
 </div>
 
 {{/* iOS instructions banner */}}
-<div id="pwa-ios-instructions" class="pwa-ios-instructions hidden" role="banner" aria-hidden="true">
+<div id="pwa-ios-instructions" class="pwa-ios-instructions hidden" role="banner" aria-hidden="true" data-pwa-banner>
   <div class="pwa-install-content">
     <img src="{{ $icons.icon192 }}" alt="" class="pwa-install-icon" width="48" height="48" role="presentation">
     <div class="pwa-install-text">

@@ -18,6 +18,9 @@
 // Ensure Michael namespace exists
 window.Michael = window.Michael || {};
 
+// Track registered listeners for cleanup
+const footnoteListeners = [];
+
 /**
  * Handle click on footnote reference or backref link
  * @param {Event} e - Click event
@@ -128,12 +131,16 @@ function processFootnotes(content, footnotesSection, footnotesList, prefix) {
     if (!link.dataset.footnoteListenerAdded) {
       link.dataset.footnoteListenerAdded = 'true';
       link.addEventListener('click', handleFootnoteClick);
+      // Track for cleanup
+      footnoteListeners.push({ element: link, handler: handleFootnoteClick });
     }
   });
   content.querySelectorAll('.footnote-ref').forEach(function(link) {
     if (!link.dataset.footnoteListenerAdded) {
       link.dataset.footnoteListenerAdded = 'true';
       link.addEventListener('click', handleFootnoteClick);
+      // Track for cleanup
+      footnoteListeners.push({ element: link, handler: handleFootnoteClick });
     }
   });
 
@@ -152,16 +159,35 @@ function initDefaultFootnotes() {
   processFootnotes(content, footnotesSection, footnotesList, '');
 }
 
+/**
+ * Cleanup all footnote event listeners
+ */
+function cleanup() {
+  footnoteListeners.forEach(({ element, handler }) => {
+    if (element && element.parentNode) {
+      element.removeEventListener('click', handler);
+      delete element.dataset.footnoteListenerAdded;
+    }
+  });
+  footnoteListeners.length = 0;
+}
+
 // ============================================================================
 // EXPORTS
 // ============================================================================
 
-export { processFootnotes, initDefaultFootnotes };
+export { processFootnotes, initDefaultFootnotes, cleanup };
 
 // Export the module for backwards compatibility
 window.Michael.Footnotes = {
-  process: processFootnotes
+  process: processFootnotes,
+  cleanup
 };
+
+// Register cleanup handler
+if (window.Michael && typeof window.Michael.addCleanup === 'function') {
+  window.Michael.addCleanup(cleanup);
+}
 
 // Auto-initialize for chapter pages on DOMContentLoaded
 if (document.readyState === 'loading') {

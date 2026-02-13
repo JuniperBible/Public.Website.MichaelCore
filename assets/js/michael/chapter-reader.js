@@ -380,6 +380,23 @@
   }
 
   /**
+   * Escape HTML to prevent XSS attacks
+   * @param {string} str - String to escape
+   * @returns {string} Escaped string safe for HTML insertion
+   */
+  function escapeHtml(str) {
+    if (!str) return '';
+    // Use DomUtils if available, otherwise inline fallback
+    if (window.Michael && window.Michael.DomUtils && window.Michael.DomUtils.escapeHtml) {
+      return window.Michael.DomUtils.escapeHtml(str);
+    }
+    // Fallback implementation
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  /**
    * Render aligned verse rows with left and right verses
    */
   function renderAlignedVerses(rightVerses) {
@@ -408,18 +425,22 @@
       return;
     }
 
-    let html = '';
+    // Build verse rows using safe HTML escaping
+    const verseRows = [];
     sortedNums.forEach(num => {
-      const leftHtml = leftMap.get(num) || `<em class="sss-missing">(not in ${leftBibleName})</em>`;
-      const rightHtml = rightMap.get(num) || `<em class="sss-missing">(not in ${rightBibleName})</em>`;
+      const leftHtml = leftMap.get(num) || `<em class="sss-missing">(not in ${escapeHtml(leftBibleName)})</em>`;
+      const rightHtml = rightMap.get(num) || `<em class="sss-missing">(not in ${escapeHtml(rightBibleName)})</em>`;
 
-      html += `<div class="sss-verse-row" data-verse="${num}">
+      // Note: leftHtml and rightHtml come from trusted sources (page DOM or BibleAPI)
+      // They already contain formatted HTML with sup tags, Strong's links, etc.
+      // We preserve this HTML but escape the Bible names in missing messages
+      verseRows.push(`<div class="sss-verse-row" data-verse="${num}">
         <div class="sss-verse-left">${leftHtml}</div>
         <div class="sss-verse-right">${rightHtml}</div>
-      </div>`;
+      </div>`);
     });
 
-    sssVersesContainer.innerHTML = html;
+    sssVersesContainer.innerHTML = verseRows.join('');
 
     // Process Strong's numbers in both left and right columns
     if (window.Michael && window.Michael.processStrongsContent) {

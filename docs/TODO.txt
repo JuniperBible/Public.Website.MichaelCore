@@ -4,6 +4,70 @@ MICHAEL BIBLE PWA - PLANNED TASKS
 Updated: 2026-02-13
 
 ================================================================================
+COMPLETED SPRINT #3: Security, Accessibility & Robustness (2026-02-13)
+================================================================================
+
+### Batch 1: JavaScript Null Safety [COMPLETED]
+[x] Add null guards to theme-toggle.js DOM element access
+[x] Add HTML escaping for XSS protection in chapter-reader.js renderAlignedVerses()
+[x] Add null check for OfflineManager in offline-settings-ui.js
+[x] Add try-catch and validation for localStorage in pwa-install.js isDismissed()
+[x] Add null guards for DOM elements in pwa-install.js setupBannerUI()
+[x] Add menuItems array validation in share-menu.js focus methods
+
+### Batch 2: JavaScript Memory Leak Fixes [COMPLETED]
+[x] Add cleanup handler for click listener in theme-toggle.js
+[x] Add footnoteListeners tracking array and cleanup() in footnotes.js
+[x] Add named handlers and cleanup() in reading-tracker.js
+[x] Add tapListeners tracking and cleanup() in dom-utils.js
+
+### Batch 3: Hugo Template Security & Nil Safety [COMPLETED]
+[x] Fix XSS in sw-register.html - use DOM methods instead of innerHTML
+[x] Add $bibleData nil checks in bible/single.html
+[x] Add $bookData nil check in bible-nav.html
+[x] Add configurable basePath to continue-reading.html (via data attribute)
+
+### Batch 4: CSS Dark Mode Contrast & Accessibility [COMPLETED]
+[x] Fix toast background colors for WCAG AA contrast (theme-colors.css)
+[x] Fix diff highlight colors for 4.5:1 contrast ratio
+[x] Lighten dark mode text colors (--text-500, --text-400)
+[x] Add focus-visible state for reader toggles (theme-custom.css)
+[x] Add prefers-reduced-motion for SSS verse row transitions
+[x] Replace hardcoded rgba colors with CSS variables (theme-pwa.css)
+[x] Add prefers-reduced-motion for offline message animation
+[x] Increase tile touch targets from 40px to 44px (WCAG minimum)
+
+### Batch 5: Service Worker Cache & Error Handling [COMPLETED]
+[x] Move skipWaiting() after successful cache in install event
+[x] Add offline.html fallback for HTML requests in cache-first errors
+[x] Add offline.html fallback for HTML requests in network-first errors
+[x] Add path validation for static asset caching
+[x] Add retry tracking for background sync (MAX_SYNC_RETRIES = 3)
+
+### Batch 6: PWA Install & Offline Improvements [COMPLETED]
+[x] Add user feedback when install prompt unavailable in pwa-install.js
+[x] Add isUserBusy() check before SW reload in offline-manager.js
+[x] Add 7-day TTL for background sync localStorage entries
+[x] Add comprehensive isNetworkRelatedError() detection
+[x] Return false/null from user-storage.js on QuotaExceededError
+
+### Batch 7: Build Scripts & Config Hardening [COMPLETED]
+[x] Remove vendor-package from Makefile build target
+[x] Add Hugo server startup verification in Makefile test target
+[x] Make pkill more specific with port matching
+[x] Make RELEASE confirmation case-insensitive
+[x] Add README existence check in check-all.sh
+[x] Capture stderr separately for debugging in check-all.sh
+[x] Add --quiet flag documentation and parsing to generate-sbom.sh
+
+### Batch 8: Form Accessibility & ARIA Fixes [COMPLETED]
+[x] Add error announcer region in search.html
+[x] Add role="region" to search results container
+[x] Add aria-live to cache status and progress elements (offline-settings.html)
+[x] Improve color picker button aria-labels
+[x] Add data-pwa-banner for JS aria-hidden toggling
+
+================================================================================
 COMPLETED SPRINT #2: Post-ES6 Cleanup (2026-02-13)
 ================================================================================
 

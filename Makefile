@@ -83,7 +83,7 @@ dev-hugo: kill-dev sync-submodules
 	$(HUGO) server --buildDrafts --buildFuture --disableFastRender
 
 # Build static site (regenerates SBOM and Bible data first)
-build: sbom vendor-restore ensure-data vendor-package
+build: sbom vendor-restore ensure-data
 	$(HUGO) --minify
 
 # Ensure Bible data exists, prompt for conversion if needed
@@ -190,10 +190,26 @@ sbom:
 test:
 	@echo "Starting Hugo server for tests..."
 	@hugo server --port $(PORT) --buildDrafts &
-	@sleep 3
-	@echo "Running regression tests..."
-	@cd tests && go test -v ./regression/... || (pkill -f "hugo server" && exit 1)
-	@pkill -f "hugo server" || true
+	@HUGO_PID=$$!; \
+	RETRY_COUNT=0; \
+	MAX_RETRIES=10; \
+	HUGO_READY=false; \
+	while [ $$RETRY_COUNT -lt $$MAX_RETRIES ]; do \
+		if curl -s http://localhost:$(PORT)/ >/dev/null 2>&1; then \
+			HUGO_READY=true; \
+			break; \
+		fi; \
+		sleep 1; \
+		RETRY_COUNT=$$((RETRY_COUNT + 1)); \
+	done; \
+	if [ "$$HUGO_READY" != "true" ]; then \
+		echo "Error: Hugo server failed to start within $$MAX_RETRIES seconds"; \
+		pkill -f "hugo server.*$(PORT)" || true; \
+		exit 1; \
+	fi; \
+	echo "Running regression tests..."; \
+	cd tests && go test -v ./regression/... || (pkill -f "hugo server.*$(PORT)" && exit 1)
+	@pkill -f "hugo server.*$(PORT)" || true
 	@echo "Tests complete!"
 
 # Run individual test suites (assumes Hugo is running on port $(PORT))
@@ -246,7 +262,8 @@ push: clean
 		echo ""; \
 		echo "To proceed anyway, type 'RELEASE' and press Enter:"; \
 		read -r confirm; \
-		if [ "$$confirm" != "RELEASE" ]; then \
+		confirm_upper=$$(echo "$$confirm" | tr '[:lower:]' '[:upper:]'); \
+		if [ "$$confirm_upper" != "RELEASE" ]; then \
 			echo "Push cancelled."; \
 			exit 1; \
 		fi; \

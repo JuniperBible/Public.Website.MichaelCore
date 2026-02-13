@@ -133,49 +133,81 @@
       banner.setAttribute('role', 'alert');
       banner.setAttribute('aria-live', 'polite');
 
-      banner.innerHTML = `
-        <div class="sw-update-banner__content">
-          <svg class="sw-update-banner__icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" focusable="false" aria-hidden="true">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-          </svg>
-          <div class="sw-update-banner__text">
-            <div class="sw-update-banner__title">{{ i18n "swUpdateAvailable" | default "Update Available" }}</div>
-            <div class="sw-update-banner__message">{{ i18n "swUpdateMessage" | default "A new version is ready to install." }}</div>
-          </div>
-        </div>
-        <div class="sw-update-banner__actions">
-          <button
-            id="sw-update-reload-btn"
-            class="sw-update-banner__reload-btn"
-            type="button"
-          >
-            {{ i18n "swUpdateNow" | default "Update Now" }}
-          </button>
-          <button
-            id="sw-update-dismiss-btn"
-            class="sw-update-banner__dismiss-btn"
-            type="button"
-            aria-label="{{ i18n "swDismissUpdate" | default "Dismiss update notification" }}"
-          >
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-      `;
+      // Create content container
+      const content = document.createElement('div');
+      content.className = 'sw-update-banner__content';
 
+      // Create icon
+      const icon = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      icon.setAttribute('class', 'sw-update-banner__icon');
+      icon.setAttribute('fill', 'none');
+      icon.setAttribute('viewBox', '0 0 24 24');
+      icon.setAttribute('stroke', 'currentColor');
+      icon.setAttribute('focusable', 'false');
+      icon.setAttribute('aria-hidden', 'true');
+      const iconPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      iconPath.setAttribute('stroke-linecap', 'round');
+      iconPath.setAttribute('stroke-linejoin', 'round');
+      iconPath.setAttribute('stroke-width', '2');
+      iconPath.setAttribute('d', 'M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15');
+      icon.appendChild(iconPath);
+
+      // Create text container
+      const textContainer = document.createElement('div');
+      textContainer.className = 'sw-update-banner__text';
+
+      const titleDiv = document.createElement('div');
+      titleDiv.className = 'sw-update-banner__title';
+      titleDiv.textContent = {{ i18n "swUpdateAvailable" | default "Update Available" | jsonify }};
+
+      const messageDiv = document.createElement('div');
+      messageDiv.className = 'sw-update-banner__message';
+      messageDiv.textContent = {{ i18n "swUpdateMessage" | default "A new version is ready to install." | jsonify }};
+
+      textContainer.appendChild(titleDiv);
+      textContainer.appendChild(messageDiv);
+      content.appendChild(icon);
+      content.appendChild(textContainer);
+
+      // Create actions container
+      const actions = document.createElement('div');
+      actions.className = 'sw-update-banner__actions';
+
+      const reloadBtn = document.createElement('button');
+      reloadBtn.id = 'sw-update-reload-btn';
+      reloadBtn.className = 'sw-update-banner__reload-btn';
+      reloadBtn.type = 'button';
+      reloadBtn.textContent = {{ i18n "swUpdateNow" | default "Update Now" | jsonify }};
+
+      const dismissBtn = document.createElement('button');
+      dismissBtn.id = 'sw-update-dismiss-btn';
+      dismissBtn.className = 'sw-update-banner__dismiss-btn';
+      dismissBtn.type = 'button';
+      dismissBtn.setAttribute('aria-label', {{ i18n "swDismissUpdate" | default "Dismiss update notification" | jsonify }});
+
+      const dismissIcon = document.createElement('span');
+      dismissIcon.setAttribute('aria-hidden', 'true');
+      dismissIcon.innerHTML = '&times;';
+      dismissBtn.appendChild(dismissIcon);
+
+      actions.appendChild(reloadBtn);
+      actions.appendChild(dismissBtn);
+
+      banner.appendChild(content);
+      banner.appendChild(actions);
       document.body.appendChild(banner);
 
       // Move focus to the reload button so screen readers announce the banner
-      var reloadBtn = document.getElementById('sw-update-reload-btn');
-      if (reloadBtn) reloadBtn.focus();
+      reloadBtn.focus();
 
       // Handle reload button click
-      document.getElementById('sw-update-reload-btn').addEventListener('click', function() {
+      reloadBtn.addEventListener('click', function() {
         // Send skip waiting and reload when the new SW takes control
         skipWaiting();
       });
 
       // Handle dismiss button click
-      document.getElementById('sw-update-dismiss-btn').addEventListener('click', function() {
+      dismissBtn.addEventListener('click', function() {
         banner.remove();
       });
 

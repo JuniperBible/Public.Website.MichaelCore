@@ -63,11 +63,11 @@
   --surface-1: #2d2d2d;
   --surface-2: #353535;
 
-  /* Text (light on dark) */
+  /* Text (light on dark) - lightened for WCAG AA 4.5:1 contrast on --surface-2: #353535 */
   --text-900: #f0f0f0;
   --text-700: #d0d0d0;
-  --text-500: #a0a0a0;
-  --text-400: #808080;
+  --text-500: #b8b8b8;  /* Lightened from #a0a0a0 for 4.5:1 contrast on #353535 */
+  --text-400: #909090;  /* Lightened from #808080 */
 
   /* Links */
   --link: var(--brand-500);
@@ -143,9 +143,9 @@
     --focus-ring: 0 0 0 3px rgba(107, 76, 107, 0.35);
 
     /* Diff highlighting colors (light mode) */
-    --diff-add: #ccffcc;
+    --diff-add: #99e699;        /* Darkened for 4.5:1 contrast */
     --diff-omit: #e6e6e6;
-    --diff-punct: #ffeb99;
+    --diff-punct: #ffdd33;      /* Darkened for 4.5:1 contrast */
     --diff-spelling: #ffe0b3;
     --diff-subst: #ffcccc;
 
@@ -252,6 +252,11 @@ footer.chrome {
   border-color: var(--brand-500);
 }
 
+.reader-toggles .btn:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
 /* Full-width mode */
 body.full-width-mode main.container {
   max-width: 100%;
@@ -334,6 +339,12 @@ body.sss-chapter-mode .chapter-sss-container {
   grid-template-columns: 1fr 1fr;
   border-bottom: 1px solid var(--border);
   transition: background-color 0.15s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sss-verse-row {
+    transition: none;
+  }
 }
 
 .sss-verse-row:hover {

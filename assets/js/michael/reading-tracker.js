@@ -28,6 +28,10 @@ let scrollDebounceTimer = null;
 // Current page info
 let currentPage = null;
 
+// Event handlers for cleanup
+let scrollHandler = null;
+let beforeUnloadHandler = null;
+
 /**
  * Initializes the reading tracker.
  *
@@ -121,7 +125,7 @@ function parseCurrentPage() {
  */
 function setupChapterTracking() {
     // Save scroll position with debounce
-    window.addEventListener('scroll', () => {
+    scrollHandler = () => {
       if (scrollDebounceTimer) {
         clearTimeout(scrollDebounceTimer);
       }
@@ -129,10 +133,11 @@ function setupChapterTracking() {
       scrollDebounceTimer = setTimeout(async () => {
         await saveCurrentProgress();
       }, TIMING.SCROLL_SAVE_DEBOUNCE);
-    }, { passive: true });
+    };
+    window.addEventListener('scroll', scrollHandler, { passive: true });
 
     // Save progress when leaving the page
-    window.addEventListener('beforeunload', () => {
+    beforeUnloadHandler = () => {
       // Use synchronous storage as a fallback
       if (currentPage) {
         const progressKey = `michael-progress-${currentPage.bibleId}`;
@@ -149,7 +154,8 @@ function setupChapterTracking() {
           // Storage full or unavailable
         }
       }
-    });
+    };
+    window.addEventListener('beforeunload', beforeUnloadHandler);
   }
 
 /**
@@ -407,6 +413,24 @@ async function getLastRead() {
     }
   }
 
+/**
+ * Cleanup event listeners
+ */
+function cleanup() {
+  if (scrollHandler) {
+    window.removeEventListener('scroll', scrollHandler);
+    scrollHandler = null;
+  }
+  if (beforeUnloadHandler) {
+    window.removeEventListener('beforeunload', beforeUnloadHandler);
+    beforeUnloadHandler = null;
+  }
+  if (scrollDebounceTimer) {
+    clearTimeout(scrollDebounceTimer);
+    scrollDebounceTimer = null;
+  }
+}
+
 // Initialize when DOM is ready
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', init);
@@ -419,7 +443,8 @@ export {
   init,
   getStreakInfo,
   getLastRead,
-  navigateToContinueReading
+  navigateToContinueReading,
+  cleanup
 };
 
 // Backwards compatibility: expose on window.Michael
@@ -428,5 +453,11 @@ window.Michael.ReadingTracker = {
   init,
   getStreakInfo,
   getLastRead,
-  navigateToContinueReading
+  navigateToContinueReading,
+  cleanup
 };
+
+// Register cleanup handler
+if (window.Michael && typeof window.Michael.addCleanup === 'function') {
+  window.Michael.addCleanup(cleanup);
+}

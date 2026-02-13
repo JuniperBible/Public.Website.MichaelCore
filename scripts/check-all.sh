@@ -14,6 +14,11 @@ README="$PROJECT_ROOT/README.md"
 UPDATE_README=false
 HUGO_PID=""
 
+# Validate README exists
+if [[ ! -f "$README" ]]; then
+    echo "Warning: README not found at $README"
+fi
+
 # Cleanup function to kill background processes
 cleanup() {
     if [[ -n "$HUGO_PID" ]] && kill -0 "$HUGO_PID" 2>/dev/null; then
@@ -67,21 +72,34 @@ cd "$PROJECT_ROOT"
 
 # 1. Clean Build Check
 echo "Checking Hugo build..."
+# WARNING: Removing build artifacts (public/, resources/)
 rm -rf public/ resources/
-if hugo --minify --quiet 2>/dev/null; then
+STDERR_CAPTURE=$(mktemp)
+if hugo --minify --quiet 2>"$STDERR_CAPTURE"; then
     pass "Hugo Build"
 else
     fail "Hugo Build" "hugo --minify failed"
+    if [[ -s "$STDERR_CAPTURE" ]]; then
+        echo "  Error details:" >&2
+        cat "$STDERR_CAPTURE" >&2
+    fi
 fi
+rm -f "$STDERR_CAPTURE"
 
 # 2. SBOM Generation Check
 echo "Checking SBOM generation..."
 if [ -x "./scripts/generate-sbom.sh" ]; then
-    if ./scripts/generate-sbom.sh --quiet 2>/dev/null; then
+    STDERR_CAPTURE=$(mktemp)
+    if ./scripts/generate-sbom.sh --quiet 2>"$STDERR_CAPTURE"; then
         pass "SBOM Generation"
     else
         fail "SBOM Generation" "generate-sbom.sh failed"
+        if [[ -s "$STDERR_CAPTURE" ]]; then
+            echo "  Error details:" >&2
+            cat "$STDERR_CAPTURE" >&2
+        fi
     fi
+    rm -f "$STDERR_CAPTURE"
 else
     skip "SBOM Generation" "generate-sbom.sh not found or not executable"
 fi

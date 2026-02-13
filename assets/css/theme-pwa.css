@@ -211,9 +211,9 @@ html.pwa-standalone .continue-reading { padding: var(--pad-1); margin-bottom: va
 .pwa-install-dismiss {
   padding: 6px 10px;
   border-radius: var(--radius-1);
-  border: 1px solid rgba(255,255,255,.3);
+  border: 1px solid var(--chrome-text);
   background: transparent;
-  color: rgba(255,255,255,.8);
+  color: var(--chrome-text);
   cursor: pointer;
   font: inherit;
   font-size: 1.2rem;
@@ -221,7 +221,7 @@ html.pwa-standalone .continue-reading { padding: var(--pad-1); margin-bottom: va
 }
 
 .pwa-install-dismiss:hover {
-  background: rgba(255,255,255,.1);
+  background: var(--surface-alpha);
 }
 
 .pwa-install-dismiss:focus-visible {
@@ -323,7 +323,7 @@ html.pwa-standalone .continue-reading { padding: var(--pad-1); margin-bottom: va
 .sw-update-banner__dismiss-btn {
   padding: 6px 10px;
   border-radius: var(--radius-1);
-  border: 1px solid rgba(255,255,255,.4);
+  border: 1px solid var(--surface-2);
   background: transparent;
   color: var(--surface-2);
   cursor: pointer;
@@ -333,7 +333,7 @@ html.pwa-standalone .continue-reading { padding: var(--pad-1); margin-bottom: va
 }
 
 .sw-update-banner__dismiss-btn:hover {
-  background: rgba(255,255,255,.1);
+  background: var(--surface-alpha);
 }
 
 .sw-update-banner__dismiss-btn:focus-visible {

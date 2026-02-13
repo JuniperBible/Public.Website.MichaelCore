@@ -35,7 +35,7 @@
 <div id="{{ $id }}-color-picker" class="hidden color-picker-dropdown">
   <div class="row color-picker-options">
     {{ range $colors }}
-    <button type="button" class="{{ $optionClass }} btn btn--sm color-option-btn" data-color="{{ .value }}" style="background-color: {{ .value }};" title="{{ .label }}" aria-label="{{ .label }}"></button>
+    <button type="button" class="{{ $optionClass }} btn btn--sm color-option-btn" data-color="{{ .value }}" style="background-color: {{ .value }};" title="{{ .label }} highlight" aria-label="{{ .label }} highlight"></button>
     {{ end }}
   </div>
 </div>

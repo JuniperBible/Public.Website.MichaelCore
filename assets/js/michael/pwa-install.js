@@ -182,30 +182,45 @@ export function isIOS() {
  * Check if the user has dismissed the banner recently
  */
 function isDismissed() {
-  const dismissed = localStorage.getItem(STORAGE_KEY_DISMISSED);
-  if (!dismissed) {
+  try {
+    const dismissed = localStorage.getItem(STORAGE_KEY_DISMISSED);
+    if (!dismissed) {
+      return false;
+    }
+
+    // Check if enough time has passed to show again
+    const dismissedTime = localStorage.getItem(STORAGE_KEY_DISMISSED_TIME);
+    if (dismissedTime) {
+      // Handle empty string and non-numeric string cases
+      if (dismissedTime === '' || dismissedTime.trim() === '') {
+        // Empty string - clear and allow showing again
+        localStorage.removeItem(STORAGE_KEY_DISMISSED);
+        localStorage.removeItem(STORAGE_KEY_DISMISSED_TIME);
+        return false;
+      }
+
+      const parsedTime = parseInt(dismissedTime, 10);
+      if (isNaN(parsedTime) || parsedTime < 0) {
+        // Corrupted data — clear and allow showing again
+        localStorage.removeItem(STORAGE_KEY_DISMISSED);
+        localStorage.removeItem(STORAGE_KEY_DISMISSED_TIME);
+        return false;
+      }
+
+      const daysSinceDismissed = (Date.now() - parsedTime) / (1000 * 60 * 60 * 24);
+      if (daysSinceDismissed >= DAYS_BEFORE_RESHOWING) {
+        localStorage.removeItem(STORAGE_KEY_DISMISSED);
+        localStorage.removeItem(STORAGE_KEY_DISMISSED_TIME);
+        return false;
+      }
+    }
+
+    return true;
+  } catch (error) {
+    // localStorage access error or JSON parsing error - fail safe and allow showing
+    console.warn('[PWA Install] Error checking dismissed state:', error);
     return false;
   }
-
-  // Check if enough time has passed to show again
-  const dismissedTime = localStorage.getItem(STORAGE_KEY_DISMISSED_TIME);
-  if (dismissedTime) {
-    const parsedTime = parseInt(dismissedTime, 10);
-    if (isNaN(parsedTime)) {
-      // Corrupted data — clear and allow showing again
-      localStorage.removeItem(STORAGE_KEY_DISMISSED);
-      localStorage.removeItem(STORAGE_KEY_DISMISSED_TIME);
-      return false;
-    }
-    const daysSinceDismissed = (Date.now() - parsedTime) / (1000 * 60 * 60 * 24);
-    if (daysSinceDismissed >= DAYS_BEFORE_RESHOWING) {
-      localStorage.removeItem(STORAGE_KEY_DISMISSED);
-      localStorage.removeItem(STORAGE_KEY_DISMISSED_TIME);
-      return false;
-    }
-  }
-
-  return true;
 }
 
 /**
@@ -214,13 +229,17 @@ function isDismissed() {
 function setupBannerUI() {
   // Install button
   const installBtn = document.getElementById('pwa-install-btn');
-  if (installBtn) {
+  if (!installBtn) {
+    console.warn('[PWA Install] Install button not found');
+  } else {
     installBtn.addEventListener('click', triggerInstallPrompt);
   }
 
   // Dismiss button
   const dismissBtn = document.getElementById('pwa-install-dismiss');
-  if (dismissBtn) {
+  if (!dismissBtn) {
+    console.warn('[PWA Install] Dismiss button not found');
+  } else {
     dismissBtn.addEventListener('click', dismissInstallBanner);
   }
 }
@@ -230,18 +249,21 @@ function setupBannerUI() {
  */
 function setupIOSDismissButton() {
   const iosDismissBtn = document.getElementById('pwa-ios-dismiss');
-  if (iosDismissBtn) {
-    iosDismissBtn.addEventListener('click', function() {
-      const banner = document.getElementById('pwa-ios-instructions');
-      if (banner) {
-        banner.classList.add('hidden');
-        banner.setAttribute('aria-hidden', 'true');
-      }
-      // Store dismissal
-      localStorage.setItem(STORAGE_KEY_DISMISSED, 'true');
-      localStorage.setItem(STORAGE_KEY_DISMISSED_TIME, Date.now().toString());
-    });
+  if (!iosDismissBtn) {
+    console.warn('[PWA Install] iOS dismiss button not found');
+    return;
   }
+
+  iosDismissBtn.addEventListener('click', function() {
+    const banner = document.getElementById('pwa-ios-instructions');
+    if (banner) {
+      banner.classList.add('hidden');
+      banner.setAttribute('aria-hidden', 'true');
+    }
+    // Store dismissal
+    localStorage.setItem(STORAGE_KEY_DISMISSED, 'true');
+    localStorage.setItem(STORAGE_KEY_DISMISSED_TIME, Date.now().toString());
+  });
 }
 
 /**
@@ -267,6 +289,26 @@ function hideInstallBanner() {
 }
 
 /**
+ * Show a message when install prompt is unavailable
+ * This happens when the deferred prompt has already been used
+ */
+function showInstallUnavailableMessage() {
+  // Try to show a gentle notification to the user
+  const banner = document.getElementById('pwa-install-banner');
+  if (banner) {
+    const messageEl = banner.querySelector('.install-message');
+    if (messageEl) {
+      const originalText = messageEl.textContent;
+      messageEl.textContent = 'Please reload the page to install the app.';
+      // Restore original text after 5 seconds
+      setTimeout(() => {
+        messageEl.textContent = originalText;
+      }, 5000);
+    }
+  }
+}
+
+/**
  * Dismiss the install banner and remember the choice
  */
 function dismissInstallBanner() {
@@ -277,26 +319,37 @@ function dismissInstallBanner() {
 
 /**
  * Trigger the install prompt
+ * Note: The deferred prompt can only be used once. If the user dismisses it,
+ * the prompt won't be available again until the page reloads.
  */
 export async function triggerInstallPrompt() {
   if (!deferredPrompt) {
-    console.warn('[PWA Install] No deferred prompt available');
+    console.warn('[PWA Install] No deferred prompt available. The prompt may have already been used, or the page needs to be reloaded.');
+    // Show user-friendly message that they need to reload
+    showInstallUnavailableMessage();
     return false;
   }
 
-  // Show the install prompt
-  deferredPrompt.prompt();
+  try {
+    // Show the install prompt
+    deferredPrompt.prompt();
 
-  // Wait for the user's response
-  const { outcome } = await deferredPrompt.userChoice;
+    // Wait for the user's response
+    const { outcome } = await deferredPrompt.userChoice;
 
-  // Clear the deferred prompt (can only be used once)
-  deferredPrompt = null;
+    // Clear the deferred prompt (can only be used once)
+    deferredPrompt = null;
 
-  // Hide the banner regardless of outcome
-  hideInstallBanner();
+    // Hide the banner regardless of outcome
+    hideInstallBanner();
 
-  return outcome === 'accepted';
+    return outcome === 'accepted';
+  } catch (error) {
+    console.error('[PWA Install] Error triggering install prompt:', error);
+    deferredPrompt = null;
+    hideInstallBanner();
+    return false;
+  }
 }
 
 /**

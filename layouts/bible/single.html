@@ -58,8 +58,8 @@
     <header class="page-header">
       {{/* On Bible overview pages, prefer override title and description */}}
       {{ if not (or .Params.chapter .Params.book) }}
-        <h1>{{ with $bibleData.title }}{{ . }}{{ else }}{{ .Title }}{{ end }}</h1>
-        {{ with $bibleData.description }}<p>{{ . }}</p>{{ end }}
+        <h1>{{ if $bibleData }}{{ with $bibleData.title }}{{ . }}{{ else }}{{ $.Title }}{{ end }}{{ else }}{{ .Title }}{{ end }}</h1>
+        {{ if $bibleData }}{{ with $bibleData.description }}<p>{{ . }}</p>{{ end }}{{ end }}
       {{ else }}
         <h1>{{ .Title }}</h1>
         {{ with .Params.description }}<p>{{ . }}</p>{{ end }}
@@ -67,14 +67,15 @@
 
       <!-- Features/tags -->
       <div class="row row--center mt-1">
+        {{ if $bibleData }}
         {{ with $bibleData.language }}
         <span class="badge">{{ . }}</span>
         {{ end }}
         {{ with $bibleData.license }}
         <a href="{{ printf "/license/%s/" (. | lower) | relLangURL }}" class="badge" title="SPDX License: {{ . }}">{{ . }}</a>
         {{ end }}
-        {{/* Fallback to params if not in bibles.json */}}
-        {{ if not .Site.Data.bibles.bibles }}
+        {{ else }}
+        {{/* Fallback to params if bibleData not found */}}
           {{ with .Params.language }}
           <span class="badge">{{ . }}</span>
           {{ end }}
@@ -100,9 +101,9 @@
         </div>
 
         <!-- Side-by-side view (shown when SSS toggle active) -->
-        <div class="chapter-sss-container" id="sss-container" data-left-bible="{{ $bibleData.abbrev }}">
+        <div class="chapter-sss-container" id="sss-container" data-left-bible="{{ if $bibleData }}{{ $bibleData.abbrev }}{{ end }}">
           <div class="sss-header">
-            <div class="sss-header-left"><strong>{{ $bibleData.abbrev }}</strong></div>
+            <div class="sss-header-left"><strong>{{ if $bibleData }}{{ $bibleData.abbrev }}{{ end }}</strong></div>
             <div class="sss-header-right"><strong id="sss-right-pane-label">{{ i18n "selectBibleToCompare" | default "Select a Bible" }}</strong></div>
           </div>
           <div class="sss-verses" id="sss-verses">

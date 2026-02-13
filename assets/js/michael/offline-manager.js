@@ -52,6 +52,13 @@ let swRegistration = null;
 let swMessageHandler = null;
 
 /**
+ * Pending reload flag - set when SW update is available but user is busy
+ * @private
+ * @type {boolean}
+ */
+let pendingReload = false;
+
+/**
  * Initializes the offline manager by registering the service worker
  * and setting up message listeners.
  *
@@ -85,8 +92,17 @@ async function initialize(swPath = window.Michael?.Config?.serviceWorkerPath || 
     // finishes installing, reload the page so the fresh SW takes control.
     // The SW already calls skipWaiting() on install, so the new controller
     // will be active after reload.
+    //
+    // To avoid disrupting user actions, we check if the user is idle before reloading.
     navigator.serviceWorker.addEventListener('controllerchange', () => {
-      window.location.reload();
+      // Check if user is actively doing something that shouldn't be interrupted
+      if (isUserBusy()) {
+        console.log('[OfflineManager] SW update available, but user is busy. Queueing reload...');
+        queueReloadWhenIdle();
+      } else {
+        console.log('[OfflineManager] SW updated, reloading page...');
+        window.location.reload();
+      }
     });
 
     // Wait for service worker to be ready with timeout
@@ -549,6 +565,85 @@ function formatBytes(bytes, decimals = 2) {
 }
 
 /**
+ * Checks if the user is currently busy with an operation that shouldn't be interrupted.
+ * This includes:
+ * - Active downloads in progress
+ * - Form inputs being filled
+ * - Text being selected
+ * - Active media playback
+ *
+ * @private
+ * @returns {boolean} True if user appears to be busy
+ */
+function isUserBusy() {
+  // Check if downloads are in progress
+  if (downloadStates.size > 0) {
+    return true;
+  }
+
+  // Check if user is typing in a form field
+  const activeElement = document.activeElement;
+  if (activeElement && (
+    activeElement.tagName === 'INPUT' ||
+    activeElement.tagName === 'TEXTAREA' ||
+    activeElement.isContentEditable
+  )) {
+    return true;
+  }
+
+  // Check if user has selected text (they might be copying)
+  const selection = window.getSelection();
+  if (selection && selection.toString().length > 0) {
+    return true;
+  }
+
+  // Check if media is playing
+  const mediaElements = document.querySelectorAll('audio, video');
+  for (const media of mediaElements) {
+    if (!media.paused && !media.ended) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+/**
+ * Queues a page reload to happen when the user becomes idle.
+ * Uses requestIdleCallback if available, otherwise uses a simple timeout.
+ *
+ * @private
+ */
+function queueReloadWhenIdle() {
+  if (pendingReload) {
+    return; // Already queued
+  }
+
+  pendingReload = true;
+
+  // Function to check if we can reload now
+  const attemptReload = () => {
+    if (!isUserBusy()) {
+      console.log('[OfflineManager] User is now idle, reloading for SW update...');
+      window.location.reload();
+    } else {
+      // Try again in 10 seconds
+      setTimeout(attemptReload, 10000);
+    }
+  };
+
+  // Use requestIdleCallback if available (fires when browser is idle)
+  if ('requestIdleCallback' in window) {
+    requestIdleCallback(() => {
+      attemptReload();
+    }, { timeout: 30000 }); // Force check after 30 seconds max
+  } else {
+    // Fallback: wait 5 seconds then check
+    setTimeout(attemptReload, 5000);
+  }
+}
+
+/**
  * Checks if the browser supports service workers and offline functionality.
  *
  * @returns {boolean} True if offline functionality is supported
@@ -605,8 +700,16 @@ async function queueBackgroundDownload(bibleId, basePath = '/bible') {
     const registration = await navigator.serviceWorker.ready;
 
     // Store pending download info in localStorage for the SW to pick up
+    // Add TTL (Time To Live) of 7 days to prevent stale entries
+    const TTL_DAYS = 7;
+    const expiresAt = Date.now() + (TTL_DAYS * 24 * 60 * 60 * 1000);
     const pendingKey = `michael-pending-download-${bibleId}`;
-    localStorage.setItem(pendingKey, JSON.stringify({ bibleId, basePath, queuedAt: Date.now() }));
+    localStorage.setItem(pendingKey, JSON.stringify({
+      bibleId,
+      basePath,
+      queuedAt: Date.now(),
+      expiresAt
+    }));
 
     // Register a background sync task
     await registration.sync.register(`download-bible-${bibleId}`);
@@ -652,12 +755,10 @@ async function downloadBibleWithSync(bibleId, basePath = '/bible') {
     await downloadBible(bibleId, basePath);
     return { success: true, queued: false };
   } catch (error) {
-    // Check if it's a network error
-    if (error.message.includes('network') ||
-        error.message.includes('timeout') ||
-        error.message.includes('fetch') ||
-        !navigator.onLine) {
+    // Check if it's a network error using multiple detection methods
+    const isNetworkError = isNetworkRelatedError(error);
 
+    if (isNetworkError) {
       // Try to queue for background sync
       if (isBackgroundSyncSupported()) {
         const queued = await queueBackgroundDownload(bibleId, basePath);
@@ -672,9 +773,57 @@ async function downloadBibleWithSync(bibleId, basePath = '/bible') {
 }
 
 /**
- * Gets the list of pending background sync downloads.
+ * Detects if an error is network-related using multiple detection methods.
+ * This is more reliable than just checking error.message across different browsers.
  *
- * @returns {Array<{bibleId: string, basePath: string, queuedAt: number}>}
+ * @private
+ * @param {Error} error - The error to check
+ * @returns {boolean} True if the error appears to be network-related
+ */
+function isNetworkRelatedError(error) {
+  // Check navigator.onLine first (most reliable)
+  if (!navigator.onLine) {
+    return true;
+  }
+
+  // Check error name for specific types
+  if (error.name === 'NetworkError' || error.name === 'TypeError') {
+    return true;
+  }
+
+  // Check error message (less reliable but covers more cases)
+  const errorMessage = (error.message || '').toLowerCase();
+  const networkKeywords = [
+    'network',
+    'fetch',
+    'timeout',
+    'failed to fetch',
+    'networkerror',
+    'net::err',
+    'connection',
+    'offline',
+    'unreachable'
+  ];
+
+  for (const keyword of networkKeywords) {
+    if (errorMessage.includes(keyword)) {
+      return true;
+    }
+  }
+
+  // Check if it's an AbortError from a timeout
+  if (error.name === 'AbortError') {
+    return true;
+  }
+
+  return false;
+}
+
+/**
+ * Gets the list of pending background sync downloads.
+ * Also cleans up any expired entries.
+ *
+ * @returns {Array<{bibleId: string, basePath: string, queuedAt: number, expiresAt: number}>}
  *
  * @example
  * const pending = OfflineManager.getPendingDownloads();
@@ -684,19 +833,66 @@ async function downloadBibleWithSync(bibleId, basePath = '/bible') {
  */
 function getPendingDownloads() {
   const pending = [];
+  const now = Date.now();
+
   for (let i = 0; i < localStorage.length; i++) {
     const key = localStorage.key(i);
     if (key && key.startsWith('michael-pending-download-')) {
       try {
         const data = JSON.parse(localStorage.getItem(key));
+
+        // Check if entry has expired
+        if (data.expiresAt && data.expiresAt < now) {
+          console.log(`[OfflineManager] Removing expired pending download: ${data.bibleId}`);
+          localStorage.removeItem(key);
+          continue;
+        }
+
         pending.push(data);
       } catch (e) {
         // Invalid data, remove corrupted entry
+        console.warn(`[OfflineManager] Removing corrupted pending download entry: ${key}`);
         localStorage.removeItem(key);
       }
     }
   }
   return pending;
+}
+
+/**
+ * Cleans up expired pending download entries from localStorage.
+ * This should be called periodically to prevent localStorage bloat.
+ *
+ * @returns {number} Number of expired entries removed
+ */
+function cleanupExpiredDownloads() {
+  const now = Date.now();
+  let removedCount = 0;
+
+  for (let i = localStorage.length - 1; i >= 0; i--) {
+    const key = localStorage.key(i);
+    if (key && key.startsWith('michael-pending-download-')) {
+      try {
+        const data = JSON.parse(localStorage.getItem(key));
+
+        // Check if entry has expired
+        if (data.expiresAt && data.expiresAt < now) {
+          localStorage.removeItem(key);
+          removedCount++;
+        }
+      } catch (e) {
+        // Invalid data, remove corrupted entry
+        localStorage.removeItem(key);
+        removedCount++;
+      }
+    }
+  }
+
+  if (removedCount > 0) {
+    console.log(`[OfflineManager] Cleaned up ${removedCount} expired pending download entries`);
+  }
+
+  return removedCount;
 }
 
 /**
@@ -837,6 +1033,7 @@ export {
   clearCache,
   getDownloadProgress,
   getPendingDownloads,
+  cleanupExpiredDownloads,
   clearPendingDownload,
   addEventListener,
   removeEventListener,
@@ -858,9 +1055,19 @@ window.Michael.OfflineManager = {
   clearCache,
   getDownloadProgress,
   getPendingDownloads,
+  cleanupExpiredDownloads,
   clearPendingDownload,
   addEventListener,
   removeEventListener,
   isSupported,
   isBackgroundSyncSupported
 };
+
+// Run cleanup on initialization to remove any stale entries
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => {
+    cleanupExpiredDownloads();
+  });
+} else {
+  cleanupExpiredDownloads();
+}

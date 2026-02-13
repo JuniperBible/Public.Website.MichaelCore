@@ -10,6 +10,7 @@
 #   --cyclonedx     Generate CycloneDX JSON
 #   --cyclonedx-xml Generate CycloneDX XML
 #   --syft          Generate Syft JSON (native format)
+#   --quiet         Suppress output messages
 #   --output-dir    Output directory (default: assets/downloads/sbom)
 #   --help          Show this help
 
@@ -20,6 +21,7 @@ PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
 OUTPUT_DIR="${PROJECT_ROOT}/assets/downloads/sbom"
 MANUAL_DEPS="${PROJECT_ROOT}/data/example/software_deps.json"
 GENERATE_ALL=true
+QUIET_MODE=false
 FORMATS=()
 TEMP_FILES=()
 
@@ -68,8 +70,12 @@ while [[ $# -gt 0 ]]; do
             OUTPUT_DIR="$2"
             shift 2
             ;;
+        --quiet)
+            QUIET_MODE=true
+            shift
+            ;;
         --help)
-            head -16 "$0" | tail -14
+            head -17 "$0" | tail -15
             exit 0
             ;;
         *)
@@ -140,8 +146,10 @@ if [[ -f "$MANUAL_DEPS" ]]; then
         exit 1
     fi
 else
-    echo "Warning: Manual deps file not found: $MANUAL_DEPS"
-    echo "Continuing without manual dependencies..."
+    if [[ "$QUIET_MODE" != "true" ]]; then
+        echo "Warning: Manual deps file not found: $MANUAL_DEPS"
+        echo "Continuing without manual dependencies..."
+    fi
 fi
 
 # Project metadata
@@ -152,17 +160,23 @@ if PROJECT_VERSION=$(git describe --tags --always 2>/dev/null); then
 elif [[ -d "$PROJECT_ROOT/.git" ]]; then
     # Git repo exists but describe failed (shallow clone?)
     PROJECT_VERSION=$(git rev-parse --short HEAD 2>/dev/null || echo "unknown")
-    echo "Warning: Unable to get version from git tags, using commit: $PROJECT_VERSION"
+    if [[ "$QUIET_MODE" != "true" ]]; then
+        echo "Warning: Unable to get version from git tags, using commit: $PROJECT_VERSION"
+    fi
 else
     # Not a git repo
     PROJECT_VERSION="0.0.0"
-    echo "Warning: Not a git repository, using version: $PROJECT_VERSION"
+    if [[ "$QUIET_MODE" != "true" ]]; then
+        echo "Warning: Not a git repository, using version: $PROJECT_VERSION"
+    fi
 fi
 
-echo "Generating SBOM for $PROJECT_NAME v$PROJECT_VERSION"
-echo "Output directory: $OUTPUT_DIR"
-echo "Manual deps: $MANUAL_DEPS"
-echo ""
+if [[ "$QUIET_MODE" != "true" ]]; then
+    echo "Generating SBOM for $PROJECT_NAME v$PROJECT_VERSION"
+    echo "Output directory: $OUTPUT_DIR"
+    echo "Manual deps: $MANUAL_DEPS"
+    echo ""
+fi
 
 # Function to merge manual deps into SPDX JSON
 merge_spdx_json() {
@@ -257,7 +271,9 @@ for format in "${FORMATS[@]}"; do
             output_file="$OUTPUT_DIR/sbom.spdx.json"
             temp_file=$(mktemp)
             TEMP_FILES+=("$temp_file")
-            echo "Generating SPDX 2.3 JSON -> $output_file"
+            if [[ "$QUIET_MODE" != "true" ]]; then
+                echo "Generating SPDX 2.3 JSON -> $output_file"
+            fi
             "$SYFT_BIN" scan "$PROJECT_ROOT" \
                 --source-name "$PROJECT_NAME" \
                 --source-version "$PROJECT_VERSION" \
@@ -269,7 +285,9 @@ for format in "${FORMATS[@]}"; do
             output_file="$OUTPUT_DIR/sbom.cdx.json"
             temp_file=$(mktemp)
             TEMP_FILES+=("$temp_file")
-            echo "Generating CycloneDX JSON -> $output_file"
+            if [[ "$QUIET_MODE" != "true" ]]; then
+                echo "Generating CycloneDX JSON -> $output_file"
+            fi
             "$SYFT_BIN" scan "$PROJECT_ROOT" \
                 --source-name "$PROJECT_NAME" \
                 --source-version "$PROJECT_VERSION" \
@@ -279,20 +297,26 @@ for format in "${FORMATS[@]}"; do
             ;;
         cyclonedx-xml)
             output_file="$OUTPUT_DIR/sbom.cdx.xml"
-            echo "Generating CycloneDX XML -> $output_file"
+            if [[ "$QUIET_MODE" != "true" ]]; then
+                echo "Generating CycloneDX XML -> $output_file"
+            fi
             # XML merging is complex, generate directly (manual deps won't be included)
             "$SYFT_BIN" scan "$PROJECT_ROOT" \
                 --source-name "$PROJECT_NAME" \
                 --source-version "$PROJECT_VERSION" \
                 -o "cyclonedx-xml=$output_file" \
                 --quiet
-            echo "  Note: Manual deps not merged into XML format"
+            if [[ "$QUIET_MODE" != "true" ]]; then
+                echo "  Note: Manual deps not merged into XML format"
+            fi
             ;;
         syft-json)
             output_file="$OUTPUT_DIR/sbom.syft.json"
             temp_file=$(mktemp)
             TEMP_FILES+=("$temp_file")
-            echo "Generating Syft JSON -> $output_file"
+            if [[ "$QUIET_MODE" != "true" ]]; then
+                echo "Generating Syft JSON -> $output_file"
+            fi
             "$SYFT_BIN" scan "$PROJECT_ROOT" \
                 --source-name "$PROJECT_NAME" \
                 --source-version "$PROJECT_VERSION" \
@@ -303,13 +327,15 @@ for format in "${FORMATS[@]}"; do
     esac
 done
 
-echo ""
-echo "SBOM generation complete!"
-echo ""
-echo "Manual dependencies merged from: $MANUAL_DEPS"
-echo "  Tools: $("$JQ_BIN" '.tools | length' "$MANUAL_DEPS")"
-echo "  Libraries: $("$JQ_BIN" '.libraries | length' "$MANUAL_DEPS")"
-echo "  Data sources: $("$JQ_BIN" '.data_sources | length' "$MANUAL_DEPS")"
-echo ""
-echo "Generated files:"
-ls -la "$OUTPUT_DIR"/*.{json,xml} 2>/dev/null || true
+if [[ "$QUIET_MODE" != "true" ]]; then
+    echo ""
+    echo "SBOM generation complete!"
+    echo ""
+    echo "Manual dependencies merged from: $MANUAL_DEPS"
+    echo "  Tools: $("$JQ_BIN" '.tools | length' "$MANUAL_DEPS")"
+    echo "  Libraries: $("$JQ_BIN" '.libraries | length' "$MANUAL_DEPS")"
+    echo "  Data sources: $("$JQ_BIN" '.data_sources | length' "$MANUAL_DEPS")"
+    echo ""
+    echo "Generated files:"
+    ls -la "$OUTPUT_DIR"/*.{json,xml} 2>/dev/null || true
+fi

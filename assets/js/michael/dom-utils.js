@@ -38,6 +38,9 @@ const TOAST_MODIFIERS = {
 // TAP LISTENER
 // ============================================================================
 
+// Track all registered tap listeners for cleanup
+const tapListeners = [];
+
 /**
  * Add unified tap listener for mobile and desktop compatibility
  *
@@ -65,28 +68,43 @@ export function addTapListener(element, handler) {
   let touchMoved = false;
 
   // Track touch start
-  element.addEventListener('touchstart', () => {
+  const touchStartHandler = () => {
     touchMoved = false;
-  }, { passive: true });
+  };
+  element.addEventListener('touchstart', touchStartHandler, { passive: true });
 
   // Track if user is scrolling/swiping
-  element.addEventListener('touchmove', () => {
+  const touchMoveHandler = () => {
     touchMoved = true;
-  }, { passive: true });
+  };
+  element.addEventListener('touchmove', touchMoveHandler, { passive: true });
 
   // Handle touch end (tap)
-  element.addEventListener('touchend', (e) => {
+  const touchEndHandler = (e) => {
     if (!touchMoved) {
       e.preventDefault();
       handler(e);
     }
-  });
+  };
+  element.addEventListener('touchend', touchEndHandler);
 
   // Handle click for mouse/trackpad
-  element.addEventListener('click', (e) => {
+  const clickHandler = (e) => {
     // Only fire click if not from touch (touch already handled above)
     if (e.pointerType !== 'touch') {
       handler(e);
+    }
+  };
+  element.addEventListener('click', clickHandler);
+
+  // Track for cleanup
+  tapListeners.push({
+    element,
+    handlers: {
+      touchstart: touchStartHandler,
+      touchmove: touchMoveHandler,
+      touchend: touchEndHandler,
+      click: clickHandler
     }
   });
 }
@@ -289,6 +307,25 @@ export function createLoadingIndicator(message = 'Loading...') {
 }
 
 // ============================================================================
+// CLEANUP
+// ============================================================================
+
+/**
+ * Cleanup all registered tap listeners
+ */
+function cleanup() {
+  tapListeners.forEach(({ element, handlers }) => {
+    if (element && element.parentNode) {
+      element.removeEventListener('touchstart', handlers.touchstart, { passive: true });
+      element.removeEventListener('touchmove', handlers.touchmove, { passive: true });
+      element.removeEventListener('touchend', handlers.touchend);
+      element.removeEventListener('click', handlers.click);
+    }
+  });
+  tapListeners.length = 0;
+}
+
+// ============================================================================
 // BACKWARDS COMPATIBILITY
 // ============================================================================
 
@@ -299,5 +336,11 @@ window.Michael.DomUtils = {
   showMessage,
   dismissToast,
   escapeHtml,
-  createLoadingIndicator
+  createLoadingIndicator,
+  cleanup
 };
+
+// Register cleanup handler
+if (window.Michael && typeof window.Michael.addCleanup === 'function') {
+  window.Michael.addCleanup(cleanup);
+}

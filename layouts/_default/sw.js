@@ -41,6 +41,7 @@ const SHELL_CACHE = `michael-shell-v${CACHE_VERSION}`;
 const CHAPTERS_CACHE = `michael-chapters-v${CACHE_VERSION}`;
 const METADATA_CACHE = `michael-metadata-v${CACHE_VERSION}`;
 const OFFLINE_URL = '/offline.html';
+const MAX_SYNC_RETRIES = 3;
 
 // Track active download operations for cancellation
 const activeDownloads = new Map(); // bibleId -> AbortController
@@ -50,6 +51,9 @@ const bibleMetadata = new Map(); // bibleId -> { totalChapters, totalBooks }
 
 // Track metadata loading Promise to avoid race conditions
 let metadataReady = Promise.resolve();
+
+// Track background sync retry attempts
+const syncRetryCount = new Map(); // syncTag -> retryCount
 
 // Assets to pre-cache on install
 // CSS files are now embedded with their fingerprinted paths by Hugo
@@ -130,10 +134,11 @@ self.addEventListener('install', (event) => {
 
         console.log('[Service Worker] Installation complete');
 
-        // Skip waiting to activate immediately
-        self.skipWaiting();
+        // Skip waiting to activate immediately - only after successful cache
+        await self.skipWaiting();
       } catch (error) {
         console.error('[Service Worker] Installation failed:', error);
+        // Don't skipWaiting on error - let the old SW continue serving
       }
     })()
   );
@@ -235,8 +240,35 @@ async function cacheFirstStrategy(request, cacheName) {
     return networkResponse;
   } catch (error) {
     console.error(`[Service Worker] Cache-first failed for ${request.url}:`, error);
-    // Return a basic error response instead of throwing
-    return new Response('Network error', {
+
+    // Try to return cached version if available (may have existed in cache)
+    try {
+      const cache = await caches.open(cacheName);
+      const cachedResponse = await cache.match(request);
+      if (cachedResponse) {
+        console.log(`[Service Worker] Serving stale cache after network failure: ${request.url}`);
+        return cachedResponse;
+      }
+    } catch (cacheError) {
+      console.warn(`[Service Worker] Cache access failed: ${cacheError.message}`);
+    }
+
+    // For HTML requests, return offline page
+    const accept = request.headers.get('accept');
+    if (accept && accept.includes('text/html')) {
+      try {
+        const offlineCache = await caches.open(SHELL_CACHE);
+        const offlinePage = await offlineCache.match(OFFLINE_URL);
+        if (offlinePage) {
+          return offlinePage;
+        }
+      } catch (offlineError) {
+        console.warn(`[Service Worker] Failed to load offline page: ${offlineError.message}`);
+      }
+    }
+
+    // Last resort: return a basic error response
+    return new Response('Network error and no cache available', {
       status: 408,
       statusText: 'Request Timeout',
       headers: { 'Content-Type': 'text/plain' }
@@ -279,9 +311,26 @@ async function networkFirstStrategy(request, cacheName) {
       console.error(`[Service Worker] Cache access failed for ${request.url}:`, cacheError);
     }
 
-    // Both network and cache failed - return error response
+    // Both network and cache failed
     console.error(`[Service Worker] Network-first failed for ${request.url}:`, error);
-    return new Response('Network error and no cache available', {
+
+    // For HTML requests, try to return offline page
+    const accept = request.headers.get('accept');
+    if (accept && accept.includes('text/html')) {
+      try {
+        const offlineCache = await caches.open(SHELL_CACHE);
+        const offlinePage = await offlineCache.match(OFFLINE_URL);
+        if (offlinePage) {
+          return offlinePage;
+        }
+      } catch (offlineError) {
+        console.warn(`[Service Worker] Failed to load offline page: ${offlineError.message}`);
+      }
+    }
+
+    // Return error response with context
+    const errorType = error.name === 'TypeError' ? 'Network error' : 'Request failed';
+    return new Response(`${errorType} and no cache available`, {
       status: 503,
       statusText: 'Service Unavailable',
       headers: { 'Content-Type': 'text/plain' }
@@ -341,10 +390,33 @@ async function navigationStrategy(request) {
 
 /**
  * Helper: Check if URL is a static asset
+ * Validates both file extension and path to prevent caching user-generated content
  */
 function isStaticAsset(url) {
   const staticExtensions = ['.css', '.js', '.woff', '.woff2', '.ttf', '.eot', '.svg', '.png', '.jpg', '.jpeg', '.gif', '.webp', '.ico'];
-  return staticExtensions.some(ext => url.pathname.endsWith(ext));
+
+  // Must end with a static extension
+  if (!staticExtensions.some(ext => url.pathname.endsWith(ext))) {
+    return false;
+  }
+
+  // Validate path - only cache assets from known static directories
+  // Prevent caching images/files from user-generated or dynamic paths
+  const validPathPrefixes = [
+    '/css/',
+    '/js/',
+    '/fonts/',
+    '/img/',
+    '/images/',
+    '/icons/',
+    '/assets/',
+    '/android-chrome-',
+    '/apple-touch-icon',
+    '/favicon',
+    '/manifest'
+  ];
+
+  return validPathPrefixes.some(prefix => url.pathname.startsWith(prefix) || url.pathname.includes(prefix));
 }
 
 /**
@@ -904,13 +976,18 @@ async function loadAllBibleMetadata() {
 /**
  * Background Sync Event Handler
  * Handles queued Bible downloads when the device comes back online
+ * Implements retry tracking with max attempts limit
  */
 self.addEventListener('sync', (event) => {
   console.log('[Service Worker] Sync event:', event.tag);
 
   if (event.tag.startsWith('download-bible-')) {
     const bibleId = event.tag.replace('download-bible-', '');
-    console.log(`[Service Worker] Background sync for Bible: ${bibleId}`);
+    const syncTag = event.tag;
+
+    // Track retry attempts
+    const currentRetries = syncRetryCount.get(syncTag) || 0;
+    console.log(`[Service Worker] Background sync for Bible: ${bibleId} (attempt ${currentRetries + 1}/${MAX_SYNC_RETRIES})`);
 
     event.waitUntil(
       (async () => {
@@ -920,6 +997,9 @@ self.addEventListener('sync', (event) => {
 
           // Cache the Bible
           await cacheBible(bibleId, basePath);
+
+          // Success - clear retry count
+          syncRetryCount.delete(syncTag);
 
           // Notify clients that background sync completed
           const clients = await self.clients.matchAll();
@@ -932,14 +1012,46 @@ self.addEventListener('sync', (event) => {
 
           console.log(`[Service Worker] Background sync completed for ${bibleId}`);
         } catch (error) {
-          console.error(`[Service Worker] Background sync failed for ${bibleId}:`, error);
+          // Increment retry count
+          const newRetryCount = currentRetries + 1;
+          syncRetryCount.set(syncTag, newRetryCount);
 
-          // Notify clients of failure
+          console.error(`[Service Worker] Background sync failed for ${bibleId} (attempt ${newRetryCount}/${MAX_SYNC_RETRIES}):`, error);
+
+          // Check if we've exceeded max retries
+          if (newRetryCount >= MAX_SYNC_RETRIES) {
+            console.warn(`[Service Worker] Max retries (${MAX_SYNC_RETRIES}) reached for ${bibleId}, giving up`);
+            syncRetryCount.delete(syncTag);
+
+            // Notify clients of permanent failure
+            const clients = await self.clients.matchAll();
+            clients.forEach(client => {
+              client.postMessage({
+                type: 'BACKGROUND_SYNC_COMPLETE',
+                data: {
+                  bible: bibleId,
+                  success: false,
+                  error: error.message,
+                  maxRetriesReached: true
+                }
+              });
+            });
+
+            // Don't re-throw - prevent further retries
+            return;
+          }
+
+          // Notify clients of retry
           const clients = await self.clients.matchAll();
           clients.forEach(client => {
             client.postMessage({
-              type: 'BACKGROUND_SYNC_COMPLETE',
-              data: { bible: bibleId, success: false, error: error.message }
+              type: 'BACKGROUND_SYNC_RETRY',
+              data: {
+                bible: bibleId,
+                error: error.message,
+                retryCount: newRetryCount,
+                maxRetries: MAX_SYNC_RETRIES
+              }
             });
           });
 

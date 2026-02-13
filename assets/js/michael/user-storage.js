@@ -127,10 +127,13 @@ async function ensureDB() {
  * @param {string} bookId - Book ID (e.g., "gen", "matt")
  * @param {number} chapter - Chapter number
  * @param {number} [scrollPos=0] - Scroll position
- * @returns {Promise<void>}
+ * @returns {Promise<boolean>} Returns true if successful, false if quota exceeded
  *
  * @example
- * await UserStorage.saveProgress('kjv', 'gen', 1, 250);
+ * const saved = await UserStorage.saveProgress('kjv', 'gen', 1, 250);
+ * if (!saved) {
+ *   console.error('Failed to save progress - storage quota exceeded');
+ * }
  */
 export async function saveProgress(bibleId, bookId, chapter, scrollPos = 0) {
   const database = await ensureDB();
@@ -153,16 +156,20 @@ export async function saveProgress(bibleId, bookId, chapter, scrollPos = 0) {
       request.onerror = () => {
         const error = request.error;
         if (error && error.name === 'QuotaExceededError') {
-          console.warn('[UserStorage] Storage quota exceeded while saving progress');
+          console.error('[UserStorage] Storage quota exceeded while saving progress');
+          resolve(false); // Return false instead of rejecting
+        } else {
+          reject(error);
         }
-        reject(error);
       };
-      request.onsuccess = () => resolve();
+      request.onsuccess = () => resolve(true);
     } catch (error) {
       if (error.name === 'QuotaExceededError') {
-        console.warn('[UserStorage] Storage quota exceeded while saving progress');
+        console.error('[UserStorage] Storage quota exceeded while saving progress');
+        resolve(false); // Return false instead of throwing
+      } else {
+        reject(error);
       }
-      reject(error);
     }
   });
 }
@@ -251,10 +258,13 @@ export async function getAllProgress() {
  * @param {string} bibleId - Bible translation ID
  * @param {string} reference - Scripture reference (e.g., "John 3:16")
  * @param {string} [note=''] - Optional note
- * @returns {Promise<number>} The bookmark ID
+ * @returns {Promise<number|null>} The bookmark ID, or null if quota exceeded
  *
  * @example
  * const id = await UserStorage.addBookmark('kjv', 'John 3:16', 'Great verse');
+ * if (!id) {
+ *   console.error('Failed to add bookmark - storage quota exceeded');
+ * }
  */
 export async function addBookmark(bibleId, reference, note = '') {
   const database = await ensureDB();
@@ -276,16 +286,20 @@ export async function addBookmark(bibleId, reference, note = '') {
       request.onerror = () => {
         const error = request.error;
         if (error && error.name === 'QuotaExceededError') {
-          console.warn('[UserStorage] Storage quota exceeded while adding bookmark');
+          console.error('[UserStorage] Storage quota exceeded while adding bookmark');
+          resolve(null); // Return null instead of rejecting
+        } else {
+          reject(error);
         }
-        reject(error);
       };
       request.onsuccess = () => resolve(request.result);
     } catch (error) {
       if (error.name === 'QuotaExceededError') {
-        console.warn('[UserStorage] Storage quota exceeded while adding bookmark');
+        console.error('[UserStorage] Storage quota exceeded while adding bookmark');
+        resolve(null); // Return null instead of throwing
+      } else {
+        reject(error);
       }
-      reject(error);
     }
   });
 }
@@ -353,10 +367,13 @@ export async function removeBookmark(id) {
  * @param {string} reference - Scripture reference
  * @param {string} content - Note content
  * @param {string} [highlightColor] - Optional highlight color
- * @returns {Promise<number>} The note ID
+ * @returns {Promise<number|null>} The note ID, or null if quota exceeded
  *
  * @example
  * const id = await UserStorage.addNote('kjv', 'Rom 8:28', 'God works all things...', '#ffff00');
+ * if (!id) {
+ *   console.error('Failed to add note - storage quota exceeded');
+ * }
  */
 export async function addNote(bibleId, reference, content, highlightColor) {
   const database = await ensureDB();
@@ -380,16 +397,20 @@ export async function addNote(bibleId, reference, content, highlightColor) {
       request.onerror = () => {
         const error = request.error;
         if (error && error.name === 'QuotaExceededError') {
-          console.warn('[UserStorage] Storage quota exceeded while adding note');
+          console.error('[UserStorage] Storage quota exceeded while adding note');
+          resolve(null); // Return null instead of rejecting
+        } else {
+          reject(error);
         }
-        reject(error);
       };
       request.onsuccess = () => resolve(request.result);
     } catch (error) {
       if (error.name === 'QuotaExceededError') {
-        console.warn('[UserStorage] Storage quota exceeded while adding note');
+        console.error('[UserStorage] Storage quota exceeded while adding note');
+        resolve(null); // Return null instead of throwing
+      } else {
+        reject(error);
       }
-      reject(error);
     }
   });
 }
@@ -401,7 +422,7 @@ export async function addNote(bibleId, reference, content, highlightColor) {
  * @param {Object} updates - Fields to update
  * @param {string} [updates.content] - New content
  * @param {string} [updates.highlightColor] - New highlight color
- * @returns {Promise<void>}
+ * @returns {Promise<boolean>} Returns true if successful, false if quota exceeded
  */
 export async function updateNote(id, updates) {
   const database = await ensureDB();
@@ -431,17 +452,21 @@ export async function updateNote(id, updates) {
         putRequest.onerror = () => {
           const error = putRequest.error;
           if (error && error.name === 'QuotaExceededError') {
-            console.warn('[UserStorage] Storage quota exceeded while updating note');
+            console.error('[UserStorage] Storage quota exceeded while updating note');
+            resolve(false); // Return false instead of rejecting
+          } else {
+            reject(error);
           }
-          reject(error);
         };
-        putRequest.onsuccess = () => resolve();
+        putRequest.onsuccess = () => resolve(true);
       };
     } catch (error) {
       if (error.name === 'QuotaExceededError') {
-        console.warn('[UserStorage] Storage quota exceeded while updating note');
+        console.error('[UserStorage] Storage quota exceeded while updating note');
+        resolve(false); // Return false instead of throwing
+      } else {
+        reject(error);
       }
-      reject(error);
     }
   });
 }
@@ -534,11 +559,13 @@ export async function removeNote(id) {
  *
  * @param {string} key - Setting key
  * @param {*} value - Setting value (any serializable type)
- * @returns {Promise<void>}
+ * @returns {Promise<boolean>} Returns true if successful, false if quota exceeded
  *
  * @example
- * await UserStorage.setSetting('fontSize', 18);
- * await UserStorage.setSetting('darkMode', true);
+ * const saved = await UserStorage.setSetting('fontSize', 18);
+ * if (!saved) {
+ *   console.error('Failed to save setting - storage quota exceeded');
+ * }
  */
 export async function setSetting(key, value) {
   const database = await ensureDB();
@@ -553,16 +580,20 @@ export async function setSetting(key, value) {
       request.onerror = () => {
         const error = request.error;
         if (error && error.name === 'QuotaExceededError') {
-          console.warn('[UserStorage] Storage quota exceeded while setting preference');
+          console.error('[UserStorage] Storage quota exceeded while setting preference');
+          resolve(false); // Return false instead of rejecting
+        } else {
+          reject(error);
         }
-        reject(error);
       };
-      request.onsuccess = () => resolve();
+      request.onsuccess = () => resolve(true);
     } catch (error) {
       if (error.name === 'QuotaExceededError') {
-        console.warn('[UserStorage] Storage quota exceeded while setting preference');
+        console.error('[UserStorage] Storage quota exceeded while setting preference');
+        resolve(false); // Return false instead of throwing
+      } else {
+        reject(error);
       }
-      reject(error);
     }
   });
 }
