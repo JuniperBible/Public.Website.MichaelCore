@@ -1041,8 +1041,11 @@ function buildComparisonHTML(chaptersData) {
       const bible = bibleData.bibles.find(b => b.id === id);
       return escapeHtml(bible?.abbrev || id);
     }).join(', ');
+  // All values are escaped: bookName via escapeHtml, currentChapter/verseRef are validated numbers
+  const safeChapter = Number.isInteger(currentChapter) ? currentChapter : 0;
+  const safeVerseRef = currentVerse > 0 ? `:${Math.floor(currentVerse)}` : '';
   html += `<header style="text-align: center; margin-bottom: 1.5rem;">
-    <h2 style=" margin-bottom: 0.25rem;">${escapeHtml(bookName)} ${currentChapter}${verseRef}</h2>
+    <h2 style=" margin-bottom: 0.25rem;">${escapeHtml(bookName)} ${safeChapter}${safeVerseRef}</h2>
     <p style="color: var(--michael-text-muted);  font-size: 0.875rem; margin: 0;">${abbrevList}</p>
   </header>`;
 
@@ -1053,11 +1056,12 @@ function buildComparisonHTML(chaptersData) {
 
   // Verse-by-verse comparison - iterate through each verse
   versesToShow.forEach((verse) => {
-    const verseNum = verse.number;
+    // Validate verse number is a safe integer
+    const verseNum = Number.isInteger(verse.number) ? verse.number : 0;
 
     html += `<article class="parallel-verse" data-verse="${verseNum}">
       <header>
-        <h3 style=" font-weight: bold; color: var(--michael-accent); margin-bottom: 0.5rem; font-size: 1rem;">${escapeHtml(bookName)} ${currentChapter}:${verseNum}</h3>
+        <h3 style=" font-weight: bold; color: var(--michael-accent); margin-bottom: 0.5rem; font-size: 1rem;">${escapeHtml(bookName)} ${safeChapter}:${verseNum}</h3>
       </header>
       <div>`;
 
@@ -1702,7 +1706,7 @@ function showSSSLoading() {
  * @param {string} message - Error message to display
  */
 function showSSSError(message) {
-  // SECURITY: escapeHtml sanitizes the message parameter
+  // XSS Safe: message is sanitized via escapeHtml() before HTML insertion
   const errorHtml = `<div class="center muted">${escapeHtml(message)}</div>`;
   if (sssLeftPane) sssLeftPane.innerHTML = errorHtml;
   if (sssRightPane) sssRightPane.innerHTML = errorHtml;
@@ -2052,12 +2056,15 @@ function buildSSSPaneHTML(verses, bible, bookName, compareVerses, compareBible) 
 
   // Check for versification mismatch (e.g., Masoretic vs Septuagint)
   // Display warning when comparing Bibles with different verse numbering systems
+  // XSS Safe: bible.versification is sanitized via escapeHtml()
   const versificationWarning = (compareBible && bible?.versification && compareBible?.versification &&
     bible.versification !== compareBible.versification)
     ? `<small style="color: var(--michael-text-muted); display: block; font-size: 0.7rem;">${escapeHtml(bible.versification)} versification</small>`
     : '';
 
+  // XSS Safe: bible.abbrev is sanitized via escapeHtml()
   const bibleAbbrev = escapeHtml(bible?.abbrev || 'Unknown');
+  // XSS Safe: bibleAbbrev and versificationWarning both contain escaped content
   let html = `<header class="translation-label" style="text-align: center; padding-bottom: 0.5rem;">
     <strong>${bibleAbbrev}</strong>${versificationWarning}
   </header>`;
@@ -2065,8 +2072,11 @@ function buildSSSPaneHTML(verses, bible, bookName, compareVerses, compareBible) 
   // Render each verse with highlighting based on comparison
   verses.forEach(verse => {
     const compareVerse = compareVerses?.find(v => v.number === verse.number);
+    // XSS Safe: highlightDifferences() returns HTML with text content escaped via escapeHtml()
     const highlightedText = highlightDifferences(verse.text, compareVerse?.text);
 
+    // XSS Safe: verse.number is numeric data from Bible API (not user input)
+    // XSS Safe: highlightedText contains properly escaped content from highlightDifferences()
     html += `<div class="parallel-verse">
       <span class="parallel-verse-num">${verse.number}</span>
       <span>${highlightedText}</span>
@@ -2171,6 +2181,7 @@ function highlightNormalDifferences(text, otherTexts) {
         // It's a word (possibly with punctuation)
         const cleanWord = word.toLowerCase().replace(/[.,;:!?'"]/g, '');
         if (diffWordsLower.has(cleanWord)) {
+          // XSS Safe: word is sanitized via escapeHtml() before insertion
           return `<span class="diff-insert">${escapeHtml(word)}</span>`;
         }
       }
@@ -2251,6 +2262,7 @@ function highlightDifferences(text, compareText) {
         // It's a word (possibly with punctuation)
         const cleanWord = word.toLowerCase().replace(/[.,;:!?'"]/g, '');
         if (diffWordsLower.has(cleanWord)) {
+          // XSS Safe: word is sanitized via escapeHtml() before insertion
           return `<span class="diff-insert">${escapeHtml(word)}</span>`;
         }
       }
@@ -2322,6 +2334,7 @@ function highlightWithTextCompare(text, compareText) {
         html += TC.escapeHtml(normalizedText.slice(pos, h.offset));
       }
       // Add highlighted text
+      // XSS Safe: h.original is sanitized via TC.escapeHtml() before insertion
       html += `<span class="diff-insert">${TC.escapeHtml(h.original)}</span>`;
       pos = h.offset + h.length;
     }

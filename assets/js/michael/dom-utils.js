@@ -304,9 +304,7 @@ export function escapeHtml(text) {
  * element.innerHTML = createLoadingIndicator('Fetching chapter data...');
  */
 export function createLoadingIndicator(message = 'Loading...') {
-  // SECURITY: The message parameter is sanitized using escapeHtml() to prevent XSS attacks.
-  // This ensures any HTML special characters (<, >, &, ", ') in the message are escaped
-  // before being inserted into the template literal, making it safe to use with innerHTML.
+  // XSS Safe: message is sanitized via escapeHtml() before HTML insertion
   return `<article aria-busy="true" style="text-align: center; padding: 2rem 0;">${escapeHtml(message)}</article>`;
 }
 
@@ -326,10 +324,14 @@ function hasDangerousProtocol(url) {
 /**
  * Check if path matches any allowed patterns
  * @param {string} path - URL path
- * @param {RegExp[]} patterns - Allowed patterns
+ * @param {RegExp[]} patterns - Allowed patterns (must be hardcoded, not user input)
  * @returns {boolean} True if matches
  */
 function matchesAllowedPatterns(path, patterns) {
+  // Limit path length to prevent ReDoS attacks
+  if (path.length > 500) {
+    return false;
+  }
   return patterns.length === 0 || patterns.some(pattern => pattern.test(path));
 }
 

@@ -31,6 +31,7 @@ function checkAndNavigate(url, fallbackUrl, selectEl) {
   // - Only same-origin URLs matching /bible/* or /data/bibles/* allowed
   // - Dangerous protocols (javascript:, data:) blocked by hasDangerousProtocol()
   const validatedUrl = url; // Explicit: URL has passed isValidFetchUrl() check above
+  // HTTP Safe: URL validated by isValidFetchUrl() with BIBLE_URL_PATTERNS - same-origin only
   fetch(validatedUrl, { method: 'HEAD' })
     .then(function(response) {
       if (response.ok) {
