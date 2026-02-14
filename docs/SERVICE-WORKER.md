@@ -174,6 +174,7 @@ The service worker provides detailed console logging:
 ## Cache Management
 
 ### Cache Names
+
 - **Shell cache:** `michael-shell-v${CACHE_VERSION}`
 - **Chapters cache:** `michael-chapters-v${CACHE_VERSION}`
 
@@ -279,16 +280,19 @@ The registration script includes feature detection, so unsupported browsers simp
 ## Performance Impact
 
 ### Initial Load
+
 - **Service worker script:** ~10KB
 - **Registration overhead:** Minimal (async)
 - **No impact on first page load**
 
 ### Subsequent Loads
+
 - **Cache-first assets:** Instant (no network request)
 - **Network-first pages:** Slightly slower (cache fallback adds overhead)
 - **Overall:** Faster experience due to caching
 
 ### Storage
+
 - **Shell cache:** ~50KB
 - **Default chapters:** ~200KB (4 chapters)
 - **Total initial:** ~250KB

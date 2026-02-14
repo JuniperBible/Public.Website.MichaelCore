@@ -27,28 +27,33 @@ It must run in two modes:
 ## 2) Cleanup Objectives (What "better" means)
 
 ### 2.1 Human Readability & Comments
+
 - Clear file headers and module boundaries
 - JSDoc for exported functions/classes
 - Consistent naming, consistent patterns
 - Minimal "magic" DOM + state, documented assumptions
 
 ### 2.2 DRY (Don't Repeat Yourself)
+
 - Remove duplicate functions across `parallel.js`, `share.js`, `bible-search.js`, templates/partials
 - Centralize common logic in shared modules and reusable partials/components
 
 ### 2.3 Security
+
 - CSP-compatible by default (no inline JS, minimized innerHTML usage)
 - Input validation/sanitization for user-controlled inputs (search terms, URL parameters, selection state)
 - Offline-first without increasing attack surface
 - Avoid remote runtime dependencies by default
 
 ### 2.4 Usability & Accessibility
+
 - Meet **WCAG 2.1 AA** (minimum) for navigation, controls, tooltips/menus, contrast, focus
 - Full keyboard support and focus visibility
 - Screen reader announcements for dynamic changes
 - Respect `prefers-reduced-motion`
 
 ### 2.5 Web Standards
+
 - Semantic HTML5 templates
 - CSS custom properties for theme + contrast control
 - Vanilla JS, no framework lock-in
@@ -150,6 +155,7 @@ Definition of Done:
 **Purpose:** Make module safer, CSP-friendly, and usable offline without remote dependencies.
 
 #### 2.1 Bundle Strong's Definitions Locally
+
 - Add `juniper extract-strongs` command (from SWORD modules)
 - Generate:
   - `data/strongs/hebrew.json`
@@ -180,6 +186,7 @@ DoD:
 - User has control to download/clear offline data
 
 #### 2.3 CSP Compatibility
+
 - Remove/avoid inline event handlers
 - Reduce `innerHTML` usage in places like `highlightMatches()`
 - Prefer `textContent`, `createElement`, DOM fragments
@@ -190,6 +197,7 @@ DoD:
 - Any unavoidable exceptions explicitly documented (and minimized)
 
 #### 2.4 Social Sharing Offline Fallbacks
+
 - `isOnline()` check
 - When offline: replace social buttons with "Copy formatted text"
 - Provide toast feedback: "Copied! Share when online."
@@ -219,6 +227,7 @@ DoD:
 | Muted text contrast | `theme.css` | use higher contrast variable |
 
 #### 3.3 Screen Reader + Motion Enhancements
+
 - `aria-live="polite"` for search results/status updates
 - Dedicated SR-only announcement region for compare updates
 - `prefers-reduced-motion` support
@@ -276,6 +285,7 @@ Create `docs/`:
 - `HUGO-MODULE-USAGE.md` — how to embed vs standalone usage
 
 #### 5.3 Template Documentation
+
 - File headers with parameters + data sources
 - Versification notes and assumptions where relevant
 - Comments around complex template blocks
@@ -303,24 +313,28 @@ DoD:
 ## 8) Implementation Order (Sprints)
 
 ### Sprint 1 — Foundation (DRY + Security Core)
+
 1. Create `assets/js/michael/`
 2. Extract `dom-utils.js` and `bible-api.js`
 3. Update `parallel.js` and `bible-search.js` to use shared modules
 4. Add CSP meta tag (document recommended header approach)
 
 ### Sprint 2 — UI Components + Accessibility
+
 1. Implement `VerseGrid` and `ChapterDropdown`
 2. Add ARIA patterns + keyboard support (ShareMenu, Strong's)
 3. Extract Hugo partials (color picker, verse grid, SSS toggle)
 4. Address key contrast issues + focus-visible
 
 ### Sprint 3 — Offline + Self-Containment
+
 1. Add `juniper extract-strongs`
 2. Bundle Strong's definitions with provenance
 3. Implement service worker with versioning + user controls
 4. Add offline share/copy fallbacks
 
 ### Sprint 4 — CSS + Documentation
+
 1. Standardize CSS components, remove inline styles
 2. Finish refactor cleanup + reduce style.cssText usage
 3. Add JSDoc and docs/* architecture pages

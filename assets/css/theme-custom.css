@@ -105,60 +105,58 @@
   --font-hand: "Patrick Hand", cursive;
 }
 
-/* Light mode (OS preference, no explicit toggle) */
-@media (prefers-color-scheme: light) {
-  :root:not([data-theme="dark"]) {
-    /* Brand - Muted purple (juniperbible accent) */
-    --brand-100: #f0e0f0;
-    --brand-400: #7d5c7d;
-    --brand-500: #6b4c6b;
-    --brand-600: #684580;
+/* Light mode - explicit toggle OR OS preference with no explicit choice */
+:root[data-theme="light"] {
+  /* Brand - Muted purple (juniperbible accent) */
+  --brand-100: #f0e0f0;
+  --brand-400: #7d5c7d;
+  --brand-500: #6b4c6b;
+  --brand-600: #684580;
 
-    /* Success - Green */
-    --success-100: #e8f5e9;
-    --success-500: #16a34a;
+  /* Success - Green */
+  --success-100: #e8f5e9;
+  --success-500: #16a34a;
 
-    /* Background / Surfaces (warm parchment) */
-    --bg-0: #b8a080;
-    --surface-0: #e6ddc0;
-    --surface-1: #ebe5d8;
-    --surface-2: #ffffff;
+  /* Background / Surfaces (warm parchment) */
+  --bg-0: #b8a080;
+  --surface-0: #e6ddc0;
+  --surface-1: #ebe5d8;
+  --surface-2: #ffffff;
 
-    /* Text */
-    --text-900: #1a1a1a;
-    --text-700: #4a4540;
-    --text-500: #6b6560;
-    --text-400: #857f78;
+  /* Text */
+  --text-900: #1a1a1a;
+  --text-700: #4a4540;
+  --text-500: #6b6560;
+  --text-400: #857f78;
 
-    /* Borders */
-    --border: #d4cfc5;
-    --border-strong: #b8b2a6;
-    --border-hover: rgba(0, 0, 0, 0.55);
+  /* Borders */
+  --border: #d4cfc5;
+  --border-strong: #b8b2a6;
+  --border-hover: rgba(0, 0, 0, 0.55);
 
-    /* Shadows */
-    --shadow-0: 0 1px 2px rgba(0, 0, 0, 0.05);
-    --shadow-1: 0 4px 6px rgba(0, 0, 0, 0.07), 0 1px 3px rgba(0, 0, 0, 0.05);
+  /* Shadows */
+  --shadow-0: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-1: 0 4px 6px rgba(0, 0, 0, 0.07), 0 1px 3px rgba(0, 0, 0, 0.05);
 
-    /* Focus ring */
-    --focus-ring: 0 0 0 3px rgba(107, 76, 107, 0.35);
+  /* Focus ring */
+  --focus-ring: 0 0 0 3px rgba(107, 76, 107, 0.35);
 
-    /* Diff highlighting colors (light mode) */
-    --diff-add: #99e699;        /* Darkened for 4.5:1 contrast */
-    --diff-omit: #e6e6e6;
-    --diff-punct: #ffdd33;      /* Darkened for 4.5:1 contrast */
-    --diff-spelling: #ffe0b3;
-    --diff-subst: #ffcccc;
+  /* Diff highlighting colors (light mode) */
+  --diff-add: #99e699;        /* Darkened for 4.5:1 contrast */
+  --diff-omit: #e6e6e6;
+  --diff-punct: #ffdd33;      /* Darkened for 4.5:1 contrast */
+  --diff-spelling: #ffe0b3;
+  --diff-subst: #ffcccc;
 
-    /* State colors (light mode) */
-    --state-error: #d32f2f;
-    --state-error-bg: #ffebee;
+  /* State colors (light mode) */
+  --state-error: #d32f2f;
+  --state-error-bg: #ffebee;
 
-    /* Surface alpha */
-    --surface-alpha: rgba(255, 255, 255, 0.55);
+  /* Surface alpha */
+  --surface-alpha: rgba(255, 255, 255, 0.55);
 
-    /* Subtle backgrounds */
-    --bg-light: rgba(0, 0, 0, 0.04);
-  }
+  /* Subtle backgrounds */
+  --bg-light: rgba(0, 0, 0, 0.04);
 }
 
 /* -----------------------------

@@ -566,16 +566,19 @@ syft scan . -o json | grype
 ### Dependency Update Policy
 
 **Build dependencies:**
+
 - Hugo: Use latest stable version (no pinning)
 - Go: Use latest stable version
 - Syft: Use latest stable version
 
 **Juniper Go dependencies:**
+
 - Pin minor versions in `go.mod`
 - Update quarterly or when vulnerabilities are reported
 - Test after updates to ensure no breakage
 
 **Vendored packages:**
+
 - Update when security issues are discovered
 - Review license changes before updating
 

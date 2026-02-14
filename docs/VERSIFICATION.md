@@ -34,6 +34,7 @@ Matthew through Revelation
 Protestant canon plus the Apocrypha between the testaments.
 
 **Additional books (7):**
+
 - 1 Esdras
 - 2 Esdras
 - Tobit
@@ -56,6 +57,7 @@ Protestant canon plus the Apocrypha between the testaments.
 The Catholic canon includes deuterocanonical books integrated into the Old Testament.
 
 **Deuterocanonical books (7):**
+
 - Tobit
 - Judith
 - 1 Maccabees
@@ -65,6 +67,7 @@ The Catholic canon includes deuterocanonical books integrated into the Old Testa
 - Baruch
 
 **Also includes:**
+
 - Additions to Esther (within Esther)
 - Additions to Daniel (within Daniel)
 
@@ -75,6 +78,7 @@ The Catholic canon includes deuterocanonical books integrated into the Old Testa
 Eastern Orthodox canon varies by jurisdiction but typically includes:
 
 **Additional to Catholic:**
+
 - 3 Maccabees
 - 4 Maccabees (appendix)
 - 1 Esdras
@@ -88,6 +92,7 @@ Eastern Orthodox canon varies by jurisdiction but typically includes:
 The Greek Old Testament used by early Christians.
 
 **Characteristics:**
+
 - 53 books total
 - Different book order than Hebrew Bible
 - Includes deuterocanonical works
@@ -100,6 +105,7 @@ The Greek Old Testament used by early Christians.
 The Hebrew Masoretic text following the Leningrad Codex.
 
 **Characteristics:**
+
 - 39 books (Protestant OT only)
 - Hebrew book order (Torah, Nevi'im, Ketuvim)
 - Verse numbering may differ from English translations
@@ -123,6 +129,7 @@ Psalm numbering differs between Hebrew (Masoretic) and Greek (Septuagint) tradit
 | — | Ps 151 | Greek only |
 
 **Michael handles this by:**
+
 - Using the versification system to determine numbering
 - Displaying the appropriate psalm number for each tradition
 - Mapping between systems when comparing translations

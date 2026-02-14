@@ -74,6 +74,7 @@ grep -r "font-face" assets/css/
 ```
 
 **Findings:**
+
 - No `@import` statements found
 - No `@font-face` declarations with external URLs
 - All CSS is bundled locally
@@ -90,6 +91,7 @@ grep -r "cdn\|googleapis\|cloudflare\|jsdelivr\|unpkg" layouts/
 ```
 
 **Findings:**
+
 - No CDN references found in any template files
 - All resources served from `'self'` origin only
 
@@ -102,6 +104,7 @@ grep -r "cdn\|googleapis\|cloudflare\|jsdelivr\|unpkg" layouts/
 ### Strong's Concordance Module (`assets/js/strongs.js`)
 
 **Changes Made:**
+
 - ✅ Removed `fetchFromAPI()` function (lines 309-322)
 - ✅ Removed external API call code (lines 244-257)
 - ✅ Updated documentation to clarify zero runtime dependencies
@@ -117,6 +120,7 @@ grep -r "cdn\|googleapis\|cloudflare\|jsdelivr\|unpkg" layouts/
 ### Share Menu Component (`assets/js/michael/share-menu.js`)
 
 **Behavior:**
+
 - ✅ Twitter/Facebook URLs only used for `window.open()` (user-initiated)
 - ✅ When offline: Social buttons disabled with "Unavailable offline" message
 - ✅ Copy functionality works 100% offline
@@ -127,6 +131,7 @@ grep -r "cdn\|googleapis\|cloudflare\|jsdelivr\|unpkg" layouts/
 ### Service Worker (`static/sw.js`)
 
 **Verification:**
+
 - ✅ Lines 137-139: Only handles same-origin requests
 - ✅ No `fetch()` calls to external APIs
 - ✅ All caching strategies use local resources only
@@ -137,6 +142,7 @@ grep -r "cdn\|googleapis\|cloudflare\|jsdelivr\|unpkg" layouts/
 ### Base HTML Template (`layouts/_default/baseof.html`)
 
 **Verification:**
+
 - ✅ No external CSS loaded
 - ✅ No external JavaScript loaded
 - ✅ No external fonts loaded
@@ -184,17 +190,20 @@ frame-ancestors 'none'; base-uri 'self'; form-action 'self';
 ### Service Worker Caching Strategy
 
 **Shell Assets (Pre-cached):**
+
 - `/` (homepage)
 - `/offline.html`
 - All JavaScript files
 - All CSS files
 
 **Chapter Pages (Cached on demand):**
+
 - Bible chapter pages cached as user browses
 - Network-first with cache fallback
 - Works offline after first visit
 
 **Default Pre-cached Chapters:**
+
 - Genesis 1
 - Psalm 23
 - Matthew 1
@@ -340,6 +349,7 @@ performance.getEntriesByType('resource').forEach(r => {
 The Michael Bible Module has been verified to have **ZERO external runtime dependencies**. All core functionality works 100% offline with local data only.
 
 **External URLs in the codebase are:**
+
 - Documentation/attribution links
 - User-initiated social sharing (optional)
 - Manual reference links (Strong's concordance)

@@ -14,12 +14,14 @@ let darkIcon = null;
 
 /**
  * Update icon visibility based on current theme
+ * Shows sun icon (light) when dark mode is active (click to switch to light)
+ * Shows moon icon (dark) when light mode is active (click to switch to dark)
  */
 function updateIcons() {
   const currentTheme = document.documentElement.getAttribute('data-theme');
-  const isDark = currentTheme === 'dark' ||
-                 (!currentTheme && window.matchMedia('(prefers-color-scheme: dark)').matches);
+  const isDark = currentTheme === 'dark';
 
+  // Show sun when dark (click to go light), show moon when light (click to go dark)
   if (lightIcon) lightIcon.style.display = isDark ? 'block' : 'none';
   if (darkIcon) darkIcon.style.display = isDark ? 'none' : 'block';
 }
@@ -29,9 +31,7 @@ function updateIcons() {
  */
 function toggleTheme() {
   const currentTheme = document.documentElement.getAttribute('data-theme');
-  const isDark = currentTheme === 'dark' ||
-                 (!currentTheme && window.matchMedia('(prefers-color-scheme: dark)').matches);
-  const newTheme = isDark ? 'light' : 'dark';
+  const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
 
   document.documentElement.setAttribute('data-theme', newTheme);
   try {

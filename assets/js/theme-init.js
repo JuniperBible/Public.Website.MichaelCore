@@ -23,8 +23,11 @@ function initTheme() {
   } catch (e) {
     // localStorage unavailable (private browsing) - fall through to system preference
   }
+  // Set theme based on system preference
   if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
     document.documentElement.setAttribute('data-theme', 'dark');
+  } else {
+    document.documentElement.setAttribute('data-theme', 'light');
   }
 }
 

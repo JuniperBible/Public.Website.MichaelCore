@@ -10,12 +10,14 @@
 ### 1.1 Hugo Templates (`/home/justin/Programming/Workspace/michael/layouts/`)
 
 #### Core Layout Templates
+
 - **`layouts/_default/baseof.html`** - Base template for all pages
   - Loads `assets/css/theme.css` (minified and fingerprinted)
   - Includes header and footer partials
   - Provides `scripts` block for page-specific JavaScript
 
 #### Bible Page Templates
+
 - **`layouts/bible/list.html`** - Bible translations list page
   - Displays all available Bible translations as cards
   - Quick links to Compare and Search
@@ -53,6 +55,7 @@
   - Embeds Bible index as JSON for JavaScript
 
 #### Partials
+
 - **`layouts/partials/header.html`** - Site header
 - **`layouts/partials/footer.html`** - Site footer
 - **`layouts/partials/prose-content.html`** - Prose content wrapper
@@ -66,10 +69,12 @@
 - **`layouts/partials/michael/color-picker.html`** - Color picker (unused in current code)
 
 #### License Pages
+
 - **`layouts/licenses/list.html`** - License list page
 - **`layouts/licenses/single.html`** - Individual license page
 
 #### Default Templates
+
 - **`layouts/_default/list.html`** - Default list template
 - **`layouts/_default/single.html`** - Default single page template
 - **`layouts/index.html`** - Homepage template
@@ -77,6 +82,7 @@
 ### 1.2 JavaScript Files (`/home/justin/Programming/Workspace/michael/assets/js/`)
 
 #### Core Functionality
+
 - **`assets/js/parallel.js`** (1264 lines) - Parallel translation comparison controller
   - State management for both Normal and SSS modes
   - On-demand chapter fetching (avoids loading 32MB of data)
@@ -130,6 +136,7 @@
 ### 1.3 Data Paths
 
 #### Primary Data Sources
+
 - **`data/example/bible.json`** - Bible metadata
   - Schema: `/static/schemas/bible.schema.json`
   - Contains: id, title, abbrev, description, language, license, versification, features, tags, weight
@@ -148,12 +155,14 @@
 - **`data/example/software_deps.json`** - Software dependencies for SBOM
 
 #### External Data Mounts (hugo.toml)
+
 - **SPDX data:** `tools/juniper/vendor_external/spdx/licenses.json` → `data/spdx/`
 - **choosealicense.com data:** `tools/juniper/vendor_external/choosealicense/` → `data/choosealicense/`
   - licenses.json
   - rules.json
 
 #### JSON Schemas
+
 - **`static/schemas/bible.schema.json`** - Metadata schema
 - **`static/schemas/bible-auxiliary.schema.json`** - Content schema
 
@@ -197,6 +206,7 @@
 ```
 
 #### Configuration
+
 - **basePath:** `/bible` (configurable via `params.michael.basePath`)
 - **backLink:** `/` (configurable via `params.michael.backLink`)
 
@@ -737,6 +747,7 @@ Runtime:
 ## 7. Key Observations for CSS Refactoring
 
 ### 7.1 Inline Styles Detected
+
 - **Compare page:** Extensive inline styles in template (padding, gaps, sizing)
 - **Bible nav:** Inline styles for dropdown widths
 - **SSS mode:** Inline color picker positioning
@@ -744,6 +755,7 @@ Runtime:
 - **Verse grid:** Inline button sizing and colors
 
 ### 7.2 CSS Class Patterns
+
 - **Utility classes:** `.hidden`, `.center`, `.muted`, `.mt-1`, `.mt-2`, `.mt-3`
 - **Component classes:** `.panel`, `.panel--inner`, `.card`, `.btn`, `.btn--sm`, `.btn--secondary`
 - **Grid classes:** `.grid-2`, `.row`, `.col`
@@ -753,12 +765,14 @@ Runtime:
 - **Share classes:** `.share-menu`, `.share-menu-item`, `.share-menu-divider`
 
 ### 7.3 JavaScript-CSS Coupling
+
 - **Dynamic classes:** `.is-active`, `.is-disabled`, `.copied`, `.highlight-verse`
 - **CSS variable reads:** `var(--michael-accent)`, `var(--michael-text-muted)`, `var(--surface-1)`, etc.
 - **CSS variable writes:** `--highlight-color` (set dynamically)
 - **Style attribute writes:** Background colors, text colors, display properties
 
 ### 7.4 Responsive Design Needs
+
 - Mobile touch handling (tap listeners)
 - Chapter grid (responsive layout)
 - Book grid (responsive layout)

@@ -131,11 +131,13 @@ Michael generates SBOMs in **four formats** to support different tools and use c
 **Specification:** https://spdx.dev/
 
 **Use cases:**
+
 - Standard format for license compliance
 - Widely adopted in enterprise and government
 - Supported by major scanning tools (Black Duck, Snyk, etc.)
 
 **Key features:**
+
 - Comprehensive license information
 - Package relationships and dependencies
 - Copyright and attribution data
@@ -148,12 +150,14 @@ Michael generates SBOMs in **four formats** to support different tools and use c
 **Specification:** https://cyclonedx.org/
 
 **Use cases:**
+
 - Security-focused SBOM format
 - Integration with vulnerability databases (NVD, OSV)
 - Supply chain risk management
 - DevSecOps toolchains
 
 **Key features:**
+
 - Component vulnerability tracking
 - Dependency graph representation
 - CVE (Common Vulnerabilities and Exposures) mapping
@@ -166,11 +170,13 @@ Michael generates SBOMs in **four formats** to support different tools and use c
 **Specification:** https://cyclonedx.org/
 
 **Use cases:**
+
 - Enterprise tools that require XML (instead of JSON)
 - Legacy systems integration
 - XSLT transformations and XML tooling
 
 **Key features:**
+
 - Same data as CycloneDX JSON
 - XML schema validation
 - Human-readable (with proper XML viewer)
@@ -182,11 +188,13 @@ Michael generates SBOMs in **four formats** to support different tools and use c
 **Specification:** https://github.com/anchore/syft
 
 **Use cases:**
+
 - Maximum detail and fidelity
 - Syft-specific tooling and analysis
 - Debugging and development
 
 **Key features:**
+
 - Most comprehensive format (includes all Syft metadata)
 - File digests (SHA-1, SHA-256)
 - ELF binary analysis (for compiled Go binaries)

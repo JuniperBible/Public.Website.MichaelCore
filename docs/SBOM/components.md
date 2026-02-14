@@ -391,6 +391,7 @@ See: `tools/juniper/go.mod` for full dependency tree
 **Source:** https://github.com/github/choosealicense.com
 **License:** MIT
 **Files:**
+
 - `licenses.json` - License metadata
 - `rules.json` - License permission/condition/limitation rules
 - `assets/vendor/hint.css/` - CSS tooltips (MIT licensed)

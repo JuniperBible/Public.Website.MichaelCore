@@ -12,18 +12,21 @@ Security, accessibility, and robustness sprint with comprehensive fixes across J
 ### Changed
 
 #### Service Worker Improvements
+
 - Moved `skipWaiting()` to execute after successful cache completion
 - Added path validation for static asset caching (whitelist approach)
 - Added retry tracking for background sync with `MAX_SYNC_RETRIES = 3`
 - Returns `offline.html` for HTML requests when network and cache fail
 
 #### PWA & Offline Manager
+
 - Added `isUserBusy()` check to prevent reload during downloads/form entry
 - Added 7-day TTL for background sync localStorage entries with auto-cleanup
 - Added comprehensive `isNetworkRelatedError()` with multiple detection methods
 - User storage functions now return `false`/`null` on QuotaExceededError
 
 #### Build System
+
 - Removed `vendor-package` from default build target (now on-demand only)
 - Added Hugo server startup verification in test target
 - Made `pkill` more specific with port matching
@@ -33,6 +36,7 @@ Security, accessibility, and robustness sprint with comprehensive fixes across J
 ### Added
 
 #### JavaScript Null Safety & Memory Leak Prevention
+
 - Null guards for DOM elements in `theme-toggle.js`, `pwa-install.js`, `share-menu.js`
 - HTML escaping for XSS protection in `chapter-reader.js` verse rendering
 - Try-catch and validation for localStorage in `pwa-install.js`
@@ -43,6 +47,7 @@ Security, accessibility, and robustness sprint with comprehensive fixes across J
   - `dom-utils.js` (tap listeners)
 
 #### Accessibility (WCAG 2.1 AA)
+
 - Error announcer region with `role="alert"` in search page
 - `role="region"` and `aria-label` on search results container
 - `aria-live` and `aria-atomic` on cache status and progress elements
@@ -52,12 +57,14 @@ Security, accessibility, and robustness sprint with comprehensive fixes across J
 ### Fixed
 
 #### Hugo Template Security
+
 - XSS vulnerability in `sw-register.html` — replaced innerHTML with DOM methods
 - Added `$bibleData` nil checks in `bible/single.html`
 - Added `$bookData` nil check in `bible-nav.html`
 - Made `basePath` configurable via data attribute in `continue-reading.html`
 
 #### CSS Dark Mode & Contrast (WCAG AA Compliance)
+
 - Toast backgrounds darkened for proper text contrast (`theme-colors.css`)
 - Diff highlight colors adjusted for 4.5:1 ratio
 - Dark mode text colors lightened (`--text-500: #b8b8b8`, `--text-400: #909090`)
@@ -67,6 +74,7 @@ Security, accessibility, and robustness sprint with comprehensive fixes across J
 - Increased tile touch targets from 40px to 44px (WCAG minimum)
 
 #### Build Script Error Handling
+
 - Added README existence check in `check-all.sh`
 - Captured stderr separately for debugging instead of swallowing
 - Added warning comments for destructive operations
@@ -80,12 +88,14 @@ Post-ES6 cleanup sprint addressing null safety, accessibility, and configuration
 ### Changed
 
 #### Complete ES6 Migration
+
 - `chapter-reader.js` — Converted from IIFE to ES6 module with exports
 - `bible-filter.js` — Converted from IIFE to ES6 module with exports
 - `theme-toggle.js` — Converted from IIFE to ES6 module with exports
 - `theme-init.js` — Converted from IIFE to ES6 module (immediate execution preserved)
 
 #### Configuration Centralization
+
 - Added `serviceWorkerPath`, `pwaInstallReshowDays`, `toastAnimationMs` to `config.js`
 - Updated `offline-manager.js`, `pwa-install.js`, `dom-utils.js` to use centralized config
 - Removed hardcoded paths and magic numbers throughout codebase
@@ -93,6 +103,7 @@ Post-ES6 cleanup sprint addressing null safety, accessibility, and configuration
 ### Added
 
 #### Null/Undefined Safety
+
 - AbortController in `chapter-reader.js` for SSS loading race conditions
 - Null checks for DOM elements in `offline-settings-ui.js`
 - `CSS.escape()` for querySelector security in `chapter-dropdown.js`
@@ -100,6 +111,7 @@ Post-ES6 cleanup sprint addressing null safety, accessibility, and configuration
 - Improved error handling with proper `error.message` checks
 
 #### Accessibility Improvements
+
 - `role="presentation" aria-hidden="true"` on logo image in header
 - `aria-label` on continue reading placeholder link
 - `required` attribute on search input
@@ -107,12 +119,14 @@ Post-ES6 cleanup sprint addressing null safety, accessibility, and configuration
 ### Fixed
 
 #### Hugo Template Nil Safety
+
 - Added `$bibleData` condition check in `bible-nav.html`
 - Added nil check for `$firstBible` in `book-chapter-selects.html`
 - Changed to proper `{{ with }}` statement in `bible-select.html`
 - Added nil checks for `$firstBible` and `$aux` in `compare.html`
 
 #### CSS Dark Mode & Accessibility
+
 - `.sss-verse-num` contrast ratio improved to 4.5:1 (WCAG AA)
 - `.reader-toggles` button contrast fixed for dark mode pressed states
 - Focus ring opacity increased from 0.35/0.45 to 0.6 in `theme-colors.css`
@@ -120,6 +134,7 @@ Post-ES6 cleanup sprint addressing null safety, accessibility, and configuration
 - Added SSS header focus styles
 
 #### Service Worker & PWA
+
 - Extended cache hash from 12 to 32 characters (reduced collision risk)
 - Standardized AbortError checking to `error.name === 'AbortError'`
 - Fixed chapter page regex to handle query params (`?v=1`)
@@ -133,6 +148,7 @@ ES6 Module Migration and comprehensive bug fixes backported from JuniperBible.or
 ### Changed
 
 #### ES6 Module Architecture
+
 - **Complete ES6 module migration** — All 20+ JavaScript files converted from IIFE/revealing module patterns to ES6 modules
 - **Module registry system** — New `core.js` with `Michael.register/get/init/cleanup` pattern
 - **Centralized configuration** — New `config.js` with storage keys prefixed `michael-`
@@ -143,6 +159,7 @@ ES6 Module Migration and comprehensive bug fixes backported from JuniperBible.or
 - All modules maintain backwards compatibility via `window.Michael` namespace
 
 #### Core Module Conversions
+
 - `dom-utils.js` — ES6 exports with backwards compatibility
 - `bible-api.js` — ES6 module with race condition fix
 - `user-storage.js` — ES6 module with QuotaExceededError handling
@@ -150,6 +167,7 @@ ES6 Module Migration and comprehensive bug fixes backported from JuniperBible.or
 - `chapter-dropdown.js` — ES6 module
 
 #### Feature Module Conversions
+
 - `bible-nav.js` — ES6 module, removed inline onclick handler
 - `bible-search.js` — ES6 module with race condition fix using request counter
 - `sss-mode.js` — ES6 module with race condition fix and Number.isInteger validation
@@ -158,6 +176,7 @@ ES6 Module Migration and comprehensive bug fixes backported from JuniperBible.or
 - `footnotes.js` — ES6 module with duplicate listener prevention
 
 #### Remaining Module Conversions
+
 - `parallel.js` — ES6 module
 - `strongs.js` — ES6 module
 - `text-compare.js` — ES6 module with named exports
@@ -171,6 +190,7 @@ ES6 Module Migration and comprehensive bug fixes backported from JuniperBible.or
 ### Added
 
 #### Accessibility Improvements
+
 - `id="main-content"` added to all 9 layout files for skip-link navigation:
   - `layouts/index.html`
   - `layouts/_default/list.html`
@@ -183,20 +203,24 @@ ES6 Module Migration and comprehensive bug fixes backported from JuniperBible.or
   - `layouts/license/single.html`
 
 #### New Hugo Partials
+
 - `bible-data-map.html` — O(1) Bible lookup by ID using Hugo dict
 
 ### Fixed
 
 #### Security
+
 - External links now include `noreferrer` in addition to `noopener`
 - Nil checks added to license template external link rendering
 
 #### CSS
+
 - Fixed undefined CSS variable (`--shadow-2` → `--shadow-1`)
 - Removed duplicate light mode CSS block (34 lines)
 - Removed obsolete `clip` property from sr-only class
 
 #### JavaScript Bug Fixes
+
 - Race condition in `bible-search.js` — Added request ID counter pattern
 - Race condition in `sss-mode.js` — Added request ID counter pattern
 - Duplicate event listeners in `footnotes.js` — Added dataset marker
@@ -204,6 +228,7 @@ ES6 Module Migration and comprehensive bug fixes backported from JuniperBible.or
 - Service worker ready timeout — Added 5-second timeout in `offline-manager.js`
 
 #### Code Quality
+
 - Removed 27+ debug `console.log` statements across all modules
 - Kept `console.warn` and `console.error` for genuine issues
 
@@ -217,6 +242,7 @@ providing Bible reading, comparison, search, and offline support as a Progressiv
 ### Added
 
 #### Core Bible Features
+
 - Complete Bible reading and comparison module for Hugo sites
 - Bible layouts: list, single, compare, and search pages
 - Bible navigation partial with book/chapter dropdown selectors
@@ -234,6 +260,7 @@ providing Bible reading, comparison, search, and offline support as a Progressiv
 - Bible override system (`data/example/bibles_override.json`) for field overrides without touching auto-generated data
 
 #### JavaScript Modules (`assets/js/michael/`)
+
 - `dom-utils.js` — Touch handling, contrast colors, toast notifications
 - `bible-api.js` — Unified chapter fetching and caching
 - `verse-grid.js` — Verse selection component with accessibility
@@ -246,6 +273,7 @@ providing Bible reading, comparison, search, and offline support as a Progressiv
 - `sss-mode.js` — Side-by-side/stacked comparison mode
 
 #### JavaScript Assets (`assets/js/`)
+
 - `parallel.js` — Parallel translation view controller
 - `share.js` — Verse sharing (Twitter/X, Facebook) with offline clipboard fallback
 - `strongs.js` — Strong's number processing with local-first definitions
@@ -253,6 +281,7 @@ providing Bible reading, comparison, search, and offline support as a Progressiv
 - `bible-search.js` — Client-side Bible search with XSS-safe highlighting
 
 #### Hugo Partials (`layouts/partials/michael/`)
+
 - `color-picker.html` — Highlight color selection
 - `verse-grid.html` — Verse grid markup
 - `sss-toggle.html` — SSS mode toggle button
@@ -265,12 +294,14 @@ providing Bible reading, comparison, search, and offline support as a Progressiv
 - `notes-section.html` — Footnotes section
 
 #### Strong's Concordance Bundle (`data/strongs/`)
+
 - `hebrew.json` — Local Hebrew/Aramaic definitions (H0001-H8674)
 - `greek.json` — Local Greek definitions (G0001-G5624)
 - Provenance metadata (source, version, license)
 - Local-first lookups with external API fallback
 
 #### CSS Architecture (`assets/css/`)
+
 - `theme.css` — Core styles and components
 - `theme-colors.css` — Color token system
 - `theme-compare.css` — Compare/diff page styles
@@ -287,6 +318,7 @@ providing Bible reading, comparison, search, and offline support as a Progressiv
 - Verse button, share menu, Strong's tooltip, loading/skeleton components
 
 #### Progressive Web App (PWA)
+
 - Web App Manifest (`static/manifest.json`) with icons, shortcuts, categories
 - SVG logo (shield + sword + crown) with PNG icons at all required sizes
 - Service Worker (`layouts/_default/sw.js`) as Hugo template for CSS fingerprinting
@@ -308,12 +340,14 @@ providing Bible reading, comparison, search, and offline support as a Progressiv
 - Bible cache status with per-Bible chapter counts and completion percentages
 
 #### Unified Toast Notification System
+
 - `showMessage()` with `info`, `success`, `warning`, `error` type variants
 - Configurable duration and position (top/bottom)
 - `dismissToast()` for programmatic dismissal
 - ARIA live regions for screen reader accessibility
 
 #### SBOM (Software Bill of Materials)
+
 - `assets/downloads/sbom/sbom.spdx.json` — SPDX 2.3 format
 - `assets/downloads/sbom/sbom.cdx.json` — CycloneDX JSON format
 - `assets/downloads/sbom/sbom.cdx.xml` — CycloneDX XML format
@@ -321,6 +355,7 @@ providing Bible reading, comparison, search, and offline support as a Progressiv
 - `scripts/generate-sbom.sh` — Automated SBOM generation script
 
 #### Build & Development
+
 - Makefile with `make dev`, `make build`, `make clean`, `make check`, `make push`
 - Build verification system (`scripts/check-all.sh`) with auto-updated README status table
 - Branch-aware workflow (main requires `RELEASE` confirmation, development pushes freely)
@@ -329,17 +364,20 @@ providing Bible reading, comparison, search, and offline support as a Progressiv
 - Nix development shell with all dependencies
 
 #### Verse Typography
+
 - Content pipeline uses `<span class="verse" data-verse="N"><sup>N</sup> text</span>`
 - Each verse displays as its own paragraph block
 - Verse numbers styled as superscript with brand color
 - Highlight-verse CSS for `?v=` URL scroll-to support
 
 #### Juniperbible.org Theme
+
 - Self-hosted Patrick Hand font (OFL-1.1, woff2 latin + latin-ext)
 - Brand palette: muted purple (#6b4c6b), dark teal chrome (#1a3230), warm parchment surfaces
 - Handwritten font applied to headings, buttons, badges, navigation
 
 #### Architecture Documentation (`docs/`)
+
 - `ARCHITECTURE.md` — System overview and data flow
 - `DATA-FORMATS.md` — JSON schemas and structures
 - `VERSIFICATION.md` — Bible versification systems
@@ -350,6 +388,7 @@ providing Bible reading, comparison, search, and offline support as a Progressiv
 - `ACCESSIBILITY-AUDIT-2026-01-25.md` — WCAG 2.1 AA audit (0 violations)
 
 #### Accessibility
+
 - WCAG 2.1 AA compliance across all core flows
 - All form controls properly labeled
 - Color contrast meets 4.5:1 minimum ratio
@@ -363,6 +402,7 @@ providing Bible reading, comparison, search, and offline support as a Progressiv
 - `prefers-reduced-motion` and `prefers-contrast` media query support
 
 #### Security
+
 - Content Security Policy (CSP) meta tag in `baseof.html`
 - XSS vulnerability patched in `bible-search.js` `highlightMatches()`
 - HTML escaping for UI strings in `share-menu.js`
@@ -371,6 +411,7 @@ providing Bible reading, comparison, search, and offline support as a Progressiv
 - CSP audit completed (21 innerHTML usages documented and reviewed)
 
 ### Changed
+
 - CSS architecture: Refactored from Tailwind CSS to PicoCSS with semantic HTML5
 - CSS uses custom properties for AirFold paper theme integration
 - Templates use semantic CSS classes instead of utility classes
@@ -389,6 +430,7 @@ providing Bible reading, comparison, search, and offline support as a Progressiv
 - Juniper submodule migrated to JuniperBible repository with HTTPS URLs
 
 ### Fixed
+
 - Language prefix in Bible content links for i18n support
 - Navigation URLs use i18n-aware paths
 - Menu links include language prefix in multilingual sites

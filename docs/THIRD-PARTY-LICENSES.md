@@ -25,6 +25,7 @@ The following Bible translations are extracted from SWORD Project modules using 
 | Open Scriptures Morphological Hebrew Bible | SWORD: OSMHB | Public Domain (CC-PDDC) | `data/example/bible_auxiliary/osmhb.json`, `assets/downloads/osmhb.tar.xz` |
 
 **Notes:**
+
 - CC-PDDC = Creative Commons Public Domain Dedication and Certification
 - These texts are based on historical works published before 1928, placing them in the public domain in the United States
 
@@ -37,6 +38,7 @@ The following Bible translations are extracted from SWORD Project modules using 
 | The Greek New Testament: SBL Edition | SWORD: SBLGNT | Copyrighted-Free | `data/example/bible_auxiliary/sblgnt.json`, `assets/downloads/sblgnt.tar.xz` |
 
 **Notes:**
+
 - KJVA Strong's numbers derived from The Bible Foundation (Hebrew) and KJV2003 Project at CrossWire (Greek)
 - KJVA base text rights held by Crown of England; CrossWire data licensed under GPL-3.0-or-later
 - LXX sourced from Center for Computer Analysis of Texts (CCAT) at University of Pennsylvania
@@ -45,30 +47,35 @@ The following Bible translations are extracted from SWORD Project modules using 
 ### Data Sources and Attribution
 
 **The SWORD Project**
+
 - Website: https://www.crosswire.org/sword/
 - Purpose: Bible module distribution and format specification
 - License: GPL-2.0-or-later (for SWORD software)
 - Note: Individual Bible texts have their own licenses as listed above
 
 **CrossWire Bible Society**
+
 - Website: http://www.crosswire.org
 - Modules: KJVA with Strong's numbers
 - License: GPL-3.0-or-later for compiled modules
 - Contact: modules@crosswire.org
 
 **Open Scriptures**
+
 - Website: http://beta.openscriptures.org
 - Project: Morphological Hebrew Bible (OSMHB)
 - Source: Westminster Leningrad Codex with Strong's numbers
 - License: Public Domain
 
 **Center for Computer Analysis of Texts (CCAT)**
+
 - Institution: University of Pennsylvania
 - Source: http://ccat.sas.upenn.edu/gopher/text/religion/biblical/lxxmorph/
 - Data: Septuagint with morphological tagging (Rahlfs' edition)
 - License: Copyrighted-Free (academic use permitted)
 
 **Society of Biblical Literature (SBL)**
+
 - Website: https://www.sblgnt.com
 - Editor: Michael W. Holmes
 - Data: SBL Greek New Testament
@@ -83,10 +90,12 @@ The following Bible translations are extracted from SWORD Project modules using 
 **Author:** James Strong
 **License:** Public Domain (work published before 1928)
 **Files:**
+
 - `data/strongs/hebrew.json` - Hebrew/Aramaic definitions (H0001-H8674)
 - `data/strongs/greek.json` - Greek definitions (G0001-G5624)
 
 **Notes:**
+
 - Definitions extracted from public domain Strong's concordance data
 - Original work by James Strong (1822-1894) is in the public domain
 - Data format follows SWORD module lexicon structure
@@ -127,6 +136,7 @@ Amharic, Arabic, Bengali, Chinese, Czech, Danish, Dutch, English, Farsi, Finnish
 **Purpose:** Pure Go toolkit for converting SWORD and e-Sword modules to Hugo-compatible JSON
 **License:** See `tools/juniper/THIRD-PARTY-LICENSES.md`
 **Key Dependencies:**
+
 - SWORD Project file format specifications (GPL-2.0-or-later)
 - e-Sword database format (.bblx, .cmtx, .dctx)
 - OSIS (Open Scripture Information Standard) specifications
@@ -172,6 +182,7 @@ Royalty-free, world-wide, non-exclusive license granted to JuniperBible.org (and
 ## Versification Schemas
 
 **Sources:**
+
 - CrossWire SWORD versification schemas (KJV, KJVA, Vulgate, LXX)
 - OpenScriptures reference data
 - Academic biblical scholarship resources
@@ -179,10 +190,12 @@ Royalty-free, world-wide, non-exclusive license granted to JuniperBible.org (and
 **License:** Factual data, not subject to copyright
 
 **Files:**
+
 - `tools/juniper/versifications/*.yaml`
 - Versification mappings in Go code (`tools/juniper/pkg/sword/versification_*.go`)
 
 **Supported Systems:**
+
 - Protestant (66 books) - KJV versification
 - Catholic (73 books) - Vulgate versification
 - Orthodox (76-81 books) - LXX/Septuagint versification

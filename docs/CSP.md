@@ -129,6 +129,7 @@ To remove `'unsafe-inline'`, two approaches are possible:
 ```
 
 **Limitations:**
+
 - Requires server-side rendering (not static HTML)
 - Incompatible with Hugo's static site architecture
 - Adds complexity to deployment
@@ -140,6 +141,7 @@ element.classList.add('tooltip--position-bottom');
 ```
 
 **Trade-offs:**
+
 - Requires predefined classes for all positioning scenarios (100+ classes)
 - Inflexible for dynamic values (tooltip coordinates, color picker)
 - Significantly increases CSS bundle size
@@ -271,6 +273,7 @@ const escapedTerm = escapeHTML(normalizedTerm);
 3. Additional validation: patterns validated before use
 
 **Test Cases:**
+
 - ✅ Search for `<script>alert('XSS')</script>` → Renders as text, not executed
 - ✅ Search for `<img src=x onerror=alert(1)>` → Rendered harmlessly
 - ✅ Phrase search `"faith & love"` → Ampersand escaped to `&amp;`
@@ -322,6 +325,7 @@ element.appendChild(p);
 ```
 
 **Benchmark (Firefox 133, comparing 1000 verses):**
+
 - `innerHTML`: ~45ms
 - DOM APIs: ~9000ms (200x slower)
 
@@ -336,12 +340,14 @@ element.appendChild(p);
 **Location:** `/home/justin/Programming/Workspace/michael/layouts/_default/baseof.html` (line 23)
 
 **Advantages:**
+
 - ✅ Works with static hosting (GitHub Pages, Netlify, Vercel)
 - ✅ No server configuration required
 - ✅ Hugo-only solution (no build-time changes)
 - ✅ Portable across hosting environments
 
 **Disadvantages:**
+
 - ⚠️ Less flexible than HTTP headers (can't use report-only mode)
 - ⚠️ Can be overridden by HTTP headers (if server adds them)
 - ⚠️ Slightly larger HTML payload (minor)
@@ -563,6 +569,7 @@ sudo systemctl reload apache2
 4. Ensures CSP works regardless of hosting environment
 
 **Implementation:**
+
 - ✅ Keep line 23 in `baseof.html` (meta tag)
 - ✅ Add HTTP header in production deployment (nginx/Apache/Netlify/etc.)
 - ✅ Document both approaches for downstream users
@@ -607,6 +614,7 @@ the following Content Security Policy directive: "script-src 'self'".
 ```
 
 **Violation Types to Monitor:**
+
 - ❌ Blocked external scripts
 - ❌ Blocked inline scripts (`onclick`, etc.)
 - ❌ Blocked eval() usage
@@ -614,6 +622,7 @@ the following Content Security Policy directive: "script-src 'self'".
 - ❌ Blocked external images
 
 **Expected State (No Violations):**
+
 - ✅ No CSP errors in console
 - ✅ All scripts load from `/assets/js/`
 - ✅ All styles load from `/assets/css/` or inline
@@ -631,6 +640,7 @@ the following Content Security Policy directive: "script-src 'self'".
 3. Review recommendations
 
 **Expected Warnings:**
+
 - ⚠️ `'unsafe-inline'` in `style-src` (expected, documented in Section 2)
 - ⚠️ Missing `report-uri` (optional, see Section 5.4)
 
@@ -802,6 +812,7 @@ app.listen(3000);
 #### 5.4.3 Third-Party Reporting Services
 
 **Free Options:**
+
 - **report-uri.com** (free tier available)
 - **Sentry** (includes CSP reporting)
 - **Datadog** (enterprise)
@@ -877,6 +888,7 @@ element.dataset.theme = color;
 ```
 
 **Limitations:**
+
 - ❌ Not compatible with Hugo static generation
 - ❌ Requires server-side rendering (Node.js, Python, Go, etc.)
 - ❌ Breaks CSS custom property updates (`--highlight-color`)
@@ -968,6 +980,7 @@ tail -f /var/log/csp-violations.log
 ```
 
 **Expected Violations (from this project):**
+
 - Inline styles in tooltips, share menus (127 instances)
 - Dynamic `--highlight-color` updates
 
@@ -1000,6 +1013,7 @@ if (hasStrictCSP()) {
 ```
 
 **Trade-offs:**
+
 - ✅ Graceful degradation
 - ⚠️ Reduced functionality in high-security environments
 - ❌ Increased code complexity
@@ -1015,6 +1029,7 @@ if (hasStrictCSP()) {
 | **Air-Gapped/Offline** | Add `default-src 'none'` + explicit allows | Strictest (no external anything) |
 
 **Current Configuration Justification:**
+
 - ✅ Balances security and functionality
 - ✅ Compatible with static site architecture
 - ✅ Prevents most common attacks (XSS, clickjacking, data exfiltration)
@@ -1086,6 +1101,7 @@ hugo server -D
 ---
 
 **Document Maintenance:**
+
 - Update this document when CSP policy changes
 - Re-audit innerHTML usage after major refactoring
 - Test CSP after dependency updates
