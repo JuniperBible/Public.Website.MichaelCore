@@ -147,7 +147,7 @@ export function parseVersesFromHTML(html) {
   const verseSpans = bibleText.querySelectorAll('.verse[data-verse]');
   if (verseSpans.length > 0) {
     verseSpans.forEach(span => {
-      const num = parseInt(span.dataset.verse);
+      const num = parseInt(span.dataset.verse, 10);
       if (isNaN(num)) return;
 
       // Extract HTML content excluding the sup element (verse number)
@@ -177,7 +177,7 @@ export function parseVersesFromHTML(html) {
 
   if (verseStrongs.length > 0) {
     verseStrongs.forEach((strong, index) => {
-      const num = parseInt(strong.textContent.trim());
+      const num = parseInt(strong.textContent.trim(), 10);
       const nextStrong = verseStrongs[index + 1];
 
       // Create a range from this strong to the next (or end of container)
@@ -223,7 +223,7 @@ export function parseVersesFromHTML(html) {
       let html = el.innerHTML?.replace(/^<sup[^>]*>\d+<\/sup>\s*/, '').trim();
 
       if (verseNum && html) {
-        const num = parseInt(verseNum);
+        const num = parseInt(verseNum, 10);
         if (!isNaN(num)) {
           verses.push({ number: num, text: html });
         }
@@ -241,7 +241,7 @@ export function parseVersesFromHTML(html) {
       const match = id.match(/v(\d+)/);
       if (match) {
         verses.push({
-          number: parseInt(match[1]),
+          number: parseInt(match[1], 10),
           text: span.innerHTML?.trim() || ''
         });
       }
@@ -260,7 +260,7 @@ export function parseVersesFromHTML(html) {
     let match;
     while ((match = versePattern.exec(text)) !== null) {
       verses.push({
-        number: parseInt(match[1]),
+        number: parseInt(match[1], 10),
         text: match[2].trim()
       });
     }
@@ -270,7 +270,7 @@ export function parseVersesFromHTML(html) {
       versePattern = /<strong>(\d+)<\/strong>\s*([^<]+)/g;
       while ((match = versePattern.exec(text)) !== null) {
         verses.push({
-          number: parseInt(match[1]),
+          number: parseInt(match[1], 10),
           text: match[2].trim()
         });
       }

@@ -83,7 +83,7 @@ ChapterDropdown.prototype.populate = function(bookId) {
  * @returns {number} - Selected chapter number (0 if none selected)
  */
 ChapterDropdown.prototype.getValue = function() {
-  return parseInt(this.selectElement.value) || 0;
+  return parseInt(this.selectElement.value, 10) || 0;
 };
 
 /**
@@ -92,7 +92,7 @@ ChapterDropdown.prototype.getValue = function() {
  * @returns {boolean} - True if value was set, false if invalid
  */
 ChapterDropdown.prototype.setValue = function(chapter) {
-  const chapterNum = parseInt(chapter);
+  const chapterNum = parseInt(chapter, 10);
   if (isNaN(chapterNum) || chapterNum < 1) {
     return false;
   }

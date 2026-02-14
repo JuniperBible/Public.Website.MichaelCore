@@ -697,7 +697,7 @@ function populateChapterDropdown() {
  * @param {Event} e - Change event from chapter select dropdown
  */
 function handleChapterChange(e) {
-  currentChapter = parseInt(e.target.value) || 0;
+  currentChapter = parseInt(e.target.value, 10) || 0;
   currentVerse = 0;
   saveState();
 
@@ -920,7 +920,7 @@ function updateVerseGridSelection() {
   // Update verse number buttons
   const buttons = verseButtons.querySelectorAll('.verse-btn');
   buttons.forEach(btn => {
-    const verseNum = parseInt(btn.dataset.verse);
+    const verseNum = parseInt(btn.dataset.verse, 10);
     if (verseNum === currentVerse) {
       btn.classList.add('is-active');
       btn.setAttribute('aria-pressed', 'true');
@@ -1101,8 +1101,8 @@ function restoreState() {
         // Parse the reference
         const parts = refParam.split('.');
         const bookParam = parts[0];
-        const chapter = parseInt(parts[1]) || 0;
-        const verse = parseInt(parts[2]) || 0;
+        const chapter = parseInt(parts[1], 10) || 0;
+        const verse = parseInt(parts[2], 10) || 0;
 
         // Normalize book ID to match bibleData.books (case-insensitive lookup)
         const matchedBook = bibleData?.books?.find(b =>
@@ -1181,8 +1181,8 @@ function restoreState() {
 
     if (book && chapter) {
       currentBook = book;
-      currentChapter = parseInt(chapter) || 0;
-      currentVerse = parseInt(verse) || 0;
+      currentChapter = parseInt(chapter, 10) || 0;
+      currentVerse = parseInt(verse, 10) || 0;
 
       // Set book select value - find matching option case-insensitively
       const bookOption = Array.from(bookSelect.options).find(opt =>
@@ -1427,7 +1427,7 @@ function populateSSSChapterDropdown() {
  * @private
  */
 function handleSSSChapterChange() {
-  sssChapter = parseInt(sssChapterSelect?.value) || 0;
+  sssChapter = parseInt(sssChapterSelect?.value, 10) || 0;
   sssVerse = 0; // Reset verse selection
   triedBiblesWithNoVerses.clear(); // Reset tried Bibles for new chapter
 
@@ -1702,7 +1702,7 @@ function updateSSSVerseGridSelection() {
   // Update verse number buttons
   const buttons = sssVerseButtons.querySelectorAll('.sss-verse-btn');
   buttons.forEach(btn => {
-    const verseNum = parseInt(btn.dataset.verse);
+    const verseNum = parseInt(btn.dataset.verse, 10);
     if (verseNum === sssVerse) {
       btn.classList.add('is-active');
       btn.setAttribute('aria-pressed', 'true');

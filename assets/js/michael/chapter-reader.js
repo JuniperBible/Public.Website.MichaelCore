@@ -57,7 +57,7 @@
       currentBible = bibleSelect.value;
       basePath = bibleSelect.dataset.basePath || '/bible';
       currentBook = bibleSelect.dataset.book || '';
-      currentChapter = parseInt(bibleSelect.dataset.chapter) || 0;
+      currentChapter = parseInt(bibleSelect.dataset.chapter, 10) || 0;
     }
 
     // Extract verses from the page content for later use
@@ -137,7 +137,7 @@
         // Remove share buttons from clone
         clone.querySelectorAll('.verse-share-btn').forEach(btn => btn.remove());
         leftVerses.push({
-          number: parseInt(verseNum),
+          number: parseInt(verseNum, 10),
           html: clone.innerHTML
         });
       }
@@ -328,7 +328,7 @@
 
         if (verses && verses.length > 0) {
           rightVerses = verses.map(v => ({
-            number: parseInt(v.number),
+            number: parseInt(v.number, 10),
             html: `<sup>${v.number}</sup> ${v.text}`
           }));
         }
@@ -355,7 +355,7 @@
               const verseNum = el.dataset.verse || el.querySelector('sup')?.textContent;
               if (verseNum) {
                 rightVerses.push({
-                  number: parseInt(verseNum),
+                  number: parseInt(verseNum, 10),
                   html: el.innerHTML
                 });
               }

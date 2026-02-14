@@ -44,12 +44,25 @@ function showUnavailable(selectEl, attemptedUrl, fallbackUrl) {
   // Show message in the content area
   var content = document.getElementById('chapter-content');
   if (content) {
-    content.innerHTML =
-      '<div class="notice" role="alert">' +
-      '<strong>Not available</strong> — this book or chapter is not available in ' +
-      bibleName + '.' +
-      ' <a href="' + fallbackUrl + '">Browse available books</a>.' +
-      '</div>';
+    // Use textContent to safely escape user-controlled data
+    var notice = document.createElement('div');
+    notice.className = 'notice';
+    notice.setAttribute('role', 'alert');
+
+    var strong = document.createElement('strong');
+    strong.textContent = 'Not available';
+    notice.appendChild(strong);
+
+    notice.appendChild(document.createTextNode(' — this book or chapter is not available in ' + bibleName + '. '));
+
+    var link = document.createElement('a');
+    link.href = fallbackUrl;
+    link.textContent = 'Browse available books';
+    notice.appendChild(link);
+    notice.appendChild(document.createTextNode('.'));
+
+    content.innerHTML = '';
+    content.appendChild(notice);
 
     content.scrollIntoView({ behavior: 'smooth', block: 'start' });
   } else {

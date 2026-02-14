@@ -104,7 +104,7 @@ VerseGrid.prototype.updateSelection = function() {
 
   const buttons = this.buttonsContainer.querySelectorAll('.' + this.buttonClass);
   buttons.forEach(btn => {
-    const verseNum = parseInt(btn.dataset.verse);
+    const verseNum = parseInt(btn.dataset.verse, 10);
     const isSelected = verseNum === this.selectedVerse;
 
     // Update visual state

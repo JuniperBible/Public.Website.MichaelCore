@@ -183,7 +183,7 @@ function handleSSSBookChange() {
 
 /** Handle SSS chapter selection change */
 function handleSSSChapterChange() {
-  sssChapter = parseInt(sssChapterSelect?.value) || 0;
+  sssChapter = parseInt(sssChapterSelect?.value, 10) || 0;
   sssVerse = 0;
   if (canLoadSSSComparison()) loadSSSComparison();
 }
@@ -349,7 +349,7 @@ function updateSSSVerseGridSelection() {
   if (!sssVerseButtons) return;
   const buttons = sssVerseButtons.querySelectorAll('.sss-verse-btn');
   buttons.forEach(btn => {
-    const verseNum = parseInt(btn.dataset.verse);
+    const verseNum = parseInt(btn.dataset.verse, 10);
     if (verseNum === sssVerse) {
       btn.classList.add('is-active');
       btn.setAttribute('aria-pressed', 'true');
