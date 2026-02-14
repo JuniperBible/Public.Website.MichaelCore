@@ -403,8 +403,8 @@ For questions about SBOM generation:
 
 For SBOM format specifications:
 
-- SPDX: https://spdx.dev/
-- CycloneDX: https://cyclonedx.org/
+- SPDX: <https://spdx.dev/>
+- CycloneDX: <https://cyclonedx.org/>
 
 ---
 

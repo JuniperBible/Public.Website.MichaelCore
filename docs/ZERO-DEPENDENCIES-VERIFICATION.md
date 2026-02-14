@@ -17,8 +17,10 @@ The application is fully self-contained and works 100% offline with no external 
 From `docs/CODE_CLEANUP_CHARTER.md`:
 
 > **Target:** 0 external runtime dependencies by default
+>
 > - No external API calls at runtime (Blue Letter Bible API only as fallback for missing local data)
 > - No CDN dependencies
+>
 > - No external fonts
 > - All essential features work offline
 
@@ -111,6 +113,7 @@ grep -r "cdn\|googleapis\|cloudflare\|jsdelivr\|unpkg" layouts/
 - ✅ Blue Letter Bible URLs only used for "View Full Entry" link (user-initiated)
 
 **Data Loading Strategy:**
+
 1. Check in-memory cache
 2. Check local bundled data
 3. If not found: Show fallback message with manual link

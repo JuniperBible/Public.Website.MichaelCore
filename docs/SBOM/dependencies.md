@@ -585,9 +585,9 @@ syft scan . -o json | grype
 ### Security Advisories
 
 Monitor security advisories for:
-- Hugo: https://github.com/gohugoio/hugo/security
-- Go: https://go.dev/security
-- Syft: https://github.com/anchore/syft/security
+- Hugo: <https://github.com/gohugoio/hugo/security>
+- Go: <https://go.dev/security>
+- Syft: <https://github.com/anchore/syft/security>
 
 Juniper dependencies are scanned automatically via Dependabot (if enabled on GitHub).
 

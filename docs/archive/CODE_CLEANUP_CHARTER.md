@@ -164,6 +164,7 @@ Definition of Done:
 - Keep external link as "Learn more" only (optional)
 
 **Licensing requirement:**
+
 - Include provenance metadata for extracted data (source, version, license summary)
 
 DoD:
@@ -356,18 +357,21 @@ DoD:
 ### Deviations & Explanations
 
 **⚠️ parallel.js lines increased (1264 → 1492)**
+
 - **Reason**: Comprehensive JSDoc documentation added to every function
 - **Trade-off**: Increased line count for much better maintainability
 - **Actual improvement**: Logic complexity reduced through delegation to 7 shared modules
 - **Outcome**: More readable, better documented, properly architected (meets spirit of goal)
 
 **⚠️ Inline styles preserved (127 instances)**
+
 - **Reason**: Dynamic runtime values (user-selected colors, computed visibility states)
 - **Trade-off**: Cannot move to static CSS classes (values determined at runtime)
 - **Examples**: Highlight color picker, dynamic show/hide based on state
 - **Outcome**: Static styles removed; only necessary dynamic styles remain
 
 **🔄 WCAG violations pending final testing**
+
 - **Status**: ARIA patterns implemented, keyboard navigation complete, focus management added
 - **Remaining**: Final comprehensive WCAG 2.1 AA validation testing
 - **Expected outcome**: Zero violations (all patterns follow WCAG best practices)

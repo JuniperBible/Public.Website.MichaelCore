@@ -20,6 +20,7 @@ The main service worker script that handles:
 - Cleanup of old caches
 
 **Key Features:**
+
 - Cache versioning with `CACHE_VERSION` constant
 - Two separate caches: `michael-shell-v1` and `michael-chapters-v1`
 - Pre-caches 4 default chapters (Genesis 1, Psalm 23, Matthew 1, John 1)
@@ -30,6 +31,7 @@ The main service worker script that handles:
 Standalone offline fallback page that works without external resources.
 
 **Key Features:**
+
 - Inline CSS (no external stylesheets needed)
 - Dark mode support via CSS media queries
 - Lists all cached Bible chapters dynamically
@@ -41,6 +43,7 @@ Standalone offline fallback page that works without external resources.
 Hugo partial that registers the service worker in the browser.
 
 **Key Features:**
+
 - Feature detection for service worker support
 - Environment-aware registration (production only by default)
 - Update detection and notification
@@ -241,6 +244,7 @@ localStorage.setItem('sw-show-update-notification', 'false');
 ### Service Worker Not Registering
 
 **Check:**
+
 1. Are you in production mode or is `params.michael.enableSW = true`?
 2. Is the browser on localhost or HTTPS?
 3. Does browser support service workers? (Check console)
@@ -248,6 +252,7 @@ localStorage.setItem('sw-show-update-notification', 'false');
 ### Offline Page Not Showing
 
 **Check:**
+
 1. Is `/offline.html` in the shell cache?
 2. Was the service worker installed successfully?
 3. Check browser DevTools → Application → Cache Storage
@@ -255,6 +260,7 @@ localStorage.setItem('sw-show-update-notification', 'false');
 ### Old Content Being Served
 
 **Solution:**
+
 1. Increment `CACHE_VERSION` in `sw.js`
 2. Reload page to install new service worker
 3. Click "Reload" on update banner
@@ -262,6 +268,7 @@ localStorage.setItem('sw-show-update-notification', 'false');
 ### Cache Too Large
 
 **Consider:**
+
 1. Reduce number of pre-cached chapters
 2. Remove unused shell assets
 3. Implement cache size limits

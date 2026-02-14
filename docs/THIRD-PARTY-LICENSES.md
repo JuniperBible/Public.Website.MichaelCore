@@ -48,21 +48,21 @@ The following Bible translations are extracted from SWORD Project modules using 
 
 **The SWORD Project**
 
-- Website: https://www.crosswire.org/sword/
+- Website: <https://www.crosswire.org/sword/>
 - Purpose: Bible module distribution and format specification
 - License: GPL-2.0-or-later (for SWORD software)
 - Note: Individual Bible texts have their own licenses as listed above
 
 **CrossWire Bible Society**
 
-- Website: http://www.crosswire.org
+- Website: <http://www.crosswire.org>
 - Modules: KJVA with Strong's numbers
 - License: GPL-3.0-or-later for compiled modules
-- Contact: modules@crosswire.org
+- Contact: <modules@crosswire.org>
 
 **Open Scriptures**
 
-- Website: http://beta.openscriptures.org
+- Website: <http://beta.openscriptures.org>
 - Project: Morphological Hebrew Bible (OSMHB)
 - Source: Westminster Leningrad Codex with Strong's numbers
 - License: Public Domain
@@ -70,13 +70,13 @@ The following Bible translations are extracted from SWORD Project modules using 
 **Center for Computer Analysis of Texts (CCAT)**
 
 - Institution: University of Pennsylvania
-- Source: http://ccat.sas.upenn.edu/gopher/text/religion/biblical/lxxmorph/
+- Source: <http://ccat.sas.upenn.edu/gopher/text/religion/biblical/lxxmorph/>
 - Data: Septuagint with morphological tagging (Rahlfs' edition)
 - License: Copyrighted-Free (academic use permitted)
 
 **Society of Biblical Literature (SBL)**
 
-- Website: https://www.sblgnt.com
+- Website: <https://www.sblgnt.com>
 - Editor: Michael W. Holmes
 - Data: SBL Greek New Testament
 - License: Copyrighted-Free with attribution requirement

@@ -213,6 +213,7 @@ function escapeHtml(str) {
 ```
 
 **How it works:**
+
 1. Creates temporary DOM element
 2. Assigns string to `textContent` (browser automatically escapes `<`, `>`, `&`, `"`, `'`)
 3. Reads back `innerHTML` to get escaped version
@@ -386,6 +387,7 @@ All Bible translations are derived from SWORD Project modules:
 - No runtime data modification or injection possible
 
 **Bible data pipeline:**
+
 1. SWORD modules downloaded from CrossWire
 2. Converted to OSIS XML
 3. Processed into normalized JSON format
@@ -477,6 +479,7 @@ const CHAPTERS_CACHE = `michael-chapters-v${CACHE_VERSION}`;
 ```
 
 **Update mechanism:**
+
 1. Increment `CACHE_VERSION` in `sw.js`
 2. New service worker installs with new cache names
 3. Old caches automatically deleted on activation (lines 97-125)

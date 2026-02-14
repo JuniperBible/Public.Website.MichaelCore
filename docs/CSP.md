@@ -268,6 +268,7 @@ const escapedTerm = escapeHTML(normalizedTerm);
 ```
 
 **Mitigation Applied:**
+
 1. User search terms escaped via `escapeHTML()` before rendering
 2. Search results use `<mark>` tags inserted after escaping
 3. Additional validation: patterns validated before use
@@ -357,6 +358,7 @@ element.appendChild(p);
 ### 4.2 HTTP Header (Production Recommended)
 
 **Why Prefer Headers:**
+
 1. Stronger security (can't be removed by client-side tampering)
 2. Supports report-only mode for testing
 3. Doesn't increase HTML size
@@ -563,6 +565,7 @@ sudo systemctl reload apache2
 **Best Practice:** Keep both meta tag AND HTTP header
 
 **Rationale:**
+
 1. Meta tag provides baseline protection for static hosting
 2. HTTP header adds defense-in-depth when server supports it
 3. Meta tag ignored if HTTP header present (header takes precedence)
@@ -583,6 +586,7 @@ sudo systemctl reload apache2
 #### 5.1.1 Verify CSP is Active
 
 **Chrome/Edge:**
+
 1. Open DevTools (F12)
 2. Go to **Network** tab
 3. Reload page
@@ -591,6 +595,7 @@ sudo systemctl reload apache2
 6. Look for `Content-Security-Policy` header
 
 **Firefox:**
+
 1. Open DevTools (F12)
 2. Go to **Network** tab
 3. Reload page
@@ -635,6 +640,7 @@ the following Content Security Policy directive: "script-src 'self'".
 **URL:** https://csp-evaluator.withgoogle.com/
 
 **Steps:**
+
 1. Copy CSP string from `baseof.html` line 23
 2. Paste into evaluator
 3. Review recommendations
@@ -651,6 +657,7 @@ the following Content Security Policy directive: "script-src 'self'".
 **URL:** https://observatory.mozilla.org/
 
 **Steps:**
+
 1. Enter your deployed site URL
 2. Run scan
 3. Check CSP grade
@@ -964,6 +971,7 @@ Content-Security-Policy-Report-Only: default-src 'self'; script-src 'self';
 ```
 
 **Workflow:**
+
 1. Deploy with report-only CSP (no `'unsafe-inline'`)
 2. Monitor violation reports
 3. Identify broken functionality

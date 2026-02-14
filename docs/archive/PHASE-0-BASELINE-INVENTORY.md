@@ -219,6 +219,7 @@
 **Entry:** `/bible/compare/`
 
 **Flow:**
+
 1. **Initial Load**
    - Parse URL parameters (`?bibles=kjv,drc&ref=Isa.42.16`)
    - OR restore from localStorage
@@ -271,6 +272,7 @@
 **Entry:** Click "SSS" button from Normal mode OR default state
 
 **Flow:**
+
 1. **Initial State**
    - Check if state should reset (once per day via localStorage `sss-last-date`)
    - Apply defaults if reset or first load:
@@ -320,6 +322,7 @@
 **Entry:** `/bible/search/`
 
 **Flow:**
+
 1. **Initial Load**
    - Parse URL parameters (`?q=faith&bible=kjv&case=1&word=1`)
    - Restore search if parameters present
@@ -367,6 +370,7 @@
 **Entry:** `/bible/{bible}/{book}/{chapter}/`
 
 **Flow:**
+
 1. **Initial Load**
    - Load Bible navigation component (dropdowns + prev/next buttons)
    - Render verse content from markdown
@@ -431,6 +435,7 @@
 **Description:** Different Bible translations use different versification systems, which can cause verse numbering mismatches.
 
 **Versification Systems in Use:**
+
 - **protestant** - ASV, SBLGNT, Tyndale, WEB
 - **catholic** - DRC, Vulgate (includes Deuterocanonical books)
 - **kjva** - KJVA (includes Apocrypha)
@@ -439,16 +444,19 @@
 - **leningrad** - OSMHB (Hebrew Bible)
 
 **Impact:**
+
 - Compare page may show "Verse not available" for some translations
 - SSS mode displays versification warning when comparing different systems
 - Search results may differ between translations for same reference
 
 **Example:**
+
 - Psalm numbering differs between Protestant and Catholic Bibles
 - Some books in LXX/Vulgate are not in Protestant canon
 - Orthodox canon includes books not in Catholic canon
 
 **UI Handling:**
+
 - Missing verses: `<em style="color: var(--michael-text-muted);">Verse not available</em>`
 - SSS mode warning: `<small>catholic versification</small>` (shown below Bible abbreviation)
 - No error thrown - graceful degradation
@@ -458,18 +466,21 @@
 **Description:** Not all translations have all books or chapters.
 
 **Examples:**
+
 - Tyndale: Only New Testament + Pentateuch + Jonah
 - OSMHB: Only Old Testament (Hebrew Bible)
 - LXX: Different book order and some unique books (Prayer of Manasseh in Odes 12)
 - Geneva1599: Some books have fewer chapters than expected
 
 **Content Generation Logic:**
+
 - `_content.gotmpl` checks for "real content" (verses with >50 characters)
 - Empty books/chapters skipped during page generation
 - `validBooks` list tracks only books with content
 - `validChapters` list tracks only chapters with content
 
 **UI Handling:**
+
 - Bible overview: Only shows books with content (book grid)
 - Book overview: Only shows chapters with content (chapter grid)
 - Navigation dropdowns: Only include available items
@@ -480,16 +491,19 @@
 **Description:** Only some translations include Strong's numbers.
 
 **Translations with Strong's:**
+
 - ASV (features: "StrongsNumbers")
 - KJVA (features: "StrongsNumbers", "NoParagraphs")
 - LXX (features: "StrongsNumbers", "NoParagraphs")
 
 **Impact:**
+
 - `strongs.js` processes all chapter pages regardless
 - Search for Strong's numbers only works in translations that have them
 - No Strong's → tooltips never appear (graceful failure)
 
 **UI Handling:**
+
 - Search page warns if no results: "Strong's numbers require Bible translations with Strong's data"
 - Tooltip system doesn't load if no Strong's detected
 - No errors if Strong's patterns not found
@@ -499,6 +513,7 @@
 **Description:** Compare page defaults to SSS mode with specific reference.
 
 **Default State (applied when no URL params or localStorage):**
+
 - Bibles: KJV, Vulgate, DRC, Geneva1599
 - Reference: Isaiah 42:16
 - Mode: SSS (Side-by-Side Scripture)
@@ -507,11 +522,13 @@
 - Highlighting: ON
 
 **Reset Logic:**
+
 - SSS mode state resets once per day (localStorage `sss-last-date`)
 - Normal mode state persists in localStorage indefinitely
 - URL parameters always override defaults
 
 **Rationale:**
+
 - Demonstrates translation differences clearly
 - Isaiah 42:16 is a meaningful verse for comparison
 - SSS mode is most visually compelling for first-time visitors
@@ -521,17 +538,20 @@
 **Description:** Bible data is large (~32MB), so loading strategies are critical.
 
 **On-Demand Loading:**
+
 - Chapter data fetched via HTML parsing (not embedded JSON)
 - Compare page: Fetches only selected translations for current chapter
 - Search page: Fetches chapters one-by-one with progress indicator
 - Cache: `Map` stores fetched chapters (persists for session)
 
 **Why Not Embed All Data:**
+
 - 32MB JSON would block initial page load
 - Most users only view a few chapters per session
 - Incremental loading provides better UX
 
 **Trade-offs:**
+
 - Search is slower (sequential chapter fetching)
 - Network-dependent (offline mode not supported)
 - Cache cleared on page reload
@@ -541,6 +561,7 @@
 **Description:** Sophisticated diff engine has specific behaviors.
 
 **Difference Categories:**
+
 1. **Typo** - Case changes, diacritics (currently hidden in UI: `showTypo: false`)
 2. **Punct** - Punctuation differences (shown)
 3. **Spelling** - British/American, archaic variants (126+ mappings, shown)
@@ -549,28 +570,33 @@
 6. **Omit** - Word omissions (shown, with strikethrough)
 
 **Archaic English Dictionary:**
+
 - Extensive mappings: "saith" → "says", "thee" → "you", etc.
 - Bidirectional lookup (forward and reverse maps)
 - Case-insensitive matching
 
 **Normalization:**
+
 - Unicode NFC normalization
 - Curly quotes → straight quotes
 - Em/en dashes → hyphens
 - Whitespace collapsed
 
 **Token Types:**
+
 - WORD: Letters + contractions (e.g., "don't")
 - PUNCT: Punctuation marks
 - SPACE: Whitespace (normalized to single space)
 - MARKUP: Strong's numbers (H####, G####)
 
 **Algorithm:**
+
 - Myers diff algorithm (O(ND) complexity)
 - Optimal alignment for minimal edit distance
 - Backtracking for edit script
 
 **Rendering:**
+
 - Offset-preserving (exact character positions)
 - HTML-safe escaping
 - CSS classes for styling (`.diff-typo`, `.diff-punct`, etc.)
@@ -580,12 +606,14 @@
 **Description:** Special handling for touch events.
 
 **Touch Event Handling:**
+
 - `addTapListener()` function prevents double-firing
 - Tracks `touchmove` to distinguish tap from scroll
 - Prevents default on `touchend` for taps
 - Falls back to `click` for non-touch pointers
 
 **Elements with Tap Listeners:**
+
 - Verse buttons (Normal and SSS mode)
 - All verses button
 - SSS mode toggle button
@@ -593,6 +621,7 @@
 - Color picker buttons
 
 **Why Necessary:**
+
 - Mobile browsers fire both `touch` and `click` events
 - Double-firing causes unwanted behavior (menu flicker, double navigation)
 - Touch-first approach with click fallback
@@ -602,6 +631,7 @@
 **Description:** JavaScript relies on CSS custom properties.
 
 **Expected CSS Variables:**
+
 - `--michael-accent` - Accent color (used for verse highlighting)
 - `--michael-text-muted` - Muted text color
 - `--surface-1` - Surface background color
@@ -612,10 +642,12 @@
 - `--diff-typo`, `--diff-punct`, etc. - Diff category colors
 
 **Dynamic Updates:**
+
 - `--highlight-color` set by color picker via `documentElement.style.setProperty()`
 - Applied to `.diff-insert` spans for highlighting
 
 **Fallback Behavior:**
+
 - Inline styles used where CSS variables might not exist
 - Graceful degradation if variables undefined
 
