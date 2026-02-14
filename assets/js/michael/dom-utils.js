@@ -311,6 +311,25 @@ export function createLoadingIndicator(message = 'Loading...') {
 // ============================================================================
 
 /**
+ * Check if URL has a dangerous protocol
+ * @param {string} url - URL string (lowercase)
+ * @returns {boolean} True if dangerous
+ */
+function hasDangerousProtocol(url) {
+  return url.startsWith('javascript:') || url.startsWith('data:');
+}
+
+/**
+ * Check if path matches any allowed patterns
+ * @param {string} path - URL path
+ * @param {RegExp[]} patterns - Allowed patterns
+ * @returns {boolean} True if matches
+ */
+function matchesAllowedPatterns(path, patterns) {
+  return patterns.length === 0 || patterns.some(pattern => pattern.test(path));
+}
+
+/**
  * Validate that a URL is safe for fetch requests
  *
  * Ensures URLs are same-origin and follow expected path patterns.
@@ -333,54 +352,31 @@ export function createLoadingIndicator(message = 'Loading...') {
 export function isValidFetchUrl(url, options = {}) {
   const { allowedPatterns = [], allowRelative = true } = options;
 
-  if (!url || typeof url !== 'string') {
+  // Validate input
+  if (!url || typeof url !== 'string' || !url.trim()) {
     return false;
   }
 
-  // Trim and check for empty
   const trimmedUrl = url.trim();
-  if (!trimmedUrl) {
+
+  // Block dangerous protocols
+  if (hasDangerousProtocol(trimmedUrl.toLowerCase())) {
     return false;
   }
 
-  // Block javascript: and data: protocols
-  const lowerUrl = trimmedUrl.toLowerCase();
-  if (lowerUrl.startsWith('javascript:') || lowerUrl.startsWith('data:')) {
-    return false;
-  }
-
-  // Check if relative URL
+  // Check if relative URL (starts with / but not //)
   const isRelative = trimmedUrl.startsWith('/') && !trimmedUrl.startsWith('//');
 
   if (isRelative) {
-    if (!allowRelative) {
-      return false;
-    }
-    // Validate against allowed patterns if provided
-    if (allowedPatterns.length > 0) {
-      return allowedPatterns.some(pattern => pattern.test(trimmedUrl));
-    }
-    // Relative URLs starting with / are same-origin by definition
-    return true;
+    return allowRelative && matchesAllowedPatterns(trimmedUrl, allowedPatterns);
   }
 
   // For absolute URLs, verify same-origin
   try {
     const parsedUrl = new URL(trimmedUrl, window.location.origin);
-
-    // Must be same origin
-    if (parsedUrl.origin !== window.location.origin) {
-      return false;
-    }
-
-    // Validate path against allowed patterns if provided
-    if (allowedPatterns.length > 0) {
-      return allowedPatterns.some(pattern => pattern.test(parsedUrl.pathname));
-    }
-
-    return true;
+    const isSameOrigin = parsedUrl.origin === window.location.origin;
+    return isSameOrigin && matchesAllowedPatterns(parsedUrl.pathname, allowedPatterns);
   } catch {
-    // Invalid URL
     return false;
   }
 }

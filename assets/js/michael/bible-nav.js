@@ -80,6 +80,54 @@ function showUnavailable(selectEl, attemptedUrl, fallbackUrl) {
 }
 
 /**
+ * Build Bible URL from components
+ * @param {string} basePath - Base path for Bible URLs
+ * @param {string} bibleId - Bible translation ID
+ * @param {string} book - Book ID (optional)
+ * @param {string} chapter - Chapter number (optional)
+ * @returns {string} Constructed URL
+ */
+function buildBibleUrl(basePath, bibleId, book, chapter) {
+  let url = basePath + '/' + bibleId + '/';
+  if (book) url += book + '/';
+  if (book && chapter) url += chapter + '/';
+  return url;
+}
+
+/**
+ * Handle Bible selector change event
+ * @param {HTMLSelectElement} selectEl - The select element
+ */
+function handleBibleChange(selectEl) {
+  var bibleId = selectEl.value;
+  if (!bibleId) return;
+
+  var basePath = selectEl.dataset.basePath || '/bible';
+  var book = selectEl.dataset.book || '';
+  var chapter = selectEl.dataset.chapter || '';
+
+  var url = buildBibleUrl(basePath, bibleId, book, chapter);
+  var fallbackUrl = basePath + '/' + bibleId + '/';
+
+  // If we have book context, check if the page exists
+  if (book) {
+    checkAndNavigate(url, fallbackUrl, selectEl);
+  } else {
+    window.location.href = url;
+  }
+}
+
+/**
+ * Handle book/chapter selector change event
+ * @param {HTMLSelectElement} selectEl - The select element
+ */
+function handleNavChange(selectEl) {
+  if (selectEl.value) {
+    window.location.href = selectEl.value;
+  }
+}
+
+/**
  * Initialize Bible navigation
  */
 function initBibleNav() {
@@ -93,24 +141,7 @@ function initBibleNav() {
     // Bible selector — preserve book/chapter context
     if (bibleSelect) {
       bibleSelect.addEventListener('change', function() {
-        var bibleId = this.value;
-        if (!bibleId) return;
-
-        var basePath = this.dataset.basePath || '/bible';
-        var book = this.dataset.book || '';
-        var chapter = this.dataset.chapter || '';
-
-        // Build the most specific URL possible
-        var url = basePath + '/' + bibleId + '/';
-        if (book) url += book + '/';
-        if (book && chapter) url += chapter + '/';
-
-        // If we have book/chapter context, check if the page exists
-        if (book) {
-          checkAndNavigate(url, basePath + '/' + bibleId + '/', this);
-        } else {
-          window.location.href = url;
-        }
+        handleBibleChange(this);
       });
     }
 
@@ -118,9 +149,7 @@ function initBibleNav() {
     [bookSelect, chapterSelect].forEach(function(select) {
       if (!select) return;
       select.addEventListener('change', function() {
-        if (this.value) {
-          window.location.href = this.value;
-        }
+        handleNavChange(this);
       });
     });
   });

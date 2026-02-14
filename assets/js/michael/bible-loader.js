@@ -28,6 +28,9 @@ window.Michael.BibleLoader = (function() {
   // Regex pattern for valid Bible IDs (alphanumeric, hyphen, underscore only)
   const VALID_BIBLE_ID = /^[A-Za-z0-9_-]+$/;
 
+  // Pattern for valid archive URLs
+  const VALID_ARCHIVE_URL = /^\/[A-Za-z0-9/_-]+\.(json|xz|gz)$/;
+
   /**
    * Validates a Bible ID to prevent path traversal and SSRF attacks.
    * @param {string} bibleId - Bible translation ID to validate
@@ -38,6 +41,31 @@ window.Michael.BibleLoader = (function() {
            bibleId.length > 0 &&
            bibleId.length <= 50 &&
            VALID_BIBLE_ID.test(bibleId);
+  }
+
+  /**
+   * Validates an archive URL for safe fetching.
+   * @param {string} url - URL to validate
+   * @returns {boolean} True if valid, false otherwise
+   */
+  function isValidArchiveUrl(url) {
+    return typeof url === 'string' &&
+           url.startsWith('/') &&
+           !url.includes('..') &&
+           VALID_ARCHIVE_URL.test(url);
+  }
+
+  /**
+   * Safe fetch wrapper that validates URLs before fetching.
+   * @param {string} url - URL to fetch
+   * @returns {Promise<Response>} Fetch response
+   * @throws {Error} If URL is invalid
+   */
+  async function safeFetch(url) {
+    if (!isValidArchiveUrl(url)) {
+      throw new Error(`Invalid archive URL: ${url}`);
+    }
+    return fetch(url);
   }
 
   // In-memory cache for loaded Bibles
@@ -156,7 +184,7 @@ window.Michael.BibleLoader = (function() {
       if (onProgress) onProgress(0.1);
 
       const xzUrl = `${ARCHIVE_PATH}/xz/${bibleId}.json.xz`;
-      const xzResponse = await fetch(xzUrl);
+      const xzResponse = await safeFetch(xzUrl);
 
       if (xzResponse.ok) {
         if (onProgress) onProgress(0.5);
@@ -177,7 +205,7 @@ window.Michael.BibleLoader = (function() {
       if (onProgress) onProgress(0.3);
 
       const gzUrl = `${ARCHIVE_PATH}/gz/${bibleId}.json.gz`;
-      const gzResponse = await fetch(gzUrl);
+      const gzResponse = await safeFetch(gzUrl);
 
       if (gzResponse.ok) {
         if (onProgress) onProgress(0.6);
@@ -195,7 +223,7 @@ window.Michael.BibleLoader = (function() {
       if (onProgress) onProgress(0.5);
 
       const jsonUrl = `${ARCHIVE_PATH}/json/${bibleId}.json`;
-      const jsonResponse = await fetch(jsonUrl);
+      const jsonResponse = await safeFetch(jsonUrl);
 
       if (jsonResponse.ok) {
         if (onProgress) onProgress(1);
