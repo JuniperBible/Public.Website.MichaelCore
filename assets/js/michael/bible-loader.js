@@ -65,6 +65,9 @@ window.Michael.BibleLoader = (function() {
     if (!isValidArchiveUrl(url)) {
       throw new Error(`Invalid archive URL: ${url}`);
     }
+    // SECURITY: URLs are validated by isValidArchiveUrl() before fetching.
+    // Only relative paths matching the VALID_ARCHIVE_URL pattern are allowed.
+    // Path traversal is prevented by checking for '..' and enforcing format restrictions.
     return fetch(url);
   }
 

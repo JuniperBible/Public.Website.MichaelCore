@@ -781,6 +781,7 @@ async function fetchComparisonData() {
  * @param {Array} chaptersData - Chapter data from all translations
  */
 function renderComparisonResults(chaptersData) {
+  // SECURITY: buildComparisonHTML uses escapeHtml on all user-controlled content
   const html = buildComparisonHTML(chaptersData);
   parallelContent.innerHTML = html;
 
@@ -828,6 +829,7 @@ async function loadComparison() {
     }
 
     updateURL();
+    // SECURITY: createLoadingIndicator() returns static safe HTML (no user input)
     parallelContent.innerHTML = createLoadingIndicator();
 
     const chaptersData = await fetchComparisonData();

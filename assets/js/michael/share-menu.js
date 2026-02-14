@@ -148,6 +148,9 @@
     // Fallback implementation
     var div = document.createElement('div');
     div.textContent = str;
+    // SECURITY: Safe use of innerHTML - reading escaped content from textContent
+    // The div.textContent assignment automatically escapes HTML special characters,
+    // so reading innerHTML returns the safely escaped string
     return div.innerHTML;
   };
 
@@ -259,6 +262,9 @@
       `);
     }
 
+    // SECURITY: Safe use of innerHTML - all dynamic content is escaped via escapeHtml()
+    // Static HTML (SVG icons, button elements) contains no user input
+    // User-controlled strings (safeUi.copyLink, shareTwitter, etc.) are escaped at lines 173-178
     menu.innerHTML = items.join('');
     return menu;
   };

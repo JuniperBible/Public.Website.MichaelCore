@@ -115,6 +115,14 @@ export async function fetchChapter(basePath, bibleId, bookId, chapterNum, signal
   }
 
   try {
+    // SECURITY: User-controlled URLs passed to HTTP client
+    // 1. Path components (bibleId, bookId, chapterNum) are validated with isValidPathComponent()
+    //    to ensure they match VALID_ID_PATTERN (alphanumeric, hyphen, underscore only) and
+    //    have appropriate length constraints (1-50 chars for IDs, 1-200 for chapter numbers)
+    // 2. The final URL is validated by isValidFetchUrl() before fetching
+    // 3. Only same-origin URLs matching BIBLE_URL_PATTERNS are allowed
+    // 4. Path traversal is prevented by rejecting path components containing "..", "/", or
+    //    other special characters through the VALID_ID_PATTERN regex
     // Fetch chapter HTML page
     const response = await fetch(url, { signal: fetchSignal });
 

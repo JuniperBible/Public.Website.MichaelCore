@@ -24,6 +24,10 @@ function checkAndNavigate(url, fallbackUrl, selectEl) {
   // Disable selector during check
   selectEl.disabled = true;
 
+  // SECURITY: User-controlled URL validated before fetching
+  // - isValidFetchUrl() validates URLs against BIBLE_URL_PATTERNS (same-origin only)
+  // - Only URLs matching /bible/* patterns are allowed
+  // - Dangerous protocols (javascript:, data:, etc.) are blocked
   fetch(url, { method: 'HEAD' })
     .then(function(response) {
       if (response.ok) {

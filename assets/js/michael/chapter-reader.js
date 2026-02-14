@@ -374,7 +374,7 @@
     const signal = loadSSSAbortController.signal;
 
     // Show loading state
-    // SECURITY: Safe static HTML
+    // SECURITY: Safe - static HTML with no user input
     sssVersesContainer.innerHTML = '<div class="sss-loading">Loading...</div>';
 
     try {
@@ -420,7 +420,7 @@
             verseElements.forEach(el => {
               const verseNum = el.dataset.verse || el.querySelector('sup')?.textContent;
               if (verseNum) {
-                // SECURITY: innerHTML is from trusted site content
+                // SECURITY: Safe - innerHTML is from trusted Bible data fetched from our own site
                 rightVerses.push({
                   number: parseInt(verseNum, 10),
                   html: el.innerHTML
@@ -499,7 +499,7 @@
 
     // Handle case where no verses found at all
     if (sortedNums.length === 0) {
-      // SECURITY: Safe static HTML
+      // SECURITY: Safe - static HTML with no user input
       sssVersesContainer.innerHTML = '<div class="sss-loading">No verses found</div>';
       return;
     }
@@ -519,7 +519,8 @@
       </div>`);
     });
 
-    // SECURITY: verseRows contains trusted HTML from page DOM/BibleAPI with escapeHtml() on user-visible names
+    // SECURITY: Safe - verseRows contains trusted HTML from page DOM and Bible API data
+    // Bible names in "missing" messages are escaped via escapeHtml()
     sssVersesContainer.innerHTML = verseRows.join('');
 
     // Process Strong's numbers in both left and right columns

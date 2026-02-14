@@ -198,6 +198,7 @@ async function handleClearCache(OfflineManager) {
 
       // Reset button on success
       clearBtn.disabled = false;
+      // SECURITY: Safe - restoring previously saved HTML from the button element itself
       clearBtn.innerHTML = originalHtml;
     } catch (error) {
       console.error('[Offline Settings] Failed to clear cache:', error);
@@ -205,6 +206,7 @@ async function handleClearCache(OfflineManager) {
 
       // Reset button on error
       clearBtn.disabled = false;
+      // SECURITY: Safe - restoring previously saved HTML from the button element itself
       clearBtn.innerHTML = originalHtml;
     }
   }
@@ -442,6 +444,7 @@ async function handleCacheCleared(detail, OfflineManager) {
       const clearBtn = document.getElementById('clear-cache-btn');
       if (clearBtn) {
         clearBtn.disabled = false;
+        // SECURITY: Safe - hardcoded HTML string with no user input
         clearBtn.innerHTML = '<span aria-hidden="true">🗑</span> Clear Cache';
       }
 

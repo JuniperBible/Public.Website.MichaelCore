@@ -306,6 +306,7 @@ function populateSSSChapterDropdown() {
   if (!sssChapterSelect) return;
 
   // Clear and add default option safely
+  // SECURITY: Safe - clearing dropdown content, no user input
   sssChapterSelect.innerHTML = '';
   const defaultOption = document.createElement('option');
   defaultOption.value = '';
@@ -350,6 +351,7 @@ async function loadSSSComparison() {
 
   // Show loading - DomUtils.createLoadingIndicator() returns safe HTML
   const loadingHtml = window.Michael?.DomUtils?.createLoadingIndicator?.() ?? '<div class="center muted">Loading...</div>';
+  // SECURITY: Safe - loadingHtml is either from DomUtils.createLoadingIndicator() (safe) or static HTML with no user input
   if (sssLeftPane) {
     sssLeftPane.innerHTML = loadingHtml;
   }
@@ -385,6 +387,7 @@ async function loadSSSComparison() {
     const leftFiltered = sssVerse > 0 ? leftVerses?.filter(v => v.number === sssVerse) : leftVerses;
     const rightFiltered = sssVerse > 0 ? rightVerses?.filter(v => v.number === sssVerse) : rightVerses;
 
+    // SECURITY: Safe - buildSSSPaneHTML escapes all user-facing content via escapeHtml()
     if (sssLeftPane) {
       sssLeftPane.innerHTML = buildSSSPaneHTML(leftFiltered, leftBible, bookName, rightFiltered, rightBible);
     }
@@ -397,6 +400,7 @@ async function loadSSSComparison() {
       return;
     }
     console.error('[SSS] Error loading comparison:', err);
+    // SECURITY: Safe - static HTML with no user input
     if (sssLeftPane) {
       sssLeftPane.innerHTML = '<article><p style="text-align: center; color: var(--michael-text-muted);">Error loading content</p></article>';
     }
