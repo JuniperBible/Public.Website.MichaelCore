@@ -148,7 +148,7 @@ async function handleDownloadBibles(OfflineManager) {
         successCount++;
 
       } catch (error) {
-        console.error(`[Offline Settings] Failed to download ${bible.abbrev}:`, error);
+        console.error('[Offline Settings] Failed to download %s:', bible.abbrev, error);
         updateBibleStatus(bible.id, 'Failed', 'is-error');
         showMessage(`Failed to download ${bible.abbrev}: ${error.message}`, 'error');
         failCount++;
@@ -259,7 +259,7 @@ async function updateBibleCacheStatuses(OfflineManager) {
           }
         }
       } catch (error) {
-        console.warn(`[Offline Settings] Failed to get cache status for ${bibleId}:`, error);
+        console.warn('[Offline Settings] Failed to get cache status for %s:', bibleId, error);
         if (chip) uncachedBibles.push(chip);
       }
     }

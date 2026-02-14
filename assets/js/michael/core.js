@@ -62,7 +62,7 @@ Michael.init = function() {
         module.init();
         initializedModules.add(name);
       } catch (err) {
-        console.error(`[Michael] Failed to initialize module "${name}":`, err);
+        console.error('[Michael] Failed to initialize module "%s":', name, err);
       }
     }
   });

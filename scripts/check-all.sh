@@ -124,7 +124,7 @@ fi
 echo "Checking regression tests..."
 if [ -d "tests" ] && [ -f "tests/go.mod" ]; then
     # Start Hugo server in background
-    hugo server --port ${PORT:-1313} --buildDrafts &>/dev/null &
+    hugo server --port "${PORT:-1313}" --buildDrafts &>/dev/null &
     HUGO_PID=$!
 
     # Wait for Hugo to start with retry logic
@@ -133,7 +133,7 @@ if [ -d "tests" ] && [ -f "tests/go.mod" ]; then
     HUGO_READY=false
 
     while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
-        if curl -s http://localhost:${PORT:-1313}/ &>/dev/null; then
+        if curl -s "http://localhost:${PORT:-1313}/" &>/dev/null; then
             HUGO_READY=true
             break
         fi
@@ -174,7 +174,7 @@ echo "Results Summary"
 echo "========================================"
 
 # Update README.md if requested
-if $UPDATE_README; then
+if [ "$UPDATE_README" = true ]; then
     echo "Updating README.md..."
 
     TODAY=$(date +%Y-%m-%d)
@@ -216,7 +216,7 @@ $TABLE\\
 fi
 
 echo ""
-if $ALL_PASSED; then
+if [ "$ALL_PASSED" = true ]; then
     echo -e "${GREEN}All checks passed!${NC}"
     exit 0
 else

@@ -169,7 +169,7 @@ window.Michael.BibleLoader = (function() {
         return data;
       }
     } catch (err) {
-      console.warn(`XZ decompression failed for ${bibleId}, falling back to gzip:`, err.message);
+      console.warn('XZ decompression failed for %s, falling back to gzip:', bibleId, err.message);
     }
 
     // Fallback to Gzip (native browser support)
@@ -187,7 +187,7 @@ window.Michael.BibleLoader = (function() {
         return data;
       }
     } catch (err) {
-      console.warn(`Gzip decompression failed for ${bibleId}, falling back to JSON:`, err.message);
+      console.warn('Gzip decompression failed for %s, falling back to JSON:', bibleId, err.message);
     }
 
     // Tertiary fallback: uncompressed JSON (maximum compatibility)
@@ -204,7 +204,7 @@ window.Michael.BibleLoader = (function() {
 
       throw new Error(`Failed to fetch ${bibleId}: ${jsonResponse.status}`);
     } catch (err) {
-      console.error(`All fallbacks failed for ${bibleId}:`, err);
+      console.error('All fallbacks failed for %s:', bibleId, err);
       throw new Error(`Failed to load Bible ${bibleId} from any source`);
     }
   }
@@ -341,7 +341,7 @@ window.Michael.BibleLoader = (function() {
 
       return chapter.verses;
     } catch (err) {
-      console.error(`Failed to get chapter ${bibleId}/${bookId}/${chapterNum}:`, err);
+      console.error('Failed to get chapter %s/%s/%s:', bibleId, bookId, chapterNum, err);
       return null;
     }
   }
@@ -364,7 +364,7 @@ window.Michael.BibleLoader = (function() {
         chapterCount: book.chapters.length
       }));
     } catch (err) {
-      console.error(`Failed to get books for ${bibleId}:`, err);
+      console.error('Failed to get books for %s:', bibleId, err);
       return null;
     }
   }

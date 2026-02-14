@@ -119,7 +119,7 @@ export async function fetchChapter(basePath, bibleId, bookId, chapterNum, signal
     const response = await fetch(url, { signal: fetchSignal });
 
     if (!response.ok) {
-      console.warn(`Failed to fetch ${url}: ${response.status}`);
+      console.warn('Failed to fetch %s: %d', url, response.status);
       return null;
     }
 
@@ -135,7 +135,7 @@ export async function fetchChapter(basePath, bibleId, bookId, chapterNum, signal
     if (err.name === 'AbortError') {
       throw err;
     }
-    console.error(`Error fetching ${url}:`, err);
+    console.error('Error fetching %s:', url, err);
     return null;
   } finally {
     // Clean up active fetch tracking

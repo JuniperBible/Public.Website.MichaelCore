@@ -86,7 +86,7 @@ while [[ $# -gt 0 ]]; do
 done
 
 # If generating all formats
-if $GENERATE_ALL; then
+if [ "$GENERATE_ALL" = true ]; then
     FORMATS=("spdx-json" "cyclonedx-json" "cyclonedx-xml" "syft-json")
 fi
 
@@ -122,7 +122,7 @@ resolve_tool() {
     # 4. Build from source
     if [[ -n "$build_dir" && -d "$build_dir" ]]; then
         echo "Building $name from source..." >&2
-        (cd "$build_dir" && $build_cmd) || { echo "Error: failed to build $name" >&2; exit 1; }
+        (cd "$build_dir" && eval "$build_cmd") || { echo "Error: failed to build $name" >&2; exit 1; }
         if [[ -n "$local_bin" && -f "$local_bin" && -x "$local_bin" ]]; then
             printf '%s' "$local_bin"; return 0
         fi
