@@ -9,6 +9,21 @@
 let highlightColor = '#666';
 
 /**
+ * Escape HTML special characters to prevent XSS
+ * @param {string} str - String to escape
+ * @returns {string} Escaped string
+ */
+function escapeHtml(str) {
+  if (!str) return '';
+  if (window.Michael?.DomUtils?.escapeHtml) {
+    return window.Michael.DomUtils.escapeHtml(str);
+  }
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+/**
  * Set the highlight color
  * @param {string} color - Hex color code
  */
@@ -64,9 +79,9 @@ export function highlightNormalDifferences(text, otherTexts, enabled) {
     return words.map(word => {
       const cleanWord = normalizeWord(word);
       if (!otherWords.has(cleanWord) && cleanWord.length > 0) {
-        return `<span class="diff-insert">${word}</span>`;
+        return `<span class="diff-insert">${escapeHtml(word)}</span>`;
       }
-      return word;
+      return escapeHtml(word);
     }).join(' ');
   }
 
@@ -92,9 +107,9 @@ export function highlightDifferences(text, compareText, enabled) {
     return words.map(word => {
       const cleanWord = normalizeWord(word);
       if (!compareWords.includes(cleanWord) && cleanWord.length > 0) {
-        return `<span class="diff-insert">${word}</span>`;
+        return `<span class="diff-insert">${escapeHtml(word)}</span>`;
       }
-      return word;
+      return escapeHtml(word);
     }).join(' ');
   }
 
