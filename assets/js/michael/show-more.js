@@ -8,16 +8,18 @@
  * SPDX-License-Identifier: MIT
  */
 
-'use strict';
+(function() {
+  'use strict';
 
-document.addEventListener('DOMContentLoaded', function() {
-  const showMoreBtn = document.getElementById('show-more-bibles');
-  if (!showMoreBtn) return;
+  document.addEventListener('DOMContentLoaded', function() {
+    const showMoreBtn = document.getElementById('show-more-bibles');
+    if (!showMoreBtn) return;
 
-  showMoreBtn.addEventListener('click', function() {
-    document.querySelectorAll('.bible-extra').forEach(function(el) {
-      el.classList.remove('hidden');
+    showMoreBtn.addEventListener('click', function() {
+      document.querySelectorAll('.bible-extra').forEach(function(el) {
+        el.classList.remove('hidden');
+      });
+      showMoreBtn.style.display = 'none';
     });
-    showMoreBtn.style.display = 'none';
   });
-});
+})();

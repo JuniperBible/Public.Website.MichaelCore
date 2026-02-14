@@ -2,7 +2,6 @@
    Michael Bible Module — Offline Settings Styles
    Panel for managing offline Bible downloads and cache
    ========================================================================== */
-/* stylelint-disable color-function-notation, alpha-value-notation */
 
 /* -----------------------------
    Offline Settings Panel
@@ -314,12 +313,6 @@
   margin-bottom: var(--pad-1);
   border: 1px solid var(--border);
   animation: slideIn 0.3s ease;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .offline-message {
-    animation: none;
-  }
 }
 
 @keyframes slideIn {

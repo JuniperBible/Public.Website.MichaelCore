@@ -30,13 +30,12 @@
   (dict "value" "#aaa" "label" (i18n "colorLight" | default "Light"))
 }}
 {{ $colors := .colors | default $defaultColors }}
-{{ $firstColor := dict "value" "#ffc" }}
-{{ with $colors }}{{ $firstColor = index . 0 }}{{ end }}
+{{ $firstColor := index $colors 0 }}
 <button id="{{ $id }}-color-btn" type="button" class="btn btn--sm color-picker-btn" style="background-color: {{ $firstColor.value }};" title="Choose highlight color" aria-label="Choose highlight color"></button>
 <div id="{{ $id }}-color-picker" class="hidden color-picker-dropdown">
   <div class="row color-picker-options">
     {{ range $colors }}
-    <button type="button" class="{{ $optionClass }} btn btn--sm color-option-btn" data-color="{{ .value }}" style="background-color: {{ .value }};" title="{{ .label }} highlight" aria-label="{{ .label }} highlight"></button>
+    <button type="button" class="{{ $optionClass }} btn btn--sm color-option-btn" data-color="{{ .value }}" style="background-color: {{ .value }};" title="{{ .label }}" aria-label="{{ .label }}"></button>
     {{ end }}
   </div>
 </div>

@@ -1,12 +1,12 @@
 {{ define "main" }}
-<main id="main-content" class="container pwa-home">
+<main class="container pwa-home">
   {{/* Continue Reading banner */}}
   {{ partial "michael/continue-reading.html" . }}
 
   <div class="panel">
     <header class="page-header">
       <h1>{{ .Site.Title }}</h1>
-      {{ with .Site.Params.michael.subtitle }}<p>{{ . }}</p>{{ else }}{{ with .Site.Params.description }}<p>{{ . }}</p>{{ end }}{{ end }}
+      {{ with .Site.Params.description }}<p>{{ . }}</p>{{ end }}
     </header>
 
     {{/* Try /bible first (standalone), then /religion/bible (module) */}}

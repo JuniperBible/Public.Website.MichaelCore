@@ -14,11 +14,6 @@ README="$PROJECT_ROOT/README.md"
 UPDATE_README=false
 HUGO_PID=""
 
-# Validate README exists
-if [[ ! -f "$README" ]]; then
-    echo "Warning: README not found at $README"
-fi
-
 # Cleanup function to kill background processes
 cleanup() {
     if [[ -n "$HUGO_PID" ]] && kill -0 "$HUGO_PID" 2>/dev/null; then
@@ -72,34 +67,21 @@ cd "$PROJECT_ROOT"
 
 # 1. Clean Build Check
 echo "Checking Hugo build..."
-# WARNING: Removing build artifacts (public/, resources/)
 rm -rf public/ resources/
-STDERR_CAPTURE=$(mktemp)
-if hugo --minify --quiet 2>"$STDERR_CAPTURE"; then
+if hugo --minify --quiet 2>/dev/null; then
     pass "Hugo Build"
 else
     fail "Hugo Build" "hugo --minify failed"
-    if [[ -s "$STDERR_CAPTURE" ]]; then
-        echo "  Error details:" >&2
-        cat "$STDERR_CAPTURE" >&2
-    fi
 fi
-rm -f "$STDERR_CAPTURE"
 
 # 2. SBOM Generation Check
 echo "Checking SBOM generation..."
 if [ -x "./scripts/generate-sbom.sh" ]; then
-    STDERR_CAPTURE=$(mktemp)
-    if ./scripts/generate-sbom.sh --quiet 2>"$STDERR_CAPTURE"; then
+    if ./scripts/generate-sbom.sh --quiet 2>/dev/null; then
         pass "SBOM Generation"
     else
         fail "SBOM Generation" "generate-sbom.sh failed"
-        if [[ -s "$STDERR_CAPTURE" ]]; then
-            echo "  Error details:" >&2
-            cat "$STDERR_CAPTURE" >&2
-        fi
     fi
-    rm -f "$STDERR_CAPTURE"
 else
     skip "SBOM Generation" "generate-sbom.sh not found or not executable"
 fi
@@ -124,7 +106,7 @@ fi
 echo "Checking regression tests..."
 if [ -d "tests" ] && [ -f "tests/go.mod" ]; then
     # Start Hugo server in background
-    hugo server --port "${PORT:-1313}" --buildDrafts &>/dev/null &
+    hugo server --port ${PORT:-1313} --buildDrafts &>/dev/null &
     HUGO_PID=$!
 
     # Wait for Hugo to start with retry logic
@@ -133,7 +115,7 @@ if [ -d "tests" ] && [ -f "tests/go.mod" ]; then
     HUGO_READY=false
 
     while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
-        if curl -s "http://localhost:${PORT:-1313}/" &>/dev/null; then
+        if curl -s http://localhost:${PORT:-1313}/ &>/dev/null; then
             HUGO_READY=true
             break
         fi
@@ -174,7 +156,7 @@ echo "Results Summary"
 echo "========================================"
 
 # Update README.md if requested
-if [ "$UPDATE_README" = true ]; then
+if $UPDATE_README; then
     echo "Updating README.md..."
 
     TODAY=$(date +%Y-%m-%d)
@@ -189,9 +171,9 @@ if [ "$UPDATE_README" = true ]; then
 | Clean Worktree | ${RESULTS["Clean Worktree"]:-skip} | No uncommitted changes |"
 
     # Convert pass/fail/skip to emoji
-    TABLE="${TABLE//| pass |/| ✅ Pass |}"
-    TABLE="${TABLE//| fail |/| ❌ Fail |}"
-    TABLE="${TABLE//| skip |/| ⊘ Skip |}"
+    TABLE=$(echo "$TABLE" | sed 's/| pass |/| ✅ Pass |/g')
+    TABLE=$(echo "$TABLE" | sed 's/| fail |/| ❌ Fail |/g')
+    TABLE=$(echo "$TABLE" | sed 's/| skip |/| ⊘ Skip |/g')
 
     # Update README using sed (with macOS compatibility)
     # Detect macOS vs Linux
@@ -216,7 +198,7 @@ $TABLE\\
 fi
 
 echo ""
-if [ "$ALL_PASSED" = true ]; then
+if $ALL_PASSED; then
     echo -e "${GREEN}All checks passed!${NC}"
     exit 0
 else

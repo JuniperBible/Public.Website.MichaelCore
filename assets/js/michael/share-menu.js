@@ -1,5 +1,3 @@
-'use strict';
-
 /**
  * ShareMenu Component
  *
@@ -8,8 +6,11 @@
  *
  * Copyright (c) 2025, Focus with Justin
  */
+window.Michael = window.Michael || {};
+window.Michael.ShareMenu = (function() {
+  'use strict';
 
-// UI strings (can be overridden via options)
+  // UI strings (can be overridden via options)
   const DEFAULT_UI = {
     copyLink: 'Copy link',
     copyText: 'Copy text',
@@ -141,17 +142,7 @@
    * @returns {string} Escaped string safe for HTML insertion
    */
   ShareMenu.prototype.escapeHtml = function(str) {
-    // Use DomUtils if available, otherwise inline fallback
-    if (window.Michael && window.Michael.DomUtils && window.Michael.DomUtils.escapeHtml) {
-      return window.Michael.DomUtils.escapeHtml(str);
-    }
-    // Fallback implementation
-    var div = document.createElement('div');
-    div.textContent = str;
-    // SECURITY: Safe use of innerHTML - reading escaped content from textContent
-    // The div.textContent assignment automatically escapes HTML special characters,
-    // so reading innerHTML returns the safely escaped string
-    return div.innerHTML;
+    return window.Michael.DomUtils.escapeHtml(str);
   };
 
   /**
@@ -262,9 +253,6 @@
       `);
     }
 
-    // SECURITY: Safe use of innerHTML - all dynamic content is escaped via escapeHtml()
-    // Static HTML (SVG icons, button elements) contains no user input
-    // User-controlled strings (safeUi.copyLink, shareTwitter, etc.) are escaped at lines 173-178
     menu.innerHTML = items.join('');
     return menu;
   };
@@ -283,86 +271,65 @@
   };
 
   /**
-   * Handle copy link action
-   */
-  ShareMenu.prototype.handleCopyLink = async function() {
-    const url = this.options.getShareUrl();
-    await this.copyToClipboard(url);
-  };
-
-  /**
-   * Handle copy text action
-   */
-  ShareMenu.prototype.handleCopyText = async function() {
-    const text = this.options.getShareText();
-    await this.copyToClipboard(text);
-  };
-
-  /**
-   * Handle copy offline action
-   */
-  ShareMenu.prototype.handleCopyOffline = async function() {
-    // Use specialized offline text formatter if available
-    const text = this.options.getOfflineText
-      ? this.options.getOfflineText()
-      : this.options.getShareText();
-    const success = await this.copyToClipboard(text);
-
-    // Trigger offline copy callback
-    if (success && this.options.onOfflineCopy) {
-      this.options.onOfflineCopy();
-    }
-  };
-
-  /**
-   * Handle Twitter share action
-   */
-  ShareMenu.prototype.handleShareTwitter = function() {
-    const text = this.options.getShareText();
-    const url = this.options.getShareUrl();
-    const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`;
-    try {
-      const parsed = new URL(twitterUrl);
-      if (parsed.hostname === 'twitter.com' || parsed.hostname === 'x.com') {
-        window.open(twitterUrl, '_blank', 'width=550,height=420,noopener,noreferrer');
-      }
-    } catch (e) { /* invalid URL — do nothing */ }
-  };
-
-  /**
-   * Handle Facebook share action
-   */
-  ShareMenu.prototype.handleShareFacebook = function() {
-    const url = this.options.getShareUrl();
-    const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`;
-    try {
-      const parsed = new URL(facebookUrl);
-      if (parsed.hostname === 'www.facebook.com') {
-        window.open(facebookUrl, '_blank', 'width=550,height=420,noopener,noreferrer');
-      }
-    } catch (e) { /* invalid URL — do nothing */ }
-  };
-
-  /**
    * Handle menu action clicks
    * @param {string} action - The action to perform
    */
   ShareMenu.prototype.handleAction = async function(action) {
     switch (action) {
       case 'copy-link':
-        await this.handleCopyLink();
+        {
+          const url = this.options.getShareUrl();
+          await this.copyToClipboard(url);
+        }
         break;
+
       case 'copy-text':
-        await this.handleCopyText();
+        {
+          const text = this.options.getShareText();
+          await this.copyToClipboard(text);
+        }
         break;
+
       case 'copy-offline':
-        await this.handleCopyOffline();
+        {
+          // Use specialized offline text formatter if available
+          const text = this.options.getOfflineText
+            ? this.options.getOfflineText()
+            : this.options.getShareText();
+          const success = await this.copyToClipboard(text);
+
+          // Trigger offline copy callback
+          if (success && this.options.onOfflineCopy) {
+            this.options.onOfflineCopy();
+          }
+        }
         break;
+
       case 'share-twitter':
-        this.handleShareTwitter();
+        {
+          const text = this.options.getShareText();
+          const url = this.options.getShareUrl();
+          const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`;
+          try {
+            const parsed = new URL(twitterUrl);
+            if (parsed.hostname === 'twitter.com' || parsed.hostname === 'x.com') {
+              window.open(twitterUrl, '_blank', 'width=550,height=420,noopener,noreferrer');
+            }
+          } catch (e) { /* invalid URL — do nothing */ }
+        }
         break;
+
       case 'share-facebook':
-        this.handleShareFacebook();
+        {
+          const url = this.options.getShareUrl();
+          const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`;
+          try {
+            const parsed = new URL(facebookUrl);
+            if (parsed.hostname === 'www.facebook.com') {
+              window.open(facebookUrl, '_blank', 'width=550,height=420,noopener,noreferrer');
+            }
+          } catch (e) { /* invalid URL — do nothing */ }
+        }
         break;
     }
 
@@ -411,7 +378,7 @@
       this.anchorBtn.classList.add('copied');
 
       setTimeout(() => {
-        if (this.anchorBtn && this.anchorBtn.setAttribute && this.anchorBtn.classList) {
+        if (this.anchorBtn) {
           this.anchorBtn.setAttribute('title', originalTitle);
           if (originalAriaLabel) {
             this.anchorBtn.setAttribute('aria-label', originalAriaLabel);
@@ -468,45 +435,6 @@
   };
 
   /**
-   * Check if target is a valid menu item
-   * @param {HTMLElement} target - The event target
-   * @returns {boolean} True if target is a menu item
-   */
-  ShareMenu.prototype.isMenuItemTarget = function(target) {
-    return target.hasAttribute('role') && target.getAttribute('role') === 'menuitem';
-  };
-
-  /**
-   * Handle navigation key press
-   * @param {KeyboardEvent} e - The keyboard event
-   */
-  ShareMenu.prototype.handleNavigationKey = function(e) {
-    switch (e.key) {
-      case 'ArrowDown':
-        e.preventDefault();
-        this.focusNextItem();
-        break;
-      case 'ArrowUp':
-        e.preventDefault();
-        this.focusPreviousItem();
-        break;
-      case 'Home':
-        e.preventDefault();
-        this.focusFirstItem();
-        break;
-      case 'End':
-        e.preventDefault();
-        this.focusLastItem();
-        break;
-      case 'Enter':
-      case ' ':
-        e.preventDefault();
-        e.target.click();
-        break;
-    }
-  };
-
-  /**
    * Setup keyboard navigation (arrow keys, Enter, Space)
    */
   ShareMenu.prototype.setupKeyboardNavigation = function() {
@@ -514,11 +442,37 @@
 
     this.keyHandler = (e) => {
       // Only handle navigation keys on menu items
-      if (!this.isMenuItemTarget(e.target)) {
+      if (!e.target.hasAttribute('role') || e.target.getAttribute('role') !== 'menuitem') {
         return;
       }
 
-      this.handleNavigationKey(e);
+      switch (e.key) {
+        case 'ArrowDown':
+          e.preventDefault();
+          this.focusNextItem();
+          break;
+
+        case 'ArrowUp':
+          e.preventDefault();
+          this.focusPreviousItem();
+          break;
+
+        case 'Home':
+          e.preventDefault();
+          this.focusFirstItem();
+          break;
+
+        case 'End':
+          e.preventDefault();
+          this.focusLastItem();
+          break;
+
+        case 'Enter':
+        case ' ':
+          e.preventDefault();
+          e.target.click();
+          break;
+      }
     };
 
     this.menu.addEventListener('keydown', this.keyHandler);
@@ -542,48 +496,40 @@
    * Focus next menu item
    */
   ShareMenu.prototype.focusNextItem = function() {
-    if (!this.menuItems || this.menuItems.length === 0) return;
+    if (this.menuItems.length === 0) return;
 
     this.currentFocusIndex = (this.currentFocusIndex + 1) % this.menuItems.length;
-    if (this.menuItems[this.currentFocusIndex]) {
-      this.menuItems[this.currentFocusIndex].focus();
-    }
+    this.menuItems[this.currentFocusIndex].focus();
   };
 
   /**
    * Focus previous menu item
    */
   ShareMenu.prototype.focusPreviousItem = function() {
-    if (!this.menuItems || this.menuItems.length === 0) return;
+    if (this.menuItems.length === 0) return;
 
     this.currentFocusIndex = (this.currentFocusIndex - 1 + this.menuItems.length) % this.menuItems.length;
-    if (this.menuItems[this.currentFocusIndex]) {
-      this.menuItems[this.currentFocusIndex].focus();
-    }
+    this.menuItems[this.currentFocusIndex].focus();
   };
 
   /**
    * Focus first menu item
    */
   ShareMenu.prototype.focusFirstItem = function() {
-    if (!this.menuItems || this.menuItems.length === 0) return;
+    if (this.menuItems.length === 0) return;
 
     this.currentFocusIndex = 0;
-    if (this.menuItems[0]) {
-      this.menuItems[0].focus();
-    }
+    this.menuItems[0].focus();
   };
 
   /**
    * Focus last menu item
    */
   ShareMenu.prototype.focusLastItem = function() {
-    if (!this.menuItems || this.menuItems.length === 0) return;
+    if (this.menuItems.length === 0) return;
 
     this.currentFocusIndex = this.menuItems.length - 1;
-    if (this.menuItems[this.currentFocusIndex]) {
-      this.menuItems[this.currentFocusIndex].focus();
-    }
+    this.menuItems[this.currentFocusIndex].focus();
   };
 
   /**
@@ -636,12 +582,6 @@
     this.setOfflineMode(!online, true);
   };
 
-// ============================================================================
-// EXPORTS
-// ============================================================================
-
-export default ShareMenu;
-
-// Backwards compatibility with window.Michael namespace
-window.Michael = window.Michael || {};
-window.Michael.ShareMenu = ShareMenu;
+  // Export the constructor
+  return ShareMenu;
+})();

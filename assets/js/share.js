@@ -1,5 +1,3 @@
-'use strict';
-
 /**
  * @file share.js - Social sharing functionality for Michael Bible Module
  * @description Manages verse and chapter sharing to social platforms
@@ -34,6 +32,8 @@
  * - Keyboard navigation supported through ShareMenu
  * - Screen reader friendly with descriptive labels
  */
+(function() {
+  'use strict';
 
   // ============================================================================
   // CONFIGURATION
@@ -148,7 +148,7 @@
       ? translationEl.getAttribute('data-translation')
       : 'Translation';
 
-    return `${title}:${verseNum} - ${translation}\n\n${content}`;
+    return `${title}:${verseNum} - ${translation}\n\n${content}\n\nShared from Michael Bible Module`;
   }
 
   // ============================================================================
@@ -164,9 +164,7 @@
    */
   function init() {
     const bibleText = document.querySelector('.bible-text');
-    if (!bibleText) {
-      return;
-    }
+    if (!bibleText) return;
 
     // Add share buttons to each verse
     addVerseShareButtons(bibleText);
@@ -193,13 +191,11 @@
     showToast(UI.onlineNotice);
 
     // Update menus if they're initialized
-    const cm = getChapterMenu();
-    const vm = getVerseMenu();
-    if (cm) {
-      cm.setOfflineMode(false);
+    if (chapterMenu) {
+      chapterMenu.setOfflineMode(false);
     }
-    if (vm) {
-      vm.setOfflineMode(false);
+    if (verseMenu) {
+      verseMenu.setOfflineMode(false);
     }
   }
 
@@ -210,13 +206,11 @@
     showToast(UI.offlineNotice, 4000);
 
     // Update menus if they're initialized
-    const cm = getChapterMenu();
-    const vm = getVerseMenu();
-    if (cm) {
-      cm.setOfflineMode(true);
+    if (chapterMenu) {
+      chapterMenu.setOfflineMode(true);
     }
-    if (vm) {
-      vm.setOfflineMode(true);
+    if (verseMenu) {
+      verseMenu.setOfflineMode(true);
     }
   }
 
@@ -258,10 +252,7 @@
           showShareMenu(btn, num);
         });
 
-        // Guard against detached DOM nodes
-        if (sup.parentNode) {
-          sup.parentNode.insertBefore(btn, sup.nextSibling);
-        }
+        sup.parentNode.insertBefore(btn, sup.nextSibling);
       });
       return;
     }
@@ -338,27 +329,16 @@
   // ============================================================================
 
   /**
-   * Chapter share menu instance (lazy-initialized)
-   * @type {Michael.ShareMenu|null}
+   * Chapter share menu instance
+   * @type {Michael.ShareMenu}
    * @description Configured for chapter-level sharing (no text copy option)
    */
-  let chapterMenu = null;
-
-  /**
-   * Get or create the chapter share menu
-   * @returns {Michael.ShareMenu|null}
-   */
-  function getChapterMenu() {
-    if (!chapterMenu && window.Michael && window.Michael.ShareMenu) {
-      chapterMenu = new window.Michael.ShareMenu({
-        includeTextCopy: false, // Chapters are too long to copy as text
-        offline: !isOnline(),
-        getShareUrl: () => window.location.href,
-        getShareTitle: () => document.querySelector('article header h1')?.textContent || document.title
-      });
-    }
-    return chapterMenu;
-  }
+  const chapterMenu = new window.Michael.ShareMenu({
+    includeTextCopy: false, // Chapters are too long to copy as text
+    offline: !isOnline(),
+    getShareUrl: () => window.location.href,
+    getShareTitle: () => document.querySelector('article header h1')?.textContent || document.title
+  });
 
   /**
    * Show share menu for the chapter
@@ -368,10 +348,7 @@
    * @returns {void}
    */
   function showChapterShareMenu(anchorBtn) {
-    const menu = getChapterMenu();
-    if (menu) {
-      menu.show(anchorBtn);
-    }
+    chapterMenu.show(anchorBtn);
   }
 
   /**
@@ -383,30 +360,19 @@
   let currentVerseNum = null;
 
   /**
-   * Verse share menu instance (lazy-initialized)
-   * @type {Michael.ShareMenu|null}
+   * Verse share menu instance
+   * @type {Michael.ShareMenu}
    * @description Configured for verse-level sharing (includes text copy option)
    */
-  let verseMenu = null;
-
-  /**
-   * Get or create the verse share menu
-   * @returns {Michael.ShareMenu|null}
-   */
-  function getVerseMenu() {
-    if (!verseMenu && window.Michael && window.Michael.ShareMenu) {
-      verseMenu = new window.Michael.ShareMenu({
-        includeTextCopy: true, // Verses are short enough to copy as formatted text
-        offline: !isOnline(),
-        getShareUrl: () => getVerseUrl(currentVerseNum),
-        getShareText: () => getVerseText(currentVerseNum),
-        getOfflineText: () => formatOfflineShareText(currentVerseNum),
-        getShareTitle: () => document.querySelector('article header h1')?.textContent || document.title,
-        onOfflineCopy: () => showToast(UI.offlineCopied)
-      });
-    }
-    return verseMenu;
-  }
+  const verseMenu = new window.Michael.ShareMenu({
+    includeTextCopy: true, // Verses are short enough to copy as formatted text
+    offline: !isOnline(),
+    getShareUrl: () => getVerseUrl(currentVerseNum),
+    getShareText: () => getVerseText(currentVerseNum),
+    getOfflineText: () => formatOfflineShareText(currentVerseNum),
+    getShareTitle: () => document.querySelector('article header h1')?.textContent || document.title,
+    onOfflineCopy: () => showToast(UI.offlineCopied)
+  });
 
   /**
    * Show share menu for a specific verse
@@ -419,10 +385,7 @@
    */
   function showShareMenu(anchorBtn, verseNum) {
     currentVerseNum = verseNum;
-    const menu = getVerseMenu();
-    if (menu) {
-      menu.show(anchorBtn);
-    }
+    verseMenu.show(anchorBtn);
   }
 
   // ============================================================================
@@ -638,11 +601,4 @@
       }
     }
   });
-
-// ============================================================================
-// EXPORTS
-// ============================================================================
-
-export { init, showShareMenu, showChapterShareMenu, getVerseUrl, getVerseText, shareChapter };
-
-// No backwards compatibility needed - this module auto-initializes and doesn't expose a public API
+})();

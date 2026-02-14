@@ -21,15 +21,15 @@
 
 {{ define "scripts" }}
 {{ partial "michael/strongs-data.html" . }}
-{{- range slice "js/michael/bible-loader.js" "js/michael/bible-api.js" "js/michael/footnotes.js" "js/text-compare.js" "js/parallel.js" -}}
+{{- range slice "js/michael/bible-api.js" "js/michael/footnotes.js" "js/text-compare.js" "js/parallel.js" -}}
 {{- $script := resources.Get . -}}
-{{- if $script }}<script type="module" src="{{ $script.RelPermalink }}"></script>{{ end -}}
+{{- if $script }}<script src="{{ $script.RelPermalink }}" defer></script>{{ end -}}
 {{- end -}}
 {{ end }}
 
 {{ define "main" }}
 {{ $basePath := .Site.Params.michael.basePath | default "/bible" }}
-<main id="main-content" class="container pad-3-2">
+<main class="container pad-3-2">
   <div class="panel">
     <header class="page-header">
       <h1>{{ .Title }}</h1>
@@ -52,7 +52,7 @@
         <div class="compare-controls__row">
           {{ partial "michael/book-chapter-selects.html" (dict "site" $.Site "bookId" "book-select" "chapterId" "chapter-select") }}
           {{ partial "michael/compare-diff-control.html" (dict "toggleId" "highlight-toggle" "colorId" "highlight" "optionClass" "color-option" "hideColorPicker" true) }}
-          <button type="button" id="sss-mode-btn" class="btn btn--sm" aria-controls="sss-mode" aria-label="Switch to Side by Side Scripture mode" title="Switch to Side by Side Scripture (SSS)">
+          <button id="sss-mode-btn" class="btn btn--sm" aria-controls="sss-mode" aria-label="Switch to Side by Side Scripture mode" title="Switch to Side by Side Scripture (SSS)">
             VVV <span class="muted">ON</span>
           </button>
         </div>
@@ -65,15 +65,13 @@
       <div class="compare-controls compare-controls--compact">
         <div class="compare-controls__row">
           <span class="sss-bible-pair">
-            <button type="button" id="sss-back-btn" class="btn btn--sm" title="Back to Compare" aria-label="Back to Compare">&larr;</button>
+            <button id="sss-back-btn" class="btn btn--sm" title="Back to Compare" aria-label="Back to Compare">&larr;</button>
             {{ partial "michael/bible-select.html" (dict "site" $.Site "id" "sss-bible-left" "label" "Left Bible..." "class" "select select--compact") }}
             {{ partial "michael/bible-select.html" (dict "site" $.Site "id" "sss-bible-right" "label" "Right Bible..." "class" "select select--compact") }}
           </span>
-        </div>
-        <div class="compare-controls__row">
           {{ partial "michael/book-chapter-selects.html" (dict "site" $.Site "bookId" "sss-book-select" "chapterId" "sss-chapter-select") }}
           {{ partial "michael/compare-diff-control.html" (dict "toggleId" "sss-highlight-toggle" "colorId" "sss-highlight" "optionClass" "sss-color-option" "checked" false "hideColorPicker" true) }}
-          <button type="button" id="sss-toggle-btn" class="btn btn--sm" aria-controls="normal-mode" aria-label="Switch to Vertical Verse View mode" title="Switch to Vertical Verse View (VVV)">
+          <button id="sss-toggle-btn" class="btn btn--sm" aria-controls="normal-mode" aria-label="Switch to Vertical Verse View mode" title="Switch to Vertical Verse View (VVV)">
             SSS <span class="muted">ON</span>
           </button>
         </div>
@@ -118,15 +116,10 @@
 {{- $biblesMeta = $biblesMeta | append (dict "id" .id "title" .title "abbrev" .abbrev "description" .description "language" .language) -}}
 {{- end -}}
 {{- $firstBible := index $allBibles 0 -}}
-{{- $aux := dict -}}
-{{- if $firstBible -}}
-  {{- $aux = index .Site.Data.bibles_auxiliary $firstBible.id -}}
-{{- end -}}
+{{- $aux := index .Site.Data.bibles_auxiliary $firstBible.id -}}
 {{- $booksList := slice -}}
-{{- if $aux -}}
 {{- range $aux.books -}}
 {{- $booksList = $booksList | append (dict "id" .id "name" .name "chapters" (len .chapters)) -}}
-{{- end -}}
 {{- end -}}
 {{- dict "bibles" $biblesMeta "books" $booksList "basePath" ($basePath | relLangURL) | jsonify | safeJS -}}
 </script>

@@ -16,10 +16,7 @@
 {{- $print := resources.Get "css/theme-print.css" -}}
 {{- $custom := resources.Get "css/theme-custom.css" -}}
 {{- $theme := slice $colors $main $compare $share $strongs $pwa $offline $print $custom | resources.Concat "css/theme.bundle.css" | minify | fingerprint -}}
-{{- $hash := substr $theme.Data.Integrity 0 32 | replaceRE "[^a-zA-Z0-9]" "" -}}
-{{- partial "michael/icons.html" . -}}
-{{- $icons := .Scratch.Get "michael-icons" -}}
-/* eslint-disable no-unused-vars */
+{{- $hash := substr $theme.Data.Integrity 0 12 | replaceRE "[^a-zA-Z0-9]" "" -}}
 /**
  * Service Worker for Michael Bible Module
  *
@@ -42,7 +39,6 @@ const SHELL_CACHE = `michael-shell-v${CACHE_VERSION}`;
 const CHAPTERS_CACHE = `michael-chapters-v${CACHE_VERSION}`;
 const METADATA_CACHE = `michael-metadata-v${CACHE_VERSION}`;
 const OFFLINE_URL = '/offline.html';
-const MAX_SYNC_RETRIES = 3;
 
 // Track active download operations for cancellation
 const activeDownloads = new Map(); // bibleId -> AbortController
@@ -53,64 +49,6 @@ const bibleMetadata = new Map(); // bibleId -> { totalChapters, totalBooks }
 // Track metadata loading Promise to avoid race conditions
 let metadataReady = Promise.resolve();
 
-// Track background sync retry attempts
-const syncRetryCount = new Map(); // syncTag -> retryCount
-
-// Network timeout for fetch operations (30 seconds)
-const FETCH_TIMEOUT_MS = 30000;
-
-/**
- * Fetch with timeout to prevent indefinite hangs
- * @param {Request|string} request - Request to fetch
- * @param {Object} options - Fetch options
- * @param {number} timeoutMs - Timeout in milliseconds
- * @returns {Promise<Response>}
- */
-async function fetchWithTimeout(request, options = {}, timeoutMs = FETCH_TIMEOUT_MS) {
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
-
-  try {
-    const mergedOptions = {
-      ...options,
-      signal: options.signal
-        ? combineAbortSignals(options.signal, controller.signal)
-        : controller.signal
-    };
-    return await fetch(request, mergedOptions);
-  } finally {
-    clearTimeout(timeoutId);
-  }
-}
-
-/**
- * Combine multiple abort signals into one
- * @param {AbortSignal} signal1
- * @param {AbortSignal} signal2
- * @returns {AbortSignal}
- */
-function combineAbortSignals(signal1, signal2) {
-  const controller = new AbortController();
-
-  const abort = () => controller.abort();
-  signal1.addEventListener('abort', abort);
-  signal2.addEventListener('abort', abort);
-
-  if (signal1.aborted || signal2.aborted) {
-    controller.abort();
-  }
-
-  return controller.signal;
-}
-
-// Critical assets that MUST cache for SW to function
-// If these fail, installation should abort
-const CRITICAL_ASSETS = [
-  '/',
-  OFFLINE_URL,
-  '{{ $theme.RelPermalink }}'
-];
-
 // Assets to pre-cache on install
 // CSS files are now embedded with their fingerprinted paths by Hugo
 // Only include JS files that are actually built (referenced in templates)
@@ -118,9 +56,9 @@ const SHELL_ASSETS = [
   '/',
   OFFLINE_URL,
   '/manifest.json',
-  '{{ $icons.icon192 }}',
-  '{{ $icons.icon512 }}',
-  '{{ $icons.apple }}',
+  '/icons/icon-192.png',
+  '/icons/icon-512.png',
+  '/icons/apple-touch-icon.png',
   // CSS with fingerprinted path from Hugo
   '{{ $theme.RelPermalink }}',
   // Core JS files (only those referenced in templates)
@@ -165,21 +103,8 @@ self.addEventListener('install', (event) => {
         const shellCache = await caches.open(SHELL_CACHE);
         console.log('[Service Worker] Caching shell assets');
 
-        // Cache critical assets first - fail install if these don't cache
-        for (const asset of CRITICAL_ASSETS) {
-          try {
-            await shellCache.add(asset);
-            console.log(`[Service Worker] Cached critical: ${asset}`);
-          } catch (error) {
-            console.error(`[Service Worker] CRITICAL: Failed to cache ${asset}:`, error);
-            throw new Error(`Critical asset ${asset} failed to cache`);
-          }
-        }
-
-        // Cache remaining assets - failures are non-fatal
+        // Cache assets one by one to handle failures gracefully
         for (const asset of SHELL_ASSETS) {
-          // Skip already-cached critical assets
-          if (CRITICAL_ASSETS.includes(asset)) continue;
           try {
             await shellCache.add(asset);
             console.log(`[Service Worker] Cached: ${asset}`);
@@ -203,11 +128,10 @@ self.addEventListener('install', (event) => {
 
         console.log('[Service Worker] Installation complete');
 
-        // Skip waiting to activate immediately - only after successful cache
-        await self.skipWaiting();
+        // Skip waiting to activate immediately
+        self.skipWaiting();
       } catch (error) {
         console.error('[Service Worker] Installation failed:', error);
-        // Don't skipWaiting on error - let the old SW continue serving
       }
     })()
   );
@@ -297,7 +221,7 @@ async function cacheFirstStrategy(request, cacheName) {
     }
 
     console.log(`[Service Worker] Cache miss, fetching: ${request.url}`);
-    const networkResponse = await fetchWithTimeout(request);
+    const networkResponse = await fetch(request);
 
     // Cache the new response for future use (only on success)
     if (networkResponse && networkResponse.ok) {
@@ -309,35 +233,8 @@ async function cacheFirstStrategy(request, cacheName) {
     return networkResponse;
   } catch (error) {
     console.error(`[Service Worker] Cache-first failed for ${request.url}:`, error);
-
-    // Try to return cached version if available (may have existed in cache)
-    try {
-      const cache = await caches.open(cacheName);
-      const cachedResponse = await cache.match(request);
-      if (cachedResponse) {
-        console.log(`[Service Worker] Serving stale cache after network failure: ${request.url}`);
-        return cachedResponse;
-      }
-    } catch (cacheError) {
-      console.warn(`[Service Worker] Cache access failed: ${cacheError.message}`);
-    }
-
-    // For HTML requests, return offline page
-    const accept = request.headers.get('accept');
-    if (accept && accept.includes('text/html')) {
-      try {
-        const offlineCache = await caches.open(SHELL_CACHE);
-        const offlinePage = await offlineCache.match(OFFLINE_URL);
-        if (offlinePage) {
-          return offlinePage;
-        }
-      } catch (offlineError) {
-        console.warn(`[Service Worker] Failed to load offline page: ${offlineError.message}`);
-      }
-    }
-
-    // Last resort: return a basic error response
-    return new Response('Network error and no cache available', {
+    // Return a basic error response instead of throwing
+    return new Response('Network error', {
       status: 408,
       statusText: 'Request Timeout',
       headers: { 'Content-Type': 'text/plain' }
@@ -352,8 +249,8 @@ async function cacheFirstStrategy(request, cacheName) {
  */
 async function networkFirstStrategy(request, cacheName) {
   try {
-    // Try network first (with timeout)
-    const networkResponse = await fetchWithTimeout(request);
+    // Try network first
+    const networkResponse = await fetch(request);
 
     // Cache the response for offline use (only on success)
     if (networkResponse && networkResponse.ok) {
@@ -370,8 +267,7 @@ async function networkFirstStrategy(request, cacheName) {
     console.log(`[Service Worker] Network failed, trying cache: ${request.url}`);
     try {
       const cache = await caches.open(cacheName);
-      // Use ignoreSearch to match URLs regardless of query params
-      const cachedResponse = await cache.match(request, { ignoreSearch: true });
+      const cachedResponse = await cache.match(request);
 
       if (cachedResponse) {
         console.log(`[Service Worker] Serving from cache: ${request.url}`);
@@ -381,26 +277,9 @@ async function networkFirstStrategy(request, cacheName) {
       console.error(`[Service Worker] Cache access failed for ${request.url}:`, cacheError);
     }
 
-    // Both network and cache failed
+    // Both network and cache failed - return error response
     console.error(`[Service Worker] Network-first failed for ${request.url}:`, error);
-
-    // For HTML requests, try to return offline page
-    const accept = request.headers.get('accept');
-    if (accept && accept.includes('text/html')) {
-      try {
-        const offlineCache = await caches.open(SHELL_CACHE);
-        const offlinePage = await offlineCache.match(OFFLINE_URL);
-        if (offlinePage) {
-          return offlinePage;
-        }
-      } catch (offlineError) {
-        console.warn(`[Service Worker] Failed to load offline page: ${offlineError.message}`);
-      }
-    }
-
-    // Return error response with context
-    const errorType = error.name === 'TypeError' ? 'Network error' : 'Request failed';
-    return new Response(`${errorType} and no cache available`, {
+    return new Response('Network error and no cache available', {
       status: 503,
       statusText: 'Service Unavailable',
       headers: { 'Content-Type': 'text/plain' }
@@ -414,8 +293,8 @@ async function networkFirstStrategy(request, cacheName) {
  */
 async function navigationStrategy(request) {
   try {
-    // Try network first (with timeout)
-    const networkResponse = await fetchWithTimeout(request);
+    // Try network first
+    const networkResponse = await fetch(request);
 
     // Cache successful navigation responses
     if (networkResponse && networkResponse.ok) {
@@ -430,8 +309,7 @@ async function navigationStrategy(request) {
     // Network failed, try cache
     try {
       const cache = await caches.open(CHAPTERS_CACHE);
-      // Use ignoreSearch to match URLs regardless of query params
-      const cachedResponse = await cache.match(request, { ignoreSearch: true });
+      const cachedResponse = await cache.match(request);
 
       if (cachedResponse) {
         console.log(`[Service Worker] Serving cached page: ${request.url}`);
@@ -446,80 +324,34 @@ async function navigationStrategy(request) {
       if (offlinePage) {
         return offlinePage;
       }
-      // Offline page not cached, fall through to error response
     } catch (cacheError) {
       console.error('[Service Worker] Cache access failed:', cacheError);
     }
 
-    // Last resort: return a basic offline HTML page
-    return new Response(`<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Offline</title>
-  <style>
-    body { font-family: system-ui, sans-serif; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; background: #1a1a1a; color: #e0e0e0; }
-    .offline { text-align: center; padding: 2rem; }
-    h1 { margin: 0 0 1rem; }
-    p { color: #888; }
-    button { margin-top: 1rem; padding: 0.75rem 1.5rem; background: #4a4a4a; color: #fff; border: none; border-radius: 4px; cursor: pointer; }
-    button:hover { background: #5a5a5a; }
-  </style>
-</head>
-<body>
-  <div class="offline">
-    <h1>You're Offline</h1>
-    <p>This page isn't available offline yet.</p>
-    <button onclick="location.reload()">Try Again</button>
-  </div>
-</body>
-</html>`, {
+    // Last resort: return a basic error response
+    return new Response('Offline and no cached content available', {
       status: 503,
       statusText: 'Service Unavailable',
-      headers: { 'Content-Type': 'text/html; charset=UTF-8' }
+      headers: { 'Content-Type': 'text/plain' }
     });
   }
 }
 
 /**
  * Helper: Check if URL is a static asset
- * Validates both file extension and path to prevent caching user-generated content
  */
 function isStaticAsset(url) {
   const staticExtensions = ['.css', '.js', '.woff', '.woff2', '.ttf', '.eot', '.svg', '.png', '.jpg', '.jpeg', '.gif', '.webp', '.ico'];
-
-  // Must end with a static extension
-  if (!staticExtensions.some(ext => url.pathname.endsWith(ext))) {
-    return false;
-  }
-
-  // Validate path - only cache assets from known static directories
-  // Prevent caching images/files from user-generated or dynamic paths
-  const validPathPrefixes = [
-    '/css/',
-    '/js/',
-    '/fonts/',
-    '/img/',
-    '/images/',
-    '/icons/',
-    '/assets/',
-    '/android-chrome-',
-    '/apple-touch-icon',
-    '/favicon',
-    '/manifest'
-  ];
-
-  return validPathPrefixes.some(prefix => url.pathname.startsWith(prefix) || url.pathname.includes(prefix));
+  return staticExtensions.some(ext => url.pathname.endsWith(ext));
 }
 
 /**
  * Helper: Check if URL is a Bible chapter page
  */
 function isChapterPage(url) {
-  // Pattern: /bible/{bible}/{book}/{chapter}/ with optional query params
-  const chapterPattern = /^\/bible\/[^/]+\/[^/]+\/\d+\/?(?:\?.*)?$/;
-  return chapterPattern.test(url.pathname + url.search);
+  // Pattern: /bible/{bible}/{book}/{chapter}/
+  const chapterPattern = /^\/bible\/[^/]+\/[^/]+\/\d+\/?$/;
+  return chapterPattern.test(url.pathname);
 }
 
 /**
@@ -549,126 +381,65 @@ self.addEventListener('message', async (event) => {
   // Wait for metadata to be loaded before processing messages that access it
   if (metadataReady) await metadataReady;
 
-  // Dispatch to appropriate handler based on message type
   switch (type) {
     case 'SKIP_WAITING':
-      handleSkipWaiting();
+      console.log('[Service Worker] Received SKIP_WAITING message');
+      self.skipWaiting();
       break;
 
     case 'CACHE_URLS':
-      handleCacheUrlsMessage(data, event.data);
+      console.log('[Service Worker] Received CACHE_URLS message');
+      handleCacheUrls(data, event.data);
       break;
 
     case 'GET_CACHE_STATUS':
-      handleGetCacheStatus(sendResponse);
+      console.log('[Service Worker] Received GET_CACHE_STATUS message');
+      getCacheStatus()
+        .then(sendResponse)
+        .catch(error => sendResponse({ error: error.message }));
       break;
 
     case 'CACHE_BIBLE':
-      handleCacheBible(data, sendResponse);
+      console.log('[Service Worker] Received CACHE_BIBLE message', data);
+      if (!data?.bibleId || !data?.basePath) {
+        sendResponse({ error: 'Missing bibleId or basePath' });
+        break;
+      }
+      cacheBible(data.bibleId, data.basePath)
+        .then(() => sendResponse({ success: true }))
+        .catch(error => sendResponse({ error: error.message }));
       break;
 
     case 'CLEAR_CACHE':
-      handleClearCache(sendResponse);
+      console.log('[Service Worker] Received CLEAR_CACHE message');
+      clearBibleCache()
+        .then(itemsCleared => {
+          sendResponse({ success: true, itemsCleared });
+          notifyClients('CACHE_CLEARED', { itemsCleared });
+        })
+        .catch(error => sendResponse({ error: error.message }));
       break;
 
     case 'GET_BIBLE_CACHE_STATUS':
-      handleGetBibleCacheStatus(data, sendResponse);
+      console.log('[Service Worker] Received GET_BIBLE_CACHE_STATUS message', data);
+      if (!data?.bibleId || !data?.basePath) {
+        sendResponse({ error: 'Missing bibleId or basePath' });
+        break;
+      }
+      getBibleCacheStatus(data.bibleId, data.basePath)
+        .then(sendResponse)
+        .catch(error => sendResponse({ error: error.message }));
       break;
 
     case 'CANCEL_DOWNLOAD':
-      handleCancelDownloadMessage(data, sendResponse);
+      console.log('[Service Worker] Received CANCEL_DOWNLOAD message', data);
+      handleCancelDownload(data, sendResponse);
       break;
 
     default:
       console.warn('[Service Worker] Unknown message type:', type);
   }
 });
-
-/**
- * Handle SKIP_WAITING message
- */
-function handleSkipWaiting() {
-  console.log('[Service Worker] Received SKIP_WAITING message');
-  self.skipWaiting();
-}
-
-/**
- * Handle CACHE_URLS message
- */
-function handleCacheUrlsMessage(data, fallbackData) {
-  console.log('[Service Worker] Received CACHE_URLS message');
-  handleCacheUrls(data, fallbackData);
-}
-
-/**
- * Handle GET_CACHE_STATUS message
- */
-function handleGetCacheStatus(sendResponse) {
-  console.log('[Service Worker] Received GET_CACHE_STATUS message');
-  getCacheStatus()
-    .then(sendResponse)
-    .catch(error => sendResponse({ error: error.message }));
-}
-
-/**
- * Handle CACHE_BIBLE message
- */
-function handleCacheBible(data, sendResponse) {
-  console.log('[Service Worker] Received CACHE_BIBLE message', data);
-
-  if (!data?.bibleId || !data?.basePath) {
-    sendResponse({ error: 'Missing bibleId or basePath' });
-    return;
-  }
-
-  // Acknowledge immediately so the MessageChannel doesn't timeout.
-  // Progress and completion are reported via notifyClients().
-  sendResponse({ success: true, acknowledged: true });
-
-  cacheBible(data.bibleId, data.basePath)
-    .catch(error => {
-      console.error(`[Service Worker] cacheBible failed for ${data.bibleId}:`, error);
-      notifyClients('CACHE_ERROR', { bible: data.bibleId, error: error.message });
-    });
-}
-
-/**
- * Handle CLEAR_CACHE message
- */
-function handleClearCache(sendResponse) {
-  console.log('[Service Worker] Received CLEAR_CACHE message');
-
-  clearBibleCache()
-    .then(itemsCleared => {
-      sendResponse({ success: true, itemsCleared });
-      notifyClients('CACHE_CLEARED', { itemsCleared });
-    })
-    .catch(error => sendResponse({ error: error.message }));
-}
-
-/**
- * Handle GET_BIBLE_CACHE_STATUS message
- */
-function handleGetBibleCacheStatus(data, sendResponse) {
-  console.log('[Service Worker] Received GET_BIBLE_CACHE_STATUS message', data);
-
-  if (!data?.bibleId || !data?.basePath) {
-    sendResponse({ error: 'Missing bibleId or basePath' });
-    return;
-  }
-
-  getBibleCacheStatus(data.bibleId, data.basePath)
-    .then(sendResponse)
-    .catch(error => sendResponse({ error: error.message }));
-}
-
-/**
- * Handle CANCEL_DOWNLOAD message
- */
-function handleCancelDownloadMessage(data, sendResponse) {
-  console.log('[Service Worker] Received CANCEL_DOWNLOAD message', data);
-  handleCancelDownload(data, sendResponse);
-}
 
 /**
  * Handle CACHE_URLS message
@@ -795,7 +566,7 @@ async function fetchBibleOverview(bibleId, basePath, cache, signal) {
   const bibleUrl = `${basePath}/${bibleId}/`;
 
   try {
-    const bibleResponse = await fetchWithTimeout(bibleUrl, { signal });
+    const bibleResponse = await fetch(bibleUrl, { signal });
     if (!bibleResponse.ok) {
       throw new Error(`Bible page returned ${bibleResponse.status}`);
     }
@@ -806,7 +577,7 @@ async function fetchBibleOverview(bibleId, basePath, cache, signal) {
 
     return { bibleUrl, bookLinks };
   } catch (error) {
-    if (error.name === 'AbortError' || error.message === 'Download cancelled') {
+    if (error.name === 'AbortError') {
       throw new Error('Download cancelled');
     }
     throw new Error(`Failed to fetch Bible page: ${error.message}`);
@@ -825,7 +596,7 @@ async function discoverChapters(bibleId, basePath, bookLinks, cache, signal) {
     if (signal.aborted) throw new Error('Download cancelled');
 
     try {
-      const bookResponse = await fetchWithTimeout(bookUrl, { signal });
+      const bookResponse = await fetch(bookUrl, { signal });
       if (bookResponse.ok) {
         await cache.put(bookUrl, bookResponse.clone());
         const bookHtml = await bookResponse.text();
@@ -835,7 +606,7 @@ async function discoverChapters(bibleId, basePath, bookLinks, cache, signal) {
         failedBooks++;
       }
     } catch (error) {
-      if (error.name === 'AbortError') {
+      if (error.name === 'AbortError' || error.message === 'Download cancelled') {
         throw new Error('Download cancelled');
       }
       console.warn(`[Service Worker] Failed to fetch book ${bookUrl}:`, error);
@@ -874,14 +645,14 @@ async function cacheAllChapters(bibleId, chapterUrls, cache, signal, startComple
     if (signal.aborted) throw new Error('Download cancelled');
 
     try {
-      const chapterResponse = await fetchWithTimeout(chapterUrl, { signal });
+      const chapterResponse = await fetch(chapterUrl, { signal });
       if (chapterResponse.ok) {
         await cache.put(chapterUrl, chapterResponse.clone());
       } else {
         failedChapters++;
       }
     } catch (error) {
-      if (error.name === 'AbortError') {
+      if (error.name === 'AbortError' || error.message === 'Download cancelled') {
         throw new Error('Download cancelled');
       }
       console.warn(`[Service Worker] Failed to cache chapter ${chapterUrl}:`, error);
@@ -1126,18 +897,13 @@ async function loadAllBibleMetadata() {
 /**
  * Background Sync Event Handler
  * Handles queued Bible downloads when the device comes back online
- * Implements retry tracking with max attempts limit
  */
 self.addEventListener('sync', (event) => {
   console.log('[Service Worker] Sync event:', event.tag);
 
   if (event.tag.startsWith('download-bible-')) {
     const bibleId = event.tag.replace('download-bible-', '');
-    const syncTag = event.tag;
-
-    // Track retry attempts
-    const currentRetries = syncRetryCount.get(syncTag) || 0;
-    console.log(`[Service Worker] Background sync for Bible: ${bibleId} (attempt ${currentRetries + 1}/${MAX_SYNC_RETRIES})`);
+    console.log(`[Service Worker] Background sync for Bible: ${bibleId}`);
 
     event.waitUntil(
       (async () => {
@@ -1147,9 +913,6 @@ self.addEventListener('sync', (event) => {
 
           // Cache the Bible
           await cacheBible(bibleId, basePath);
-
-          // Success - clear retry count
-          syncRetryCount.delete(syncTag);
 
           // Notify clients that background sync completed
           const clients = await self.clients.matchAll();
@@ -1162,46 +925,14 @@ self.addEventListener('sync', (event) => {
 
           console.log(`[Service Worker] Background sync completed for ${bibleId}`);
         } catch (error) {
-          // Increment retry count
-          const newRetryCount = currentRetries + 1;
-          syncRetryCount.set(syncTag, newRetryCount);
+          console.error(`[Service Worker] Background sync failed for ${bibleId}:`, error);
 
-          console.error(`[Service Worker] Background sync failed for ${bibleId} (attempt ${newRetryCount}/${MAX_SYNC_RETRIES}):`, error);
-
-          // Check if we've exceeded max retries
-          if (newRetryCount >= MAX_SYNC_RETRIES) {
-            console.warn(`[Service Worker] Max retries (${MAX_SYNC_RETRIES}) reached for ${bibleId}, giving up`);
-            syncRetryCount.delete(syncTag);
-
-            // Notify clients of permanent failure
-            const clients = await self.clients.matchAll();
-            clients.forEach(client => {
-              client.postMessage({
-                type: 'BACKGROUND_SYNC_COMPLETE',
-                data: {
-                  bible: bibleId,
-                  success: false,
-                  error: error.message,
-                  maxRetriesReached: true
-                }
-              });
-            });
-
-            // Don't re-throw - prevent further retries
-            return;
-          }
-
-          // Notify clients of retry
+          // Notify clients of failure
           const clients = await self.clients.matchAll();
           clients.forEach(client => {
             client.postMessage({
-              type: 'BACKGROUND_SYNC_RETRY',
-              data: {
-                bible: bibleId,
-                error: error.message,
-                retryCount: newRetryCount,
-                maxRetries: MAX_SYNC_RETRIES
-              }
+              type: 'BACKGROUND_SYNC_COMPLETE',
+              data: { bible: bibleId, success: false, error: error.message }
             });
           });
 

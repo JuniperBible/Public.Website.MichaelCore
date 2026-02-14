@@ -44,7 +44,6 @@ The CSP is implemented as a meta tag in `/home/justin/Programming/Workspace/mich
 ### 1.3 What This CSP Blocks
 
 ✅ **Blocked (Security Benefits):**
-
 - External JavaScript from CDNs (prevents supply chain attacks)
 - External CSS from CDNs
 - External fonts (Google Fonts, etc.)
@@ -55,7 +54,6 @@ The CSP is implemented as a meta tag in `/home/justin/Programming/Workspace/mich
 - External AJAX requests (data exfiltration prevention)
 
 ✅ **Allowed (Functionality Requirements):**
-
 - Scripts from `/assets/js/` (Hugo-generated)
 - Stylesheets from `/assets/css/` (Hugo-generated)
 - Inline CSS in `style` attributes (for dynamic values)
@@ -86,13 +84,11 @@ documentElement.style.setProperty('--highlight-color', selectedColor);
 ```
 
 JavaScript dynamically updates CSS variables like:
-
 - `--highlight-color` - Diff highlighting color (user-configurable)
 - Runtime theme adjustments
 
 #### 2.1.3 Dynamic Layout Values
 127 inline styles remain in templates for values that must be computed at runtime or vary by context:
-
 - Tooltip positioning (viewport-aware)
 - Share menu positioning (avoid overflow)
 - Loading states (`display: none`/`block`)
@@ -101,7 +97,6 @@ JavaScript dynamically updates CSS variables like:
 ### 2.2 Minimization Efforts
 
 During the CSS refactoring project (documented in `CODE_CLEANUP_CHARTER.md`):
-
 - ✅ Extracted 200+ static inline styles to CSS classes
 - ✅ Created component-based CSS architecture (`theme.css`)
 - ✅ Reduced inline styles from 300+ to 127
@@ -134,7 +129,6 @@ To remove `'unsafe-inline'`, two approaches are possible:
 ```
 
 **Limitations:**
-
 - Requires server-side rendering (not static HTML)
 - Incompatible with Hugo's static site architecture
 - Adds complexity to deployment
@@ -146,14 +140,12 @@ element.classList.add('tooltip--position-bottom');
 ```
 
 **Trade-offs:**
-
 - Requires predefined classes for all positioning scenarios (100+ classes)
 - Inflexible for dynamic values (tooltip coordinates, color picker)
 - Significantly increases CSS bundle size
 - May reduce runtime performance (reflows from class changes)
 
 **Recommendation:** Accept `'unsafe-inline'` for styles as a pragmatic trade-off. The security risk is low because:
-
 1. No user-controlled CSS is injected
 2. All inline styles are from trusted templates/scripts
 3. `script-src` is still strict (no inline JS execution)
@@ -274,13 +266,11 @@ const escapedTerm = escapeHTML(normalizedTerm);
 ```
 
 **Mitigation Applied:**
-
 1. User search terms escaped via `escapeHTML()` before rendering
 2. Search results use `<mark>` tags inserted after escaping
 3. Additional validation: patterns validated before use
 
 **Test Cases:**
-
 - ✅ Search for `<script>alert('XSS')</script>` → Renders as text, not executed
 - ✅ Search for `<img src=x onerror=alert(1)>` → Rendered harmlessly
 - ✅ Phrase search `"faith & love"` → Ampersand escaped to `&amp;`
@@ -332,7 +322,6 @@ element.appendChild(p);
 ```
 
 **Benchmark (Firefox 133, comparing 1000 verses):**
-
 - `innerHTML`: ~45ms
 - DOM APIs: ~9000ms (200x slower)
 
@@ -347,14 +336,12 @@ element.appendChild(p);
 **Location:** `/home/justin/Programming/Workspace/michael/layouts/_default/baseof.html` (line 23)
 
 **Advantages:**
-
 - ✅ Works with static hosting (GitHub Pages, Netlify, Vercel)
 - ✅ No server configuration required
 - ✅ Hugo-only solution (no build-time changes)
 - ✅ Portable across hosting environments
 
 **Disadvantages:**
-
 - ⚠️ Less flexible than HTTP headers (can't use report-only mode)
 - ⚠️ Can be overridden by HTTP headers (if server adds them)
 - ⚠️ Slightly larger HTML payload (minor)
@@ -364,7 +351,6 @@ element.appendChild(p);
 ### 4.2 HTTP Header (Production Recommended)
 
 **Why Prefer Headers:**
-
 1. Stronger security (can't be removed by client-side tampering)
 2. Supports report-only mode for testing
 3. Doesn't increase HTML size
@@ -571,14 +557,12 @@ sudo systemctl reload apache2
 **Best Practice:** Keep both meta tag AND HTTP header
 
 **Rationale:**
-
 1. Meta tag provides baseline protection for static hosting
 2. HTTP header adds defense-in-depth when server supports it
 3. Meta tag ignored if HTTP header present (header takes precedence)
 4. Ensures CSP works regardless of hosting environment
 
 **Implementation:**
-
 - ✅ Keep line 23 in `baseof.html` (meta tag)
 - ✅ Add HTTP header in production deployment (nginx/Apache/Netlify/etc.)
 - ✅ Document both approaches for downstream users
@@ -592,7 +576,6 @@ sudo systemctl reload apache2
 #### 5.1.1 Verify CSP is Active
 
 **Chrome/Edge:**
-
 1. Open DevTools (F12)
 2. Go to **Network** tab
 3. Reload page
@@ -601,7 +584,6 @@ sudo systemctl reload apache2
 6. Look for `Content-Security-Policy` header
 
 **Firefox:**
-
 1. Open DevTools (F12)
 2. Go to **Network** tab
 3. Reload page
@@ -625,7 +607,6 @@ the following Content Security Policy directive: "script-src 'self'".
 ```
 
 **Violation Types to Monitor:**
-
 - ❌ Blocked external scripts
 - ❌ Blocked inline scripts (`onclick`, etc.)
 - ❌ Blocked eval() usage
@@ -633,7 +614,6 @@ the following Content Security Policy directive: "script-src 'self'".
 - ❌ Blocked external images
 
 **Expected State (No Violations):**
-
 - ✅ No CSP errors in console
 - ✅ All scripts load from `/assets/js/`
 - ✅ All styles load from `/assets/css/` or inline
@@ -646,13 +626,11 @@ the following Content Security Policy directive: "script-src 'self'".
 **URL:** https://csp-evaluator.withgoogle.com/
 
 **Steps:**
-
 1. Copy CSP string from `baseof.html` line 23
 2. Paste into evaluator
 3. Review recommendations
 
 **Expected Warnings:**
-
 - ⚠️ `'unsafe-inline'` in `style-src` (expected, documented in Section 2)
 - ⚠️ Missing `report-uri` (optional, see Section 5.4)
 
@@ -663,7 +641,6 @@ the following Content Security Policy directive: "script-src 'self'".
 **URL:** https://observatory.mozilla.org/
 
 **Steps:**
-
 1. Enter your deployed site URL
 2. Run scan
 3. Check CSP grade
@@ -825,7 +802,6 @@ app.listen(3000);
 #### 5.4.3 Third-Party Reporting Services
 
 **Free Options:**
-
 - **report-uri.com** (free tier available)
 - **Sentry** (includes CSP reporting)
 - **Datadog** (enterprise)
@@ -901,7 +877,6 @@ element.dataset.theme = color;
 ```
 
 **Limitations:**
-
 - ❌ Not compatible with Hugo static generation
 - ❌ Requires server-side rendering (Node.js, Python, Go, etc.)
 - ❌ Breaks CSS custom property updates (`--highlight-color`)
@@ -977,7 +952,6 @@ Content-Security-Policy-Report-Only: default-src 'self'; script-src 'self';
 ```
 
 **Workflow:**
-
 1. Deploy with report-only CSP (no `'unsafe-inline'`)
 2. Monitor violation reports
 3. Identify broken functionality
@@ -994,7 +968,6 @@ tail -f /var/log/csp-violations.log
 ```
 
 **Expected Violations (from this project):**
-
 - Inline styles in tooltips, share menus (127 instances)
 - Dynamic `--highlight-color` updates
 
@@ -1027,7 +1000,6 @@ if (hasStrictCSP()) {
 ```
 
 **Trade-offs:**
-
 - ✅ Graceful degradation
 - ⚠️ Reduced functionality in high-security environments
 - ❌ Increased code complexity
@@ -1043,7 +1015,6 @@ if (hasStrictCSP()) {
 | **Air-Gapped/Offline** | Add `default-src 'none'` + explicit allows | Strictest (no external anything) |
 
 **Current Configuration Justification:**
-
 - ✅ Balances security and functionality
 - ✅ Compatible with static site architecture
 - ✅ Prevents most common attacks (XSS, clickjacking, data exfiltration)
@@ -1115,7 +1086,6 @@ hugo server -D
 ---
 
 **Document Maintenance:**
-
 - Update this document when CSP policy changes
 - Re-audit innerHTML usage after major refactoring
 - Test CSP after dependency updates

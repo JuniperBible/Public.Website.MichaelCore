@@ -7,7 +7,11 @@ resources/
 tools/juniper/bin/
 tools/juniper/sword_data/
 
-# Keep compressed packages and data (these ARE committed)
+# Generated data (restore with `make vendor-restore`)
+data/example/bibles.json
+data/example/bibles_auxiliary/
+
+# Keep compressed packages (these ARE committed)
 !assets/downloads/*.tar.xz
 
 # Editor and OS files

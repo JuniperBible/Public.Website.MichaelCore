@@ -1,221 +1,523 @@
 ================================================================================
-MICHAEL BIBLE PWA - PLANNED TASKS
+MICHAEL BIBLE PWA - PRODUCTION IMPLEMENTATION PLAN
 ================================================================================
-Updated: 2026-02-13
-
-================================================================================
-COMPLETED SPRINT #3: Security, Accessibility & Robustness (2026-02-13)
-================================================================================
-
-### Batch 1: JavaScript Null Safety [COMPLETED]
-[x] Add null guards to theme-toggle.js DOM element access
-[x] Add HTML escaping for XSS protection in chapter-reader.js renderAlignedVerses()
-[x] Add null check for OfflineManager in offline-settings-ui.js
-[x] Add try-catch and validation for localStorage in pwa-install.js isDismissed()
-[x] Add null guards for DOM elements in pwa-install.js setupBannerUI()
-[x] Add menuItems array validation in share-menu.js focus methods
-
-### Batch 2: JavaScript Memory Leak Fixes [COMPLETED]
-[x] Add cleanup handler for click listener in theme-toggle.js
-[x] Add footnoteListeners tracking array and cleanup() in footnotes.js
-[x] Add named handlers and cleanup() in reading-tracker.js
-[x] Add tapListeners tracking and cleanup() in dom-utils.js
-
-### Batch 3: Hugo Template Security & Nil Safety [COMPLETED]
-[x] Fix XSS in sw-register.html - use DOM methods instead of innerHTML
-[x] Add $bibleData nil checks in bible/single.html
-[x] Add $bookData nil check in bible-nav.html
-[x] Add configurable basePath to continue-reading.html (via data attribute)
-
-### Batch 4: CSS Dark Mode Contrast & Accessibility [COMPLETED]
-[x] Fix toast background colors for WCAG AA contrast (theme-colors.css)
-[x] Fix diff highlight colors for 4.5:1 contrast ratio
-[x] Lighten dark mode text colors (--text-500, --text-400)
-[x] Add focus-visible state for reader toggles (theme-custom.css)
-[x] Add prefers-reduced-motion for SSS verse row transitions
-[x] Replace hardcoded rgba colors with CSS variables (theme-pwa.css)
-[x] Add prefers-reduced-motion for offline message animation
-[x] Increase tile touch targets from 40px to 44px (WCAG minimum)
-
-### Batch 5: Service Worker Cache & Error Handling [COMPLETED]
-[x] Move skipWaiting() after successful cache in install event
-[x] Add offline.html fallback for HTML requests in cache-first errors
-[x] Add offline.html fallback for HTML requests in network-first errors
-[x] Add path validation for static asset caching
-[x] Add retry tracking for background sync (MAX_SYNC_RETRIES = 3)
-
-### Batch 6: PWA Install & Offline Improvements [COMPLETED]
-[x] Add user feedback when install prompt unavailable in pwa-install.js
-[x] Add isUserBusy() check before SW reload in offline-manager.js
-[x] Add 7-day TTL for background sync localStorage entries
-[x] Add comprehensive isNetworkRelatedError() detection
-[x] Return false/null from user-storage.js on QuotaExceededError
-
-### Batch 7: Build Scripts & Config Hardening [COMPLETED]
-[x] Remove vendor-package from Makefile build target
-[x] Add Hugo server startup verification in Makefile test target
-[x] Make pkill more specific with port matching
-[x] Make RELEASE confirmation case-insensitive
-[x] Add README existence check in check-all.sh
-[x] Capture stderr separately for debugging in check-all.sh
-[x] Add --quiet flag documentation and parsing to generate-sbom.sh
-
-### Batch 8: Form Accessibility & ARIA Fixes [COMPLETED]
-[x] Add error announcer region in search.html
-[x] Add role="region" to search results container
-[x] Add aria-live to cache status and progress elements (offline-settings.html)
-[x] Improve color picker button aria-labels
-[x] Add data-pwa-banner for JS aria-hidden toggling
+Created: 2026-01-26
+Status: IN PROGRESS
+Goal: Transform Michael Bible into a fully installable, offline-first PWA
 
 ================================================================================
-COMPLETED SPRINT #2: Post-ES6 Cleanup (2026-02-13)
+PHASE 1: CORE PWA INFRASTRUCTURE (Critical for Installability)
 ================================================================================
 
-### Batch 1: Complete ES6 Migration (4 files) [COMPLETED]
-[x] Convert chapter-reader.js from IIFE to ES6 module
-[x] Convert bible-filter.js from IIFE to ES6 module
-[x] Convert theme-toggle.js from IIFE to ES6 module
-[x] Convert theme-init.js from IIFE to ES6 module
+[ ] 1.1 Create Web App Manifest
+    [ ] 1.1.1 Create static/manifest.json with required fields
+          - name, short_name, description
+          - start_url: "/"
+          - scope: "/"
+          - display: "standalone"
+          - orientation: "portrait-primary"
+          - background_color, theme_color
+          - lang, dir
+    [ ] 1.1.2 Add icons array (references to icon files)
+    [ ] 1.1.3 Add shortcuts for quick actions (Read Bible, Compare, Search)
+    [ ] 1.1.4 Add categories: ["books", "education", "lifestyle"]
+    [ ] 1.1.5 Validate manifest with https://manifest-validator.appspot.com/
 
-### Batch 2: JavaScript Null/Undefined Safety (12 fixes) [COMPLETED]
-[x] Add AbortController to chapter-reader.js loadAndRenderSSS() for race conditions
-[x] Add null checks for form/clearBtn in offline-settings-ui.js
-[x] Add CSS.escape() for querySelector in chapter-dropdown.js
-[x] Add cleanup() function for SW message handler in offline-manager.js
-[x] Add null checks throughout affected modules
-[x] Improve error handling with proper error.message checks
+[ ] 1.2 Create App Icons
+    [ ] 1.2.1 Create static/icons/ directory
+    [ ] 1.2.2 Create icon-192x192.png (required minimum)
+    [ ] 1.2.3 Create icon-512x512.png (required for splash screens)
+    [ ] 1.2.4 Create icon-maskable-192x192.png (Android adaptive icons)
+    [ ] 1.2.5 Create icon-maskable-512x512.png
+    [ ] 1.2.6 Create apple-touch-icon.png (180x180 for iOS)
+    [ ] 1.2.7 Create favicon.ico (multi-size: 16, 32, 48)
+    [ ] 1.2.8 Create favicon-16x16.png
+    [ ] 1.2.9 Create favicon-32x32.png
+    [ ] 1.2.10 Create mstile-144x144.png (Windows tiles)
+    [ ] 1.2.11 Create safari-pinned-tab.svg (Safari pinned tabs)
+    Note: Icons should feature a book/Bible symbol, work on light/dark backgrounds
 
-### Batch 3: Hugo Template Nil Safety (4 fixes) [COMPLETED]
-[x] Add $bibleData condition check in bible-nav.html
-[x] Add nil check for $firstBible in book-chapter-selects.html
-[x] Change to proper `{{ with }}` statement in bible-select.html
-[x] Add nil check for $firstBible and $aux in compare.html
-
-### Batch 4: CSS Dark Mode & Accessibility (10 fixes) [COMPLETED]
-[x] Fix .sss-verse-num contrast ratio to 4.5:1 (var(--text-700))
-[x] Fix .reader-toggles button contrast in dark mode
-[x] Increase focus ring opacity from 0.35/0.45 to 0.6 in theme-colors.css
-[x] Add hover states for .sss-verse-row
-[x] Add SSS header focus styles
-[x] Improve button contrast for dark mode pressed states
-
-### Batch 5: Service Worker & PWA Fixes (5 fixes) [COMPLETED]
-[x] Extend cache hash from 12 to 32 characters in sw.js
-[x] Standardize AbortError checking to use error.name === 'AbortError'
-[x] Fix chapter page regex to handle query params (?v=1)
-[x] Separate metadata cache versioning from shell cache
-
-### Batch 6: Template Accessibility (4 fixes) [COMPLETED]
-[x] Add role="presentation" aria-hidden="true" to logo in header.html
-[x] Add aria-label="Continue reading last chapter" in continue-reading.html
-[x] Add required attribute to search input in search.html
-
-### Batch 7: Code Quality & Configuration (6 fixes) [COMPLETED]
-[x] Add serviceWorkerPath to config.js
-[x] Add pwaInstallReshowDays to config.js
-[x] Add toastAnimationMs to config.js
-[x] Update chapter-reader.js to use config for basePath
-[x] Update offline-manager.js to use config for SW path
-[x] Update pwa-install.js to use config for reshow days
-[x] Update dom-utils.js to use config for animation duration
+[ ] 1.3 Add PWA Meta Tags to baseof.html
+    [ ] 1.3.1 Add <link rel="manifest" href="/manifest.json">
+    [ ] 1.3.2 Add <meta name="theme-color" content="#...">
+    [ ] 1.3.3 Add <meta name="apple-mobile-web-app-capable" content="yes">
+    [ ] 1.3.4 Add <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    [ ] 1.3.5 Add <meta name="apple-mobile-web-app-title" content="Michael">
+    [ ] 1.3.6 Add <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+    [ ] 1.3.7 Add <meta name="msapplication-TileColor" content="#...">
+    [ ] 1.3.8 Add <meta name="msapplication-TileImage" content="/icons/mstile-144x144.png">
+    [ ] 1.3.9 Add favicon links (ico, 16x16, 32x32)
+    [ ] 1.3.10 Update CSP to allow manifest loading
 
 ================================================================================
-COMPLETED SPRINT #1: ES6 Module Migration & Bug Fixes (2026-02-13)
+PHASE 2: INSTALL PROMPT & USER EXPERIENCE
 ================================================================================
 
-### Batch 1: Critical Template Fixes [COMPLETED]
-[x] Add id="main-content" to 9 layout files (skip-link target)
-    - layouts/index.html
-    - layouts/_default/list.html
-    - layouts/_default/single.html
-    - layouts/bible/list.html
-    - layouts/bible/compare.html
-    - layouts/bible/search.html
-    - layouts/bible/single.html
-    - layouts/license/list.html
-    - layouts/license/single.html
-[x] Fix undefined CSS variable (--shadow-2 → --shadow-1)
-[x] Fix external link security (add noreferrer to rel attribute)
-[x] Add bible-data-map.html partial (O(1) Bible lookup)
+[ ] 2.1 Implement Install Prompt Handling
+    [ ] 2.1.1 Create assets/js/michael/pwa-install.js
+          - Capture beforeinstallprompt event
+          - Store deferred prompt
+          - Export showInstallPrompt() function
+          - Track install outcome (accepted/dismissed)
+          - Handle appinstalled event
+    [ ] 2.1.2 Create install prompt UI component
+          - Non-intrusive banner or button
+          - Accessible (ARIA labels, keyboard nav)
+          - Dismissible with "don't show again" option
+          - Responsive design
+    [ ] 2.1.3 Add install button to offline-settings.html partial
+    [ ] 2.1.4 Add iOS-specific install instructions (manual add to home screen)
+    [ ] 2.1.5 Store user preference in localStorage
 
-### Batch 2: ES6 Foundation Modules [COMPLETED]
-[x] Add dom-ready.js - DOM ready utility
-[x] Add core.js - Module registry (Michael.register/get/init/cleanup)
-[x] Add config.js - Centralized configuration
-[x] Add listener-registry.js - Event listener cleanup tracking
-[x] Add clipboard-utils.js - Clipboard copy with fallback
-[x] Extract theme-init.js from baseof.html inline script
-[x] Extract theme-toggle.js from baseof.html inline script
-[x] Update baseof.html to use <script type="module">
+[ ] 2.2 Create Install Instructions Page
+    [ ] 2.2.1 Create content/install.md or static page
+    [ ] 2.2.2 Add platform-specific instructions (Android, iOS, Desktop)
+    [ ] 2.2.3 Add screenshots/diagrams for each platform
+    [ ] 2.2.4 Link from footer or help section
 
-### Batch 3: Core Module ES6 Conversion [COMPLETED]
-[x] Convert dom-utils.js to ES6 module
-[x] Convert bible-api.js to ES6 module
-[x] Convert user-storage.js to ES6 module
-[x] Convert verse-grid.js to ES6 module
-[x] Convert chapter-dropdown.js to ES6 module
-
-### Batch 4: Feature Module ES6 Conversion [COMPLETED]
-[x] Convert bible-nav.js to ES6 module
-[x] Convert bible-search.js to ES6 module + fix race condition
-[x] Convert sss-mode.js to ES6 module + fix race condition
-[x] Convert share-menu.js to ES6 module
-[x] Convert share.js to ES6 module
-[x] Convert footnotes.js to ES6 module + fix duplicate listeners
-
-### Batch 5: Remaining Module Conversions [COMPLETED]
-[x] Convert parallel.js to ES6 module
-[x] Convert strongs.js to ES6 module
-[x] Convert text-compare.js to ES6 module
-[x] Convert diff-highlight.js to ES6 module
-[x] Convert show-more.js to ES6 module
-[x] Convert reading-tracker.js to ES6 module + fix scroll listener
-[x] Convert pwa-install.js to ES6 module
-[x] Convert offline-manager.js to ES6 module
-[x] Convert offline-settings-ui.js to ES6 module
-
-### Batch 6: Cleanup & Memory Fixes [COMPLETED]
-[x] Add Michael.addCleanup() to all modules with event listeners
-[x] Add null checks and validation throughout
-[x] Handle QuotaExceededError in user-storage.js
-[x] Add SW ready timeout in offline-manager.js
-[x] Remove inline onclick handler from bible-nav.html
-
-### Batch 7: CSS & Code Quality [COMPLETED]
-[x] Remove duplicate light mode CSS block
-[x] Remove obsolete clip property from sr-only
-[x] Add dark mode focus states
-[x] Remove all debug console.log statements
-
-### Batch 8: Documentation & Final [COMPLETED]
-[x] Update CHANGELOG.md with all changes
-[ ] Run make test to verify
-[ ] Commit and push
+[ ] 2.3 Enhance Update Notification UI
+    [ ] 2.3.1 Style sw-update-banner in theme.css
+    [ ] 2.3.2 Add animation for banner appearance
+    [ ] 2.3.3 Improve accessibility of update banner
+    [ ] 2.3.4 Add "What's New" link option
 
 ================================================================================
-COMPLETED FEATURES
+PHASE 3: ENHANCED OFFLINE CAPABILITIES
 ================================================================================
 
-[x] Dark mode support (2026-02-13)
-    - Theme toggle button in header
-    - CSS variables for light/dark themes
-    - localStorage persistence
-    - Respects prefers-color-scheme
+[ ] 3.1 Improve Service Worker Pre-caching
+    [ ] 3.1.1 Pre-cache critical CSS (handle fingerprinted filenames)
+          - Use Hugo to generate asset manifest
+          - Or use runtime caching with stale-while-revalidate
+    [ ] 3.1.2 Pre-cache critical JS files
+    [ ] 3.1.3 Pre-cache fonts if any are used
+    [ ] 3.1.4 Add app shell HTML to pre-cache
+    [ ] 3.1.5 Cache manifest.json and icons
+
+[ ] 3.2 Add Stale-While-Revalidate Strategy
+    [ ] 3.2.1 Implement SWR for static assets in sw.js
+    [ ] 3.2.2 Update cache in background while serving cached version
+    [ ] 3.2.3 Add cache expiration/cleanup for old assets
+
+[ ] 3.3 Implement Background Sync (Optional but Recommended)
+    [ ] 3.3.1 Register sync event in service worker
+    [ ] 3.3.2 Queue failed download operations
+    [ ] 3.3.3 Retry downloads when back online
+    [ ] 3.3.4 Notify user of sync completion
+
+[ ] 3.4 Add IndexedDB for User Data (Optional)
+    [ ] 3.4.1 Create assets/js/michael/offline-storage.js
+    [ ] 3.4.2 Implement reading progress storage
+          - Last read chapter per Bible
+          - Scroll position
+          - Timestamp
+    [ ] 3.4.3 Implement bookmarks storage
+    [ ] 3.4.4 Implement notes/highlights storage (if feature exists)
+    [ ] 3.4.5 Sync with service worker cache
+
+[ ] 3.5 Offline Search Capability (Optional)
+    [ ] 3.5.1 Pre-build search index for cached Bibles
+    [ ] 3.5.2 Store search index in IndexedDB
+    [ ] 3.5.3 Implement client-side search when offline
+    [ ] 3.5.4 Fall back to server search when online
 
 ================================================================================
-FUTURE FEATURES
+PHASE 4: TESTING
 ================================================================================
+
+[ ] 4.1 Unit Tests for JavaScript Modules
+    [ ] 4.1.1 Set up test framework (Jest or Vitest)
+    [ ] 4.1.2 Create tests/js/ directory structure
+    [ ] 4.1.3 Test offline-manager.js
+          - initialize() - SW registration
+          - downloadBible() - success, failure, cancellation
+          - getCacheStatus() - returns correct format
+          - getBibleCacheStatus() - per-Bible status
+          - cancelDownload() - cancellation works
+          - clearCache() - cache cleared
+          - Event dispatching (progress, complete, cleared)
+          - Timeout handling
+    [ ] 4.1.4 Test pwa-install.js
+          - beforeinstallprompt capture
+          - showInstallPrompt() triggers prompt
+          - Install outcome tracking
+          - iOS detection and fallback
+    [ ] 4.1.5 Test offline-settings-ui.js
+          - UI initialization
+          - Checkbox handling
+          - Progress updates
+          - Error messages
+
+[ ] 4.2 Service Worker Tests
+    [ ] 4.2.1 Test install event - assets pre-cached
+    [ ] 4.2.2 Test activate event - old caches deleted
+    [ ] 4.2.3 Test fetch strategies
+          - Cache-first for static assets
+          - Network-first for chapters
+          - Offline fallback for navigation
+    [ ] 4.2.4 Test message handlers
+          - CACHE_BIBLE
+          - GET_CACHE_STATUS
+          - CLEAR_CACHE
+          - CANCEL_DOWNLOAD
+    [ ] 4.2.5 Test extractBookLinks() with various HTML formats
+    [ ] 4.2.6 Test extractChapterLinks() with various HTML formats
+
+[ ] 4.3 Integration Tests
+    [ ] 4.3.1 Set up Playwright or Puppeteer
+    [ ] 4.3.2 Test full download flow
+          - Select Bible, click download
+          - Verify progress updates
+          - Verify completion
+          - Verify cached chapters accessible offline
+    [ ] 4.3.3 Test offline navigation
+          - Go offline (network throttling)
+          - Navigate to cached chapter
+          - Verify content displays
+          - Navigate to uncached page
+          - Verify offline fallback shows
+    [ ] 4.3.4 Test cache clearing
+    [ ] 4.3.5 Test download cancellation
+    [ ] 4.3.6 Test SW update flow
+
+[ ] 4.4 PWA Audit Tests
+    [ ] 4.4.1 Run Lighthouse PWA audit
+    [ ] 4.4.2 Verify all PWA criteria pass:
+          - Installable
+          - PWA Optimized
+          - Fast and reliable
+    [ ] 4.4.3 Test on real devices
+          - Android Chrome
+          - iOS Safari
+          - Desktop Chrome/Edge/Firefox
+    [ ] 4.4.4 Test install flow on each platform
+
+[ ] 4.5 Accessibility Tests
+    [ ] 4.5.1 Keyboard navigation for install UI
+    [ ] 4.5.2 Screen reader compatibility
+    [ ] 4.5.3 Focus management
+    [ ] 4.5.4 Color contrast
+
+[ ] 4.6 Performance Tests
+    [ ] 4.6.1 Measure cache operation performance
+    [ ] 4.6.2 Test with large Bible downloads
+    [ ] 4.6.3 Test memory usage during downloads
+    [ ] 4.6.4 Test startup time after install
+
+================================================================================
+PHASE 5: DOCUMENTATION & POLISH
+================================================================================
+
+[ ] 5.1 Update Documentation
+    [ ] 5.1.1 Document PWA features in README or docs
+    [ ] 5.1.2 Document offline capabilities
+    [ ] 5.1.3 Document install process for users
+    [ ] 5.1.4 Document development setup for contributors
+
+[ ] 5.2 Add PWA Screenshots for Install Prompt
+    [ ] 5.2.1 Create screenshot-narrow.png (phone, 540x720)
+    [ ] 5.2.2 Create screenshot-wide.png (tablet/desktop, 720x540)
+    [ ] 5.2.3 Add to manifest.json screenshots array
+
+[ ] 5.3 Final Polish
+    [ ] 5.3.1 Review all console.log statements (remove or guard)
+    [ ] 5.3.2 Ensure graceful degradation without JS
+    [ ] 5.3.3 Test with slow 3G network throttling
+    [ ] 5.3.4 Verify no CORS issues
+    [ ] 5.3.5 Verify CSP allows all PWA resources
+
+================================================================================
+PHASE 6: DEPLOYMENT CHECKLIST
+================================================================================
+
+[ ] 6.1 Pre-deployment Verification
+    [ ] 6.1.1 All Lighthouse PWA checks pass
+    [ ] 6.1.2 Manifest validates without errors
+    [ ] 6.1.3 Icons display correctly at all sizes
+    [ ] 6.1.4 Install works on Android, iOS, Desktop
+    [ ] 6.1.5 Offline mode works completely
+    [ ] 6.1.6 No console errors in production build
+
+[ ] 6.2 Server Configuration
+    [ ] 6.2.1 Verify HTTPS is enforced
+    [ ] 6.2.2 Verify correct MIME types for manifest and SW
+    [ ] 6.2.3 Add Cache-Control headers for static assets
+    [ ] 6.2.4 Consider HTTP/2 push for critical assets
+
+================================================================================
+NOTES & DECISIONS
+================================================================================
+
+Theme Colors (TBD - check existing design):
+- Primary: #0A1922 (dark) or appropriate brand color
+- Background: #ffffff (light mode), #1a1a1a (dark mode)
+
+Icon Design (TBD):
+- Should feature book/Bible imagery
+- Must be recognizable at small sizes
+- Consider using existing logo if available
+
+Dependencies:
+- No new npm dependencies required for core PWA
+- Jest/Vitest for testing (optional, can use existing test setup)
+- Playwright/Puppeteer for E2E tests (optional)
+
+Browser Support:
+- Chrome 67+ (full PWA)
+- Firefox 67+ (limited PWA, no install prompt)
+- Safari 11.1+ (limited PWA, no install prompt)
+- Edge 79+ (full PWA, Chromium-based)
+
+================================================================================
+PROGRESS LOG
+================================================================================
+
+[2026-01-26] Plan created
+  - Analyzed current codebase
+  - Identified missing PWA components
+  - Created comprehensive task list
+
+[2026-01-26] PWA Implementation COMPLETED
+  - Phase 1 DONE: Created manifest.json with icons, shortcuts, categories
+  - Phase 1 DONE: Added PWA meta tags to baseof.html (manifest, theme-color, apple-mobile-web-app)
+  - Phase 9 DONE: Created SVG logo (shield + sword + crown design)
+  - Phase 9 DONE: Generated PNG icons at all required sizes (16, 32, 180, 192, 512, maskable)
+  - Phase 2 DONE: Migrated sw.js to Hugo template (layouts/_default/sw.js)
+    * CSS fingerprinting now works - cache version auto-updates with CSS changes
+    * Added manifest.json and icons to pre-cache list
+  - Phase 3 DONE: Created install prompt UI
+    * pwa-install.js handles beforeinstallprompt event
+    * pwa-install-banner.html partial with Install/Dismiss buttons
+    * iOS-specific instructions for manual install
+    * CSS styles in theme.css
+  - Phase 6 DONE: Added background sync for downloads
+    * Service worker handles 'sync' events
+    * offline-manager.js can queue failed downloads
+    * Downloads resume automatically when back online
+  - Phase 7 DONE: Implemented IndexedDB user storage (user-storage.js)
+    * Reading progress (per-Bible scroll position, last chapter)
+    * Bookmarks storage
+    * Notes/highlights storage
+    * User settings/preferences
+  - Phase 8 DONE: Added competitive features
+    * reading-tracker.js for auto-saving progress
+    * Reading streaks tracking
+    * "Continue Reading" functionality
+
+  Files created:
+  - static/manifest.json
+  - static/icons/logo.svg, logo-maskable.svg
+  - static/icons/icon-16.png, icon-32.png, icon-192.png, icon-512.png
+  - static/icons/icon-maskable-512.png, apple-touch-icon.png
+  - layouts/_default/sw.js (Hugo template)
+  - assets/js/michael/pwa-install.js
+  - assets/js/michael/user-storage.js
+  - assets/js/michael/reading-tracker.js
+  - layouts/partials/michael/pwa-install-banner.html
+
+  Files modified:
+  - layouts/_default/baseof.html (PWA meta tags, install banner partial)
+  - hugo.toml (added SW output format)
+  - assets/css/theme.css (install banner styles)
+  - assets/js/michael/offline-manager.js (background sync support)
+
+  Files deleted:
+  - static/sw.js (replaced by Hugo template)
+
+[2026-01-26] PWA E2E Tests COMPLETED
+  - Created comprehensive test suite: tests/regression/pwa_test.go
+  - Added PWA test helpers to tests/helpers/helpers.go
+  - Added make test-pwa target to Makefile
+
+  Test Coverage (60+ tests):
+  MANIFEST TESTS:
+  - TestManifestExists - verifies manifest.json accessible
+  - TestManifestRequiredFields - checks name, short_name, start_url, display, etc.
+  - TestManifestIconSizes - verifies 192x192 and 512x512 icons
+  - TestManifestMaskableIcon - checks maskable icon for Android
+
+  ICON TESTS:
+  - TestPWAIconsAccessible - all icon files return HTTP 200
+  - TestSVGLogoExists - verifies logo.svg exists and is valid
+
+  META TAG TESTS:
+  - TestPWAMetaTags - manifest link, theme-color, apple-* tags, favicons
+
+  SERVICE WORKER TESTS:
+  - TestServiceWorkerExists - sw.js accessible with install/fetch handlers
+  - TestServiceWorkerHasFingerprintedCSS - CSS path is fingerprinted
+  - TestServiceWorkerRegistration - SW registers on page load
+  - TestServiceWorkerActivation - SW activates and claims clients
+  - TestServiceWorkerPrecache - shell cache created
+  - TestServiceWorkerSyncHandler - sync event handler present
+
+  OFFLINE TESTS:
+  - TestOfflineFallbackPage - offline fallback for uncached pages
+  - TestOfflineWithCachedCSS - CSS loads from cache when offline
+  - TestBibleDownloadFlow - download workflow initiation
+  - TestDownloadCancellation - cancelDownload API available
+  - TestCacheStatusAPI - getCacheStatus returns valid data
+
+  INSTALL PROMPT TESTS:
+  - TestInstallBannerExists - banner element in DOM
+  - TestInstallBannerHiddenByDefault - starts with hidden class
+  - TestIOSInstructionsBanner - iOS instructions present
+  - TestPWAInstallAPI - canInstall, triggerInstallPrompt, isPWAInstalled, isIOS
+
+  INDEXEDDB STORAGE TESTS:
+  - TestUserStorageAPI - all storage functions available
+  - TestIndexedDBSupported - isSupported returns true
+  - TestUserStorageReadingProgress - save/retrieve progress
+  - TestUserStorageBookmarks - add/retrieve bookmarks
+  - TestUserStorageSettings - save/retrieve with defaults
+
+  READING TRACKER TESTS:
+  - TestReadingTrackerAPI - init, getStreakInfo, getLastRead, etc.
+  - TestReadingTrackerAutoSave - progress auto-saved on chapter pages
+  - TestReadingStreak - streak tracking works
+
+  BACKGROUND SYNC TESTS:
+  - TestBackgroundSyncAPI - sync functions available
+  - TestServiceWorkerSyncHandler - SW has sync handler
+
+  CSS/ACCESSIBILITY TESTS:
+  - TestInstallBannerStyles - CSS positioning correct
+  - TestInstallBannerAccessibility - ARIA attributes present
+  - TestOfflineMessagesAccessibility - messages container exists
+
+  MOBILE TESTS:
+  - TestMobilePWAMetaTags - viewport and apple-* tags
+  - TestMobileInstallBanner - banner works on mobile
+
+  ERROR HANDLING TESTS:
+  - TestOfflineManagerErrorHandling - handles missing Bible
+  - TestUserStorageErrorHandling - returns null/default for missing data
+
+[2026-01-26] PWA Integration COMPLETED
+  - Fixed script loading: Using Hugo resources.Get for JS files in baseof.html
+  - Fixed pwa-install-banner.html to use Hugo resources.Get
+  - Updated offline.html with Michael branding (colors, logo, accent colors)
+  - Created Continue Reading UI component
+    * layouts/partials/michael/continue-reading.html
+    * CSS styles in theme.css (.continue-reading)
+    * Integrated with reading-tracker.js
+    * Shows on home page when user has reading history
+  - All JS modules properly loaded via Hugo asset pipeline
+  - Service worker pre-caches all required assets
+
+  Files created:
+  - layouts/partials/michael/continue-reading.html
+
+  Files modified:
+  - layouts/_default/baseof.html (proper resources.Get for JS)
+  - layouts/partials/michael/pwa-install-banner.html (proper resources.Get)
+  - layouts/index.html (include continue-reading partial)
+  - static/offline.html (Michael branding, logo, theme colors)
+  - assets/css/theme.css (continue-reading styles)
+
+[2026-01-26] PWA Production Finalization COMPLETED
+  - PWA standalone mode: 100% viewport height, footer nav hidden
+  - Added notification permission request after install
+  - Added run-on-login permission request (Chromium 120+)
+  - Updated manifest.json with launch_handler and handle_links
+  - Fixed PWA standalone detection (moved script to end of body)
+  - Complete service worker pre-cache list (all 20 JS modules)
+
+  Service Worker Pre-cached Assets:
+  - Core: /, /offline.html, /manifest.json
+  - Icons: icon-192.png, icon-512.png, apple-touch-icon.png
+  - CSS: theme.css (fingerprinted)
+  - JS modules:
+    * bible-api.js, dom-utils.js, share-menu.js
+    * offline-manager.js, offline-settings-ui.js
+    * pwa-install.js, user-storage.js, reading-tracker.js
+    * bible-nav.js, chapter-dropdown.js, footnotes.js
+    * show-more.js, diff-highlight.js, verse-grid.js
+    * sss-mode.js, share.js, strongs.js
+    * bible-search.js, text-compare.js, parallel.js
+
+  PWA Features Complete:
+  [x] Web App Manifest with icons, shortcuts, categories
+  [x] Service Worker with cache-first/network-first strategies
+  [x] Offline fallback page with dynamic cached chapter list
+  [x] Background Sync for resilient Bible downloads
+  [x] IndexedDB storage for reading progress, bookmarks, settings
+  [x] Reading streak tracking
+  [x] Continue Reading feature on home page
+  [x] Install prompt with iOS-specific instructions
+  [x] Notification permission request
+  [x] Run-on-login permission (experimental)
+  [x] 100% viewport in standalone mode
+  [x] Safe area insets for notched devices
+
+[2026-01-27] CSS Modularization COMPLETED
+  - Split theme.css into modular files:
+    * theme-colors.css — Color tokens
+    * theme-compare.css — Compare/diff page styles
+    * theme-share.css — Share menu and toast notifications
+    * theme-strongs.css — Strong's concordance styles
+    * theme-pwa.css — PWA-specific styles
+    * theme-offline.css — Offline settings styles
+    * theme-print.css — Print styles
+    * theme-custom.css — Site-specific overrides (loaded last)
+  - Fixed CSS bundling: Hugo's minify doesn't resolve @import,
+    switched to resources.Concat in baseof.html and sw.js
+  - Removed 181 lines of duplicate compare styles from theme.css
+
+[2026-01-27] Bible Override System COMPLETED
+  - Created data/example/bibles_override.json for field overrides
+    without touching auto-generated bibles.json
+  - Created layouts/partials/michael/bible-data.html merge partial
+  - Updated 11 templates to use the partial
+  - Populated overrides for all 10 Bibles (short titles, descriptions)
+  - Bible overview pages show override title and description
+
+[2026-01-27] Juniperbible.org Theme COMPLETED
+  - Applied juniperbible.org color palette via theme-custom.css:
+    * Brand: muted purple (#6b4c6b)
+    * Chrome: dark teal (#1a3230)
+    * Surface/panel: warm parchment (#e6ddc0)
+    * Text, borders, shadows matched
+  - Self-hosted Patrick Hand font (OFL-1.1, woff2 latin + latin-ext)
+  - Applied handwritten font to headings, buttons, badges, nav
+  - Doubled header/footer nav size and site title size
+  - Updated theme-color meta tag and manifest.json
+  - Added font to SBOM (software_deps.json)
+
+[2026-01-27] Verse Typography COMPLETED
+  - Changed content pipeline from **N** (markdown bold) to
+    <span class="verse" data-verse="N"><sup>N</sup> text</span>
+  - Each verse now displays as its own paragraph block
+  - Verse numbers styled as superscript with brand color
+  - Added highlight-verse CSS for ?v= URL scroll-to
+  - Updated share.js for modern .verse[data-verse] + legacy fallback
+  - Added bible-text class to chapter content div for JS selectors
+  - Verified all JS files: bible-api.js already supports new format,
+    parallel.js/sss-mode.js use own verse markup, all others unaffected
+  - Added card descriptions and footer to home page and Bible list page
+
+================================================================================
+CURRENT / PLANNED TASKS
+================================================================================
+
+[ ] Dark mode support
+    - juniperbible.org has dark mode variables already defined
+    - Add [data-theme="dark"] overrides to theme-custom.css
+    - Add theme toggle button to header
 
 [ ] Integrate _content.gotmpl with bible-data.html partial
     - Content adapter currently reads raw bibles.json for titles
     - Could use override titles in page generation for HTML <title> tags
+    - Would fix "King James Version (1769) with Strongs..." in browser tab
 
 [ ] Deprecate legacy <strong> verse format in bible-api.js
     - Strategy 2 (strong elements) and Strategy 5 (regex) can be removed
     - All content now uses modern .verse[data-verse] format
+    - Keep legacy fallback for cached pages until cache expires
 
 [ ] Review and clean up theme-colors.css defaults
     - Default values are now overridden by theme-custom.css
+    - Consider whether defaults should match juniperbible or stay generic
 
 [ ] Performance optimization
     - Audit CSS bundle size after modularization
@@ -223,50 +525,59 @@ FUTURE FEATURES
     - Profile font loading impact
 
 ================================================================================
-TESTING
-================================================================================
-
-[ ] Unit Tests for JavaScript Modules
-    - Set up test framework (Jest or Vitest)
-    - Test offline-manager.js, pwa-install.js, offline-settings-ui.js
-
-[ ] Service Worker Tests
-    - Test install, activate, and fetch strategy events
-    - Test message handlers (CACHE_BIBLE, GET_CACHE_STATUS, etc.)
-
-[ ] Integration Tests
-    - Set up Playwright or Puppeteer
-    - Test full download flow, offline navigation, cache clearing
-
-[ ] PWA Audit Tests
-    - Run Lighthouse PWA audit
-    - Test install flow on Android, iOS, Desktop
-
-[ ] Accessibility Tests
-    - Keyboard navigation for all interactive elements
-    - Screen reader compatibility
-    - Focus management
-
-[ ] Performance Tests
-    - Cache operation performance
-    - Memory usage during downloads
-    - Startup time after install
 
 ================================================================================
-DEPLOYMENT
+CODE REVIEW LOG
 ================================================================================
 
-[ ] Pre-deployment Verification
-    - All Lighthouse PWA checks pass
-    - Manifest validates without errors
-    - Icons display correctly at all sizes
-    - Install works on Android, iOS, Desktop
-    - Offline mode works completely
-    - No console errors in production build
+[2026-01-27] Code Review Round 6 COMPLETED (commit 0357c5d)
+  Fixes applied (8 items):
+  [x] XSS fix: bible-search.js showMessage() innerHTML → textContent DOM construction
+  [x] Semantic buttons: bible-nav.html disabled <span> → <button disabled>
+  [x] CSS: theme-offline.css .offline-message border color → var(--border)
+  [x] Defensive: offline-manager.js remove corrupted localStorage entries
+  [x] CSS: theme-offline.css focus ring aligned to var(--focus-ring) pattern
+  [x] CSS: theme-offline.css .bible-chip transition: all → specific properties
+  [x] Script: check-all.sh hardcoded port → ${PORT:-1313}
+  [x] A11y: offline-settings.html remove redundant aria-label from fieldset
 
-[ ] Server Configuration
-    - Verify HTTPS is enforced
-    - Verify correct MIME types for manifest and SW
-    - Add Cache-Control headers for static assets
+[2026-01-27] Code Review Round 7 COMPLETED
+  11 parallel review agents examined all JS, CSS, templates, service worker,
+  content adapter, config/scripts, i18n, accessibility, and security.
+  17 fixes across 13 files:
+
+  Group 1 — Race Conditions & State Management:
+  [x] 1a. user-storage.js: ensureDB() race condition — cache init promise
+  [x] 1b. offline-settings-ui.js: clear cache button stuck after success — reset on success
+  [x] 1c. parallel.js: nested RAF handle not tracked — update pendingSyncRAF to inner RAF
+  [x] 1d. pwa-install.js: parseInt NaN guard — handle corrupted localStorage
+
+  Group 2 — Accessibility (Templates):
+  [x] 2a. verse-grid.html: "All" button missing type="button"
+  [x] 2b. color-picker.html: picker + option buttons missing type="button"
+  [x] 2c. notes-section.html: hidden footnotes missing aria-hidden="true"
+  [x] 2d. compare.html: mode toggle buttons missing aria-controls
+  [x] 2e. SVGs missing focusable="false" (license/single.html ×3, sw-register.html,
+       continue-reading.html, sss-toggle.html)
+
+  Group 3 — CSS Consistency:
+  [x] 3a. theme-pwa.css: dismiss button focus rings → var(--focus-ring) (2 selectors)
+  [x] 3b. theme-print.css: consolidated duplicate @page rules
+
+  Group 4 — Security Hardening:
+  [x] 4a. license/single.html: external links rel="noopener" → rel="noopener noreferrer"
+
+  False positives excluded (11 items verified):
+  - bible-nav.js innerHTML: textContent strips HTML (safe)
+  - reading-tracker.js open redirect: hardcoded /bible/ path + internal data
+  - user-storage.js prototype pollution: trusted internal callers only
+  - bible-search.js null DOM refs: script only on search page
+  - share-menu.js null check: all paths guarded
+  - SW update message color: explicit var(--surface-2) on parent
+  - generate-sbom.sh --quiet: already present on all calls
+  - manifest.json scope: broader scope intentional
+  - offline-manager.js download race: state cleanup acceptable
+  - content adapter HTML injection: trusted OSIS build-time data
+  - Makefile test target: || pattern works correctly
 
 ================================================================================

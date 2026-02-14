@@ -54,7 +54,6 @@ These tools are required **only during the build process**. They are not include
 #### Purpose
 
 Hugo generates static HTML from:
-
 - Go templates (`layouts/*.html`)
 - Markdown content (`content/`)
 - JSON data files (`data/`)
@@ -99,7 +98,6 @@ make build  # Runs hugo --minify
 #### Configuration
 
 Hugo is configured via `hugo.toml`:
-
 - `baseURL` - Site base URL
 - `languageCode` - Site language (en)
 - `params.michael.basePath` - Bible content path (`/bible`)
@@ -123,7 +121,6 @@ See: [hugo.toml](../../hugo.toml) for full configuration
 #### Purpose
 
 Go is used for:
-
 1. **Juniper tool** - Compiling the SWORD/e-Sword converter (`tools/juniper/`)
 2. **Hugo modules** - If Michael is used as a Go module (not required for standalone mode)
 
@@ -171,7 +168,6 @@ make juniper
 #### Purpose
 
 Syft scans the project and generates Software Bill of Materials (SBOM) in multiple formats:
-
 - SPDX 2.3 JSON
 - CycloneDX JSON/XML
 - Syft native JSON
@@ -210,7 +206,6 @@ make build  # Runs make sbom first
 #### Configuration
 
 Syft scans:
-
 - Go modules (`tools/juniper/go.mod`)
 - NPM packages (`tools/juniper/vendor_external/choosealicense/assets/vendor/hint.css/package-lock.json`)
 - GitHub Actions workflows (`.github/workflows/*.yml`)
@@ -234,7 +229,6 @@ Output: `assets/downloads/sbom/*.{json,xml}`
 #### Purpose
 
 Make orchestrates build tasks:
-
 - `make dev` - Start Hugo development server
 - `make build` - Build static site with SBOM generation
 - `make sbom` - Generate SBOM only
@@ -284,7 +278,6 @@ cd tools/juniper && go build -o bin/juniper ./cmd/juniper
 #### Purpose
 
 Creates `.tar.xz` compressed archives of Bible JSON files for distribution:
-
 - `assets/downloads/*.tar.xz`
 
 #### Installation
@@ -348,7 +341,6 @@ Michael generates a static site with **zero runtime dependencies**.
 ### What "Zero Runtime Dependencies" Means
 
 The final HTML, CSS, and JavaScript:
-
 - ✅ Run in the browser without external libraries
 - ✅ No CDN dependencies (no jQuery, React, Bootstrap, etc.)
 - ✅ No external API calls (fully offline-capable)
@@ -377,7 +369,6 @@ The JavaScript code uses only native browser APIs:
 **NONE.**
 
 Michael uses a single custom CSS file:
-
 - No Bootstrap
 - No Tailwind CSS
 - No CSS frameworks
@@ -413,7 +404,6 @@ These tools are useful for development but not required for building or running 
 
 **Required:** No (any editor works)
 **Recommended:** VS Code, Neovim, Emacs, or any editor with:
-
 - Go syntax support (for editing Juniper)
 - HTML/CSS/JavaScript syntax support
 - Hugo template syntax support (optional)
@@ -428,7 +418,6 @@ These tools are useful for development but not required for building or running 
 #### Purpose
 
 Nix provides a reproducible development environment via `shell.nix`:
-
 - Pins exact versions of Hugo, Go, Make, xz, curl, Syft
 - Ensures consistent builds across machines
 - No need to install dependencies manually
@@ -502,7 +491,6 @@ No installation required (built into browsers).
 Michael can be used as a Hugo module, but **does not use Hugo modules for dependencies**.
 
 The `hugo.toml` defines module mounts for:
-
 - Layouts (`layouts/`)
 - Assets (`assets/`)
 - Data (`data/`)
@@ -555,7 +543,6 @@ go list -json -m all | docker run --rm -i sonatype/nancy:latest sleuth
 Michael **does not use npm** for runtime dependencies.
 
 The only NPM package is **vendored** (copied into the repository):
-
 - `tools/juniper/vendor_external/choosealicense/assets/vendor/hint.css/`
 
 This package is **not installed via npm** - it's committed to the repository.
@@ -579,29 +566,25 @@ syft scan . -o json | grype
 ### Dependency Update Policy
 
 **Build dependencies:**
-
 - Hugo: Use latest stable version (no pinning)
 - Go: Use latest stable version
 - Syft: Use latest stable version
 
 **Juniper Go dependencies:**
-
 - Pin minor versions in `go.mod`
 - Update quarterly or when vulnerabilities are reported
 - Test after updates to ensure no breakage
 
 **Vendored packages:**
-
 - Update when security issues are discovered
 - Review license changes before updating
 
 ### Security Advisories
 
 Monitor security advisories for:
-
-- Hugo: <https://github.com/gohugoio/hugo/security>
-- Go: <https://go.dev/security>
-- Syft: <https://github.com/anchore/syft/security>
+- Hugo: https://github.com/gohugoio/hugo/security
+- Go: https://go.dev/security
+- Syft: https://github.com/anchore/syft/security
 
 Juniper dependencies are scanned automatically via Dependabot (if enabled on GitHub).
 
@@ -688,7 +671,6 @@ make build
 **Currently:** Michael uses latest stable versions of all tools (no pinning)
 
 **Future:** Consider pinning with Nix flakes for even more reproducibility:
-
 - Pin exact Hugo version
 - Pin exact Go version
 - Pin exact Syft version
@@ -738,7 +720,6 @@ Python may be used for optional scripts, but is not required.
 ### Can I use Michael without Nix?
 
 **Yes!** Nix is optional. Just install:
-
 - Hugo (via Homebrew, apt, or binary)
 - Go (via Homebrew, apt, or binary)
 - Make (usually pre-installed)
@@ -748,7 +729,6 @@ Then run `make build` as usual.
 ### Can I use Michael without Juniper?
 
 **Yes!** If you only want to use the Hugo templates and don't need to convert new Bible modules, you can:
-
 - Download pre-converted Bible JSON files
 - Skip building Juniper
 - Run Hugo directly

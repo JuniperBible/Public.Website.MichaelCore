@@ -123,7 +123,7 @@ other = "No results found"
 
 # PWA Installation
 [installApp]
-other = "Install App"
+other = "Install Michael Bible"
 
 [installSubtext]
 other = "Read offline, anytime"

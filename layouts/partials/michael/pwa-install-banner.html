@@ -7,12 +7,11 @@
 */}}
 
 {{/* Standard install banner (Chrome, Edge, etc.) */}}
-{{- $icons := .Scratch.Get "michael-icons" -}}
-<div id="pwa-install-banner" class="pwa-install-banner hidden" role="banner" aria-hidden="true" data-pwa-banner>
+<div id="pwa-install-banner" class="pwa-install-banner hidden" role="banner" aria-hidden="true">
   <div class="pwa-install-content">
-    <img src="{{ $icons.icon192 }}" alt="" class="pwa-install-icon" width="48" height="48" role="presentation">
+    <img src="/icons/icon-192.png" alt="" class="pwa-install-icon" width="48" height="48" role="presentation">
     <div class="pwa-install-text">
-      <strong>{{ i18n "installApp" | default (printf "Install %s" .Site.Title) }}</strong>
+      <strong>{{ i18n "installApp" | default "Install Michael Bible" }}</strong>
       <span>{{ i18n "installSubtext" | default "Read offline, anytime" }}</span>
     </div>
   </div>
@@ -27,11 +26,11 @@
 </div>
 
 {{/* iOS instructions banner */}}
-<div id="pwa-ios-instructions" class="pwa-ios-instructions hidden" role="banner" aria-hidden="true" data-pwa-banner>
+<div id="pwa-ios-instructions" class="pwa-ios-instructions hidden" role="banner" aria-hidden="true">
   <div class="pwa-install-content">
-    <img src="{{ $icons.icon192 }}" alt="" class="pwa-install-icon" width="48" height="48" role="presentation">
+    <img src="/icons/icon-192.png" alt="" class="pwa-install-icon" width="48" height="48" role="presentation">
     <div class="pwa-install-text">
-      <strong>{{ i18n "installApp" | default (printf "Install %s" .Site.Title) }}</strong>
+      <strong>{{ i18n "installApp" | default "Install Michael Bible" }}</strong>
       <span>{{ i18n "iosInstallInstructions" | default "Tap Share then \"Add to Home Screen\"" }}</span>
     </div>
   </div>
@@ -41,4 +40,4 @@
 </div>
 
 {{ $pwaInstall := resources.Get "js/michael/pwa-install.js" }}
-{{ if $pwaInstall }}<script type="module" src="{{ $pwaInstall.RelPermalink }}"></script>{{ end }}
+{{ if $pwaInstall }}<script src="{{ $pwaInstall.RelPermalink }}" defer></script>{{ end }}

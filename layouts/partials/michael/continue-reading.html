@@ -7,11 +7,10 @@
 
   Usage: {{ partial "michael/continue-reading.html" . }}
 */}}
-{{ $basePath := .Site.Params.michael.basePath | default "/bible" }}
-<div id="continue-reading" class="continue-reading hidden" aria-live="polite" aria-label="{{ i18n "continueReading" | default "Continue Reading" }}" data-base-path="{{ $basePath }}">
+<div id="continue-reading" class="continue-reading hidden" aria-live="polite" aria-label="{{ i18n "continueReading" | default "Continue Reading" }}">
   <div class="continue-reading__content">
     <span class="continue-reading__label">{{ i18n "continueReading" | default "Continue Reading" }}</span>
-    <a id="continue-reading-link" href="#" class="continue-reading__chapter" aria-label="Continue reading last chapter">
+    <a id="continue-reading-link" href="#" class="continue-reading__chapter">
       <span id="continue-reading-title">{{ i18n "loading" | default "Loading..." }}</span>
       <span class="continue-reading__arrow" aria-hidden="true">&rarr;</span>
     </a>
@@ -48,15 +47,12 @@
     const dismissed = sessionStorage.getItem('continue-reading-dismissed');
     if (dismissed === 'true') return;
 
-    // Get base path from data attribute
-    const basePath = container.getAttribute('data-base-path') || '/bible';
-
     // Get last read chapter
     tracker.getLastRead().then(lastRead => {
       if (!lastRead || !lastRead.bibleId || !lastRead.bookId || !lastRead.chapter) return;
 
-      // Build URL from parts using basePath
-      const url = `${basePath}/${lastRead.bibleId}/${lastRead.bookId}/${lastRead.chapter}/`;
+      // Build URL from parts
+      const url = `/bible/${lastRead.bibleId}/${lastRead.bookId}/${lastRead.chapter}/`;
 
       // Don't show if we're already on that page
       if (window.location.pathname === url) return;

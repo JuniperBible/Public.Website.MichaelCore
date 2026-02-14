@@ -142,38 +142,6 @@ your-site/
         └── single.html  # Override chapter display
 ```
 
-### Custom Logo and Icons
-
-Michael generates all site icons (favicons, PWA icons, apple-touch-icon) from a single SVG source at build time. To use your own logo:
-
-1. Place your SVG logo at `assets/images/logo.svg`
-2. Run `make icons` to generate all PNG sizes
-
-```bash
-# Generate from the default location
-make icons
-
-# Or specify a custom SVG source
-make icons SVG=path/to/my-logo.svg
-```
-
-This generates:
-
-- `assets/images/logo.png` (512x512, for Hugo image processing)
-- `assets/images/logo.svg` (copy, for header display)
-- `static/icons/icon-16.png` (favicon)
-- `static/icons/icon-32.png` (favicon)
-- `static/icons/apple-touch-icon.png` (180x180)
-- `static/icons/icon-192.png` (PWA icon)
-- `static/icons/icon-512.png` (PWA icon)
-- `static/icons/icon-maskable-512.png` (PWA maskable icon)
-
-When `assets/images/logo.png` exists, Hugo's image processing pipeline generates optimized icons at build time. Without it, the module falls back to its bundled default icons.
-
-The header partial also checks for `assets/images/logo.svg` and displays it as a logo image. Without it, the site title is shown as text.
-
-**Requirements:** ImageMagick 7 (`magick` command). Included in the nix shell.
-
 ### Overriding Styles
 
 Add custom CSS in your site:
@@ -309,7 +277,6 @@ The service worker is automatically registered when the site loads. No additiona
 ### Cache Management
 
 Users can manage their offline cache through the settings panel:
-
 - View cached content
 - Clear offline cache
 - See cache size

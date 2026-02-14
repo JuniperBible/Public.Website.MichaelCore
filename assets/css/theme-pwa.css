@@ -10,7 +10,6 @@
    Both paths are covered by the class-based selectors below.
    The media query block ONLY handles edge cases where JS hasn't run yet.
    ========================================================================== */
-/* stylelint-disable color-function-notation, alpha-value-notation */
 
 /* Display-mode media query — ensures styles apply even before JS runs */
 @media all and (display-mode: standalone),
@@ -212,9 +211,9 @@ html.pwa-standalone .continue-reading { padding: var(--pad-1); margin-bottom: va
 .pwa-install-dismiss {
   padding: 6px 10px;
   border-radius: var(--radius-1);
-  border: 1px solid var(--chrome-text);
+  border: 1px solid rgba(255,255,255,.3);
   background: transparent;
-  color: var(--chrome-text);
+  color: rgba(255,255,255,.8);
   cursor: pointer;
   font: inherit;
   font-size: 1.2rem;
@@ -222,7 +221,7 @@ html.pwa-standalone .continue-reading { padding: var(--pad-1); margin-bottom: va
 }
 
 .pwa-install-dismiss:hover {
-  background: var(--surface-alpha);
+  background: rgba(255,255,255,.1);
 }
 
 .pwa-install-dismiss:focus-visible {
@@ -324,7 +323,7 @@ html.pwa-standalone .continue-reading { padding: var(--pad-1); margin-bottom: va
 .sw-update-banner__dismiss-btn {
   padding: 6px 10px;
   border-radius: var(--radius-1);
-  border: 1px solid var(--surface-2);
+  border: 1px solid rgba(255,255,255,.4);
   background: transparent;
   color: var(--surface-2);
   cursor: pointer;
@@ -334,7 +333,7 @@ html.pwa-standalone .continue-reading { padding: var(--pad-1); margin-bottom: va
 }
 
 .sw-update-banner__dismiss-btn:hover {
-  background: var(--surface-alpha);
+  background: rgba(255,255,255,.1);
 }
 
 .sw-update-banner__dismiss-btn:focus-visible {

@@ -5,7 +5,6 @@ This document describes the automated regression testing setup for the Michael H
 ## Overview
 
 The test suite consists of 15 end-to-end browser tests covering:
-
 - Compare page functionality (5 tests)
 - Search page functionality (2 tests)
 - Single chapter page functionality (5 tests)
@@ -219,19 +218,16 @@ func TestNewFeature(t *testing.T) {
 ## Troubleshooting
 
 ### Tests timeout
-
 - Increase timeout in `helpers.NewTestBrowser()`
 - Check that Hugo server is running on port 1313
 - Verify Chrome/Chromium is installed
 
 ### Element not found
-
 - Check selector matches current HTML structure
 - Add wait conditions before interacting
 - Use browser DevTools to verify selectors
 
 ### Offline test fails
-
 - Service worker may not be registered yet
 - Increase wait time after initial page load
 - Check service worker registration in browser DevTools
@@ -239,7 +235,6 @@ func TestNewFeature(t *testing.T) {
 ## CI/CD Integration
 
 For CI environments, ensure:
-
 1. Chrome/Chromium is available (use `chromedp/headless-shell` container)
 2. Hugo is installed for building the site
 3. Port 1313 is available for the dev server
@@ -258,7 +253,6 @@ Example GitHub Actions step:
 The regression test suite covers all items from the manual QA checklist:
 
 ### Compare Page Coverage (5 tests)
-
 - ✅ Select 2+ translations, see parallel display
 - ✅ Toggle SSS mode, see side-by-side panes
 - ✅ Use verse grid to select specific verse
@@ -266,12 +260,10 @@ The regression test suite covers all items from the manual QA checklist:
 - ✅ Navigate to different chapter
 
 ### Search Page Coverage (2 tests)
-
 - ✅ Enter text query, see results
 - ✅ Enter Strong's number (H430), see results
 
 ### Single Page Coverage (5 tests)
-
 - ✅ Navigate between chapters with arrows
 - ✅ Click Strong's number, see tooltip
 - ✅ Click share button, see menu
@@ -279,7 +271,6 @@ The regression test suite covers all items from the manual QA checklist:
 - ✅ Click verse share button
 
 ### Cross-Cutting Coverage (3 tests)
-
 - ✅ Load cached page when offline
 - ✅ All controls usable on touch device
 - ✅ Navigate all controls with Tab/Enter/Escape/Arrows

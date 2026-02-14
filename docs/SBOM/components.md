@@ -79,7 +79,6 @@ Michael includes **23 Hugo template files** that render Bible content and naviga
 ### Template Language
 
 All templates use:
-
 - **Hugo template syntax** - Go's `text/template` and `html/template` packages
 - **No JavaScript templating** - Templates render at build time, not in the browser
 - **OSIS markup support** - Handles OSIS XML structure from SWORD modules
@@ -87,7 +86,6 @@ All templates use:
 ### Versioning
 
 Templates are versioned with the Michael project:
-
 - **License:** Same as Michael project (see root `LICENSE`)
 - **No separate versioning** - Templates are integral to the module
 
@@ -149,7 +147,6 @@ All JavaScript modules use **modern vanilla JavaScript**:
 ### Browser Compatibility
 
 Modules are tested on:
-
 - Chrome/Edge 90+ (Chromium)
 - Firefox 88+
 - Safari 14+
@@ -159,7 +156,6 @@ Older browsers are not supported (no polyfills included).
 ### License
 
 All JavaScript modules:
-
 - **Author:** Michael project contributors
 - **License:** Same as Michael project (see root `LICENSE`)
 - **Copyright:** 2024-Present
@@ -201,7 +197,6 @@ The stylesheet is organized into logical sections:
 ### NO CSS Frameworks
 
 Michael does **not** use:
-
 - Bootstrap
 - Tailwind CSS
 - Foundation
@@ -213,7 +208,6 @@ Rationale: Keep the project lightweight and eliminate runtime dependencies.
 ### CSS Processing
 
 CSS is processed by **Hugo's asset pipeline**:
-
 - Minification (via `hugo --minify`)
 - Fingerprinting (cache-busting hashes)
 - PostCSS (optional, if configured)
@@ -255,7 +249,6 @@ Michael includes extensive JSON data files for Bible texts and metadata.
 **Size:** ~15 KB
 
 Contains:
-
 - Translation names and abbreviations
 - Language codes (ISO 639)
 - Testament coverage (OT, NT, Apocrypha)
@@ -274,7 +267,6 @@ Contains:
 **Note:** Currently includes only the most common Strong's numbers. Full concordance data is available from SWORD modules.
 
 Each entry includes:
-
 - `lemma` - Original Hebrew or Greek word
 - `xlit` - Transliteration (romanized)
 - `pron` - Pronunciation guide
@@ -318,7 +310,6 @@ Michael includes minimal static assets.
 **Current status:** None included (planned for future)
 
 Potential future assets:
-
 - Favicon (`.ico`, `.png`)
 - App icons for PWA (Progressive Web App)
 - Social media preview images (Open Graph)
@@ -400,7 +391,6 @@ See: `tools/juniper/go.mod` for full dependency tree
 **Source:** https://github.com/github/choosealicense.com
 **License:** MIT
 **Files:**
-
 - `licenses.json` - License metadata
 - `rules.json` - License permission/condition/limitation rules
 - `assets/vendor/hint.css/` - CSS tooltips (MIT licensed)
@@ -520,7 +510,6 @@ cat assets/downloads/sbom/sbom.syft.json | jq '.artifacts[] | .name'
 This inventory is maintained alongside the codebase.
 
 To update:
-
 1. Add new components as they're created
 2. Update version numbers when dependencies change
 3. Regenerate SBOM: `make sbom`

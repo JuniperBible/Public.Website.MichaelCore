@@ -14,21 +14,13 @@
 {{- $bookId := .bookId -}}
 {{- $chapterId := .chapterId -}}
 {{- $site := .site -}}
-{{- $firstBible := dict -}}
-{{- with $site.Data.bibles.bibles -}}
-  {{- $firstBible = index . 0 -}}
-{{- end -}}
-{{- $aux := dict -}}
-{{- if $firstBible -}}
-  {{- $aux = index $site.Data.bibles_auxiliary $firstBible.id -}}
-{{- end -}}
+{{- $firstBible := index $site.Data.bibles.bibles 0 -}}
+{{- $aux := index $site.Data.bibles_auxiliary $firstBible.id -}}
 <label for="{{ $bookId }}" class="sr-only">{{ i18n "selectBook" | default "Select Book" }}</label>
 <select id="{{ $bookId }}" class="select w-auto" aria-label="{{ i18n "selectBook" | default "Select Book" }}">
   <option value="">{{ i18n "bookPlaceholder" | default "Book..." }}</option>
-  {{- if $aux -}}
   {{- range $aux.books -}}
   <option value="{{ .id }}">{{ .name }}</option>
-  {{- end -}}
   {{- end -}}
 </select>
 <label for="{{ $chapterId }}" class="sr-only">{{ i18n "selectChapter" | default "Select Chapter" }}</label>

@@ -2,7 +2,6 @@
    Michael Bible Module — Color Tokens
    All project colors defined in one place for easy theming
    ========================================================================== */
-/* stylelint-disable color-function-notation, alpha-value-notation */
 
 :root {
   /* Brand - Purple theme */
@@ -45,12 +44,12 @@
   --shadow-1: 0 1px 0 rgba(0,0,0,.18), 0 3px 10px rgba(0,0,0,.10);
 
   /* Focus ring */
-  --focus-ring: 0 0 0 3px rgba(122, 0, 176, 0.6);
+  --focus-ring: 0 0 0 3px rgba(122, 0, 176, 0.35);
 
   /* Diff highlighting colors */
-  --diff-add: #99e699;        /* addition - green - darkened for 4.5:1 contrast */
+  --diff-add: #ccffcc;        /* addition - green */
   --diff-omit: #e6e6e6;       /* omission - gray */
-  --diff-punct: #ffdd33;      /* punctuation/formatting - yellow - darkened for 4.5:1 contrast */
+  --diff-punct: #ffeb99;      /* punctuation/formatting - yellow */
   --diff-spelling: #ffe0b3;   /* spelling modernization - orange */
   --diff-subst: #ffcccc;      /* word substitution - red */
 
@@ -67,10 +66,10 @@
   --success-bg-light: rgba(54, 176, 0, 0.12);
   --success-text: #1d3a0a;
 
-  /* Toast background colors - darkened for sufficient contrast with white text */
-  --toast-success-bg: #0f2305;
-  --toast-warning-bg: #3d2b00;
-  --toast-error-bg: #3d0f0f;
+  /* Toast background colors */
+  --toast-success-bg: #1d3a0a;
+  --toast-warning-bg: #5c4100;
+  --toast-error-bg: #5c1a1a;
 
   /* Surface alpha (semi-transparent white) */
   --surface-alpha: rgba(255, 255, 255, 0.55);

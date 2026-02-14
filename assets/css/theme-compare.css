@@ -2,7 +2,6 @@
    Michael Bible Module — Compare Page Styles
    Side-by-side Bible comparison, diff highlighting, and related controls
    ========================================================================== */
-/* stylelint-disable color-function-notation, alpha-value-notation */
 
 /* -----------------------------
    Compare Controls
@@ -22,22 +21,6 @@
 
 .compare-controls--compact .compare-controls__row {
   gap: 6px;
-  min-height: 32px;
-}
-
-/* Make all selects and chips compact in SSS mode */
-.compare-controls--compact .select {
-  padding: 6px 10px;
-  font-size: 0.85rem;
-}
-
-.compare-controls--compact .chip {
-  padding: 4px 8px;
-  font-size: 0.85rem;
-}
-
-.compare-controls--compact .btn--sm {
-  padding: 6px 10px;
 }
 
 .sss-bible-pair {
@@ -56,11 +39,12 @@
   flex-wrap: wrap;
   align-items: center;
   gap: 8px;
-  min-height: 38px;
 }
 
 .compare-controls__row + .compare-controls__row {
-  margin-top: 6px;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border);
 }
 
 .compare-controls__translations {
@@ -397,34 +381,4 @@
 
 .footnote-literal {
   font-style: italic;
-}
-
-/* -----------------------------
-   SSS Verse Grid (compact)
------------------------------- */
-/* Make the verse grid row in SSS mode more compact to match row 1 height */
-#sss-verse-grid {
-  margin-top: 6px;
-}
-
-#sss-verse-grid .verse-grid-row {
-  gap: 6px;
-}
-
-#sss-verse-grid .verse-grid-row > .muted {
-  line-height: 32px;
-  font-size: 0.85rem;
-}
-
-#sss-verse-grid .verse-buttons-row {
-  gap: 3px;
-}
-
-/* Compact verse buttons in SSS mode */
-#sss-verse-grid .verse-btn,
-#sss-verse-grid .chip {
-  min-width: 32px;
-  min-height: 32px;
-  padding: 6px 10px;
-  font-size: 0.85rem;
 }

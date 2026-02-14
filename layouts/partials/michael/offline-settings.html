@@ -60,11 +60,11 @@
 
     <div class="offline-settings__content">
       <!-- Cache Status Section -->
-      <section class="cache-status">
+      <section class="cache-status" aria-live="polite" aria-atomic="true">
         <h3 class="cache-status__title">
           {{ i18n "cacheStatus" | default "Cache Status" }}
         </h3>
-        <div class="cache-status__info" aria-live="polite" aria-atomic="true">
+        <div class="cache-status__info">
           <dl class="cache-status__list">
             <div class="cache-status__item">
               <dt class="cache-status__label">{{ i18n "cachedChapters" | default "Cached Chapters" }}:</dt>
@@ -117,11 +117,8 @@
                 max="100"
                 value="0"
                 aria-labelledby="download-progress-label"
-                aria-valuemin="0"
-                aria-valuemax="100"
-                aria-valuenow="0"
               ></progress>
-              <p class="download-progress__text" id="download-progress-text" aria-live="polite">0%</p>
+              <p class="download-progress__text" id="download-progress-text">0%</p>
             </div>
           </div>
 
@@ -160,7 +157,7 @@
       </section>
 
       <!-- Error/Status Messages Section -->
-      <div id="offline-messages" class="offline-messages" role="status" aria-live="polite" aria-atomic="true"></div>
+      <div id="offline-messages" class="offline-messages" role="status" aria-live="polite"></div>
 
       <!-- No JavaScript Fallback -->
       <noscript>

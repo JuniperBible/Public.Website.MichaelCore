@@ -1,3 +1,3 @@
 module github.com/FocuswithJustin/michael
 
-go 1.24.13
+go 1.21

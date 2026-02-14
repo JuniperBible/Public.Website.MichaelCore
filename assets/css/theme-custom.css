@@ -6,7 +6,6 @@
 
    Color palette and font sourced from juniperbible.org
    ========================================================================== */
-/* stylelint-disable color-function-notation, alpha-value-notation, color-hex-length, at-rule-empty-line-before */
 
 /* -----------------------------
    Patrick Hand font (self-hosted)
@@ -37,77 +36,9 @@
 
 /* -----------------------------
    Custom Color Overrides
-   Dark mode is default, light mode for prefers-color-scheme: light
-   Color palette matched to juniperbible.org
+   Matched to juniperbible.org
 ------------------------------ */
 :root {
-  /* Dark Mode (Default) */
-
-  /* Brand - Muted purple (juniperbible accent) - lighter for dark bg */
-  --brand-100: #3d2e4a;
-  --brand-400: #a88da8;
-  --brand-500: #c4a8c4;
-  --brand-600: #d9c4d9;
-
-  /* Success - Green */
-  --success-100: #1a2e1a;
-  --success-500: #4ade80;
-
-  /* Chrome (header/footer) - Dark teal */
-  --chrome-800: #223836;
-  --chrome-900: #1a3230;
-  --chrome-text: rgba(255, 255, 255, 0.92);
-
-  /* Background / Surfaces (dark theme) */
-  --bg-0: #1a1a1a;
-  --surface-0: #252525;
-  --surface-1: #2d2d2d;
-  --surface-2: #353535;
-
-  /* Text (light on dark) - lightened for WCAG AA 4.5:1 contrast on --surface-2: #353535 */
-  --text-900: #f0f0f0;
-  --text-700: #d0d0d0;
-  --text-500: #b8b8b8;  /* Lightened from #a0a0a0 for 4.5:1 contrast on #353535 */
-  --text-400: #909090;  /* Lightened from #808080 */
-
-  /* Links */
-  --link: var(--brand-500);
-
-  /* Borders */
-  --border: #404040;
-  --border-strong: #505050;
-  --border-hover: #606060;
-
-  /* Shadows (subtle on dark) */
-  --shadow-0: 0 1px 2px rgba(0, 0, 0, 0.3);
-  --shadow-1: 0 4px 6px rgba(0, 0, 0, 0.4), 0 1px 3px rgba(0, 0, 0, 0.3);
-
-  /* Focus ring */
-  --focus-ring: 0 0 0 3px rgba(196, 168, 196, 0.6);
-
-  /* Diff highlighting colors (improved contrast for dark mode) */
-  --diff-add: #2d5a2d;
-  --diff-omit: #4a4a4a;
-  --diff-punct: #5a4a20;
-  --diff-spelling: #5a4020;
-  --diff-subst: #5a2828;
-
-  /* State colors (dark mode) */
-  --state-error: #ef5350;
-  --state-error-bg: #3d1a1a;
-
-  /* Surface alpha (semi-transparent dark) */
-  --surface-alpha: rgba(0, 0, 0, 0.3);
-
-  /* Subtle backgrounds */
-  --bg-light: rgba(255, 255, 255, 0.06);
-
-  /* Font */
-  --font-hand: "Patrick Hand", cursive;
-}
-
-/* Light mode - explicit toggle OR OS preference with no explicit choice */
-:root[data-theme="light"] {
   /* Brand - Muted purple (juniperbible accent) */
   --brand-100: #f0e0f0;
   --brand-400: #7d5c7d;
@@ -117,6 +48,10 @@
   /* Success - Green */
   --success-100: #e8f5e9;
   --success-500: #16a34a;
+
+  /* Chrome (header/footer) - Dark teal */
+  --chrome-800: #223836;
+  --chrome-900: #1a3230;
 
   /* Background / Surfaces (warm parchment) */
   --bg-0: #b8a080;
@@ -130,10 +65,12 @@
   --text-500: #6b6560;
   --text-400: #857f78;
 
+  /* Links */
+  --link: var(--brand-500);
+
   /* Borders */
   --border: #d4cfc5;
   --border-strong: #b8b2a6;
-  --border-hover: rgba(0, 0, 0, 0.55);
 
   /* Shadows */
   --shadow-0: 0 1px 2px rgba(0, 0, 0, 0.05);
@@ -142,22 +79,8 @@
   /* Focus ring */
   --focus-ring: 0 0 0 3px rgba(107, 76, 107, 0.35);
 
-  /* Diff highlighting colors (light mode) */
-  --diff-add: #99e699;        /* Darkened for 4.5:1 contrast */
-  --diff-omit: #e6e6e6;
-  --diff-punct: #ffdd33;      /* Darkened for 4.5:1 contrast */
-  --diff-spelling: #ffe0b3;
-  --diff-subst: #ffcccc;
-
-  /* State colors (light mode) */
-  --state-error: #d32f2f;
-  --state-error-bg: #ffebee;
-
-  /* Surface alpha */
-  --surface-alpha: rgba(255, 255, 255, 0.55);
-
-  /* Subtle backgrounds */
-  --bg-light: rgba(0, 0, 0, 0.04);
+  /* Font */
+  --font-hand: "Patrick Hand", cursive;
 }
 
 /* -----------------------------
@@ -176,43 +99,6 @@ h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-hand);
 }
 
-/* Header — sticky at top, 89% width, rounded bottom corners */
-header.chrome {
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  width: 89%;
-  max-width: 1400px;
-  margin-left: auto;
-  margin-right: auto;
-  border-radius: 0 0 1rem 1rem;
-  box-shadow: var(--shadow-1);
-}
-
-/* Footer wrapper — pushed to bottom */
-.site-footer-wrapper {
-  margin-top: auto;
-}
-
-/* Footer — 89% width, rounded top corners */
-footer.chrome {
-  width: 89%;
-  max-width: 1400px;
-  margin-left: auto;
-  margin-right: auto;
-  border-radius: 1rem 1rem 0 0;
-}
-
-/* Footer copyright — 89% width, centered */
-.footer-copyright {
-  width: 89%;
-  max-width: 1400px;
-  margin-left: auto;
-  margin-right: auto;
-  font-size: 0.65rem;
-  text-align: center;
-}
-
 /* Header/footer nav and site title — doubled from default */
 .nav a {
   font-size: 2rem;
@@ -223,187 +109,7 @@ footer.chrome {
   font-size: 2rem;
 }
 
-/* Compare controls - match header width and rounded corners */
-.compare-controls {
-  max-width: 1100px;
-  margin-left: auto;
-  margin-right: auto;
-  border-radius: var(--radius-2, 12px);
+.footer-copyright {
+  font-size: 0.65rem;
 }
 
-/* -----------------------------
-   Reader Toggles
-   Full-width and side-by-side controls
------------------------------- */
-.reader-toggles {
-  display: inline-flex;
-  gap: 4px;
-  margin-left: auto;
-}
-
-.reader-toggles .btn {
-  padding: 6px 8px;
-}
-
-.reader-toggles .btn[aria-pressed="true"] {
-  background: var(--brand-500);
-  color: var(--text-900);
-  border-color: var(--brand-500);
-}
-
-.reader-toggles .btn:focus-visible {
-  outline: none;
-  box-shadow: var(--focus-ring);
-}
-
-/* Full-width mode */
-body.full-width-mode main.container {
-  max-width: 100%;
-  padding-left: var(--pad-2);
-  padding-right: var(--pad-2);
-}
-
-body.full-width-mode .panel {
-  max-width: 100%;
-}
-
-body.full-width-mode .reader-bar {
-  max-width: 100%;
-}
-
-body.full-width-mode .prose {
-  max-width: 100%;
-}
-
-/* SSS (Side-by-Side Scripture) mode for chapter pages */
-
-/* Hide comparison Bible selector by default */
-.sss-comparison-select {
-  display: none;
-}
-
-/* Show comparison Bible selector when SSS mode is active */
-body.sss-chapter-mode .sss-comparison-select {
-  display: inline-block;
-}
-
-.chapter-sss-container {
-  display: none;
-  background: var(--surface-1);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-1);
-  overflow: hidden;
-}
-
-body.sss-chapter-mode .chapter-content-single {
-  display: none;
-}
-
-body.sss-chapter-mode .chapter-sss-container {
-  display: block;
-}
-
-/* SSS Header row */
-.sss-header {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  background: var(--surface-2);
-  border-bottom: 2px solid var(--border);
-}
-
-.sss-header-left,
-.sss-header-right {
-  padding: var(--pad-1) var(--pad-2);
-  text-align: center;
-}
-
-.sss-header-left {
-  border-right: 1px solid var(--border);
-}
-
-/* SSS Verses container */
-.sss-verses {
-  min-height: 300px;
-}
-
-.sss-loading {
-  text-align: center;
-  color: var(--text-500);
-  padding: var(--pad-3);
-}
-
-/* SSS Verse row - each row contains left and right verse */
-.sss-verse-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  border-bottom: 1px solid var(--border);
-  transition: background-color 0.15s ease;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .sss-verse-row {
-    transition: none;
-  }
-}
-
-.sss-verse-row:hover {
-  background-color: var(--bg-light);
-}
-
-.sss-verse-row:last-child {
-  border-bottom: none;
-}
-
-.sss-verse-left,
-.sss-verse-right {
-  padding: var(--pad-1) var(--pad-2);
-  line-height: 1.6;
-}
-
-.sss-verse-left {
-  border-right: 1px solid var(--border);
-}
-
-.sss-verse-num {
-  font-weight: bold;
-  color: var(--text-700);
-  margin-right: 0.5em;
-  font-size: 0.85em;
-}
-
-.sss-verse-text {
-  /* Allow proper wrapping */
-}
-
-.sss-missing {
-  color: var(--text-400);
-  font-style: italic;
-}
-
-/* Mobile: stack verses vertically */
-@media (max-width: 768px) {
-  .sss-header {
-    grid-template-columns: 1fr;
-  }
-
-  .sss-header-left {
-    border-right: none;
-    border-bottom: 1px solid var(--border);
-  }
-
-  .sss-verse-row {
-    grid-template-columns: 1fr;
-  }
-
-  .sss-verse-left {
-    border-right: none;
-    border-bottom: 1px dashed var(--border);
-    background: var(--surface-2);
-  }
-
-  .reader-toggles {
-    width: 100%;
-    justify-content: flex-end;
-    margin-top: 8px;
-  }
-}

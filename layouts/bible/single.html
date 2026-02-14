@@ -27,24 +27,21 @@
 {{ define "scripts" }}
 {{/* Inject Strong's definitions data (cached — identical across all pages) */}}
 {{ partialCached "michael/strongs-data.html" . }}
-{{/* Load JS with fingerprinting for cache busting */}}
 {{ $bibleNav := resources.Get "js/michael/bible-nav.js" }}
-{{ if $bibleNav }}{{ $bibleNav = $bibleNav | fingerprint }}<script type="module" src="{{ $bibleNav.RelPermalink }}"></script>{{ end }}
+{{ if $bibleNav }}<script src="{{ $bibleNav.RelPermalink }}" defer></script>{{ end }}
 {{ $shareMenu := resources.Get "js/michael/share-menu.js" }}
-{{ if $shareMenu }}{{ $shareMenu = $shareMenu | fingerprint }}<script type="module" src="{{ $shareMenu.RelPermalink }}"></script>{{ end }}
+{{ if $shareMenu }}<script src="{{ $shareMenu.RelPermalink }}" defer></script>{{ end }}
 {{ $share := resources.Get "js/share.js" }}
-{{ if $share }}{{ $share = $share | fingerprint }}<script type="module" src="{{ $share.RelPermalink }}"></script>{{ end }}
+{{ if $share }}<script src="{{ $share.RelPermalink }}" defer></script>{{ end }}
 {{ $strongs := resources.Get "js/strongs.js" }}
-{{ if $strongs }}{{ $strongs = $strongs | fingerprint }}<script type="module" src="{{ $strongs.RelPermalink }}"></script>{{ end }}
+{{ if $strongs }}<script src="{{ $strongs.RelPermalink }}" defer></script>{{ end }}
 {{ $footnotes := resources.Get "js/michael/footnotes.js" }}
-{{ if $footnotes }}{{ $footnotes = $footnotes | fingerprint }}<script type="module" src="{{ $footnotes.RelPermalink }}"></script>{{ end }}
-{{ $chapterReader := resources.Get "js/michael/chapter-reader.js" }}
-{{ if $chapterReader }}{{ $chapterReader = $chapterReader | fingerprint }}<script type="module" src="{{ $chapterReader.RelPermalink }}"></script>{{ end }}
+{{ if $footnotes }}<script src="{{ $footnotes.RelPermalink }}" defer></script>{{ end }}
 {{ end }}
 
 {{ define "main" }}
 {{ $basePath := .Site.Params.michael.basePath | default "/bible" }}
-<main id="main-content" class="container pad-3-2">
+<main class="container pad-3-2">
   <article class="panel">
     {{/* Look up Bible metadata from bibles-data partial (includes overrides) */}}
     {{ $bibleId := .Params.bible | default .Params.abbrev | default .File.ContentBaseName }}
@@ -58,8 +55,8 @@
     <header class="page-header">
       {{/* On Bible overview pages, prefer override title and description */}}
       {{ if not (or .Params.chapter .Params.book) }}
-        <h1>{{ if $bibleData }}{{ with $bibleData.title }}{{ . }}{{ else }}{{ $.Title }}{{ end }}{{ else }}{{ .Title }}{{ end }}</h1>
-        {{ if $bibleData }}{{ with $bibleData.description }}<p>{{ . }}</p>{{ end }}{{ end }}
+        <h1>{{ with $bibleData.title }}{{ . }}{{ else }}{{ .Title }}{{ end }}</h1>
+        {{ with $bibleData.description }}<p>{{ . }}</p>{{ end }}
       {{ else }}
         <h1>{{ .Title }}</h1>
         {{ with .Params.description }}<p>{{ . }}</p>{{ end }}
@@ -67,15 +64,14 @@
 
       <!-- Features/tags -->
       <div class="row row--center mt-1">
-        {{ if $bibleData }}
         {{ with $bibleData.language }}
         <span class="badge">{{ . }}</span>
         {{ end }}
         {{ with $bibleData.license }}
         <a href="{{ printf "/license/%s/" (. | lower) | relLangURL }}" class="badge" title="SPDX License: {{ . }}">{{ . }}</a>
         {{ end }}
-        {{ else }}
-        {{/* Fallback to params if bibleData not found */}}
+        {{/* Fallback to params if not in bibles.json */}}
+        {{ if not .Site.Data.bibles.bibles }}
           {{ with .Params.language }}
           <span class="badge">{{ . }}</span>
           {{ end }}
@@ -93,22 +89,8 @@
         <!-- Navigation with dropdowns -->
         {{ partial "michael/bible-nav.html" (dict "page" . "bible" .Params.bible "book" .Params.book "chapter" .Params.chapter "basePath" $basePath) }}
 
-        <!-- Single column view (default) -->
-        <div class="chapter-content-single">
-          <div class="prose bible-text" id="chapter-content">
-            {{ .Content }}
-          </div>
-        </div>
-
-        <!-- Side-by-side view (shown when SSS toggle active) -->
-        <div class="chapter-sss-container" id="sss-container" data-left-bible="{{ if $bibleData }}{{ $bibleData.abbrev }}{{ end }}">
-          <div class="sss-header">
-            <div class="sss-header-left"><strong>{{ if $bibleData }}{{ $bibleData.abbrev }}{{ end }}</strong></div>
-            <div class="sss-header-right"><strong id="sss-right-pane-label">{{ i18n "selectBibleToCompare" | default "Select a Bible" }}</strong></div>
-          </div>
-          <div class="sss-verses" id="sss-verses">
-            <div class="sss-loading">{{ i18n "selectBibleToCompare" | default "Select a Bible to compare" }}</div>
-          </div>
+        <div class="prose bible-text" id="chapter-content">
+          {{ .Content }}
         </div>
 
         <!-- Notes sections (side by side) -->

@@ -89,9 +89,6 @@
     }
   }
 
-  /* Note: Print styles intentionally force white background and black text
-     for optimal readability and ink conservation, regardless of user's
-     color scheme preference. This is standard practice for print media. */
   html,
   body {
     background: white !important;

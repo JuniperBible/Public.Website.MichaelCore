@@ -66,33 +66,36 @@
 {{/* Find current book data once (used by chapter selector and navigation) */}}
 {{ $bookData := dict }}
 {{ $chapterCount := 0 }}
-{{ if and $book $chapter $bibleData }}
+{{ if and $book $chapter }}
   {{ range $bibleData.books }}
     {{ if eq (.id | lower) $book }}
       {{ $bookData = . }}
     {{ end }}
   {{ end }}
-  {{ if $bookData }}
-    {{ $chapterCount = len $bookData.chapters }}
-  {{ end }}
+  {{ $chapterCount = len $bookData.chapters }}
 {{ end }}
 
 <nav class="reader-bar row bible-nav" aria-label="{{ i18n "bibleNavigation" | default "Bible Navigation" }}">
   <!-- Bible selector (always shown when bible is set) -->
   {{/* Preserve book/chapter context when switching translations */}}
   {{ with $bible }}
-  {{ partial "michael/bible-select.html" (dict
-      "site" $page.Site
-      "id" "bible-select"
-      "class" "select bible-nav__select"
-      "format" "abbrev"
-      "selected" $bible
-      "auxOnly" true
-      "basePath" $basePath
-      "book" $book
-      "chapter" $chapter
-      "showPlaceholder" false
-  ) }}
+  <label for="bible-select" class="sr-only">{{ i18n "selectBibleTranslation" | default "Select Bible Translation" }}</label>
+  <select id="bible-select"
+          class="select bible-nav__select"
+          data-base-path="{{ $basePath }}"
+          {{ with $book }}data-book="{{ . }}"{{ end }}
+          {{ with $chapter }}data-chapter="{{ . }}"{{ end }}
+          aria-label="{{ i18n "selectBibleTranslation" | default "Select Bible Translation" }}">
+    {{ range (partialCached "michael/bible-data.html" $page.Site) }}
+      {{/* Only show bibles that have auxiliary data */}}
+      {{ $hasAuxData := index $page.Site.Data.bibles_auxiliary .id }}
+      {{ if $hasAuxData }}
+    <option value="{{ .id }}" {{ if eq .id $bible }}selected{{ end }}>
+      {{ .abbrev }}
+    </option>
+      {{ end }}
+    {{ end }}
+  </select>
   {{ end }}
 
   <!-- Book selector (always shown - uses validBooks if available) -->
@@ -112,7 +115,7 @@
         {{ .name }}
       </option>
       {{ end }}
-    {{ else if $bibleData }}
+    {{ else }}
       {{/* Show all books from auxiliary data */}}
       {{ range $bibleData.books }}
         {{ $bookIdLower := .id | lower }}
@@ -159,41 +162,5 @@
   {{ else }}
   <button type="button" class="btn btn--sm" disabled aria-label="{{ i18n "nextChapter" | default "Next Chapter" }} {{ i18n "disabled" | default "(disabled)" }}">&rarr;</button>
   {{ end }}
-
-  <!-- Reader toggles (chapter view only) -->
-  <span class="reader-toggles">
-    <button type="button" id="fullwidth-toggle" class="btn btn--sm" aria-pressed="false" aria-label="{{ i18n "toggleFullWidth" | default "Toggle Full Width" }}" title="{{ i18n "fullWidth" | default "Full Width" }}">
-      <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/>
-      </svg>
-    </button>
-    <button type="button" id="sss-chapter-toggle" class="btn btn--sm" aria-pressed="false" aria-label="{{ i18n "toggleSSS" | default "Toggle Side-by-Side Scripture" }}" title="{{ i18n "sideBySide" | default "Side-by-Side" }}">
-      <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-        <rect x="3" y="3" width="7" height="18" rx="1" stroke-width="2"/>
-        <rect x="14" y="3" width="7" height="18" rx="1" stroke-width="2"/>
-      </svg>
-    </button>
-    <button type="button" id="print-chapter" class="btn btn--sm" aria-label="{{ i18n "printChapter" | default "Print Chapter" }}" title="{{ i18n "print" | default "Print" }}">
-      <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
-      </svg>
-    </button>
-    <button type="button" id="share-chapter" class="btn btn--sm" aria-label="{{ i18n "shareChapter" | default "Share Chapter" }}" title="{{ i18n "share" | default "Share" }}">
-      <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/>
-      </svg>
-    </button>
-  </span>
-
-  <!-- SSS Comparison Bible selector (hidden until SSS mode active) -->
-  {{ partial "michael/bible-select.html" (dict
-      "site" $page.Site
-      "id" "sss-comparison-bible"
-      "class" "select bible-nav__select sss-comparison-select"
-      "label" (i18n "selectBible" | default "Select Bible...")
-      "format" "abbrev"
-      "exclude" $bible
-      "auxOnly" true
-  ) }}
   {{ end }}
 </nav>

@@ -14,14 +14,12 @@ The service worker provides offline functionality with intelligent caching strat
 
 ### 1. `/static/sw.js`
 The main service worker script that handles:
-
 - Pre-caching of shell assets and default chapters
 - Request interception and caching strategies
 - Cache version management
 - Cleanup of old caches
 
 **Key Features:**
-
 - Cache versioning with `CACHE_VERSION` constant
 - Two separate caches: `michael-shell-v1` and `michael-chapters-v1`
 - Pre-caches 4 default chapters (Genesis 1, Psalm 23, Matthew 1, John 1)
@@ -32,7 +30,6 @@ The main service worker script that handles:
 Standalone offline fallback page that works without external resources.
 
 **Key Features:**
-
 - Inline CSS (no external stylesheets needed)
 - Dark mode support via CSS media queries
 - Lists all cached Bible chapters dynamically
@@ -44,7 +41,6 @@ Standalone offline fallback page that works without external resources.
 Hugo partial that registers the service worker in the browser.
 
 **Key Features:**
-
 - Feature detection for service worker support
 - Environment-aware registration (production only by default)
 - Update detection and notification
@@ -59,7 +55,6 @@ Updated to include the service worker registration partial before `</body>`.
 
 ### Shell Assets (Cache-First)
 Static resources that rarely change:
-
 - Home page (`/`)
 - Offline fallback page
 - JavaScript files (bible-api.js, dom-utils.js, share-menu.js, share.js, strongs.js)
@@ -69,7 +64,6 @@ Static resources that rarely change:
 
 ### Chapter Pages (Network-First)
 Bible chapter pages (`/bible/{bible}/{book}/{chapter}/`):
-
 - Try network first for fresh content
 - Fall back to cache if network fails
 - Cache successful responses for offline use
@@ -78,7 +72,6 @@ Bible chapter pages (`/bible/{bible}/{book}/{chapter}/`):
 
 ### Offline Fallback
 When both network and cache fail for navigation requests:
-
 - Show `/offline.html` with list of cached content
 - Display connection status
 - Provide retry button
@@ -181,7 +174,6 @@ The service worker provides detailed console logging:
 ## Cache Management
 
 ### Cache Names
-
 - **Shell cache:** `michael-shell-v${CACHE_VERSION}`
 - **Chapters cache:** `michael-chapters-v${CACHE_VERSION}`
 
@@ -197,7 +189,6 @@ To force cache refresh (e.g., after major updates):
 
 ### Manual Cache Clearing
 Users can clear caches via browser DevTools:
-
 - Application → Cache Storage → Delete
 
 ## Security Considerations
@@ -249,7 +240,6 @@ localStorage.setItem('sw-show-update-notification', 'false');
 ### Service Worker Not Registering
 
 **Check:**
-
 1. Are you in production mode or is `params.michael.enableSW = true`?
 2. Is the browser on localhost or HTTPS?
 3. Does browser support service workers? (Check console)
@@ -257,7 +247,6 @@ localStorage.setItem('sw-show-update-notification', 'false');
 ### Offline Page Not Showing
 
 **Check:**
-
 1. Is `/offline.html` in the shell cache?
 2. Was the service worker installed successfully?
 3. Check browser DevTools → Application → Cache Storage
@@ -265,7 +254,6 @@ localStorage.setItem('sw-show-update-notification', 'false');
 ### Old Content Being Served
 
 **Solution:**
-
 1. Increment `CACHE_VERSION` in `sw.js`
 2. Reload page to install new service worker
 3. Click "Reload" on update banner
@@ -273,7 +261,6 @@ localStorage.setItem('sw-show-update-notification', 'false');
 ### Cache Too Large
 
 **Consider:**
-
 1. Reduce number of pre-cached chapters
 2. Remove unused shell assets
 3. Implement cache size limits
@@ -281,7 +268,6 @@ localStorage.setItem('sw-show-update-notification', 'false');
 ## Browser Support
 
 Service workers are supported in:
-
 - ✅ Chrome 40+
 - ✅ Firefox 44+
 - ✅ Safari 11.1+
@@ -293,19 +279,16 @@ The registration script includes feature detection, so unsupported browsers simp
 ## Performance Impact
 
 ### Initial Load
-
 - **Service worker script:** ~10KB
 - **Registration overhead:** Minimal (async)
 - **No impact on first page load**
 
 ### Subsequent Loads
-
 - **Cache-first assets:** Instant (no network request)
 - **Network-first pages:** Slightly slower (cache fallback adds overhead)
 - **Overall:** Faster experience due to caching
 
 ### Storage
-
 - **Shell cache:** ~50KB
 - **Default chapters:** ~200KB (4 chapters)
 - **Total initial:** ~250KB

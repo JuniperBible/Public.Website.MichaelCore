@@ -26,14 +26,14 @@
 
 {{ define "scripts" }}
 {{ $bibleApi := resources.Get "js/michael/bible-api.js" }}
-{{ if $bibleApi }}<script type="module" src="{{ $bibleApi.RelPermalink }}"></script>{{ end }}
+{{ if $bibleApi }}<script src="{{ $bibleApi.RelPermalink }}" defer></script>{{ end }}
 {{ $search := resources.Get "js/bible-search.js" }}
-{{ if $search }}<script type="module" src="{{ $search.RelPermalink }}"></script>{{ end }}
+{{ if $search }}<script src="{{ $search.RelPermalink }}" defer></script>{{ end }}
 {{ end }}
 
 {{ define "main" }}
 {{ $basePath := .Site.Params.michael.basePath | default "/bible" }}
-<main id="main-content" class="container pad-3-2">
+<main class="container pad-3-2">
   <div class="panel">
     <header class="page-header">
       <h1>{{ .Title }}</h1>
@@ -54,23 +54,17 @@
             class="input"
             placeholder="{{ i18n "searchPlaceholder" | default "word, \"exact phrase\", or H1234/G5678" }}"
             autocomplete="off"
-            maxlength="200"
-            aria-invalid="false"
-            required
           >
         </div>
         <div class="field">
           <label for="bible-select" class="label">
             {{ i18n "selectBible" | default "Select Bible" }}:
           </label>
-          {{ partial "michael/bible-select.html" (dict
-              "site" .Site
-              "id" "bible-select"
-              "name" "bible"
-              "class" "select"
-              "format" "abbrev-title"
-              "showPlaceholder" false
-          ) }}
+          <select id="bible-select" name="bible" class="select">
+            {{ range (partialCached "michael/bible-data.html" .Site) }}
+            <option value="{{ .id }}">{{ .abbrev }} - {{ .title }}</option>
+            {{ end }}
+          </select>
         </div>
       </div>
       <div class="row">
@@ -78,18 +72,15 @@
           {{ i18n "search" | default "Search" }}
         </button>
         <label class="chip">
-          <input type="checkbox" id="case-sensitive" name="case">
+          <input type="checkbox" id="case-sensitive">
           {{ i18n "caseSensitive" | default "Case sensitive" }}
         </label>
         <label class="chip">
-          <input type="checkbox" id="whole-word" name="word">
+          <input type="checkbox" id="whole-word">
           {{ i18n "wholeWord" | default "Whole word" }}
         </label>
       </div>
     </form>
-
-    <!-- Error announcements for screen readers -->
-    <div id="search-error-announcer" class="sr-only" role="alert" aria-live="assertive" aria-atomic="true"></div>
 
     <!-- Search Status -->
     <div id="search-status" class="notice mt-2 hidden">
@@ -97,7 +88,7 @@
     </div>
 
     <!-- Search Results with aria-live for accessibility -->
-    <div id="search-results" class="mt-3" role="region" aria-live="polite" aria-atomic="false" aria-label="{{ i18n "searchResults" | default "Search Results" }}">
+    <div id="search-results" class="mt-3" aria-live="polite" aria-atomic="false">
       <div class="center muted">
         <p>{{ i18n "searchPrompt" | default "Enter a search term to find verses across the Bible." }}</p>
         <p>{{ i18n "searchTypesHint" | default "Try: word, \"exact phrase\", or Strong's numbers (H430, G2316)" }}</p>

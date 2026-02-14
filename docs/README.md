@@ -120,7 +120,6 @@ Historical documentation from the code cleanup project (completed 2026-01-25):
 ## Contributing
 
 When adding new documentation:
-
 1. Add entry to this index (README.md)
 2. Update relevant cross-references in other docs
 3. Add entry to CHANGELOG.md under [Unreleased]
