@@ -25,6 +25,21 @@ window.Michael.BibleLoader = (function() {
   const STORE_NAME = 'bibles';
   const ARCHIVE_PATH = window.Michael?.Config?.archivePath || '/bible-archives';
 
+  // Regex pattern for valid Bible IDs (alphanumeric, hyphen, underscore only)
+  const VALID_BIBLE_ID = /^[A-Za-z0-9_-]+$/;
+
+  /**
+   * Validates a Bible ID to prevent path traversal and SSRF attacks.
+   * @param {string} bibleId - Bible translation ID to validate
+   * @returns {boolean} True if valid, false otherwise
+   */
+  function isValidBibleId(bibleId) {
+    return typeof bibleId === 'string' &&
+           bibleId.length > 0 &&
+           bibleId.length <= 50 &&
+           VALID_BIBLE_ID.test(bibleId);
+  }
+
   // In-memory cache for loaded Bibles
   const memoryCache = new Map();
 
@@ -131,6 +146,11 @@ window.Michael.BibleLoader = (function() {
    * @returns {Promise<Object>} - Bible data object
    */
   async function fetchBibleArchive(bibleId, onProgress) {
+    // Validate bibleId to prevent path traversal and SSRF
+    if (!isValidBibleId(bibleId)) {
+      throw new Error(`Invalid Bible ID: ${bibleId}`);
+    }
+
     // Try XZ first (better compression)
     try {
       if (onProgress) onProgress(0.1);

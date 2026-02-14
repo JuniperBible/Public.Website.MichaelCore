@@ -10,6 +10,23 @@
 
 'use strict';
 
+import { isValidFetchUrl, BIBLE_URL_PATTERNS } from './dom-utils.js';
+
+// Regex pattern for valid Bible IDs and book IDs (alphanumeric, hyphen, underscore only)
+const VALID_ID_PATTERN = /^[A-Za-z0-9_-]+$/;
+
+/**
+ * Validates path components to prevent path traversal attacks.
+ * @param {string} id - The ID to validate
+ * @returns {boolean} True if valid, false otherwise
+ */
+function isValidPathComponent(id) {
+  return typeof id === 'string' &&
+         id.length > 0 &&
+         id.length <= 50 &&
+         VALID_ID_PATTERN.test(id);
+}
+
 /**
  * Cache for fetched chapter data
  * Key format: "{bibleId}/{bookId}/{chapterNum}"
@@ -52,6 +69,20 @@ const activeFetches = new Map();
  * // Later: controller.abort();
  */
 export async function fetchChapter(basePath, bibleId, bookId, chapterNum, signal) {
+  // Validate path components to prevent path traversal and SSRF
+  if (!isValidPathComponent(bibleId)) {
+    console.error('Invalid bibleId rejected:', bibleId);
+    return null;
+  }
+  if (!isValidPathComponent(bookId)) {
+    console.error('Invalid bookId rejected:', bookId);
+    return null;
+  }
+  if (typeof chapterNum !== 'number' || chapterNum < 1 || chapterNum > 200) {
+    console.error('Invalid chapterNum rejected:', chapterNum);
+    return null;
+  }
+
   const cacheKey = `${bibleId}/${bookId}/${chapterNum}`;
 
   // Return cached data if available
@@ -76,6 +107,12 @@ export async function fetchChapter(basePath, bibleId, bookId, chapterNum, signal
 
   // Construct URL (bookId should be lowercase in URL)
   const url = `${basePath}/${bibleId}/${bookId.toLowerCase()}/${chapterNum}/`;
+
+  // Validate final URL before fetching
+  if (!isValidFetchUrl(url, { allowedPatterns: BIBLE_URL_PATTERNS })) {
+    console.error('Invalid URL rejected:', url);
+    return null;
+  }
 
   try {
     // Fetch chapter HTML page

@@ -1,5 +1,7 @@
 'use strict';
 
+import { isValidFetchUrl, BIBLE_URL_PATTERNS } from './dom-utils.js';
+
 /**
  * Bible Navigation Handler
  *
@@ -13,6 +15,12 @@
  * and navigate to the fallback URL.
  */
 function checkAndNavigate(url, fallbackUrl, selectEl) {
+  // Validate URL before fetching (SSRF prevention)
+  if (!isValidFetchUrl(url, { allowedPatterns: BIBLE_URL_PATTERNS })) {
+    console.error('Invalid URL rejected:', url);
+    return;
+  }
+
   // Disable selector during check
   selectEl.disabled = true;
 

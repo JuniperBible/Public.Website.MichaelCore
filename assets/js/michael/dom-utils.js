@@ -307,6 +307,102 @@ export function createLoadingIndicator(message = 'Loading...') {
 }
 
 // ============================================================================
+// URL VALIDATION
+// ============================================================================
+
+/**
+ * Validate that a URL is safe for fetch requests
+ *
+ * Ensures URLs are same-origin and follow expected path patterns.
+ * This prevents SSRF attacks by rejecting external URLs and
+ * validating that paths match allowed patterns.
+ *
+ * @param {string} url - The URL to validate
+ * @param {Object} [options] - Validation options
+ * @param {RegExp[]} [options.allowedPatterns] - Array of RegExp patterns for allowed paths
+ * @param {boolean} [options.allowRelative=true] - Whether to allow relative URLs
+ * @returns {boolean} True if URL is safe, false otherwise
+ *
+ * @example
+ * // Validate a Bible data URL
+ * const url = '/data/bibles/WEB/Matthew/1.html';
+ * if (isValidFetchUrl(url, { allowedPatterns: [/^\/data\/bibles\//] })) {
+ *   fetch(url);
+ * }
+ */
+export function isValidFetchUrl(url, options = {}) {
+  const { allowedPatterns = [], allowRelative = true } = options;
+
+  if (!url || typeof url !== 'string') {
+    return false;
+  }
+
+  // Trim and check for empty
+  const trimmedUrl = url.trim();
+  if (!trimmedUrl) {
+    return false;
+  }
+
+  // Block javascript: and data: protocols
+  const lowerUrl = trimmedUrl.toLowerCase();
+  if (lowerUrl.startsWith('javascript:') || lowerUrl.startsWith('data:')) {
+    return false;
+  }
+
+  // Check if relative URL
+  const isRelative = trimmedUrl.startsWith('/') && !trimmedUrl.startsWith('//');
+
+  if (isRelative) {
+    if (!allowRelative) {
+      return false;
+    }
+    // Validate against allowed patterns if provided
+    if (allowedPatterns.length > 0) {
+      return allowedPatterns.some(pattern => pattern.test(trimmedUrl));
+    }
+    // Relative URLs starting with / are same-origin by definition
+    return true;
+  }
+
+  // For absolute URLs, verify same-origin
+  try {
+    const parsedUrl = new URL(trimmedUrl, window.location.origin);
+
+    // Must be same origin
+    if (parsedUrl.origin !== window.location.origin) {
+      return false;
+    }
+
+    // Validate path against allowed patterns if provided
+    if (allowedPatterns.length > 0) {
+      return allowedPatterns.some(pattern => pattern.test(parsedUrl.pathname));
+    }
+
+    return true;
+  } catch {
+    // Invalid URL
+    return false;
+  }
+}
+
+/**
+ * URL patterns for Bible data paths
+ * @type {RegExp[]}
+ */
+export const BIBLE_URL_PATTERNS = [
+  /^\/data\/bibles\/[A-Za-z0-9_-]+\//,  // Bible chapter data
+  /^\/bibles\/[A-Za-z0-9_-]+\//          // Bible page URLs
+];
+
+/**
+ * URL patterns for Bible archive paths
+ * @type {RegExp[]}
+ */
+export const BIBLE_ARCHIVE_PATTERNS = [
+  /^\/data\/bibles\/[A-Za-z0-9_-]+\.(?:json|xz|gz)$/  // Bible archive files
+];
+
+// ============================================================================
 // CLEANUP
 // ============================================================================
 
@@ -337,6 +433,9 @@ window.Michael.DomUtils = {
   dismissToast,
   escapeHtml,
   createLoadingIndicator,
+  isValidFetchUrl,
+  BIBLE_URL_PATTERNS,
+  BIBLE_ARCHIVE_PATTERNS,
   cleanup
 };
 
