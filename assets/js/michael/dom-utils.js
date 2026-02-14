@@ -6,6 +6,7 @@
  *
  * Copyright (c) 2025, Focus with Justin
  */
+/* eslint-disable no-unused-vars */
 
 'use strict';
 

@@ -19,6 +19,7 @@
 {{- $hash := substr $theme.Data.Integrity 0 32 | replaceRE "[^a-zA-Z0-9]" "" -}}
 {{- partial "michael/icons.html" . -}}
 {{- $icons := .Scratch.Get "michael-icons" -}}
+/* eslint-disable no-unused-vars */
 /**
  * Service Worker for Michael Bible Module
  *

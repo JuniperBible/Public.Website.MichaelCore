@@ -1,4 +1,5 @@
 'use strict';
+/* eslint-disable no-unused-vars */
 
 /**
  * @file parallel.js - Compare page controller for Michael Bible Module

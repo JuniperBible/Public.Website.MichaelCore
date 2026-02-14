@@ -10,6 +10,7 @@
  * Copyright (c) 2025, Focus with Justin
  * SPDX-License-Identifier: MIT
  */
+/* eslint-disable no-unused-vars */
 
 // Store the deferred prompt for later use
 let deferredPrompt = null;

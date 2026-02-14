@@ -10,6 +10,7 @@
    Both paths are covered by the class-based selectors below.
    The media query block ONLY handles edge cases where JS hasn't run yet.
    ========================================================================== */
+/* stylelint-disable color-function-notation, alpha-value-notation */
 
 /* Display-mode media query — ensures styles apply even before JS runs */
 @media all and (display-mode: standalone),

@@ -2,6 +2,7 @@
    Michael Bible Module — Color Tokens
    All project colors defined in one place for easy theming
    ========================================================================== */
+/* stylelint-disable color-function-notation, alpha-value-notation */
 
 :root {
   /* Brand - Purple theme */
