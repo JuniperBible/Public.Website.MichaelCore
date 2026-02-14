@@ -168,6 +168,47 @@ class Token {
 // ==================== Tokenizer ====================
 
 /**
+ * Token pattern definitions with their associated types
+ * Ordered by priority (Strong's first, then words, punct, space)
+ */
+const TOKEN_PATTERNS = [
+  { pattern: /^[HG]\d+/i, type: TokenType.MARKUP },  // Strong's numbers (H1234, G5678)
+  { pattern: /^[\w\u0080-\uFFFF]+(?:[''][\w\u0080-\uFFFF]+)*/, type: TokenType.WORD },  // Words with contractions
+  { pattern: /^[.,;:!?'"()[\]{}\-–—…«»""'']/, type: TokenType.PUNCT },  // Punctuation
+  { pattern: /^\s+/, type: TokenType.SPACE }  // Whitespace
+];
+
+/**
+ * Try to match a token at the start of the remaining text
+ *
+ * @param {string} remaining - The remaining text to match against
+ * @returns {Object|null} Match result with {text, type} or null if no match
+ */
+function tryMatchToken(remaining) {
+  for (const { pattern, type } of TOKEN_PATTERNS) {
+    const match = remaining.match(pattern);
+    if (match) {
+      return { text: match[0], type };
+    }
+  }
+  return null;
+}
+
+/**
+ * Create and add a token to the tokens array
+ *
+ * @param {Token[]} tokens - Array to push token into
+ * @param {string} type - Token type
+ * @param {string} text - Token text
+ * @param {number} offset - Character offset in original text
+ * @returns {number} Length of token added
+ */
+function addToken(tokens, type, text, offset) {
+  tokens.push(new Token(type, text, offset));
+  return text.length;
+}
+
+/**
  * Tokenize text into words, punctuation, and whitespace tokens
  * Preserves exact character offsets for reconstruction
  *
@@ -178,50 +219,16 @@ function tokenize(text) {
   const tokens = [];
   let offset = 0;
 
-  // Regex patterns
-  const wordPattern = /^[\w\u0080-\uFFFF]+(?:[''][\w\u0080-\uFFFF]+)*/;  // Words with contractions
-  const strongsPattern = /^[HG]\d+/i;  // Strong's numbers (H1234, G5678)
-  const punctPattern = /^[.,;:!?'"()[\]{}\-–—…«»""'']/;
-  const spacePattern = /^\s+/;
-
   while (offset < text.length) {
     const remaining = text.slice(offset);
+    const matchResult = tryMatchToken(remaining);
 
-    // Try Strong's numbers first (they're atomic tokens)
-    let match = remaining.match(strongsPattern);
-    if (match) {
-      tokens.push(new Token(TokenType.MARKUP, match[0], offset));
-      offset += match[0].length;
-      continue;
+    if (matchResult) {
+      offset += addToken(tokens, matchResult.type, matchResult.text, offset);
+    } else {
+      // Unknown character - treat as punctuation
+      offset += addToken(tokens, TokenType.PUNCT, remaining[0], offset);
     }
-
-    // Try word
-    match = remaining.match(wordPattern);
-    if (match) {
-      tokens.push(new Token(TokenType.WORD, match[0], offset));
-      offset += match[0].length;
-      continue;
-    }
-
-    // Try punctuation
-    match = remaining.match(punctPattern);
-    if (match) {
-      tokens.push(new Token(TokenType.PUNCT, match[0], offset));
-      offset += match[0].length;
-      continue;
-    }
-
-    // Try whitespace
-    match = remaining.match(spacePattern);
-    if (match) {
-      tokens.push(new Token(TokenType.SPACE, match[0], offset));
-      offset += match[0].length;
-      continue;
-    }
-
-    // Unknown character - treat as punctuation
-    tokens.push(new Token(TokenType.PUNCT, remaining[0], offset));
-    offset += 1;
   }
 
   return tokens;

@@ -721,6 +721,87 @@ function handleChapterChange(e) {
 }
 
 /**
+ * Validate loadComparison prerequisites
+ * @private
+ * @returns {Object|null} Validation result with error message or null if valid
+ */
+function validateComparisonLoad() {
+  if (!currentBook || !currentChapter) {
+    return { skip: true };
+  }
+
+  if (isLoadingComparison) {
+    return { skip: true };
+  }
+
+  if (selectedTranslations.length === 0) {
+    return {
+      error: true,
+      render: () => {
+        parallelContent.textContent = '';
+        const article = document.createElement('article');
+        const p = document.createElement('p');
+        p.style.cssText = 'text-align: center; color: var(--michael-text-muted); padding: 2rem 0;';
+        p.textContent = 'Select at least one translation to view.';
+        article.appendChild(p);
+        parallelContent.appendChild(article);
+      }
+    };
+  }
+
+  if (!window.Michael?.BibleLoader?.getChapter) {
+    return {
+      error: true,
+      render: () => {
+        console.error('[Parallel] BibleLoader not loaded');
+        parallelContent.innerHTML = '<div class="center muted">Error: Bible data unavailable</div>';
+      }
+    };
+  }
+
+  return null;
+}
+
+/**
+ * Fetch chapter data for all selected translations
+ * @private
+ * @async
+ * @returns {Promise<Array>} Array of chapter data for each translation
+ */
+async function fetchComparisonData() {
+  const chapterDataPromises = selectedTranslations.map(bibleId =>
+    window.Michael.BibleLoader.getChapter(bibleId, currentBook, currentChapter)
+  );
+  return Promise.all(chapterDataPromises);
+}
+
+/**
+ * Render comparison results to the page
+ * @private
+ * @param {Array} chaptersData - Chapter data from all translations
+ */
+function renderComparisonResults(chaptersData) {
+  const html = buildComparisonHTML(chaptersData);
+  parallelContent.innerHTML = html;
+
+  if (window.Michael?.Footnotes) {
+    const notesRow = document.getElementById('vvv-notes-row');
+    const vvvFootnotesSection = document.getElementById('vvv-footnotes-section');
+    const vvvFootnotesList = document.getElementById('vvv-footnotes-list');
+    const footnoteCount = window.Michael.Footnotes.process(parallelContent, vvvFootnotesSection, vvvFootnotesList, 'vvv-');
+
+    if (notesRow) {
+      notesRow.classList.toggle('hidden', footnoteCount === 0);
+    }
+  }
+
+  const bookInfo = bibleData?.books?.find(b => b.id === currentBook);
+  const bookName = bookInfo?.name || currentBook;
+  const verseInfo = currentVerse > 0 ? ` verse ${currentVerse}` : '';
+  announce(`${bookName} chapter ${currentChapter}${verseInfo} loaded with ${selectedTranslations.length} translation${selectedTranslations.length !== 1 ? 's' : ''}.`);
+}
+
+/**
  * Load and display the parallel comparison
  * Fetches chapter data for all selected translations and renders verse-by-verse
  * @private
@@ -728,73 +809,29 @@ function handleChapterChange(e) {
  * @returns {Promise<void>}
  */
 async function loadComparison() {
-  if (!currentBook || !currentChapter) {
+  const validationResult = validateComparisonLoad();
+
+  if (validationResult?.skip) {
     return Promise.resolve();
   }
 
-  // Prevent concurrent calls
-  if (isLoadingComparison) return Promise.resolve();
+  if (validationResult?.error) {
+    validationResult.render();
+    return Promise.resolve();
+  }
+
   isLoadingComparison = true;
 
   try {
-    // Clear Strong's notes when loading new chapter
     if (window.Michael?.Strongs?.clearNotes) {
       window.Michael.Strongs.clearNotes();
     }
 
-  // Handle no translations selected
-  if (selectedTranslations.length === 0) {
-    parallelContent.textContent = '';
-    const article = document.createElement('article');
-    const p = document.createElement('p');
-    p.style.cssText = 'text-align: center; color: var(--michael-text-muted); padding: 2rem 0;';
-    p.textContent = 'Select at least one translation to view.';
-    article.appendChild(p);
-    parallelContent.appendChild(article);
-    return Promise.resolve();
-  }
+    updateURL();
+    parallelContent.innerHTML = createLoadingIndicator();
 
-  // Update URL with current state
-  updateURL();
-
-  // SECURITY: createLoadingIndicator() returns static safe HTML (no user input)
-  parallelContent.innerHTML = createLoadingIndicator();
-
-  // Fetch chapter data for all selected translations in parallel
-  // Use BibleLoader to read from compressed archives (works for all Bibles)
-  if (!window.Michael?.BibleLoader?.getChapter) {
-    console.error('[Parallel] BibleLoader not loaded');
-    parallelContent.innerHTML = '<div class="center muted">Error: Bible data unavailable</div>';
-    return;
-  }
-  const chapterDataPromises = selectedTranslations.map(bibleId =>
-    window.Michael.BibleLoader.getChapter(bibleId, currentBook, currentChapter)
-  );
-
-  const chaptersData = await Promise.all(chapterDataPromises);
-
-  // SECURITY: buildComparisonHTML uses escapeHtml on all user-controlled content
-  const html = buildComparisonHTML(chaptersData);
-  parallelContent.innerHTML = html;
-
-  // Process footnotes for VVV mode content
-  if (window.Michael?.Footnotes) {
-    const notesRow = document.getElementById('vvv-notes-row');
-    const vvvFootnotesSection = document.getElementById('vvv-footnotes-section');
-    const vvvFootnotesList = document.getElementById('vvv-footnotes-list');
-    const footnoteCount = window.Michael.Footnotes.process(parallelContent, vvvFootnotesSection, vvvFootnotesList, 'vvv-');
-
-    // Show/hide the notes row based on whether there are footnotes
-    if (notesRow) {
-      notesRow.classList.toggle('hidden', footnoteCount === 0);
-    }
-  }
-
-    // Announce completion to screen readers
-    const bookInfo = bibleData?.books?.find(b => b.id === currentBook);
-    const bookName = bookInfo?.name || currentBook;
-    const verseInfo = currentVerse > 0 ? ` verse ${currentVerse}` : '';
-    announce(`${bookName} chapter ${currentChapter}${verseInfo} loaded with ${selectedTranslations.length} translation${selectedTranslations.length !== 1 ? 's' : ''}.`);
+    const chaptersData = await fetchComparisonData();
+    renderComparisonResults(chaptersData);
   } finally {
     isLoadingComparison = false;
   }
@@ -832,25 +869,67 @@ function resetVerseGrid() {
 }
 
 /**
+ * Get valid verses from first available translation
+ * @private
+ * @async
+ * @returns {Promise<Array<Object>|null>} Array of verses or null if none found
+ */
+async function getValidVersesForGrid() {
+  if (!window.Michael?.BibleLoader?.getChapter) {
+    return null;
+  }
+
+  for (const translationId of selectedTranslations) {
+    const verses = await window.Michael.BibleLoader.getChapter(translationId, currentBook, currentChapter);
+    if (verses && verses.length > 0) {
+      return verses;
+    }
+  }
+
+  return null;
+}
+
+/**
+ * Create a verse button element
+ * @private
+ * @param {Object} verse - Verse object with number property
+ * @returns {HTMLButtonElement} Configured verse button
+ */
+function createVerseButton(verse) {
+  const btn = document.createElement('button');
+  btn.type = 'button';
+  btn.className = 'verse-btn';
+  btn.textContent = verse.number;
+  btn.dataset.verse = verse.number;
+  btn.setAttribute('aria-pressed', 'false');
+  addTapListener(btn, () => handleVerseButtonClick(verse.number));
+  return btn;
+}
+
+/**
+ * Create the "All" verses button
+ * @private
+ * @returns {HTMLButtonElement} Configured "All" button
+ */
+function createAllVersesButton() {
+  const newAllBtn = document.createElement('button');
+  newAllBtn.id = 'all-verses-btn';
+  newAllBtn.type = 'button';
+  newAllBtn.className = 'chip';
+  newAllBtn.textContent = 'All';
+  newAllBtn.addEventListener('click', handleAllVersesClick);
+  return newAllBtn;
+}
+
+
+/**
  * Populate verse grid based on loaded chapter data
  * Creates clickable buttons for each verse in the current chapter
  * @private
  * @async
  */
 async function populateVerseGrid() {
-  // Find first translation with valid data for this chapter
-  // Use BibleLoader which already has all loaded Bibles cached in memory
-  if (!window.Michael?.BibleLoader?.getChapter) {
-    resetVerseGrid();
-    return;
-  }
-  let verses = null;
-  for (const translationId of selectedTranslations) {
-    verses = await window.Michael.BibleLoader.getChapter(translationId, currentBook, currentChapter);
-    if (verses && verses.length > 0) {
-      break;
-    }
-  }
+  const verses = await getValidVersesForGrid();
 
   if (!verses || verses.length === 0) {
     resetVerseGrid();
@@ -863,23 +942,11 @@ async function populateVerseGrid() {
 
     // Add verse buttons
     verses.forEach(verse => {
-      const btn = document.createElement('button');
-      btn.type = 'button';
-      btn.className = 'verse-btn';
-      btn.textContent = verse.number;
-      btn.dataset.verse = verse.number;
-      btn.setAttribute('aria-pressed', 'false');
-      addTapListener(btn, () => handleVerseButtonClick(verse.number));
-      verseButtons.appendChild(btn);
+      verseButtons.appendChild(createVerseButton(verse));
     });
 
     // Always create a fresh All button at the end
-    const newAllBtn = document.createElement('button');
-    newAllBtn.id = 'all-verses-btn';
-    newAllBtn.type = 'button';
-    newAllBtn.className = 'chip';
-    newAllBtn.textContent = 'All';
-    newAllBtn.addEventListener('click', handleAllVersesClick);
+    const newAllBtn = createAllVersesButton();
     verseButtons.appendChild(newAllBtn);
 
     // Update global reference
@@ -1256,6 +1323,69 @@ function setDefaultState() {
 }
 
 /**
+ * Parse URL parameters and return bibles and reference
+ * @private
+ * @returns {{biblesParam: string|null, refParam: string|null}} URL parameters
+ */
+function parseURLParameters() {
+  const params = new URLSearchParams(window.location.search);
+  return {
+    biblesParam: params.get('bibles'),
+    refParam: params.get('ref')
+  };
+}
+
+/**
+ * Handle restoration from URL bibles parameter
+ * @private
+ * @param {string} biblesParam - Comma-separated Bible IDs
+ * @param {string|null} refParam - Reference parameter
+ * @returns {boolean} True if state was fully restored (SSS mode entered)
+ */
+function restoreFromBiblesParam(biblesParam, refParam) {
+  selectedTranslations = filterValidBibles(biblesParam.split(','));
+  syncTranslationCheckboxes();
+
+  // Single Bible mode: auto-select random second Bible and enter SSS mode
+  if (selectedTranslations.length === 1 && refParam) {
+    const ref = parseReference(refParam);
+    if (setupSingleBibleSSSMode(selectedTranslations[0], ref)) {
+      return true; // SSS mode entered successfully
+    }
+  }
+
+  return false;
+}
+
+/**
+ * Handle restoration of Bible translations (from URL or localStorage)
+ * @private
+ * @param {string|null} biblesParam - URL bibles parameter
+ * @param {string|null} refParam - URL reference parameter
+ * @returns {boolean} True if fully restored and should exit early
+ */
+function restoreBibleTranslations(biblesParam, refParam) {
+  if (biblesParam) {
+    return restoreFromBiblesParam(biblesParam, refParam);
+  } else {
+    restoreTranslationsFromStorage();
+    return false;
+  }
+}
+
+/**
+ * Apply default state if no URL parameters provided
+ * @private
+ * @param {string|null} biblesParam - URL bibles parameter
+ * @param {string|null} refParam - URL reference parameter
+ */
+function applyDefaultsIfNeeded(biblesParam, refParam) {
+  if (!biblesParam && !refParam) {
+    setDefaultState();
+  }
+}
+
+/**
  * Restore state from URL query parameters or localStorage
  * URL parameters take precedence over localStorage
  * Falls back to defaults if neither source has data
@@ -1267,25 +1397,12 @@ function setDefaultState() {
  * // localStorage: ["kjv", "drc"]
  */
 function restoreState() {
-  const params = new URLSearchParams(window.location.search);
-  const biblesParam = params.get('bibles');
-  const refParam = params.get('ref');
+  const { biblesParam, refParam } = parseURLParameters();
 
-  // Handle URL with bibles parameter
-  if (biblesParam) {
-    selectedTranslations = filterValidBibles(biblesParam.split(','));
-    syncTranslationCheckboxes();
-
-    // Single Bible mode: auto-select random second Bible and enter SSS mode
-    if (selectedTranslations.length === 1 && refParam) {
-      const ref = parseReference(refParam);
-      if (setupSingleBibleSSSMode(selectedTranslations[0], ref)) {
-        return; // SSS mode entered successfully
-      }
-    }
-  } else {
-    // Try localStorage
-    restoreTranslationsFromStorage();
+  // Handle Bible translations restoration
+  const shouldExitEarly = restoreBibleTranslations(biblesParam, refParam);
+  if (shouldExitEarly) {
+    return;
   }
 
   // Handle reference parameter
@@ -1294,9 +1411,7 @@ function restoreState() {
   }
 
   // Set defaults if no URL params
-  if (!biblesParam && !refParam) {
-    setDefaultState();
-  }
+  applyDefaultsIfNeeded(biblesParam, refParam);
 }
 
 /* ========================================================================
@@ -1669,6 +1784,77 @@ function renderSSSPanes(leftVerses, rightVerses) {
 }
 
 /**
+ * Clear Strong's notes when loading new chapter
+ * @private
+ */
+function clearStrongsNotes() {
+  if (window.Michael?.Strongs?.clearNotes) {
+    window.Michael.Strongs.clearNotes();
+  }
+}
+
+/**
+ * Validate BibleLoader availability
+ * @private
+ * @returns {boolean} True if BibleLoader is available
+ */
+function validateBibleLoader() {
+  return !!(window.Michael?.BibleLoader?.getChapter);
+}
+
+/**
+ * Fetch chapter data for both SSS panes in parallel
+ * @private
+ * @async
+ * @returns {Promise<{leftVerses: Array, rightVerses: Array}>}
+ */
+async function fetchSSSChapterData() {
+  const [leftVerses, rightVerses] = await Promise.all([
+    window.Michael.BibleLoader.getChapter(sssLeftBible, sssBook, sssChapter),
+    window.Michael.BibleLoader.getChapter(sssRightBible, sssBook, sssChapter)
+  ]);
+  return { leftVerses, rightVerses };
+}
+
+/**
+ * Check if fallback is needed for missing right Bible verses
+ * @private
+ * @param {Array} rightVerses - Right pane verses
+ * @param {Array} leftVerses - Left pane verses
+ * @returns {boolean} True if fallback is needed
+ */
+function shouldTryFallback(rightVerses, leftVerses) {
+  const rightMissing = !rightVerses || rightVerses.length === 0;
+  const leftPresent = leftVerses && leftVerses.length > 0;
+  return rightMissing && leftPresent;
+}
+
+/**
+ * Reset tried Bibles tracker on successful verse fetch
+ * @private
+ * @param {Array} rightVerses - Right pane verses
+ */
+function resetTriedBiblesIfSuccess(rightVerses) {
+  const rightMissing = !rightVerses || rightVerses.length === 0;
+  if (!rightMissing) {
+    triedBiblesWithNoVerses.clear();
+  }
+}
+
+/**
+ * Render the complete SSS comparison view
+ * @private
+ * @param {Array} leftVerses - Left pane verses
+ * @param {Array} rightVerses - Right pane verses
+ */
+function renderSSSComparison(leftVerses, rightVerses) {
+  populateSSSVerseGrid(leftVerses || rightVerses);
+  renderSSSPanes(leftVerses, rightVerses);
+  processSSSFootnotes();
+  syncSSSVerseHeights();
+}
+
+/**
  * Load and display SSS comparison
  * Fetches both translations in parallel and renders side-by-side
  * If the right Bible has no verses, automatically tries another Bible
@@ -1680,43 +1866,22 @@ function renderSSSPanes(leftVerses, rightVerses) {
 async function loadSSSComparison(depth = 0) {
   if (!canLoadSSSComparison()) return;
 
-  // Clear Strong's notes when loading new chapter
-  if (window.Michael?.Strongs?.clearNotes) {
-    window.Michael.Strongs.clearNotes();
-  }
-
+  clearStrongsNotes();
   showSSSLoading();
 
-  // Check BibleLoader availability
-  if (!window.Michael?.BibleLoader?.getChapter) {
+  if (!validateBibleLoader()) {
     showSSSError('Error: Bible data unavailable');
     return;
   }
 
-  // Fetch both chapters in parallel
-  const [leftVerses, rightVerses] = await Promise.all([
-    window.Michael.BibleLoader.getChapter(sssLeftBible, sssBook, sssChapter),
-    window.Michael.BibleLoader.getChapter(sssRightBible, sssBook, sssChapter)
-  ]);
+  const { leftVerses, rightVerses } = await fetchSSSChapterData();
 
-  // Handle fallback for missing right Bible verses
-  const rightMissing = !rightVerses || rightVerses.length === 0;
-  const leftPresent = leftVerses && leftVerses.length > 0;
-
-  if (rightMissing && leftPresent && tryFallbackBible(depth)) {
+  if (shouldTryFallback(rightVerses, leftVerses) && tryFallbackBible(depth)) {
     return loadSSSComparison(depth + 1);
   }
 
-  // Reset tried Bibles on success
-  if (!rightMissing) {
-    triedBiblesWithNoVerses.clear();
-  }
-
-  // Populate verse grid and render panes
-  populateSSSVerseGrid(leftVerses || rightVerses);
-  renderSSSPanes(leftVerses, rightVerses);
-  processSSSFootnotes();
-  syncSSSVerseHeights();
+  resetTriedBiblesIfSuccess(rightVerses);
+  renderSSSComparison(leftVerses, rightVerses);
 }
 
 /**

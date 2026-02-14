@@ -95,6 +95,21 @@ function buildBibleUrl(basePath, bibleId, book, chapter) {
 }
 
 /**
+ * Navigate to Bible URL with optional book context validation
+ * @param {string} url - Target URL
+ * @param {string} fallbackUrl - Fallback URL if target doesn't exist
+ * @param {HTMLSelectElement} selectEl - The select element
+ * @param {string} book - Book ID (empty if none)
+ */
+function navigateToBible(url, fallbackUrl, selectEl, book) {
+  if (book) {
+    checkAndNavigate(url, fallbackUrl, selectEl);
+  } else {
+    window.location.href = url;
+  }
+}
+
+/**
  * Handle Bible selector change event
  * @param {HTMLSelectElement} selectEl - The select element
  */
@@ -109,12 +124,7 @@ function handleBibleChange(selectEl) {
   var url = buildBibleUrl(basePath, bibleId, book, chapter);
   var fallbackUrl = basePath + '/' + bibleId + '/';
 
-  // If we have book context, check if the page exists
-  if (book) {
-    checkAndNavigate(url, fallbackUrl, selectEl);
-  } else {
-    window.location.href = url;
-  }
+  navigateToBible(url, fallbackUrl, selectEl, book);
 }
 
 /**
