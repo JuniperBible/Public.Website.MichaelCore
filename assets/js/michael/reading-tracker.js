@@ -182,6 +182,47 @@ async function saveCurrentProgress() {
   }
 
 /**
+ * Checks if progress matches the current chapter.
+ *
+ * @private
+ * @param {Object} progress - Progress data
+ * @returns {boolean} True if progress matches current chapter
+ */
+function isProgressMatchingCurrentChapter(progress) {
+  return progress &&
+         progress.bookId === currentPage.bookId &&
+         progress.chapter === currentPage.chapter &&
+         progress.scrollPos > 0;
+}
+
+/**
+ * Checks if the last read time is within the restore window.
+ *
+ * @private
+ * @param {number} lastRead - Timestamp of last read
+ * @returns {boolean} True if within restore window
+ */
+function isWithinRestoreWindow(lastRead) {
+  const hoursSinceLastRead = (Date.now() - lastRead) / (1000 * 60 * 60);
+  return hoursSinceLastRead < TIMING.SCROLL_RESTORE_WINDOW;
+}
+
+/**
+ * Performs the scroll restoration to the saved position.
+ *
+ * @private
+ * @param {number} scrollPos - Scroll position to restore
+ */
+function performScrollRestore(scrollPos) {
+  requestAnimationFrame(() => {
+    window.scrollTo({
+      top: scrollPos,
+      behavior: 'instant'
+    });
+  });
+}
+
+/**
  * Restores scroll position when returning to a chapter.
  *
  * @private
@@ -195,23 +236,8 @@ async function restoreScrollPosition() {
     try {
       const progress = await window.Michael.UserStorage.getProgress(currentPage.bibleId);
 
-      if (progress &&
-          progress.bookId === currentPage.bookId &&
-          progress.chapter === currentPage.chapter &&
-          progress.scrollPos > 0) {
-        // Only restore if we're returning to the same chapter
-        // and within a reasonable time window
-        const hoursSinceLastRead = (Date.now() - progress.lastRead) / (1000 * 60 * 60);
-
-        if (hoursSinceLastRead < TIMING.SCROLL_RESTORE_WINDOW) {
-          // Delay scroll restoration to ensure page is fully rendered
-          requestAnimationFrame(() => {
-            window.scrollTo({
-              top: progress.scrollPos,
-              behavior: 'instant'
-            });
-          });
-        }
+      if (isProgressMatchingCurrentChapter(progress) && isWithinRestoreWindow(progress.lastRead)) {
+        performScrollRestore(progress.scrollPos);
       }
     } catch (error) {
       console.warn('[ReadingTracker] Failed to restore scroll position:', error);

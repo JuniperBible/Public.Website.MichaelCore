@@ -303,6 +303,9 @@ export function escapeHtml(text) {
  * element.innerHTML = createLoadingIndicator('Fetching chapter data...');
  */
 export function createLoadingIndicator(message = 'Loading...') {
+  // SECURITY: The message parameter is sanitized using escapeHtml() to prevent XSS attacks.
+  // This ensures any HTML special characters (<, >, &, ", ') in the message are escaped
+  // before being inserted into the template literal, making it safe to use with innerHTML.
   return `<article aria-busy="true" style="text-align: center; padding: 2rem 0;">${escapeHtml(message)}</article>`;
 }
 
@@ -330,6 +333,42 @@ function matchesAllowedPatterns(path, patterns) {
 }
 
 /**
+ * Check if URL string is valid (not empty, is a string, not just whitespace)
+ * @param {*} url - URL to validate
+ * @returns {boolean} True if valid string
+ */
+function isValidUrlString(url) {
+  return url && typeof url === 'string' && url.trim();
+}
+
+/**
+ * Validate a relative URL
+ * @param {string} url - URL to check
+ * @param {boolean} allowRelative - Whether relative URLs are allowed
+ * @param {RegExp[]} patterns - Allowed patterns
+ * @returns {boolean} True if valid
+ */
+function validateRelativeUrl(url, allowRelative, patterns) {
+  return allowRelative && matchesAllowedPatterns(url, patterns);
+}
+
+/**
+ * Validate an absolute URL for same-origin
+ * @param {string} url - URL to validate
+ * @param {RegExp[]} patterns - Allowed patterns
+ * @returns {boolean} True if valid same-origin URL
+ */
+function validateAbsoluteUrl(url, patterns) {
+  try {
+    const parsedUrl = new URL(url, window.location.origin);
+    const isSameOrigin = parsedUrl.origin === window.location.origin;
+    return isSameOrigin && matchesAllowedPatterns(parsedUrl.pathname, patterns);
+  } catch {
+    return false;
+  }
+}
+
+/**
  * Validate that a URL is safe for fetch requests
  *
  * Ensures URLs are same-origin and follow expected path patterns.
@@ -353,7 +392,7 @@ export function isValidFetchUrl(url, options = {}) {
   const { allowedPatterns = [], allowRelative = true } = options;
 
   // Validate input
-  if (!url || typeof url !== 'string' || !url.trim()) {
+  if (!isValidUrlString(url)) {
     return false;
   }
 
@@ -367,18 +406,10 @@ export function isValidFetchUrl(url, options = {}) {
   // Check if relative URL (starts with / but not //)
   const isRelative = trimmedUrl.startsWith('/') && !trimmedUrl.startsWith('//');
 
-  if (isRelative) {
-    return allowRelative && matchesAllowedPatterns(trimmedUrl, allowedPatterns);
-  }
-
-  // For absolute URLs, verify same-origin
-  try {
-    const parsedUrl = new URL(trimmedUrl, window.location.origin);
-    const isSameOrigin = parsedUrl.origin === window.location.origin;
-    return isSameOrigin && matchesAllowedPatterns(parsedUrl.pathname, allowedPatterns);
-  } catch {
-    return false;
-  }
+  // Validate relative or absolute URL
+  return isRelative
+    ? validateRelativeUrl(trimmedUrl, allowRelative, allowedPatterns)
+    : validateAbsoluteUrl(trimmedUrl, allowedPatterns);
 }
 
 /**

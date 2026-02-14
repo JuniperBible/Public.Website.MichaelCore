@@ -41,6 +41,78 @@ let sssVerseGrid, sssVerseButtons, sssAllVersesBtn;
 let bibleData, basePath, highlightDiffsFn;
 
 /**
+ * Cache DOM elements for SSS mode
+ * @private
+ */
+function cacheDOMElements() {
+  normalModeEl = document.getElementById('normal-mode');
+  sssModeEl = document.getElementById('sss-mode');
+  sssBibleLeft = document.getElementById('sss-bible-left');
+  sssBibleRight = document.getElementById('sss-bible-right');
+  sssBookSelect = document.getElementById('sss-book-select');
+  sssChapterSelect = document.getElementById('sss-chapter-select');
+  sssLeftPane = document.getElementById('sss-left-pane');
+  sssRightPane = document.getElementById('sss-right-pane');
+  sssVerseGrid = document.getElementById('sss-verse-grid');
+  sssVerseButtons = document.getElementById('sss-verse-buttons');
+  sssAllVersesBtn = document.getElementById('sss-all-verses-btn');
+}
+
+/**
+ * Set up navigation event listeners
+ * @param {Function} addTapListener - Tap listener utility
+ * @private
+ */
+function setupNavigationListeners(addTapListener) {
+  const sssBackBtn = document.getElementById('sss-back-btn');
+  const sssToggleBtn = document.getElementById('sss-toggle-btn');
+
+  if (sssBackBtn) addTapListener(sssBackBtn, exitSSSMode);
+  if (sssToggleBtn) addTapListener(sssToggleBtn, exitSSSMode);
+}
+
+/**
+ * Set up highlight toggle listener
+ * @private
+ */
+function setupHighlightToggle() {
+  const sssHighlightToggle = document.getElementById('sss-highlight-toggle');
+
+  if (sssHighlightToggle) {
+    sssHighlightToggle.addEventListener('change', (e) => {
+      sssHighlightEnabled = e.target.checked;
+      if (canLoadSSSComparison()) loadSSSComparison();
+    });
+  }
+}
+
+/**
+ * Set up selection change listeners
+ * @private
+ */
+function setupSelectionListeners() {
+  if (sssBibleLeft) sssBibleLeft.addEventListener('change', handleSSSBibleChange);
+  if (sssBibleRight) sssBibleRight.addEventListener('change', handleSSSBibleChange);
+  if (sssBookSelect) sssBookSelect.addEventListener('change', handleSSSBookChange);
+  if (sssChapterSelect) sssChapterSelect.addEventListener('change', handleSSSChapterChange);
+}
+
+/**
+ * Set up all verses button listener
+ * @param {Function} addTapListener - Tap listener utility
+ * @private
+ */
+function setupAllVersesButton(addTapListener) {
+  if (sssAllVersesBtn) {
+    addTapListener(sssAllVersesBtn, () => {
+      sssVerse = 0;
+      updateSSSVerseGridSelection();
+      if (canLoadSSSComparison()) loadSSSComparison();
+    });
+  }
+}
+
+/**
  * Initialize SSS mode module
  * @param {Object} config - Configuration object
  * @param {Object} config.bibleData - Bible metadata
@@ -53,47 +125,14 @@ function init(config) {
   basePath = config.basePath;
   highlightDiffsFn = config.highlightDiffsFn;
 
-  // Get DOM elements
-  normalModeEl = document.getElementById('normal-mode');
-  sssModeEl = document.getElementById('sss-mode');
-  sssBibleLeft = document.getElementById('sss-bible-left');
-  sssBibleRight = document.getElementById('sss-bible-right');
-  sssBookSelect = document.getElementById('sss-book-select');
-  sssChapterSelect = document.getElementById('sss-chapter-select');
-  sssLeftPane = document.getElementById('sss-left-pane');
-  sssRightPane = document.getElementById('sss-right-pane');
-  sssVerseGrid = document.getElementById('sss-verse-grid');
-  sssVerseButtons = document.getElementById('sss-verse-buttons');
-  sssAllVersesBtn = document.getElementById('sss-all-verses-btn');
+  cacheDOMElements();
 
   if (!normalModeEl || !sssModeEl) return;
 
-  // Set up SSS-specific event listeners
-  const sssBackBtn = document.getElementById('sss-back-btn');
-  const sssToggleBtn = document.getElementById('sss-toggle-btn');
-  const sssHighlightToggle = document.getElementById('sss-highlight-toggle');
-
-  if (sssBackBtn) config.addTapListener(sssBackBtn, exitSSSMode);
-  if (sssToggleBtn) config.addTapListener(sssToggleBtn, exitSSSMode);
-
-  if (sssHighlightToggle) {
-    sssHighlightToggle.addEventListener('change', (e) => {
-      sssHighlightEnabled = e.target.checked;
-      if (canLoadSSSComparison()) loadSSSComparison();
-    });
-  }
-
-  if (sssBibleLeft) sssBibleLeft.addEventListener('change', handleSSSBibleChange);
-  if (sssBibleRight) sssBibleRight.addEventListener('change', handleSSSBibleChange);
-  if (sssBookSelect) sssBookSelect.addEventListener('change', handleSSSBookChange);
-  if (sssChapterSelect) sssChapterSelect.addEventListener('change', handleSSSChapterChange);
-  if (sssAllVersesBtn) {
-    config.addTapListener(sssAllVersesBtn, () => {
-      sssVerse = 0;
-      updateSSSVerseGridSelection();
-      if (canLoadSSSComparison()) loadSSSComparison();
-    });
-  }
+  setupNavigationListeners(config.addTapListener);
+  setupHighlightToggle();
+  setupSelectionListeners();
+  setupAllVersesButton(config.addTapListener);
 }
 
 /** Check if SSS comparison can be loaded */
@@ -101,44 +140,108 @@ function canLoadSSSComparison() {
   return sssLeftBible !== '' && sssRightBible !== '' && sssBook !== '' && Number.isInteger(sssChapter) && sssChapter > 0;
 }
 
-/** Enter SSS mode with defaults */
-function enterSSSMode() {
-  sssMode = true;
-  updateSSSModeStatus();
+/**
+ * Toggle visibility of mode elements
+ * @private
+ */
+function toggleModeVisibility() {
   if (normalModeEl) normalModeEl.classList.add('hidden');
   if (sssModeEl) sssModeEl.classList.remove('hidden');
   document.getElementById('parallel-content')?.classList.add('hidden');
+}
 
-  // Check if we should reset to defaults (once per day)
+/**
+ * Check if SSS state should reset (once per day)
+ * @returns {boolean} True if reset is needed
+ * @private
+ */
+function shouldResetSSSState() {
   const today = new Date().toDateString();
   let lastSSSDate = null;
   try { lastSSSDate = localStorage.getItem('sss-last-date'); } catch (e) {}
-  if (lastSSSDate !== today) {
-    try { localStorage.setItem('sss-last-date', today); } catch (e) {}
-    sssLeftBible = '';
-    sssRightBible = '';
-    sssBook = '';
-    sssChapter = 0;
-  }
+  return lastSSSDate !== today;
+}
 
-  // Set defaults if not already set
+/**
+ * Reset SSS state to empty and save date
+ * @private
+ */
+function resetSSSState() {
+  const today = new Date().toDateString();
+  try { localStorage.setItem('sss-last-date', today); } catch (e) {}
+  sssLeftBible = '';
+  sssRightBible = '';
+  sssBook = '';
+  sssChapter = 0;
+}
+
+/**
+ * Apply default left Bible selection
+ * @private
+ */
+function applyDefaultLeftBible() {
   if (!sssLeftBible && sssBibleLeft) {
     sssLeftBible = 'drc';
     sssBibleLeft.value = 'drc';
   }
+}
+
+/**
+ * Apply default right Bible selection
+ * @private
+ */
+function applyDefaultRightBible() {
   if (!sssRightBible && sssBibleRight) {
     sssRightBible = 'kjv';
     sssBibleRight.value = 'kjv';
   }
+}
+
+/**
+ * Apply default book selection
+ * @private
+ */
+function applyDefaultBook() {
   if (!sssBook && sssBookSelect) {
     sssBook = 'Isa';
     sssBookSelect.value = 'Isa';
     populateSSSChapterDropdown();
   }
+}
+
+/**
+ * Apply default chapter selection
+ * @private
+ */
+function applyDefaultChapter() {
   if (!sssChapter && sssChapterSelect) {
     sssChapter = 42;
     sssChapterSelect.value = '42';
   }
+}
+
+/**
+ * Apply default selections for all SSS controls
+ * @private
+ */
+function applyDefaultSelections() {
+  applyDefaultLeftBible();
+  applyDefaultRightBible();
+  applyDefaultBook();
+  applyDefaultChapter();
+}
+
+/** Enter SSS mode with defaults */
+function enterSSSMode() {
+  sssMode = true;
+  updateSSSModeStatus();
+  toggleModeVisibility();
+
+  if (shouldResetSSSState()) {
+    resetSSSState();
+  }
+
+  applyDefaultSelections();
 
   if (canLoadSSSComparison()) loadSSSComparison();
 }

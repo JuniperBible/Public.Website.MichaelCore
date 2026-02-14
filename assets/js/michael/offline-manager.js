@@ -147,6 +147,70 @@ function handleServiceWorkerMessage(event) {
 }
 
 /**
+ * Updates the download state for a specific Bible.
+ *
+ * @private
+ * @param {string|null} bibleId - Bible ID to update
+ * @param {number} completed - Number of completed items
+ * @param {number} total - Total number of items
+ */
+function updateBibleDownloadState(bibleId, completed, total) {
+  if (bibleId && downloadStates.has(bibleId)) {
+    const state = downloadStates.get(bibleId);
+    state.completedItems = completed;
+    state.totalItems = total;
+  }
+}
+
+/**
+ * Updates the legacy download state for backwards compatibility.
+ *
+ * @private
+ * @param {number} completed - Number of completed items
+ * @param {number} total - Total number of items
+ */
+function updateLegacyDownloadState(completed, total) {
+  downloadState.completedItems = completed;
+  downloadState.totalItems = total;
+}
+
+/**
+ * Calculates progress percentage from completed and total counts.
+ *
+ * @private
+ * @param {number} completed - Number of completed items
+ * @param {number} total - Total number of items
+ * @returns {number} Progress percentage (0-100)
+ */
+function calculateProgress(completed, total) {
+  return total > 0 ? Math.round((completed / total) * 100) : 0;
+}
+
+/**
+ * Creates and dispatches a download progress event.
+ *
+ * @private
+ * @param {number} progress - Progress percentage
+ * @param {number} completed - Number of completed items
+ * @param {number} total - Total number of items
+ * @param {string} currentItem - Currently processing item
+ * @param {string|null} bibleId - Bible ID being downloaded
+ */
+function dispatchProgressEvent(progress, completed, total, currentItem, bibleId) {
+  const progressEvent = new CustomEvent('download-progress', {
+    detail: {
+      progress,
+      completed,
+      total,
+      currentItem,
+      bible: bibleId
+    }
+  });
+
+  eventTarget.dispatchEvent(progressEvent);
+}
+
+/**
  * Handles cache progress updates from service worker.
  *
  * @private
@@ -157,33 +221,20 @@ function handleServiceWorkerMessage(event) {
  */
 function handleCacheProgress(data) {
   const bibleId = data.bible || downloadState.currentBible;
+  const completed = data.completed || 0;
+  const total = data.total || 0;
 
   // Update per-Bible state if tracking this Bible
-  if (bibleId && downloadStates.has(bibleId)) {
-    const state = downloadStates.get(bibleId);
-    state.completedItems = data.completed || 0;
-    state.totalItems = data.total || 0;
-  }
+  updateBibleDownloadState(bibleId, completed, total);
 
   // Update legacy state for backwards compatibility
-  downloadState.completedItems = data.completed || 0;
-  downloadState.totalItems = data.total || 0;
+  updateLegacyDownloadState(completed, total);
 
-  const progress = (data.total || 0) > 0
-    ? Math.round(((data.completed || 0) / (data.total || 1)) * 100)
-    : 0;
+  // Calculate progress percentage
+  const progress = calculateProgress(completed, total);
 
-  const progressEvent = new CustomEvent('download-progress', {
-    detail: {
-      progress,
-      completed: data.completed || 0,
-      total: data.total || 0,
-      currentItem: data.currentItem,
-      bible: bibleId
-    }
-  });
-
-  eventTarget.dispatchEvent(progressEvent);
+  // Dispatch progress event
+  dispatchProgressEvent(progress, completed, total, data.currentItem, bibleId);
 }
 
 /**
@@ -565,6 +616,60 @@ function formatBytes(bytes, decimals = 2) {
 }
 
 /**
+ * Checks if any downloads are currently in progress.
+ *
+ * @private
+ * @returns {boolean} True if downloads are active
+ */
+function hasActiveDownloads() {
+  return downloadStates.size > 0;
+}
+
+/**
+ * Checks if the user is actively typing in a form field.
+ *
+ * @private
+ * @returns {boolean} True if user is typing in an input field
+ */
+function isUserTyping() {
+  const activeElement = document.activeElement;
+  if (!activeElement) {
+    return false;
+  }
+
+  return activeElement.tagName === 'INPUT' ||
+         activeElement.tagName === 'TEXTAREA' ||
+         activeElement.isContentEditable;
+}
+
+/**
+ * Checks if the user has selected any text.
+ *
+ * @private
+ * @returns {boolean} True if text is selected
+ */
+function hasTextSelection() {
+  const selection = window.getSelection();
+  return selection && selection.toString().length > 0;
+}
+
+/**
+ * Checks if any media elements are currently playing.
+ *
+ * @private
+ * @returns {boolean} True if media is playing
+ */
+function isMediaPlaying() {
+  const mediaElements = document.querySelectorAll('audio, video');
+  for (const media of mediaElements) {
+    if (!media.paused && !media.ended) {
+      return true;
+    }
+  }
+  return false;
+}
+
+/**
  * Checks if the user is currently busy with an operation that shouldn't be interrupted.
  * This includes:
  * - Active downloads in progress
@@ -576,36 +681,10 @@ function formatBytes(bytes, decimals = 2) {
  * @returns {boolean} True if user appears to be busy
  */
 function isUserBusy() {
-  // Check if downloads are in progress
-  if (downloadStates.size > 0) {
-    return true;
-  }
-
-  // Check if user is typing in a form field
-  const activeElement = document.activeElement;
-  if (activeElement && (
-    activeElement.tagName === 'INPUT' ||
-    activeElement.tagName === 'TEXTAREA' ||
-    activeElement.isContentEditable
-  )) {
-    return true;
-  }
-
-  // Check if user has selected text (they might be copying)
-  const selection = window.getSelection();
-  if (selection && selection.toString().length > 0) {
-    return true;
-  }
-
-  // Check if media is playing
-  const mediaElements = document.querySelectorAll('audio, video');
-  for (const media of mediaElements) {
-    if (!media.paused && !media.ended) {
-      return true;
-    }
-  }
-
-  return false;
+  return hasActiveDownloads() ||
+         isUserTyping() ||
+         hasTextSelection() ||
+         isMediaPlaying();
 }
 
 /**

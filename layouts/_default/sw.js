@@ -548,70 +548,126 @@ self.addEventListener('message', async (event) => {
   // Wait for metadata to be loaded before processing messages that access it
   if (metadataReady) await metadataReady;
 
+  // Dispatch to appropriate handler based on message type
   switch (type) {
     case 'SKIP_WAITING':
-      console.log('[Service Worker] Received SKIP_WAITING message');
-      self.skipWaiting();
+      handleSkipWaiting();
       break;
 
     case 'CACHE_URLS':
-      console.log('[Service Worker] Received CACHE_URLS message');
-      handleCacheUrls(data, event.data);
+      handleCacheUrlsMessage(data, event.data);
       break;
 
     case 'GET_CACHE_STATUS':
-      console.log('[Service Worker] Received GET_CACHE_STATUS message');
-      getCacheStatus()
-        .then(sendResponse)
-        .catch(error => sendResponse({ error: error.message }));
+      handleGetCacheStatus(sendResponse);
       break;
 
     case 'CACHE_BIBLE':
-      console.log('[Service Worker] Received CACHE_BIBLE message', data);
-      if (!data?.bibleId || !data?.basePath) {
-        sendResponse({ error: 'Missing bibleId or basePath' });
-        break;
-      }
-      // Acknowledge immediately so the MessageChannel doesn't timeout.
-      // Progress and completion are reported via notifyClients().
-      sendResponse({ success: true, acknowledged: true });
-      cacheBible(data.bibleId, data.basePath)
-        .catch(error => {
-          console.error(`[Service Worker] cacheBible failed for ${data.bibleId}:`, error);
-          notifyClients('CACHE_ERROR', { bible: data.bibleId, error: error.message });
-        });
+      handleCacheBible(data, sendResponse);
       break;
 
     case 'CLEAR_CACHE':
-      console.log('[Service Worker] Received CLEAR_CACHE message');
-      clearBibleCache()
-        .then(itemsCleared => {
-          sendResponse({ success: true, itemsCleared });
-          notifyClients('CACHE_CLEARED', { itemsCleared });
-        })
-        .catch(error => sendResponse({ error: error.message }));
+      handleClearCache(sendResponse);
       break;
 
     case 'GET_BIBLE_CACHE_STATUS':
-      console.log('[Service Worker] Received GET_BIBLE_CACHE_STATUS message', data);
-      if (!data?.bibleId || !data?.basePath) {
-        sendResponse({ error: 'Missing bibleId or basePath' });
-        break;
-      }
-      getBibleCacheStatus(data.bibleId, data.basePath)
-        .then(sendResponse)
-        .catch(error => sendResponse({ error: error.message }));
+      handleGetBibleCacheStatus(data, sendResponse);
       break;
 
     case 'CANCEL_DOWNLOAD':
-      console.log('[Service Worker] Received CANCEL_DOWNLOAD message', data);
-      handleCancelDownload(data, sendResponse);
+      handleCancelDownloadMessage(data, sendResponse);
       break;
 
     default:
       console.warn('[Service Worker] Unknown message type:', type);
   }
 });
+
+/**
+ * Handle SKIP_WAITING message
+ */
+function handleSkipWaiting() {
+  console.log('[Service Worker] Received SKIP_WAITING message');
+  self.skipWaiting();
+}
+
+/**
+ * Handle CACHE_URLS message
+ */
+function handleCacheUrlsMessage(data, fallbackData) {
+  console.log('[Service Worker] Received CACHE_URLS message');
+  handleCacheUrls(data, fallbackData);
+}
+
+/**
+ * Handle GET_CACHE_STATUS message
+ */
+function handleGetCacheStatus(sendResponse) {
+  console.log('[Service Worker] Received GET_CACHE_STATUS message');
+  getCacheStatus()
+    .then(sendResponse)
+    .catch(error => sendResponse({ error: error.message }));
+}
+
+/**
+ * Handle CACHE_BIBLE message
+ */
+function handleCacheBible(data, sendResponse) {
+  console.log('[Service Worker] Received CACHE_BIBLE message', data);
+
+  if (!data?.bibleId || !data?.basePath) {
+    sendResponse({ error: 'Missing bibleId or basePath' });
+    return;
+  }
+
+  // Acknowledge immediately so the MessageChannel doesn't timeout.
+  // Progress and completion are reported via notifyClients().
+  sendResponse({ success: true, acknowledged: true });
+
+  cacheBible(data.bibleId, data.basePath)
+    .catch(error => {
+      console.error(`[Service Worker] cacheBible failed for ${data.bibleId}:`, error);
+      notifyClients('CACHE_ERROR', { bible: data.bibleId, error: error.message });
+    });
+}
+
+/**
+ * Handle CLEAR_CACHE message
+ */
+function handleClearCache(sendResponse) {
+  console.log('[Service Worker] Received CLEAR_CACHE message');
+
+  clearBibleCache()
+    .then(itemsCleared => {
+      sendResponse({ success: true, itemsCleared });
+      notifyClients('CACHE_CLEARED', { itemsCleared });
+    })
+    .catch(error => sendResponse({ error: error.message }));
+}
+
+/**
+ * Handle GET_BIBLE_CACHE_STATUS message
+ */
+function handleGetBibleCacheStatus(data, sendResponse) {
+  console.log('[Service Worker] Received GET_BIBLE_CACHE_STATUS message', data);
+
+  if (!data?.bibleId || !data?.basePath) {
+    sendResponse({ error: 'Missing bibleId or basePath' });
+    return;
+  }
+
+  getBibleCacheStatus(data.bibleId, data.basePath)
+    .then(sendResponse)
+    .catch(error => sendResponse({ error: error.message }));
+}
+
+/**
+ * Handle CANCEL_DOWNLOAD message
+ */
+function handleCancelDownloadMessage(data, sendResponse) {
+  console.log('[Service Worker] Received CANCEL_DOWNLOAD message', data);
+  handleCancelDownload(data, sendResponse);
+}
 
 /**
  * Handle CACHE_URLS message

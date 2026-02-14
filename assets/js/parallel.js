@@ -757,7 +757,7 @@ async function loadComparison() {
   // Update URL with current state
   updateURL();
 
-  // Show loading state - DomUtils.createLoadingIndicator() returns safe HTML
+  // SECURITY: createLoadingIndicator() returns static safe HTML (no user input)
   parallelContent.innerHTML = createLoadingIndicator();
 
   // Fetch chapter data for all selected translations in parallel
@@ -773,7 +773,7 @@ async function loadComparison() {
 
   const chaptersData = await Promise.all(chapterDataPromises);
 
-  // Build comparison HTML
+  // SECURITY: buildComparisonHTML uses escapeHtml on all user-controlled content
   const html = buildComparisonHTML(chaptersData);
   parallelContent.innerHTML = html;
 
@@ -1117,32 +1117,22 @@ function findSelectOption(selectEl, value) {
 }
 
 /**
- * Set up SSS mode with single Bible and random second Bible
+ * Pick a random Bible from available options (not cryptographic, just UI variety)
  * @private
- * @param {string} singleBible - The single selected Bible ID
- * @param {Object} ref - Parsed reference {book, chapter, verse}
- * @returns {boolean} True if SSS mode was entered successfully
+ * @param {Array} bibles - Array of Bible objects
+ * @returns {string} Random Bible ID
  */
-function setupSingleBibleSSSMode(singleBible, ref) {
-  // Get all available Bibles except the selected one
-  const otherBibles = bibleData?.bibles?.filter(b => b.id !== singleBible) || [];
+function pickRandomBible(bibles) {
+  // NOTE: Math.random() is fine for UI randomization - not used for security
+  const randomIndex = Math.floor(Math.random() * bibles.length);
+  return bibles[randomIndex].id;
+}
 
-  if (otherBibles.length === 0 || !ref.book || ref.chapter <= 0) {
-    return false;
-  }
-
-  // Randomly select another Bible
-  const randomIndex = Math.floor(Math.random() * otherBibles.length);
-  const randomBible = otherBibles[randomIndex].id;
-
-  // Set up SSS mode state
-  sssLeftBible = singleBible;
-  sssRightBible = randomBible;
-  sssBook = ref.book;
-  sssChapter = ref.chapter;
-  sssVerse = ref.verse;
-
-  // Update SSS mode selectors
+/**
+ * Update SSS selector elements with current state
+ * @private
+ */
+function updateSSSSelectors() {
   if (sssBibleLeft) sssBibleLeft.value = sssLeftBible;
   if (sssBibleRight) sssBibleRight.value = sssRightBible;
 
@@ -1153,13 +1143,44 @@ function setupSingleBibleSSSMode(singleBible, ref) {
   }
 
   if (sssChapterSelect) sssChapterSelect.value = sssChapter;
+}
 
-  // Enter SSS mode directly
+/**
+ * Show SSS mode UI (hide normal mode)
+ * @private
+ */
+function showSSSModeUI() {
   sssMode = true;
   updateSSSModeStatus();
   if (normalModeEl) normalModeEl.classList.add('hidden');
   if (sssModeEl) sssModeEl.classList.remove('hidden');
   document.getElementById('parallel-content')?.classList.add('hidden');
+}
+
+/**
+ * Set up SSS mode with single Bible and random second Bible
+ * @private
+ * @param {string} singleBible - The single selected Bible ID
+ * @param {Object} ref - Parsed reference {book, chapter, verse}
+ * @returns {boolean} True if SSS mode was entered successfully
+ */
+function setupSingleBibleSSSMode(singleBible, ref) {
+  const otherBibles = bibleData?.bibles?.filter(b => b.id !== singleBible) || [];
+
+  // Validate inputs
+  if (otherBibles.length === 0 || !ref.book || ref.chapter <= 0) {
+    return false;
+  }
+
+  // Set up SSS mode state
+  sssLeftBible = singleBible;
+  sssRightBible = pickRandomBible(otherBibles);
+  sssBook = ref.book;
+  sssChapter = ref.chapter;
+  sssVerse = ref.verse;
+
+  updateSSSSelectors();
+  showSSSModeUI();
 
   if (canLoadSSSComparison()) {
     loadSSSComparison();
@@ -1551,6 +1572,7 @@ const MAX_SSS_FALLBACK_DEPTH = 20;
  * @private
  */
 function showSSSLoading() {
+  // SECURITY: createLoadingIndicator() returns static safe HTML (no user input)
   const loadingHtml = createLoadingIndicator();
   if (sssLeftPane) sssLeftPane.innerHTML = loadingHtml;
   if (sssRightPane) sssRightPane.innerHTML = loadingHtml;
@@ -1562,6 +1584,7 @@ function showSSSLoading() {
  * @param {string} message - Error message to display
  */
 function showSSSError(message) {
+  // SECURITY: escapeHtml sanitizes the message parameter
   const errorHtml = `<div class="center muted">${escapeHtml(message)}</div>`;
   if (sssLeftPane) sssLeftPane.innerHTML = errorHtml;
   if (sssRightPane) sssRightPane.innerHTML = errorHtml;
@@ -1584,9 +1607,8 @@ function tryFallbackBible(depth) {
     return false;
   }
 
-  // Pick a random one from remaining options
-  const randomIndex = Math.floor(Math.random() * availableBibles.length);
-  sssRightBible = availableBibles[randomIndex].id;
+  // Pick a random Bible from remaining options
+  sssRightBible = pickRandomBible(availableBibles);
   if (sssBibleRight) sssBibleRight.value = sssRightBible;
 
   // Check depth guard
@@ -1637,6 +1659,7 @@ function renderSSSPanes(leftVerses, rightVerses) {
   const leftFiltered = sssVerse > 0 ? leftVerses?.filter(v => v.number === sssVerse) : leftVerses;
   const rightFiltered = sssVerse > 0 ? rightVerses?.filter(v => v.number === sssVerse) : rightVerses;
 
+  // SECURITY: buildSSSPaneHTML uses escapeHtml on all user-controlled content
   if (sssLeftPane) {
     sssLeftPane.innerHTML = buildSSSPaneHTML(leftFiltered, leftBible, bookName, rightFiltered, rightBible);
   }

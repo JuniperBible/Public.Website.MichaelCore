@@ -294,6 +294,60 @@ window.Michael.BibleLoader = (function() {
   }
 
   /**
+   * Attempts to load Bible data from memory cache.
+   * @param {string} bibleId - Bible translation ID
+   * @param {function} [onProgress] - Progress callback (0-1)
+   * @returns {Object|null} - Bible data from cache or null if not found
+   */
+  function tryLoadFromMemoryCache(bibleId, onProgress) {
+    if (memoryCache.has(bibleId)) {
+      if (onProgress) onProgress(1);
+      return memoryCache.get(bibleId);
+    }
+    return null;
+  }
+
+  /**
+   * Attempts to load Bible data from IndexedDB.
+   * @param {string} bibleId - Bible translation ID
+   * @param {function} [onProgress] - Progress callback (0-1)
+   * @returns {Promise<Object|null>} - Bible data from IndexedDB or null if not found
+   */
+  async function tryLoadFromIndexedDB(bibleId, onProgress) {
+    try {
+      const dbData = await getBibleFromDB(bibleId);
+      if (dbData) {
+        memoryCache.set(bibleId, dbData);
+        if (onProgress) onProgress(1);
+        return dbData;
+      }
+    } catch (err) {
+      console.warn('IndexedDB read failed:', err);
+    }
+    return null;
+  }
+
+  /**
+   * Fetches Bible data from network and caches it.
+   * @param {string} bibleId - Bible translation ID
+   * @param {function} [onProgress] - Progress callback (0-1)
+   * @returns {Promise<Object>} - Bible data object
+   */
+  async function fetchAndCacheBible(bibleId, onProgress) {
+    const data = await fetchBibleArchive(bibleId, onProgress);
+
+    // Store in memory cache
+    memoryCache.set(bibleId, data);
+
+    // Store in IndexedDB (async, don't wait)
+    storeBible(bibleId, data).catch(err => {
+      console.warn('Failed to store Bible in IndexedDB:', err);
+    });
+
+    return data;
+  }
+
+  /**
    * Loads a Bible translation, using cache/IndexedDB or fetching from network.
    *
    * Priority:
@@ -311,37 +365,19 @@ window.Michael.BibleLoader = (function() {
     const { onProgress, forceNetwork = false } = options;
 
     // Check memory cache first
-    if (!forceNetwork && memoryCache.has(bibleId)) {
-      if (onProgress) onProgress(1);
-      return memoryCache.get(bibleId);
+    if (!forceNetwork) {
+      const cachedData = tryLoadFromMemoryCache(bibleId, onProgress);
+      if (cachedData) return cachedData;
     }
 
     // Check IndexedDB
     if (!forceNetwork) {
-      try {
-        const dbData = await getBibleFromDB(bibleId);
-        if (dbData) {
-          memoryCache.set(bibleId, dbData);
-          if (onProgress) onProgress(1);
-          return dbData;
-        }
-      } catch (err) {
-        console.warn('IndexedDB read failed:', err);
-      }
+      const dbData = await tryLoadFromIndexedDB(bibleId, onProgress);
+      if (dbData) return dbData;
     }
 
     // Fetch from network
-    const data = await fetchBibleArchive(bibleId, onProgress);
-
-    // Store in memory cache
-    memoryCache.set(bibleId, data);
-
-    // Store in IndexedDB (async, don't wait)
-    storeBible(bibleId, data).catch(err => {
-      console.warn('Failed to store Bible in IndexedDB:', err);
-    });
-
-    return data;
+    return await fetchAndCacheBible(bibleId, onProgress);
   }
 
   /**

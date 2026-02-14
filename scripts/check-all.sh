@@ -189,9 +189,9 @@ if [ "$UPDATE_README" = true ]; then
 | Clean Worktree | ${RESULTS["Clean Worktree"]:-skip} | No uncommitted changes |"
 
     # Convert pass/fail/skip to emoji
-    TABLE=$(echo "$TABLE" | sed 's/| pass |/| ✅ Pass |/g')
-    TABLE=$(echo "$TABLE" | sed 's/| fail |/| ❌ Fail |/g')
-    TABLE=$(echo "$TABLE" | sed 's/| skip |/| ⊘ Skip |/g')
+    TABLE="${TABLE//| pass |/| ✅ Pass |}"
+    TABLE="${TABLE//| fail |/| ❌ Fail |}"
+    TABLE="${TABLE//| skip |/| ⊘ Skip |}"
 
     # Update README using sed (with macOS compatibility)
     # Detect macOS vs Linux

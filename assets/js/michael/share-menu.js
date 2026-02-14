@@ -277,65 +277,86 @@
   };
 
   /**
+   * Handle copy link action
+   */
+  ShareMenu.prototype.handleCopyLink = async function() {
+    const url = this.options.getShareUrl();
+    await this.copyToClipboard(url);
+  };
+
+  /**
+   * Handle copy text action
+   */
+  ShareMenu.prototype.handleCopyText = async function() {
+    const text = this.options.getShareText();
+    await this.copyToClipboard(text);
+  };
+
+  /**
+   * Handle copy offline action
+   */
+  ShareMenu.prototype.handleCopyOffline = async function() {
+    // Use specialized offline text formatter if available
+    const text = this.options.getOfflineText
+      ? this.options.getOfflineText()
+      : this.options.getShareText();
+    const success = await this.copyToClipboard(text);
+
+    // Trigger offline copy callback
+    if (success && this.options.onOfflineCopy) {
+      this.options.onOfflineCopy();
+    }
+  };
+
+  /**
+   * Handle Twitter share action
+   */
+  ShareMenu.prototype.handleShareTwitter = function() {
+    const text = this.options.getShareText();
+    const url = this.options.getShareUrl();
+    const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`;
+    try {
+      const parsed = new URL(twitterUrl);
+      if (parsed.hostname === 'twitter.com' || parsed.hostname === 'x.com') {
+        window.open(twitterUrl, '_blank', 'width=550,height=420,noopener,noreferrer');
+      }
+    } catch (e) { /* invalid URL — do nothing */ }
+  };
+
+  /**
+   * Handle Facebook share action
+   */
+  ShareMenu.prototype.handleShareFacebook = function() {
+    const url = this.options.getShareUrl();
+    const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`;
+    try {
+      const parsed = new URL(facebookUrl);
+      if (parsed.hostname === 'www.facebook.com') {
+        window.open(facebookUrl, '_blank', 'width=550,height=420,noopener,noreferrer');
+      }
+    } catch (e) { /* invalid URL — do nothing */ }
+  };
+
+  /**
    * Handle menu action clicks
    * @param {string} action - The action to perform
    */
   ShareMenu.prototype.handleAction = async function(action) {
     switch (action) {
       case 'copy-link':
-        {
-          const url = this.options.getShareUrl();
-          await this.copyToClipboard(url);
-        }
+        await this.handleCopyLink();
         break;
-
       case 'copy-text':
-        {
-          const text = this.options.getShareText();
-          await this.copyToClipboard(text);
-        }
+        await this.handleCopyText();
         break;
-
       case 'copy-offline':
-        {
-          // Use specialized offline text formatter if available
-          const text = this.options.getOfflineText
-            ? this.options.getOfflineText()
-            : this.options.getShareText();
-          const success = await this.copyToClipboard(text);
-
-          // Trigger offline copy callback
-          if (success && this.options.onOfflineCopy) {
-            this.options.onOfflineCopy();
-          }
-        }
+        await this.handleCopyOffline();
         break;
-
       case 'share-twitter':
-        {
-          const text = this.options.getShareText();
-          const url = this.options.getShareUrl();
-          const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`;
-          try {
-            const parsed = new URL(twitterUrl);
-            if (parsed.hostname === 'twitter.com' || parsed.hostname === 'x.com') {
-              window.open(twitterUrl, '_blank', 'width=550,height=420,noopener,noreferrer');
-            }
-          } catch (e) { /* invalid URL — do nothing */ }
-        }
+        this.handleShareTwitter();
         break;
-
       case 'share-facebook':
-        {
-          const url = this.options.getShareUrl();
-          const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`;
-          try {
-            const parsed = new URL(facebookUrl);
-            if (parsed.hostname === 'www.facebook.com') {
-              window.open(facebookUrl, '_blank', 'width=550,height=420,noopener,noreferrer');
-            }
-          } catch (e) { /* invalid URL — do nothing */ }
-        }
+        this.handleShareFacebook();
         break;
     }
 
@@ -441,6 +462,45 @@
   };
 
   /**
+   * Check if target is a valid menu item
+   * @param {HTMLElement} target - The event target
+   * @returns {boolean} True if target is a menu item
+   */
+  ShareMenu.prototype.isMenuItemTarget = function(target) {
+    return target.hasAttribute('role') && target.getAttribute('role') === 'menuitem';
+  };
+
+  /**
+   * Handle navigation key press
+   * @param {KeyboardEvent} e - The keyboard event
+   */
+  ShareMenu.prototype.handleNavigationKey = function(e) {
+    switch (e.key) {
+      case 'ArrowDown':
+        e.preventDefault();
+        this.focusNextItem();
+        break;
+      case 'ArrowUp':
+        e.preventDefault();
+        this.focusPreviousItem();
+        break;
+      case 'Home':
+        e.preventDefault();
+        this.focusFirstItem();
+        break;
+      case 'End':
+        e.preventDefault();
+        this.focusLastItem();
+        break;
+      case 'Enter':
+      case ' ':
+        e.preventDefault();
+        e.target.click();
+        break;
+    }
+  };
+
+  /**
    * Setup keyboard navigation (arrow keys, Enter, Space)
    */
   ShareMenu.prototype.setupKeyboardNavigation = function() {
@@ -448,37 +508,11 @@
 
     this.keyHandler = (e) => {
       // Only handle navigation keys on menu items
-      if (!e.target.hasAttribute('role') || e.target.getAttribute('role') !== 'menuitem') {
+      if (!this.isMenuItemTarget(e.target)) {
         return;
       }
 
-      switch (e.key) {
-        case 'ArrowDown':
-          e.preventDefault();
-          this.focusNextItem();
-          break;
-
-        case 'ArrowUp':
-          e.preventDefault();
-          this.focusPreviousItem();
-          break;
-
-        case 'Home':
-          e.preventDefault();
-          this.focusFirstItem();
-          break;
-
-        case 'End':
-          e.preventDefault();
-          this.focusLastItem();
-          break;
-
-        case 'Enter':
-        case ' ':
-          e.preventDefault();
-          e.target.click();
-          break;
-      }
+      this.handleNavigationKey(e);
     };
 
     this.menu.addEventListener('keydown', this.keyHandler);

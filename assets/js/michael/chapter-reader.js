@@ -36,10 +36,10 @@
   let loadSSSAbortController = null;
 
   /**
-   * Initialize the chapter reader module
+   * Initialize DOM element references
+   * @returns {Object} Object containing DOM toggle elements
    */
-  function init() {
-    // Get DOM elements - use querySelectorAll since there may be multiple nav bars
+  function initDOMElements() {
     const fullWidthToggles = document.querySelectorAll('#fullwidth-toggle');
     const sssToggles = document.querySelectorAll('#sss-chapter-toggle');
     const printButtons = document.querySelectorAll('#print-chapter');
@@ -47,11 +47,13 @@
     sssContainer = document.querySelector('.chapter-sss-container');
     sssVersesContainer = document.getElementById('sss-verses');
 
-    if (fullWidthToggles.length === 0 && sssToggles.length === 0) {
-      return;
-    }
+    return { fullWidthToggles, sssToggles, printButtons };
+  }
 
-    // Get current chapter context from page data
+  /**
+   * Initialize chapter context from page data
+   */
+  function initChapterContext() {
     const bibleSelect = document.getElementById('bible-select');
     if (bibleSelect) {
       currentBible = bibleSelect.value;
@@ -59,11 +61,12 @@
       currentBook = bibleSelect.dataset.book || '';
       currentChapter = parseInt(bibleSelect.dataset.chapter, 10) || 0;
     }
+  }
 
-    // Extract verses from the page content for later use
-    extractLeftVerses();
-
-    // Restore saved preferences (wrapped for private browsing mode)
+  /**
+   * Restore saved preferences from localStorage
+   */
+  function restoreSavedPreferences() {
     try {
       fullWidthMode = localStorage.getItem(STORAGE_KEY_FULLWIDTH) === 'true';
       sssMode = localStorage.getItem(STORAGE_KEY_SSS) === 'true';
@@ -74,42 +77,72 @@
       sssMode = false;
       comparisonBible = '';
     }
+  }
 
-    // Apply saved state and add listeners to ALL toggle buttons
-    fullWidthToggles.forEach((btn, i) => {
+  /**
+   * Attach event listeners to toggle buttons
+   * @param {NodeList} fullWidthToggles - Full width toggle buttons
+   * @param {NodeList} sssToggles - SSS toggle buttons
+   * @param {NodeList} printButtons - Print buttons
+   */
+  function attachEventListeners(fullWidthToggles, sssToggles, printButtons) {
+    fullWidthToggles.forEach((btn) => {
       if (fullWidthMode) {
         btn.setAttribute('aria-pressed', 'true');
       }
-      btn.addEventListener('click', function(e) {
-        toggleFullWidth();
-      });
+      btn.addEventListener('click', toggleFullWidth);
     });
 
-    sssToggles.forEach((btn, i) => {
+    sssToggles.forEach((btn) => {
       if (sssMode) {
         btn.setAttribute('aria-pressed', 'true');
       }
-      btn.addEventListener('click', function(e) {
-        toggleSSS();
-      });
+      btn.addEventListener('click', toggleSSS);
     });
 
-    // Add print button listeners
-    printButtons.forEach((btn, i) => {
-      btn.addEventListener('click', function(e) {
-        window.print();
-      });
+    printButtons.forEach((btn) => {
+      btn.addEventListener('click', () => window.print());
     });
+  }
 
-    // Apply full-width mode to body if saved
+  /**
+   * Apply saved UI state
+   */
+  function applySavedState() {
     if (fullWidthMode) {
       document.body.classList.add('full-width-mode');
     }
 
-    // If SSS was previously enabled and we have the elements, restore it
     if (sssMode && sssContainer) {
       enableSSSMode();
     }
+  }
+
+  /**
+   * Initialize the chapter reader module
+   */
+  function init() {
+    // Get DOM elements - use querySelectorAll since there may be multiple nav bars
+    const { fullWidthToggles, sssToggles, printButtons } = initDOMElements();
+
+    if (fullWidthToggles.length === 0 && sssToggles.length === 0) {
+      return;
+    }
+
+    // Get current chapter context from page data
+    initChapterContext();
+
+    // Extract verses from the page content for later use
+    extractLeftVerses();
+
+    // Restore saved preferences (wrapped for private browsing mode)
+    restoreSavedPreferences();
+
+    // Apply saved state and add listeners to ALL toggle buttons
+    attachEventListeners(fullWidthToggles, sssToggles, printButtons);
+
+    // Apply full-width mode to body if saved and restore SSS if needed
+    applySavedState();
   }
 
   /**
@@ -136,6 +169,7 @@
         const clone = el.cloneNode(true);
         // Remove share buttons from clone
         clone.querySelectorAll('.verse-share-btn').forEach(btn => btn.remove());
+        // SECURITY: innerHTML is from trusted page DOM
         leftVerses.push({
           number: parseInt(verseNum, 10),
           html: clone.innerHTML
@@ -169,6 +203,74 @@
   }
 
   /**
+   * Get default comparison Bible based on current Bible
+   * @returns {Array<string>} Array of default Bible codes in priority order
+   */
+  function getDefaultComparisonBibles() {
+    if (currentBible === 'kjva') {
+      return ['drc', 'kjva'];
+    } else if (currentBible === 'drc') {
+      return ['kjva', 'drc'];
+    } else {
+      return ['kjva', 'drc'];
+    }
+  }
+
+  /**
+   * Select default comparison Bible from available options
+   * @param {HTMLSelectElement} firstSelect - First comparison Bible select element
+   */
+  function selectDefaultComparisonBible(firstSelect) {
+    const defaults = getDefaultComparisonBibles();
+    let found = false;
+
+    for (let i = 0; i < defaults.length; i++) {
+      const opt = firstSelect.querySelector('option[value="' + defaults[i] + '"]');
+      if (opt && defaults[i] !== currentBible) {
+        comparisonBible = defaults[i];
+        found = true;
+        break;
+      }
+    }
+
+    // Fallback: first available different translation
+    if (!found) {
+      const options = Array.from(firstSelect.options);
+      const different = options.find(opt => opt.value && opt.value !== currentBible);
+      if (different) {
+        comparisonBible = different.value;
+      }
+    }
+  }
+
+  /**
+   * Initialize comparison Bible selection
+   * @param {NodeList} comparisonSelects - Comparison Bible select elements
+   */
+  function initComparisonBibleSelection(comparisonSelects) {
+    if (comparisonSelects.length === 0) return;
+
+    const firstSelect = comparisonSelects[0];
+
+    // Set previously selected comparison bible if available
+    const hasValidSavedBible = comparisonBible &&
+      firstSelect.querySelector(`option[value="${comparisonBible}"]`);
+
+    if (!hasValidSavedBible) {
+      selectDefaultComparisonBible(firstSelect);
+    }
+
+    // Sync all selects and add listeners
+    comparisonSelects.forEach(sel => {
+      sel.value = comparisonBible;
+      sel.addEventListener('change', handleComparisonBibleChange);
+    });
+
+    // Update the right pane label with the selected Bible
+    updateRightPaneLabel();
+  }
+
+  /**
    * Enable SSS mode
    */
   function enableSSSMode() {
@@ -176,6 +278,7 @@
 
     sssMode = true;
     document.body.classList.add('sss-chapter-mode');
+
     // Update all toggle buttons
     document.querySelectorAll('#sss-chapter-toggle').forEach(btn => {
       btn.setAttribute('aria-pressed', 'true');
@@ -184,45 +287,7 @@
 
     // Set up comparison bible selectors (may be multiple in different nav bars)
     const comparisonSelects = document.querySelectorAll('#sss-comparison-bible');
-    if (comparisonSelects.length > 0) {
-      const firstSelect = comparisonSelects[0];
-
-      // Set previously selected comparison bible if available
-      if (comparisonBible && firstSelect.querySelector(`option[value="${comparisonBible}"]`)) {
-        // Value already set, just sync all selects
-      } else {
-        // Default pairing: KJVA ↔ DRC, otherwise KJVA first, then DRC
-        var defaults = currentBible === 'kjva' ? ['drc', 'kjva']
-                     : currentBible === 'drc'  ? ['kjva', 'drc']
-                     : ['kjva', 'drc'];
-        var found = false;
-        for (var i = 0; i < defaults.length; i++) {
-          var opt = firstSelect.querySelector('option[value="' + defaults[i] + '"]');
-          if (opt && defaults[i] !== currentBible) {
-            comparisonBible = defaults[i];
-            found = true;
-            break;
-          }
-        }
-        // Fallback: first available different translation
-        if (!found) {
-          const options = Array.from(firstSelect.options);
-          const different = options.find(opt => opt.value && opt.value !== currentBible);
-          if (different) {
-            comparisonBible = different.value;
-          }
-        }
-      }
-
-      // Sync all selects and add listeners
-      comparisonSelects.forEach(sel => {
-        sel.value = comparisonBible;
-        sel.addEventListener('change', handleComparisonBibleChange);
-      });
-
-      // Update the right pane label with the selected Bible
-      updateRightPaneLabel();
-    }
+    initComparisonBibleSelection(comparisonSelects);
 
     // Load comparison content and build verse rows
     if (comparisonBible && currentBook && currentChapter) {
@@ -309,6 +374,7 @@
     const signal = loadSSSAbortController.signal;
 
     // Show loading state
+    // SECURITY: Safe static HTML
     sssVersesContainer.innerHTML = '<div class="sss-loading">Loading...</div>';
 
     try {
@@ -354,6 +420,7 @@
             verseElements.forEach(el => {
               const verseNum = el.dataset.verse || el.querySelector('sup')?.textContent;
               if (verseNum) {
+                // SECURITY: innerHTML is from trusted site content
                 rightVerses.push({
                   number: parseInt(verseNum, 10),
                   html: el.innerHTML
@@ -432,6 +499,7 @@
 
     // Handle case where no verses found at all
     if (sortedNums.length === 0) {
+      // SECURITY: Safe static HTML
       sssVersesContainer.innerHTML = '<div class="sss-loading">No verses found</div>';
       return;
     }
@@ -442,15 +510,16 @@
       const leftHtml = leftMap.get(num) || `<em class="sss-missing">(not in ${escapeHtml(leftBibleName)})</em>`;
       const rightHtml = rightMap.get(num) || `<em class="sss-missing">(not in ${escapeHtml(rightBibleName)})</em>`;
 
-      // Note: leftHtml and rightHtml come from trusted sources (page DOM or BibleAPI)
-      // They already contain formatted HTML with sup tags, Strong's links, etc.
-      // We preserve this HTML but escape the Bible names in missing messages
+      // SECURITY: leftHtml and rightHtml come from trusted sources (page DOM or BibleAPI)
+      // and contain formatted HTML with sup tags, Strong's links, etc.
+      // Bible names in missing messages are escaped via escapeHtml()
       verseRows.push(`<div class="sss-verse-row" data-verse="${num}">
         <div class="sss-verse-left">${leftHtml}</div>
         <div class="sss-verse-right">${rightHtml}</div>
       </div>`);
     });
 
+    // SECURITY: verseRows contains trusted HTML from page DOM/BibleAPI with escapeHtml() on user-visible names
     sssVersesContainer.innerHTML = verseRows.join('');
 
     // Process Strong's numbers in both left and right columns

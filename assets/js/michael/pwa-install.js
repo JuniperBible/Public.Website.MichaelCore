@@ -183,6 +183,44 @@ export function isIOS() {
 }
 
 /**
+ * Clear the dismissed state from localStorage
+ */
+function clearDismissedState() {
+  localStorage.removeItem(STORAGE_KEY_DISMISSED);
+  localStorage.removeItem(STORAGE_KEY_DISMISSED_TIME);
+}
+
+/**
+ * Check if the dismissed time value is valid
+ * @param {string} dismissedTime - The dismissed time string from localStorage
+ * @returns {boolean} True if the time is valid
+ */
+function isValidDismissedTime(dismissedTime) {
+  // Handle empty string cases
+  if (dismissedTime === '' || dismissedTime.trim() === '') {
+    return false;
+  }
+
+  const parsedTime = parseInt(dismissedTime, 10);
+  if (isNaN(parsedTime) || parsedTime < 0) {
+    return false;
+  }
+
+  return true;
+}
+
+/**
+ * Check if enough time has passed since dismissal
+ * @param {string} dismissedTime - The dismissed time string from localStorage
+ * @returns {boolean} True if enough time has passed to show again
+ */
+function shouldReshowAfterTime(dismissedTime) {
+  const parsedTime = parseInt(dismissedTime, 10);
+  const daysSinceDismissed = (Date.now() - parsedTime) / (1000 * 60 * 60 * 24);
+  return daysSinceDismissed >= DAYS_BEFORE_RESHOWING;
+}
+
+/**
  * Check if the user has dismissed the banner recently
  */
 function isDismissed() {
@@ -195,26 +233,16 @@ function isDismissed() {
     // Check if enough time has passed to show again
     const dismissedTime = localStorage.getItem(STORAGE_KEY_DISMISSED_TIME);
     if (dismissedTime) {
-      // Handle empty string and non-numeric string cases
-      if (dismissedTime === '' || dismissedTime.trim() === '') {
-        // Empty string - clear and allow showing again
-        localStorage.removeItem(STORAGE_KEY_DISMISSED);
-        localStorage.removeItem(STORAGE_KEY_DISMISSED_TIME);
+      // Validate the dismissed time
+      if (!isValidDismissedTime(dismissedTime)) {
+        // Corrupted or empty data - clear and allow showing again
+        clearDismissedState();
         return false;
       }
 
-      const parsedTime = parseInt(dismissedTime, 10);
-      if (isNaN(parsedTime) || parsedTime < 0) {
-        // Corrupted data — clear and allow showing again
-        localStorage.removeItem(STORAGE_KEY_DISMISSED);
-        localStorage.removeItem(STORAGE_KEY_DISMISSED_TIME);
-        return false;
-      }
-
-      const daysSinceDismissed = (Date.now() - parsedTime) / (1000 * 60 * 60 * 24);
-      if (daysSinceDismissed >= DAYS_BEFORE_RESHOWING) {
-        localStorage.removeItem(STORAGE_KEY_DISMISSED);
-        localStorage.removeItem(STORAGE_KEY_DISMISSED_TIME);
+      // Check if enough time has passed
+      if (shouldReshowAfterTime(dismissedTime)) {
+        clearDismissedState();
         return false;
       }
     }
