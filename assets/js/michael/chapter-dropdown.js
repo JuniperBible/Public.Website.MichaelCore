@@ -39,7 +39,11 @@ export function ChapterDropdown(selectElement, bibleData, options) {
  * Clear dropdown and set to disabled state
  */
 ChapterDropdown.prototype.clear = function() {
-  this.selectElement.innerHTML = '<option value="">' + this.options.placeholder + '</option>';
+  this.selectElement.textContent = '';
+  const option = document.createElement('option');
+  option.value = '';
+  option.textContent = this.options.placeholder;
+  this.selectElement.appendChild(option);
   this.selectElement.disabled = true;
 };
 

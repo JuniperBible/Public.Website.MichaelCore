@@ -376,7 +376,11 @@
       console.error('Error loading comparison:', err);
       const translationName = getComparisonBibleName();
       if (sssVersesContainer) {
-        sssVersesContainer.innerHTML = `<div class="sss-loading">Error loading content from ${translationName}</div>`;
+        sssVersesContainer.textContent = '';
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'sss-loading';
+        errorDiv.textContent = 'Error loading content from ' + translationName;
+        sssVersesContainer.appendChild(errorDiv);
       }
     } finally {
       // Clear the abort controller when operation completes

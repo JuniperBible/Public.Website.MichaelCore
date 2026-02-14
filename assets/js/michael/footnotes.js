@@ -92,32 +92,50 @@ function processFootnotes(content, footnotesSection, footnotesList, prefix) {
     // Build footnote content
     const catchWord = note.querySelector('catchWord');
 
-    let footnoteHTML = '<span class="footnote-num">[' + noteNum + ']</span> ';
+    // Create footnote list item using DOM API to prevent XSS
+    const li = document.createElement('li');
+    li.id = noteId;
 
+    // Add footnote number
+    const numSpan = document.createElement('span');
+    numSpan.className = 'footnote-num';
+    numSpan.textContent = '[' + noteNum + ']';
+    li.appendChild(numSpan);
+    li.appendChild(document.createTextNode(' '));
+
+    // Add catchWord if present
     if (catchWord) {
-      footnoteHTML += '<span class="footnote-catchword">' + catchWord.textContent + '</span>: ';
+      const catchSpan = document.createElement('span');
+      catchSpan.className = 'footnote-catchword';
+      catchSpan.textContent = catchWord.textContent;
+      li.appendChild(catchSpan);
+      li.appendChild(document.createTextNode(': '));
     }
 
     // Get the text content excluding catchWord
-    let noteText = '';
     note.childNodes.forEach(function(child) {
       if (child.nodeType === Node.TEXT_NODE) {
-        noteText += child.textContent;
+        li.appendChild(document.createTextNode(child.textContent));
       } else if (child.nodeName.toLowerCase() !== 'catchword') {
         if (child.nodeName.toLowerCase() === 'rdg') {
-          noteText += '<span class="footnote-literal">' + child.textContent + '</span>';
+          const rdgSpan = document.createElement('span');
+          rdgSpan.className = 'footnote-literal';
+          rdgSpan.textContent = child.textContent;
+          li.appendChild(rdgSpan);
         } else {
-          noteText += child.textContent;
+          li.appendChild(document.createTextNode(child.textContent));
         }
       }
     });
 
-    footnoteHTML += noteText.trim();
-
-    // Create footnote list item
-    const li = document.createElement('li');
-    li.id = noteId;
-    li.innerHTML = footnoteHTML + ' <a href="#' + refId + '" class="footnote-backref" title="Back to text">&uarr;</a>';
+    // Add backref link
+    li.appendChild(document.createTextNode(' '));
+    const backref = document.createElement('a');
+    backref.href = '#' + refId;
+    backref.className = 'footnote-backref';
+    backref.title = 'Back to text';
+    backref.innerHTML = '&uarr;';
+    li.appendChild(backref);
 
     footnotesList.appendChild(li);
   });
