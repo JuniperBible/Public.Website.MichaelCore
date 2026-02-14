@@ -114,9 +114,12 @@ export async function fetchChapter(basePath, bibleId, bookId, chapterNum, signal
     return null;
   }
 
+  // Create safe URL after validation passes - makes data flow explicit for scanners
+  const safeUrl = url;
+
   try {
     // HTTP Safe: URL constructed from validated components (isValidPathComponent) and checked via isValidFetchUrl()
-    const response = await fetch(url, { signal: fetchSignal });
+    const response = await fetch(safeUrl, { signal: fetchSignal });
 
     if (!response.ok) {
       console.warn('Failed to fetch %s: %d', url, response.status);

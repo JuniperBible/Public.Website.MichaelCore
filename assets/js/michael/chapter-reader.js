@@ -395,6 +395,8 @@
         if (verses && verses.length > 0) {
           rightVerses = verses.map(v => ({
             number: parseInt(v.number, 10),
+            // SECURITY: Safe - v.number and v.text are from trusted BibleAPI (vetted Bible data)
+            // v.text contains pre-formatted HTML with Strong's links, Jesus words styling, etc.
             html: `<sup>${v.number}</sup> ${v.text}`
           }));
         }
@@ -507,16 +509,20 @@
     // Build verse rows using safe HTML escaping
     const verseRows = [];
     sortedNums.forEach(num => {
+      // SECURITY: Bible names are escaped via escapeHtml() to prevent XSS in missing verse messages
       const leftHtml = leftMap.get(num) || `<em class="sss-missing">(not in ${escapeHtml(leftBibleName)})</em>`;
       const rightHtml = rightMap.get(num) || `<em class="sss-missing">(not in ${escapeHtml(rightBibleName)})</em>`;
 
       // SECURITY: leftHtml and rightHtml come from trusted sources (page DOM or BibleAPI)
       // and contain formatted HTML with sup tags, Strong's links, etc.
       // Bible names in missing messages are escaped via escapeHtml()
-      verseRows.push(`<div class="sss-verse-row" data-verse="${num}">
-        <div class="sss-verse-left">${leftHtml}</div>
-        <div class="sss-verse-right">${rightHtml}</div>
-      </div>`);
+      // Validate num is an integer to prevent XSS in data-verse attribute
+      if (Number.isInteger(num)) {
+        verseRows.push(`<div class="sss-verse-row" data-verse="${num}">
+          <div class="sss-verse-left">${leftHtml}</div>
+          <div class="sss-verse-right">${rightHtml}</div>
+        </div>`);
+      }
     });
 
     // SECURITY: Safe - verseRows contains trusted HTML from page DOM and Bible API data

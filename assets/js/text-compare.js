@@ -612,6 +612,7 @@ function renderWithHighlights(text, diffs, side, options = {}) {
     }
 
     // Add highlighted span
+    // Safe: h.category is from DiffCategory constants (typo/punct/spelling/subst/add/omit/move), not user input
     result += `<span class="diff-${h.category}">${escapeHtml(h.original)}</span>`;
     pos = h.offset + h.length;
   }

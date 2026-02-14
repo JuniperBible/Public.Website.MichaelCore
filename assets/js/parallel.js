@@ -1042,8 +1042,9 @@ function buildComparisonHTML(chaptersData) {
       return escapeHtml(bible?.abbrev || id);
     }).join(', ');
   // All values are escaped: bookName via escapeHtml, currentChapter/verseRef are validated numbers
-  const safeChapter = Number.isInteger(currentChapter) ? currentChapter : 0;
-  const safeVerseRef = currentVerse > 0 ? `:${Math.floor(currentVerse)}` : '';
+  const safeChapter = String(Number.isInteger(currentChapter) ? currentChapter : 0);
+  const safeVerseRef = currentVerse > 0 ? `:${String(Number.isInteger(currentVerse) ? currentVerse : 0)}` : '';
+  // Safe: bookName escaped, safeChapter/safeVerseRef validated as integers, abbrevList contains only escaped values
   html += `<header style="text-align: center; margin-bottom: 1.5rem;">
     <h2 style=" margin-bottom: 0.25rem;">${escapeHtml(bookName)} ${safeChapter}${safeVerseRef}</h2>
     <p style="color: var(--michael-text-muted);  font-size: 0.875rem; margin: 0;">${abbrevList}</p>
@@ -1057,8 +1058,9 @@ function buildComparisonHTML(chaptersData) {
   // Verse-by-verse comparison - iterate through each verse
   versesToShow.forEach((verse) => {
     // Validate verse number is a safe integer
-    const verseNum = Number.isInteger(verse.number) ? verse.number : 0;
+    const verseNum = String(Number.isInteger(verse.number) ? verse.number : 0);
 
+    // Safe: verseNum validated as integer, bookName escaped, safeChapter validated as integer
     html += `<article class="parallel-verse" data-verse="${verseNum}">
       <header>
         <h3 style=" font-weight: bold; color: var(--michael-accent); margin-bottom: 0.5rem; font-size: 1rem;">${escapeHtml(bookName)} ${safeChapter}:${verseNum}</h3>
@@ -1086,6 +1088,7 @@ function buildComparisonHTML(chaptersData) {
         text = highlightNormalDifferences(v.text, otherTexts);
       }
 
+      // XSS Safe: bibleAbbrev is sanitized via escapeHtml() to prevent injection attacks
       const bibleAbbrev = escapeHtml(bible?.abbrev || translationId);
       html += `<div class="translation-label" style="margin-top: 0.75rem;">
         <strong style="color: var(--michael-accent);  font-size: 0.75rem;">${bibleAbbrev}</strong>
@@ -1706,7 +1709,7 @@ function showSSSLoading() {
  * @param {string} message - Error message to display
  */
 function showSSSError(message) {
-  // XSS Safe: message is sanitized via escapeHtml() before HTML insertion
+  // XSS Safe: message is sanitized via escapeHtml() to prevent injection attacks before insertion into template literal
   const errorHtml = `<div class="center muted">${escapeHtml(message)}</div>`;
   if (sssLeftPane) sssLeftPane.innerHTML = errorHtml;
   if (sssRightPane) sssRightPane.innerHTML = errorHtml;
@@ -2056,15 +2059,14 @@ function buildSSSPaneHTML(verses, bible, bookName, compareVerses, compareBible) 
 
   // Check for versification mismatch (e.g., Masoretic vs Septuagint)
   // Display warning when comparing Bibles with different verse numbering systems
-  // XSS Safe: bible.versification is sanitized via escapeHtml()
   const versificationWarning = (compareBible && bible?.versification && compareBible?.versification &&
     bible.versification !== compareBible.versification)
+    // XSS Safe: bible.versification escaped via escapeHtml()
     ? `<small style="color: var(--michael-text-muted); display: block; font-size: 0.7rem;">${escapeHtml(bible.versification)} versification</small>`
     : '';
 
-  // XSS Safe: bible.abbrev is sanitized via escapeHtml()
   const bibleAbbrev = escapeHtml(bible?.abbrev || 'Unknown');
-  // XSS Safe: bibleAbbrev and versificationWarning both contain escaped content
+  // XSS Safe: bibleAbbrev escaped via escapeHtml(), versificationWarning contains escaped content
   let html = `<header class="translation-label" style="text-align: center; padding-bottom: 0.5rem;">
     <strong>${bibleAbbrev}</strong>${versificationWarning}
   </header>`;
@@ -2072,11 +2074,9 @@ function buildSSSPaneHTML(verses, bible, bookName, compareVerses, compareBible) 
   // Render each verse with highlighting based on comparison
   verses.forEach(verse => {
     const compareVerse = compareVerses?.find(v => v.number === verse.number);
-    // XSS Safe: highlightDifferences() returns HTML with text content escaped via escapeHtml()
     const highlightedText = highlightDifferences(verse.text, compareVerse?.text);
 
-    // XSS Safe: verse.number is numeric data from Bible API (not user input)
-    // XSS Safe: highlightedText contains properly escaped content from highlightDifferences()
+    // XSS Safe: verse.number is numeric, highlightedText escaped via highlightDifferences()
     html += `<div class="parallel-verse">
       <span class="parallel-verse-num">${verse.number}</span>
       <span>${highlightedText}</span>
@@ -2181,7 +2181,7 @@ function highlightNormalDifferences(text, otherTexts) {
         // It's a word (possibly with punctuation)
         const cleanWord = word.toLowerCase().replace(/[.,;:!?'"]/g, '');
         if (diffWordsLower.has(cleanWord)) {
-          // XSS Safe: word is sanitized via escapeHtml() before insertion
+          // XSS Safe: word is sanitized via escapeHtml() before insertion into template literal
           return `<span class="diff-insert">${escapeHtml(word)}</span>`;
         }
       }
@@ -2262,7 +2262,7 @@ function highlightDifferences(text, compareText) {
         // It's a word (possibly with punctuation)
         const cleanWord = word.toLowerCase().replace(/[.,;:!?'"]/g, '');
         if (diffWordsLower.has(cleanWord)) {
-          // XSS Safe: word is sanitized via escapeHtml() before insertion
+          // XSS Safe: word is sanitized via escapeHtml() before insertion into template literal
           return `<span class="diff-insert">${escapeHtml(word)}</span>`;
         }
       }
@@ -2334,7 +2334,7 @@ function highlightWithTextCompare(text, compareText) {
         html += TC.escapeHtml(normalizedText.slice(pos, h.offset));
       }
       // Add highlighted text
-      // XSS Safe: h.original is sanitized via TC.escapeHtml() before insertion
+      // XSS Safe: h.original is sanitized via TC.escapeHtml() before insertion into template literal
       html += `<span class="diff-insert">${TC.escapeHtml(h.original)}</span>`;
       pos = h.offset + h.length;
     }

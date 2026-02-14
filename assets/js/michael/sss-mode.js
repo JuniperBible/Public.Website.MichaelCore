@@ -481,12 +481,13 @@ function buildSSSPaneHTML(verses, bible, bookName, compareVerses, compareBible) 
     return '<article><p style="text-align: center; color: var(--michael-text-muted); padding: 2rem 0;">No verses found</p></article>';
   }
 
-  // Versification warning
+  // Versification warning (escapeHtml ensures versification string is XSS-safe)
   const versificationWarning = (compareBible && bible?.versification && compareBible?.versification &&
     bible.versification !== compareBible.versification)
     ? `<small style="color: var(--michael-text-muted); display: block; font-size: 0.7rem;">${escapeHtml(bible.versification)} versification</small>`
     : '';
 
+  // escapeHtml protects bible abbreviation from XSS; versificationWarning is already escaped
   const bibleAbbrev = escapeHtml(bible?.abbrev || 'Unknown');
   let html = `<header class="translation-label" style="text-align: center; padding-bottom: 0.5rem;">
     <strong>${bibleAbbrev}</strong>${versificationWarning}
@@ -495,9 +496,11 @@ function buildSSSPaneHTML(verses, bible, bookName, compareVerses, compareBible) 
   verses.forEach(verse => {
     const compareVerse = compareVerses?.find(v => v.number === verse.number);
     const highlightedText = highlightDiffsFn(verse.text, compareVerse?.text, sssHighlightEnabled);
+    // Validate verse number is a safe integer to prevent XSS via numeric field
+    const safeVerseNum = Number.isInteger(verse.number) ? verse.number : 0;
 
     html += `<div class="parallel-verse">
-      <span class="parallel-verse-num">${verse.number}</span>
+      <span class="parallel-verse-num">${safeVerseNum}</span>
       <span>${highlightedText}</span>
     </div>`;
   });
