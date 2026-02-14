@@ -102,6 +102,14 @@ function combineAbortSignals(signal1, signal2) {
   return controller.signal;
 }
 
+// Critical assets that MUST cache for SW to function
+// If these fail, installation should abort
+const CRITICAL_ASSETS = [
+  '/',
+  OFFLINE_URL,
+  '{{ $theme.RelPermalink }}'
+];
+
 // Assets to pre-cache on install
 // CSS files are now embedded with their fingerprinted paths by Hugo
 // Only include JS files that are actually built (referenced in templates)
@@ -156,8 +164,21 @@ self.addEventListener('install', (event) => {
         const shellCache = await caches.open(SHELL_CACHE);
         console.log('[Service Worker] Caching shell assets');
 
-        // Cache assets one by one to handle failures gracefully
+        // Cache critical assets first - fail install if these don't cache
+        for (const asset of CRITICAL_ASSETS) {
+          try {
+            await shellCache.add(asset);
+            console.log(`[Service Worker] Cached critical: ${asset}`);
+          } catch (error) {
+            console.error(`[Service Worker] CRITICAL: Failed to cache ${asset}:`, error);
+            throw new Error(`Critical asset ${asset} failed to cache`);
+          }
+        }
+
+        // Cache remaining assets - failures are non-fatal
         for (const asset of SHELL_ASSETS) {
+          // Skip already-cached critical assets
+          if (CRITICAL_ASSETS.includes(asset)) continue;
           try {
             await shellCache.add(asset);
             console.log(`[Service Worker] Cached: ${asset}`);
@@ -348,7 +369,8 @@ async function networkFirstStrategy(request, cacheName) {
     console.log(`[Service Worker] Network failed, trying cache: ${request.url}`);
     try {
       const cache = await caches.open(cacheName);
-      const cachedResponse = await cache.match(request);
+      // Use ignoreSearch to match URLs regardless of query params
+      const cachedResponse = await cache.match(request, { ignoreSearch: true });
 
       if (cachedResponse) {
         console.log(`[Service Worker] Serving from cache: ${request.url}`);
@@ -407,7 +429,8 @@ async function navigationStrategy(request) {
     // Network failed, try cache
     try {
       const cache = await caches.open(CHAPTERS_CACHE);
-      const cachedResponse = await cache.match(request);
+      // Use ignoreSearch to match URLs regardless of query params
+      const cachedResponse = await cache.match(request, { ignoreSearch: true });
 
       if (cachedResponse) {
         console.log(`[Service Worker] Serving cached page: ${request.url}`);
@@ -422,15 +445,38 @@ async function navigationStrategy(request) {
       if (offlinePage) {
         return offlinePage;
       }
+      // Offline page not cached, fall through to error response
     } catch (cacheError) {
       console.error('[Service Worker] Cache access failed:', cacheError);
     }
 
-    // Last resort: return a basic error response
-    return new Response('Offline and no cached content available', {
+    // Last resort: return a basic offline HTML page
+    return new Response(`<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Offline</title>
+  <style>
+    body { font-family: system-ui, sans-serif; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; background: #1a1a1a; color: #e0e0e0; }
+    .offline { text-align: center; padding: 2rem; }
+    h1 { margin: 0 0 1rem; }
+    p { color: #888; }
+    button { margin-top: 1rem; padding: 0.75rem 1.5rem; background: #4a4a4a; color: #fff; border: none; border-radius: 4px; cursor: pointer; }
+    button:hover { background: #5a5a5a; }
+  </style>
+</head>
+<body>
+  <div class="offline">
+    <h1>You're Offline</h1>
+    <p>This page isn't available offline yet.</p>
+    <button onclick="location.reload()">Try Again</button>
+  </div>
+</body>
+</html>`, {
       status: 503,
       statusText: 'Service Unavailable',
-      headers: { 'Content-Type': 'text/plain' }
+      headers: { 'Content-Type': 'text/html; charset=UTF-8' }
     });
   }
 }

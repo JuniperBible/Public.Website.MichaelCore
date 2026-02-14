@@ -1451,15 +1451,19 @@ function handleSSSChapterChange() {
  */
 let triedBiblesWithNoVerses = new Set();
 
+/** Maximum recursion depth for SSS Bible fallback to prevent stack overflow */
+const MAX_SSS_FALLBACK_DEPTH = 20;
+
 /**
  * Load and display SSS comparison
  * Fetches both translations in parallel and renders side-by-side
  * If the right Bible has no verses, automatically tries another Bible
  * @private
  * @async
+ * @param {number} [depth=0] - Current recursion depth for fallback prevention
  * @returns {Promise<void>}
  */
-async function loadSSSComparison() {
+async function loadSSSComparison(depth = 0) {
   if (!canLoadSSSComparison()) return;
 
   // Clear Strong's notes when loading new chapter
@@ -1505,8 +1509,11 @@ async function loadSSSComparison() {
       sssRightBible = newBible;
       if (sssBibleRight) sssBibleRight.value = sssRightBible;
 
-      // Recursively try loading again with the new Bible
-      return loadSSSComparison();
+      // Recursively try loading again with the new Bible (with depth guard)
+      if (depth < MAX_SSS_FALLBACK_DEPTH) {
+        return loadSSSComparison(depth + 1);
+      }
+      console.warn('[Parallel] Max SSS fallback depth reached, stopping recursion');
     }
     // If no more Bibles to try, fall through and display what we have
   }

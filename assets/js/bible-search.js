@@ -43,7 +43,12 @@ const announcer = document.getElementById('search-announcer');
  * @private
  * @type {Object}
  */
-const indexData = JSON.parse(document.getElementById('bible-index')?.textContent || '{}');
+let indexData = {};
+try {
+  indexData = JSON.parse(document.getElementById('bible-index')?.textContent || '{}');
+} catch (e) {
+  console.error('[BibleSearch] Failed to parse bible-index JSON:', e);
+}
 
 /**
  * Base URL path for Bible data endpoints.

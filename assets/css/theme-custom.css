@@ -84,12 +84,12 @@
   /* Focus ring */
   --focus-ring: 0 0 0 3px rgba(196, 168, 196, 0.6);
 
-  /* Diff highlighting colors (darker variants for dark mode) */
-  --diff-add: #1a3d1a;
-  --diff-omit: #3a3a3a;
-  --diff-punct: #4a4020;
-  --diff-spelling: #4a3520;
-  --diff-subst: #4a2020;
+  /* Diff highlighting colors (improved contrast for dark mode) */
+  --diff-add: #2d5a2d;
+  --diff-omit: #4a4a4a;
+  --diff-punct: #5a4a20;
+  --diff-spelling: #5a4020;
+  --diff-subst: #5a2828;
 
   /* State colors (dark mode) */
   --state-error: #ef5350;

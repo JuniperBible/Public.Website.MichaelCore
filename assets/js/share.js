@@ -258,7 +258,10 @@
           showShareMenu(btn, num);
         });
 
-        sup.parentNode.insertBefore(btn, sup.nextSibling);
+        // Guard against detached DOM nodes
+        if (sup.parentNode) {
+          sup.parentNode.insertBefore(btn, sup.nextSibling);
+        }
       });
       return;
     }

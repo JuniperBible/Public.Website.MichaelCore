@@ -614,21 +614,29 @@ function isUserBusy() {
  *
  * @private
  */
+/** Maximum reload attempts before giving up */
+const MAX_RELOAD_ATTEMPTS = 36; // 36 * 10s = 6 minutes max
+
 function queueReloadWhenIdle() {
   if (pendingReload) {
     return; // Already queued
   }
 
   pendingReload = true;
+  let reloadAttempts = 0;
 
   // Function to check if we can reload now
   const attemptReload = () => {
+    reloadAttempts++;
     if (!isUserBusy()) {
       console.log('[OfflineManager] User is now idle, reloading for SW update...');
       window.location.reload();
-    } else {
+    } else if (reloadAttempts < MAX_RELOAD_ATTEMPTS) {
       // Try again in 10 seconds
       setTimeout(attemptReload, 10000);
+    } else {
+      console.warn('[OfflineManager] Giving up on reload after max attempts. SW update pending.');
+      pendingReload = false;
     }
   };
 
