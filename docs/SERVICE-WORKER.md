@@ -14,6 +14,7 @@ The service worker provides offline functionality with intelligent caching strat
 
 ### 1. `/static/sw.js`
 The main service worker script that handles:
+
 - Pre-caching of shell assets and default chapters
 - Request interception and caching strategies
 - Cache version management
@@ -58,6 +59,7 @@ Updated to include the service worker registration partial before `</body>`.
 
 ### Shell Assets (Cache-First)
 Static resources that rarely change:
+
 - Home page (`/`)
 - Offline fallback page
 - JavaScript files (bible-api.js, dom-utils.js, share-menu.js, share.js, strongs.js)
@@ -67,6 +69,7 @@ Static resources that rarely change:
 
 ### Chapter Pages (Network-First)
 Bible chapter pages (`/bible/{bible}/{book}/{chapter}/`):
+
 - Try network first for fresh content
 - Fall back to cache if network fails
 - Cache successful responses for offline use
@@ -75,6 +78,7 @@ Bible chapter pages (`/bible/{bible}/{book}/{chapter}/`):
 
 ### Offline Fallback
 When both network and cache fail for navigation requests:
+
 - Show `/offline.html` with list of cached content
 - Display connection status
 - Provide retry button
@@ -193,6 +197,7 @@ To force cache refresh (e.g., after major updates):
 
 ### Manual Cache Clearing
 Users can clear caches via browser DevTools:
+
 - Application → Cache Storage → Delete
 
 ## Security Considerations
@@ -276,6 +281,7 @@ localStorage.setItem('sw-show-update-notification', 'false');
 ## Browser Support
 
 Service workers are supported in:
+
 - ✅ Chrome 40+
 - ✅ Firefox 44+
 - ✅ Safari 11.1+

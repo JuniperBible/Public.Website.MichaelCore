@@ -44,6 +44,7 @@ The CSP is implemented as a meta tag in `/home/justin/Programming/Workspace/mich
 ### 1.3 What This CSP Blocks
 
 ✅ **Blocked (Security Benefits):**
+
 - External JavaScript from CDNs (prevents supply chain attacks)
 - External CSS from CDNs
 - External fonts (Google Fonts, etc.)
@@ -54,6 +55,7 @@ The CSP is implemented as a meta tag in `/home/justin/Programming/Workspace/mich
 - External AJAX requests (data exfiltration prevention)
 
 ✅ **Allowed (Functionality Requirements):**
+
 - Scripts from `/assets/js/` (Hugo-generated)
 - Stylesheets from `/assets/css/` (Hugo-generated)
 - Inline CSS in `style` attributes (for dynamic values)
@@ -84,11 +86,13 @@ documentElement.style.setProperty('--highlight-color', selectedColor);
 ```
 
 JavaScript dynamically updates CSS variables like:
+
 - `--highlight-color` - Diff highlighting color (user-configurable)
 - Runtime theme adjustments
 
 #### 2.1.3 Dynamic Layout Values
 127 inline styles remain in templates for values that must be computed at runtime or vary by context:
+
 - Tooltip positioning (viewport-aware)
 - Share menu positioning (avoid overflow)
 - Loading states (`display: none`/`block`)
@@ -97,6 +101,7 @@ JavaScript dynamically updates CSS variables like:
 ### 2.2 Minimization Efforts
 
 During the CSS refactoring project (documented in `CODE_CLEANUP_CHARTER.md`):
+
 - ✅ Extracted 200+ static inline styles to CSS classes
 - ✅ Created component-based CSS architecture (`theme.css`)
 - ✅ Reduced inline styles from 300+ to 127
@@ -148,6 +153,7 @@ element.classList.add('tooltip--position-bottom');
 - May reduce runtime performance (reflows from class changes)
 
 **Recommendation:** Accept `'unsafe-inline'` for styles as a pragmatic trade-off. The security risk is low because:
+
 1. No user-controlled CSS is injected
 2. All inline styles are from trusted templates/scripts
 3. `script-src` is still strict (no inline JS execution)

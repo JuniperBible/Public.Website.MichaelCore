@@ -37,6 +37,7 @@ All interactive elements are fully accessible via keyboard:
 - **No Keyboard Traps**: Users can always navigate in and out of components
 
 **Interactive Components**:
+
 - Bible translation selectors (dropdowns)
 - Book and chapter selectors
 - Verse selection buttons
@@ -95,6 +96,7 @@ All interactive elements are fully accessible via keyboard:
 ```
 
 **Focus Features**:
+
 - Visible focus indicators on all interactive elements
 - `:focus-visible` pseudo-class to show focus only for keyboard navigation
 - Consistent 3px purple outline or shadow for brand recognition
@@ -106,6 +108,7 @@ All interactive elements are fully accessible via keyboard:
 All text meets **WCAG AA contrast requirements (4.5:1 minimum)** for normal text.
 
 **Verified Contrast Ratios** (`/assets/css/theme.css:28-32`):
+
 - **Primary Text** (`--text-900: #1d1b1f`): 12.6:1 on parchment background
 - **Secondary Text** (`--text-700: #3d3841`): 5.8:1 on parchment background (improved from #504a53)
 - **Muted Text** (`--text-500: #565056`): 4.6:1 on parchment background (improved from #6b6570)
@@ -113,6 +116,7 @@ All text meets **WCAG AA contrast requirements (4.5:1 minimum)** for normal text
 - **Button Text**: White (#fff) on purple (#7a00b0) = 8.2:1
 
 **Contrast Improvements Made**:
+
 - Updated `--text-500` from `#6b6570` (3.8:1 ❌) to `#565056` (4.6:1 ✅)
 - Updated `--text-700` from `#504a53` (marginal) to `#3d3841` (5.8:1 ✅)
 
@@ -138,6 +142,7 @@ Respects user preferences for reduced motion (`/assets/css/theme.css:912-926`):
 ```
 
 **Features Affected**:
+
 - Button hover animations (translateY)
 - Skeleton loading animations
 - Toast notification transitions
@@ -149,6 +154,7 @@ Respects user preferences for reduced motion (`/assets/css/theme.css:912-926`):
 Comprehensive print stylesheet for Bible study and sharing (`/assets/css/theme.css:969-1453`):
 
 **Print Optimizations**:
+
 - Clean black text on white background
 - Serif font (Garamond/Georgia) for readability
 - Proper page margins (0.75in top/bottom, 0.5in sides)
@@ -181,18 +187,21 @@ Comprehensive print stylesheet for Bible study and sharing (`/assets/css/theme.c
 ```
 
 **Keyboard Interaction**:
+
 - **Arrow Down/Up**: Navigate between menu items
 - **Home/End**: Jump to first/last menu item
 - **Enter/Space**: Activate menu item
 - **Escape**: Close menu and return focus to trigger button
 
 **ARIA Attributes**:
+
 - `role="menu"` on container
 - `role="menuitem"` on each option
 - `aria-label="Share options"` for context
 - Focus management on open/close
 
 **Network Awareness**:
+
 - Detects online/offline status
 - Disables social sharing when offline
 - Provides offline-specific copy options
@@ -220,11 +229,13 @@ Comprehensive print stylesheet for Bible study and sharing (`/assets/css/theme.c
 ```
 
 **Keyboard Interaction**:
+
 - **Enter/Space**: Open tooltip on Strong's number
 - **Escape**: Close tooltip
 - **Tab**: Move focus to external link inside tooltip
 
 **ARIA Attributes**:
+
 - `role="button"` on trigger elements
 - `role="tooltip"` on popup
 - `aria-describedby` linking trigger to tooltip
@@ -233,6 +244,7 @@ Comprehensive print stylesheet for Bible study and sharing (`/assets/css/theme.c
 - `aria-hidden` on tooltip when closed
 
 **Features**:
+
 - Automatic processing of Strong's numbers in Bible text
 - TreeWalker for efficient DOM traversal
 - Smart positioning (prevents overflow)
@@ -254,16 +266,19 @@ Comprehensive print stylesheet for Bible study and sharing (`/assets/css/theme.c
 ```
 
 **Keyboard Interaction**:
+
 - **Tab**: Navigate between verse buttons
 - **Enter/Space**: Select verse
 - **Arrow keys**: Navigate grid (when focused)
 
 **ARIA Attributes**:
+
 - `role="button"` (implicit from `<button>`)
 - `aria-pressed="true|false"` for toggle state
 - Visual state matches ARIA state (purple background when pressed)
 
 **Features**:
+
 - Single-selection mode
 - "All Verses" option (verse 0)
 - Callback on selection change
@@ -310,6 +325,7 @@ Comprehensive print stylesheet for Bible study and sharing (`/assets/css/theme.c
 ```
 
 **Usage Pattern**:
+
 - `aria-live="polite"`: Wait for user pause before announcing
 - `aria-atomic="false"`: Announce only changed content (for content areas)
 - `aria-atomic="true"`: Announce complete message (for status updates)
@@ -379,6 +395,7 @@ announceToScreenReader(`Found ${results.length} results for "${query}"`);
 ```
 
 **Announcements**:
+
 - "Found 42 results for 'faith'"
 - "No results found for 'xyz'"
 - "Searching..."
@@ -402,6 +419,7 @@ announceToScreenReader('Loaded 2 translations');
 ```
 
 **Announcements**:
+
 - "Loading John 3..."
 - "Loaded 2 translations"
 - "Chapter content updated"
@@ -415,6 +433,7 @@ announceToScreenReader('Loaded 2 translations');
 **Implementation**: Error states are rendered with `role="status"` or within `aria-live` regions for automatic announcement.
 
 **Examples**:
+
 - "Failed to load chapter data"
 - "Network error. Please check your connection."
 - "Definition not available offline"
@@ -444,6 +463,7 @@ All text meets **WCAG AA standards (4.5:1 minimum for normal text, 3:1 for large
 ```
 
 **Applied To**:
+
 - All interactive elements (`:focus-visible`)
 - Links, buttons, form controls
 - Verse buttons, chips, tiles
@@ -490,6 +510,7 @@ State changes are indicated through multiple channels, not color alone:
 ### Manual Testing Checklist
 
 **Keyboard Navigation**:
+
 - [ ] Tab through all interactive elements in logical order
 - [ ] Activate all buttons with Enter and Space keys
 - [ ] Navigate dropdowns with arrow keys
@@ -500,6 +521,7 @@ State changes are indicated through multiple channels, not color alone:
 - [ ] Verify focus is visible on all elements
 
 **Screen Reader Testing**:
+
 - [ ] Verify all form controls have labels
 - [ ] Verify images have appropriate alt text (or `aria-hidden` if decorative)
 - [ ] Verify buttons announce their purpose
@@ -510,6 +532,7 @@ State changes are indicated through multiple channels, not color alone:
 - [ ] Verify disabled states announce properly
 
 **Visual Testing**:
+
 - [ ] Verify focus indicators are visible
 - [ ] Verify text contrast meets 4.5:1 ratio
 - [ ] Verify UI works at 200% zoom
@@ -518,6 +541,7 @@ State changes are indicated through multiple channels, not color alone:
 - [ ] Verify high contrast mode is usable
 
 **Functional Testing**:
+
 - [ ] Verify all features work keyboard-only
 - [ ] Verify forms can be submitted with keyboard
 - [ ] Verify error messages are announced
@@ -624,6 +648,7 @@ pa11y --reporter html http://localhost:1313/ > report.html
 ```
 
 **Test Scenarios**:
+
 1. Navigate the Bible comparison page keyboard-only
 2. Search for a Bible verse and verify results are announced
 3. Open share menu and navigate with arrow keys

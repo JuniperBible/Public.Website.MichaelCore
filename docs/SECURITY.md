@@ -102,6 +102,7 @@ The application enforces a strict Content Security Policy defined in `/home/just
 ### CSP Compliance Verification
 
 All JavaScript files avoid CSP-violating patterns:
+
 - No `eval()` or `new Function()` usage
 - No `javascript:` URLs
 - No inline event handlers (`onclick`, `onerror`, etc.)
@@ -287,11 +288,13 @@ searchQuery = '<script>alert("XSS")</script>';
 **Preferred methods (in order of safety):**
 
 1. **textContent** (safest - no HTML parsing)
+
 ```javascript
 element.textContent = userInput;  // Always safe
 ```
 
 2. **createElement + appendChild** (safe - explicit DOM construction)
+
 ```javascript
 const span = document.createElement('span');
 span.className = 'verse-num';
@@ -300,6 +303,7 @@ parent.appendChild(span);
 ```
 
 3. **innerHTML with escaped content** (safe if properly escaped)
+
 ```javascript
 element.innerHTML = `<mark>${escapeHtml(userInput)}</mark>`;
 ```
@@ -374,6 +378,7 @@ const STRONGS_URLS = {
 **Bible text data sources:**
 
 All Bible translations are derived from SWORD Project modules:
+
 - Source: [CrossWire Bible Society](https://crosswire.org/sword/)
 - Format: OSIS XML converted to JSON
 - Licenses: Public domain or open licenses (see `/content/licenses/`)
@@ -462,6 +467,7 @@ function isChapterPage(url) {
 
 **Future considerations:**
 If external APIs are added (e.g., for Strong's definitions), they must:
+
 1. Use HTTPS only
 2. Implement CSP `connect-src` whitelist
 3. Validate and sanitize all API responses

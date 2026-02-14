@@ -168,24 +168,29 @@ frame-ancestors 'none'; base-uri 'self'; form-action 'self';
 ### Core Features Working Offline
 
 ✅ **Bible Text Display**
+
 - All chapter data served from local JSON files
 - Service worker caches pages as user browses
 - No network required after initial load
 
 ✅ **Strong's Definitions**
+
 - All definitions from local bundled data
 - No API calls for missing definitions
 - "View Full Entry" requires manual user action
 
 ✅ **Parallel Bible Comparison**
+
 - All translations loaded from local data
 - No external resources required
 
 ✅ **Bible Search**
+
 - All search performed client-side
 - No external search APIs
 
 ✅ **Copy/Share Functionality**
+
 - Copy to clipboard works 100% offline
 - Offline text formatting included
 - Social sharing disabled when offline (appropriate behavior)

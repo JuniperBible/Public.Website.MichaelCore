@@ -465,10 +465,12 @@ Michael is a standalone Hugo module that provides Bible reading, comparison, and
 ### Data Requirements
 
 Consuming sites must provide:
+
 1. `data/bible.json` — Bible metadata
 2. `data/bible_auxiliary/{id}.json` — Per-translation verse data
 
 See the `docs/` directory for full documentation:
+
 - [ARCHITECTURE.md](ARCHITECTURE.md) — System overview
 - [DATA-FORMATS.md](DATA-FORMATS.md) — JSON schemas
 - [VERSIFICATION.md](VERSIFICATION.md) — Bible versification

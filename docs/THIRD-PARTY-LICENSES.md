@@ -104,6 +104,7 @@ The following Bible translations are extracted from SWORD Project modules using 
 
 **Data Format:**
 Each entry includes:
+
 - `lemma` - Original Hebrew or Greek word
 - `xlit` - Transliteration (romanized form)
 - `pron` - Pronunciation guide
@@ -247,6 +248,7 @@ When redistributing Bible texts from this project:
 ## Verification
 
 All Bible text licenses can be verified by:
+
 1. Checking `data/example/bible.json` for license fields
 2. Reading full license texts in `data/example/license_rights.json`
 3. Consulting original SWORD module .conf files
@@ -261,6 +263,7 @@ For module-specific questions, contact the SWORD Project or CrossWire Bible Soci
 This document reflects the data sources as of the generation date in the repository.
 
 To report license information errors or request clarifications:
+
 - Open an issue in the project repository
 - Contact the maintainers via project communication channels
 

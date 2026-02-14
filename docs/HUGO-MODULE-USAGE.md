@@ -158,6 +158,7 @@ make icons SVG=path/to/my-logo.svg
 ```
 
 This generates:
+
 - `assets/images/logo.png` (512x512, for Hugo image processing)
 - `assets/images/logo.svg` (copy, for header display)
 - `static/icons/icon-16.png` (favicon)
@@ -308,6 +309,7 @@ The service worker is automatically registered when the site loads. No additiona
 ### Cache Management
 
 Users can manage their offline cache through the settings panel:
+
 - View cached content
 - Clear offline cache
 - See cache size

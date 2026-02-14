@@ -19,6 +19,7 @@ This directory contains documentation about Michael's Software Bill of Materials
 A **Software Bill of Materials (SBOM)** is a comprehensive inventory of all components, libraries, and dependencies that make up a software application. Think of it as an "ingredient list" for software.
 
 An SBOM typically includes:
+
 - **Component names** - What libraries and modules are used
 - **Version information** - Specific versions of each component
 - **License data** - How each component is licensed
@@ -26,6 +27,7 @@ An SBOM typically includes:
 - **Provenance** - Where components come from (package repositories, vendors)
 
 SBOMs are becoming a standard requirement in software development, especially for:
+
 - **Supply chain security** - Understanding what's in your software
 - **Vulnerability management** - Identifying components with known security issues
 - **License compliance** - Ensuring all dependencies meet legal requirements
@@ -40,6 +42,7 @@ For the Michael project, SBOM generation provides several critical benefits:
 ### 1. Security Transparency
 
 Michael processes and serves Bible texts that may be used in sensitive contexts (research, worship, education). An SBOM allows users to:
+
 - Verify exactly what software components are running
 - Audit for security vulnerabilities in dependencies
 - Track third-party code included in the project
@@ -47,11 +50,13 @@ Michael processes and serves Bible texts that may be used in sensitive contexts 
 ### 2. License Compliance
 
 The project includes multiple Bible translations with different licenses:
+
 - Public domain texts (ASV, DRC, Geneva1599, etc.)
 - GPL-licensed texts (KJVA with Strong's numbers)
 - Copyrighted-free texts (LXX, SBLGNT)
 
 The SBOM documents all software dependencies and their licenses, ensuring users can verify compliance with:
+
 - Open source licenses (GPL, MIT, BSD)
 - Bible text licenses (from SWORD Project modules)
 - Data licenses (Strong's concordance, versification schemas)
@@ -59,6 +64,7 @@ The SBOM documents all software dependencies and their licenses, ensuring users 
 ### 3. Supply Chain Security
 
 Michael aims to be a **zero-runtime-dependency** static site generator. The SBOM verifies this claim by showing:
+
 - **Build-time dependencies only** (Hugo, Go, Syft)
 - **No runtime JavaScript frameworks** (vanilla JavaScript only)
 - **No external API dependencies** (fully offline-capable)
@@ -68,6 +74,7 @@ This makes Michael suitable for air-gapped environments and high-security contex
 ### 4. Reproducibility
 
 The SBOM enables users to:
+
 - Reproduce exact builds with the same dependency versions
 - Verify that distributed packages match source code
 - Audit changes in dependencies over time
@@ -284,6 +291,7 @@ assets/downloads/sbom/
 ```
 
 These files are:
+
 - Tracked in Git (to document the project state)
 - Served as static files (accessible at `/downloads/sbom/`)
 - Updated on each build (via `make build` or `make sbom`)
@@ -374,6 +382,7 @@ When using Michael's SBOM:
 The U.S. Executive Order on Improving the Nation's Cybersecurity (May 2021) requires SBOMs for software sold to federal agencies.
 
 Michael's SBOM generation meets these requirements:
+
 - Machine-readable formats (SPDX, CycloneDX)
 - Comprehensive component inventory
 - License transparency
@@ -384,6 +393,7 @@ Michael's SBOM generation meets these requirements:
 The National Telecommunications and Information Administration (NTIA) defines minimum elements for SBOMs:
 
 Michael's SBOM includes all required elements:
+
 - ✅ Supplier names
 - ✅ Component names
 - ✅ Version strings

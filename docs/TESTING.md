@@ -5,6 +5,7 @@ This document describes the automated regression testing setup for the Michael H
 ## Overview
 
 The test suite consists of 15 end-to-end browser tests covering:
+
 - Compare page functionality (5 tests)
 - Search page functionality (2 tests)
 - Single chapter page functionality (5 tests)
@@ -238,6 +239,7 @@ func TestNewFeature(t *testing.T) {
 ## CI/CD Integration
 
 For CI environments, ensure:
+
 1. Chrome/Chromium is available (use `chromedp/headless-shell` container)
 2. Hugo is installed for building the site
 3. Port 1313 is available for the dev server
