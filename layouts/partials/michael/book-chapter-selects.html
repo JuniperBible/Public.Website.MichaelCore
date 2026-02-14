@@ -14,7 +14,10 @@
 {{- $bookId := .bookId -}}
 {{- $chapterId := .chapterId -}}
 {{- $site := .site -}}
-{{- $firstBible := index $site.Data.bibles.bibles 0 -}}
+{{- $firstBible := dict -}}
+{{- with $site.Data.bibles.bibles -}}
+  {{- $firstBible = index . 0 -}}
+{{- end -}}
 {{- $aux := dict -}}
 {{- if $firstBible -}}
   {{- $aux = index $site.Data.bibles_auxiliary $firstBible.id -}}

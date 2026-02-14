@@ -631,7 +631,7 @@ function handleBookChange(e) {
     chapterSelect.value = '1';
 
     // Get book name from metadata and announce to screen readers
-    const bookInfo = bibleData.books.find(b => b.id === currentBook);
+    const bookInfo = bibleData?.books?.find(b => b.id === currentBook);
     const bookName = bookInfo?.name || currentBook;
     announce(`Selected ${bookName}. Loading chapter 1.`);
   } else {
@@ -672,7 +672,7 @@ function populateChapterDropdown() {
   }
 
   // Get chapter count from book structure (books is now an array)
-  const book = bibleData.books.find(b => b.id === currentBook);
+  const book = bibleData?.books?.find(b => b.id === currentBook);
   if (!book) {
     chapterSelect.disabled = true;
     return;
@@ -703,7 +703,7 @@ function handleChapterChange(e) {
 
   if (currentChapter > 0 && currentBook) {
     // Get book name from metadata and announce to screen readers
-    const bookInfo = bibleData.books.find(b => b.id === currentBook);
+    const bookInfo = bibleData?.books?.find(b => b.id === currentBook);
     const bookName = bookInfo?.name || currentBook;
     announce(`Loading ${bookName} chapter ${currentChapter}.`);
   }
@@ -762,6 +762,11 @@ async function loadComparison() {
 
   // Fetch chapter data for all selected translations in parallel
   // Use BibleLoader to read from compressed archives (works for all Bibles)
+  if (!window.Michael?.BibleLoader?.getChapter) {
+    console.error('[Parallel] BibleLoader not loaded');
+    parallelContent.innerHTML = '<div class="center muted">Error: Bible data unavailable</div>';
+    return;
+  }
   const chapterDataPromises = selectedTranslations.map(bibleId =>
     window.Michael.BibleLoader.getChapter(bibleId, currentBook, currentChapter)
   );
@@ -786,7 +791,7 @@ async function loadComparison() {
   }
 
     // Announce completion to screen readers
-    const bookInfo = bibleData.books.find(b => b.id === currentBook);
+    const bookInfo = bibleData?.books?.find(b => b.id === currentBook);
     const bookName = bookInfo?.name || currentBook;
     const verseInfo = currentVerse > 0 ? ` verse ${currentVerse}` : '';
     announce(`${bookName} chapter ${currentChapter}${verseInfo} loaded with ${selectedTranslations.length} translation${selectedTranslations.length !== 1 ? 's' : ''}.`);
@@ -835,6 +840,10 @@ function resetVerseGrid() {
 async function populateVerseGrid() {
   // Find first translation with valid data for this chapter
   // Use BibleLoader which already has all loaded Bibles cached in memory
+  if (!window.Michael?.BibleLoader?.getChapter) {
+    resetVerseGrid();
+    return;
+  }
   let verses = null;
   for (const translationId of selectedTranslations) {
     verses = await window.Michael.BibleLoader.getChapter(translationId, currentBook, currentChapter);
@@ -953,7 +962,7 @@ function buildComparisonHTML(chaptersData) {
   }
 
   // Get book name from metadata (books is now an array)
-  const bookInfo = bibleData.books.find(b => b.id === currentBook);
+  const bookInfo = bibleData?.books?.find(b => b.id === currentBook);
   const bookName = bookInfo?.name || currentBook;
 
   // Compact header showing current reference
@@ -1364,7 +1373,7 @@ function handleSSSBookChange() {
     if (sssChapterSelect) sssChapterSelect.value = '1';
 
     // Announce book change to screen readers
-    const bookInfo = bibleData.books.find(b => b.id === sssBook);
+    const bookInfo = bibleData?.books?.find(b => b.id === sssBook);
     const bookName = bookInfo?.name || sssBook;
     announce(`Selected ${bookName}. Loading chapter 1.`);
   } else {
@@ -1396,7 +1405,7 @@ function populateSSSChapterDropdown() {
     return;
   }
 
-  const book = bibleData.books.find(b => b.id === sssBook);
+  const book = bibleData?.books?.find(b => b.id === sssBook);
   if (!book) {
     sssChapterSelect.disabled = true;
     return;
@@ -1424,7 +1433,7 @@ function handleSSSChapterChange() {
 
   if (sssChapter > 0 && sssBook) {
     // Announce chapter change to screen readers
-    const bookInfo = bibleData.books.find(b => b.id === sssBook);
+    const bookInfo = bibleData?.books?.find(b => b.id === sssBook);
     const bookName = bookInfo?.name || sssBook;
     announce(`Loading ${bookName} chapter ${sssChapter}.`);
   }
@@ -1468,6 +1477,11 @@ async function loadSSSComparison() {
   }
 
   // Fetch both chapters using BibleLoader (works for all Bibles)
+  if (!window.Michael?.BibleLoader?.getChapter) {
+    if (sssLeftPane) sssLeftPane.innerHTML = '<div class="center muted">Error: Bible data unavailable</div>';
+    if (sssRightPane) sssRightPane.innerHTML = '<div class="center muted">Error: Bible data unavailable</div>';
+    return;
+  }
   const [leftVerses, rightVerses] = await Promise.all([
     window.Michael.BibleLoader.getChapter(sssLeftBible, sssBook, sssChapter),
     window.Michael.BibleLoader.getChapter(sssRightBible, sssBook, sssChapter)
@@ -1508,7 +1522,7 @@ async function loadSSSComparison() {
   // Get Bible info
   const leftBible = bibleData.bibles.find(b => b.id === sssLeftBible);
   const rightBible = bibleData.bibles.find(b => b.id === sssRightBible);
-  const bookInfo = bibleData.books.find(b => b.id === sssBook);
+  const bookInfo = bibleData?.books?.find(b => b.id === sssBook);
   const bookName = bookInfo?.name || sssBook;
 
   // Filter verses if specific verse selected

@@ -160,7 +160,7 @@ These are loaded with defer to avoid blocking page rendering.
     <p id="no-results" class="center muted hidden">{{ i18n "noResults" | default "No Bibles match this filter." }}</p>
     {{ if gt $total $pageSize }}
     <nav class="actions mt-2">
-      <button id="show-more-bibles" class="btn btn--secondary">
+      <button type="button" id="show-more-bibles" class="btn btn--secondary">
         {{ i18n "showMore" | default "Show More" }} ({{ sub $total $pageSize }} {{ i18n "more" | default "more" }})
       </button>
     </nav>

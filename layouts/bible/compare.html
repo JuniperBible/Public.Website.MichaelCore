@@ -52,7 +52,7 @@
         <div class="compare-controls__row">
           {{ partial "michael/book-chapter-selects.html" (dict "site" $.Site "bookId" "book-select" "chapterId" "chapter-select") }}
           {{ partial "michael/compare-diff-control.html" (dict "toggleId" "highlight-toggle" "colorId" "highlight" "optionClass" "color-option" "hideColorPicker" true) }}
-          <button id="sss-mode-btn" class="btn btn--sm" aria-controls="sss-mode" aria-label="Switch to Side by Side Scripture mode" title="Switch to Side by Side Scripture (SSS)">
+          <button type="button" id="sss-mode-btn" class="btn btn--sm" aria-controls="sss-mode" aria-label="Switch to Side by Side Scripture mode" title="Switch to Side by Side Scripture (SSS)">
             VVV <span class="muted">ON</span>
           </button>
         </div>
@@ -65,7 +65,7 @@
       <div class="compare-controls compare-controls--compact">
         <div class="compare-controls__row">
           <span class="sss-bible-pair">
-            <button id="sss-back-btn" class="btn btn--sm" title="Back to Compare" aria-label="Back to Compare">&larr;</button>
+            <button type="button" id="sss-back-btn" class="btn btn--sm" title="Back to Compare" aria-label="Back to Compare">&larr;</button>
             {{ partial "michael/bible-select.html" (dict "site" $.Site "id" "sss-bible-left" "label" "Left Bible..." "class" "select select--compact") }}
             {{ partial "michael/bible-select.html" (dict "site" $.Site "id" "sss-bible-right" "label" "Right Bible..." "class" "select select--compact") }}
           </span>
@@ -73,7 +73,7 @@
         <div class="compare-controls__row">
           {{ partial "michael/book-chapter-selects.html" (dict "site" $.Site "bookId" "sss-book-select" "chapterId" "sss-chapter-select") }}
           {{ partial "michael/compare-diff-control.html" (dict "toggleId" "sss-highlight-toggle" "colorId" "sss-highlight" "optionClass" "sss-color-option" "checked" false "hideColorPicker" true) }}
-          <button id="sss-toggle-btn" class="btn btn--sm" aria-controls="normal-mode" aria-label="Switch to Vertical Verse View mode" title="Switch to Vertical Verse View (VVV)">
+          <button type="button" id="sss-toggle-btn" class="btn btn--sm" aria-controls="normal-mode" aria-label="Switch to Vertical Verse View mode" title="Switch to Vertical Verse View (VVV)">
             SSS <span class="muted">ON</span>
           </button>
         </div>

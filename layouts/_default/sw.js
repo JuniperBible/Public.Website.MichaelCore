@@ -55,6 +55,53 @@ let metadataReady = Promise.resolve();
 // Track background sync retry attempts
 const syncRetryCount = new Map(); // syncTag -> retryCount
 
+// Network timeout for fetch operations (30 seconds)
+const FETCH_TIMEOUT_MS = 30000;
+
+/**
+ * Fetch with timeout to prevent indefinite hangs
+ * @param {Request|string} request - Request to fetch
+ * @param {Object} options - Fetch options
+ * @param {number} timeoutMs - Timeout in milliseconds
+ * @returns {Promise<Response>}
+ */
+async function fetchWithTimeout(request, options = {}, timeoutMs = FETCH_TIMEOUT_MS) {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+
+  try {
+    const mergedOptions = {
+      ...options,
+      signal: options.signal
+        ? combineAbortSignals(options.signal, controller.signal)
+        : controller.signal
+    };
+    return await fetch(request, mergedOptions);
+  } finally {
+    clearTimeout(timeoutId);
+  }
+}
+
+/**
+ * Combine multiple abort signals into one
+ * @param {AbortSignal} signal1
+ * @param {AbortSignal} signal2
+ * @returns {AbortSignal}
+ */
+function combineAbortSignals(signal1, signal2) {
+  const controller = new AbortController();
+
+  const abort = () => controller.abort();
+  signal1.addEventListener('abort', abort);
+  signal2.addEventListener('abort', abort);
+
+  if (signal1.aborted || signal2.aborted) {
+    controller.abort();
+  }
+
+  return controller.signal;
+}
+
 // Assets to pre-cache on install
 // CSS files are now embedded with their fingerprinted paths by Hugo
 // Only include JS files that are actually built (referenced in templates)
@@ -228,7 +275,7 @@ async function cacheFirstStrategy(request, cacheName) {
     }
 
     console.log(`[Service Worker] Cache miss, fetching: ${request.url}`);
-    const networkResponse = await fetch(request);
+    const networkResponse = await fetchWithTimeout(request);
 
     // Cache the new response for future use (only on success)
     if (networkResponse && networkResponse.ok) {
@@ -283,8 +330,8 @@ async function cacheFirstStrategy(request, cacheName) {
  */
 async function networkFirstStrategy(request, cacheName) {
   try {
-    // Try network first
-    const networkResponse = await fetch(request);
+    // Try network first (with timeout)
+    const networkResponse = await fetchWithTimeout(request);
 
     // Cache the response for offline use (only on success)
     if (networkResponse && networkResponse.ok) {
@@ -344,8 +391,8 @@ async function networkFirstStrategy(request, cacheName) {
  */
 async function navigationStrategy(request) {
   try {
-    // Try network first
-    const networkResponse = await fetch(request);
+    // Try network first (with timeout)
+    const networkResponse = await fetchWithTimeout(request);
 
     // Cache successful navigation responses
     if (networkResponse && networkResponse.ok) {
@@ -645,7 +692,7 @@ async function fetchBibleOverview(bibleId, basePath, cache, signal) {
   const bibleUrl = `${basePath}/${bibleId}/`;
 
   try {
-    const bibleResponse = await fetch(bibleUrl, { signal });
+    const bibleResponse = await fetchWithTimeout(bibleUrl, { signal });
     if (!bibleResponse.ok) {
       throw new Error(`Bible page returned ${bibleResponse.status}`);
     }
@@ -675,7 +722,7 @@ async function discoverChapters(bibleId, basePath, bookLinks, cache, signal) {
     if (signal.aborted) throw new Error('Download cancelled');
 
     try {
-      const bookResponse = await fetch(bookUrl, { signal });
+      const bookResponse = await fetchWithTimeout(bookUrl, { signal });
       if (bookResponse.ok) {
         await cache.put(bookUrl, bookResponse.clone());
         const bookHtml = await bookResponse.text();
@@ -724,7 +771,7 @@ async function cacheAllChapters(bibleId, chapterUrls, cache, signal, startComple
     if (signal.aborted) throw new Error('Download cancelled');
 
     try {
-      const chapterResponse = await fetch(chapterUrl, { signal });
+      const chapterResponse = await fetchWithTimeout(chapterUrl, { signal });
       if (chapterResponse.ok) {
         await cache.put(chapterUrl, chapterResponse.clone());
       } else {

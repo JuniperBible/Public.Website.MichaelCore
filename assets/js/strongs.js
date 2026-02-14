@@ -408,6 +408,7 @@ function getLocalDefinition(number, type) {
  * @param {StrongsDefinition} def - The definition data to display
  */
 function showDefinition(tip, def) {
+  if (!tip) return;
   const defEl = tip.querySelector('.strongs-definition');
 
   if (def.source === 'local') {
