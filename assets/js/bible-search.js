@@ -452,19 +452,129 @@
    * // Function validates input, cancels previous search,
    * // iterates through all chapters, and displays results
    */
+  /**
+   * Validates the search query string.
+   * Returns an error message string if invalid, or null if valid.
+   *
+   * @param {string} query - The trimmed search query.
+   * @returns {string|null} Error message, or null when the query is acceptable.
+   */
+  function validateSearchInput(query) {
+    if (!query || query.length < 2) {
+      return 'Please enter at least 2 characters to search.';
+    }
+    if (query.length > 256) {
+      return 'Search query too long (max 256 characters).';
+    }
+    return null;
+  }
+
+  /**
+   * Searches a single chapter's verses and appends matching results.
+   * Triggers an incremental render for every new match up to the first 100.
+   *
+   * @param {Array}    verses        - Verse objects returned by fetchChapter.
+   * @param {string}   query         - The raw search query.
+   * @param {boolean}  caseSensitive - Whether the match is case-sensitive.
+   * @param {boolean}  wholeWord     - Whether to match whole words only.
+   * @param {Array}    results       - Accumulator array for matched verses.
+   * @param {Object}   book          - Book metadata (name, id, chapters).
+   * @param {number}   ch            - Chapter number being searched.
+   * @param {Function} renderFn      - Callback invoked with updated results array.
+   */
+  function searchChapterVerses(verses, query, caseSensitive, wholeWord, results, book, ch, renderFn) {
+    for (const verse of verses) {
+      if (!matchesQuery(verse.text, query, caseSensitive, wholeWord)) continue;
+
+      results.push({
+        book: book.name,
+        bookId: book.id,
+        chapter: ch,
+        verse: verse.num,
+        text: verse.text
+      });
+
+      // Show results incrementally (first 100 only to prevent DOM bloat)
+      if (results.length <= 100) {
+        renderFn(results);
+      }
+    }
+  }
+
+  /**
+   * Builds the "no results" message based on the parsed query type.
+   *
+   * @param {string} query     - The raw search query.
+   * @param {Object} bibleData - Metadata for the selected Bible translation.
+   * @returns {string} Human-readable message explaining why nothing was found.
+   */
+  function buildNoResultsMessage(query, bibleData) {
+    const parsed = parseQuery(query);
+    if (parsed.type === 'strongs') {
+      return `No verses containing Strong's number "${parsed.value}" found in ${bibleData.title}. Note: Strong's numbers require Bible translations with Strong's data.`;
+    }
+    if (parsed.type === 'phrase') {
+      return `No results found for phrase "${parsed.value}" in ${bibleData.title}.`;
+    }
+    return `No results found for "${query}" in ${bibleData.title}.`;
+  }
+
+  /**
+   * Iterates every book and chapter in bibleData, fetching and searching each.
+   * Yields to the event loop every 10 chapters to keep the UI responsive.
+   * Returns early (without throwing) when the AbortSignal fires.
+   *
+   * @async
+   * @param {Object}   bibleData     - Metadata for the selected Bible translation.
+   * @param {string}   bible         - Bible translation identifier.
+   * @param {string}   query         - The raw search query.
+   * @param {boolean}  caseSensitive - Whether the match is case-sensitive.
+   * @param {boolean}  wholeWord     - Whether to match whole words only.
+   * @param {AbortSignal} signal     - Signal used to cancel in-flight fetches.
+   * @param {Function} renderFn      - Callback invoked with updated results array.
+   * @returns {Promise<Array>} Array of all matched verse result objects.
+   */
+  async function searchAllBooks(bibleData, bible, query, caseSensitive, wholeWord, signal, renderFn) {
+    const results = [];
+    let chaptersSearched = 0;
+    const totalChapters = bibleData.books.reduce((sum, b) => sum + b.chapters, 0);
+
+    // Sequential search through each book and chapter.
+    // Results appear in canonical Bible order (no relevance ranking).
+    for (const book of bibleData.books) {
+      for (let ch = 1; ch <= book.chapters; ch++) {
+        // Check if search was canceled
+        if (signal.aborted) return results;
+
+        chaptersSearched++;
+        statusEl.textContent = `Searching ${book.name} ${ch}... (${chaptersSearched}/${totalChapters})`;
+
+        const verses = await fetchChapter(bible, book.id, ch, signal);
+
+        if (verses) {
+          searchChapterVerses(verses, query, caseSensitive, wholeWord, results, book, ch, renderFn);
+        }
+
+        // Yield to event loop every 10 chapters to keep UI responsive.
+        // setTimeout(fn, 0) allows browser to process events/render updates.
+        if (chaptersSearched % 10 === 0) {
+          await new Promise(r => setTimeout(r, 0));
+        }
+      }
+    }
+
+    return results;
+  }
+
   async function performSearch() {
     const query = queryInput.value.trim();
     const bible = bibleSelect.value;
     const caseSensitive = caseSensitiveCheckbox.checked;
     const wholeWord = wholeWordCheckbox.checked;
 
-    if (!query || query.length < 2) {
-      showMessage('Please enter at least 2 characters to search.');
-      return;
-    }
-
-    if (query.length > 256) {
-      showMessage('Search query too long (max 256 characters).');
+    const validationError = validateSearchInput(query);
+    if (validationError) {
+      showMessage(validationError);
       return;
     }
 
@@ -490,65 +600,17 @@
       return;
     }
 
-    const results = [];
-    let chaptersSearched = 0;
-    const totalChapters = bibleData.books.reduce((sum, b) => sum + b.chapters, 0);
+    const renderFn = (results) => renderResults(results, query, caseSensitive, bible, bibleData);
 
     try {
-      // Sequential search through each book and chapter
-      // Results appear in canonical Bible order (no relevance ranking)
-      for (const book of bibleData.books) {
-        for (let ch = 1; ch <= book.chapters; ch++) {
-          // Check if search was canceled
-          if (signal.aborted) return;
-
-          chaptersSearched++;
-          statusEl.textContent = `Searching ${book.name} ${ch}... (${chaptersSearched}/${totalChapters})`;
-
-          const verses = await fetchChapter(bible, book.id, ch, signal);
-
-          if (verses) {
-            for (const verse of verses) {
-              if (matchesQuery(verse.text, query, caseSensitive, wholeWord)) {
-                results.push({
-                  book: book.name,
-                  bookId: book.id,
-                  chapter: ch,
-                  verse: verse.num,
-                  text: verse.text
-                });
-
-                // Show results incrementally (first 100 only to prevent DOM bloat)
-                if (results.length <= 100) {
-                  renderResults(results, query, caseSensitive, bible, bibleData);
-                }
-              }
-            }
-          }
-
-          // Yield to event loop every 10 chapters to keep UI responsive
-          // setTimeout(fn, 0) allows browser to process events/render updates
-          if (chaptersSearched % 10 === 0) {
-            await new Promise(r => setTimeout(r, 0));
-          }
-        }
-      }
+      const results = await searchAllBooks(bibleData, bible, query, caseSensitive, wholeWord, signal, renderFn);
 
       // Final render with complete results
       statusEl.classList.add('hidden');
       renderResults(results, query, caseSensitive, bible, bibleData);
 
       if (results.length === 0) {
-        const parsed = parseQuery(query);
-        let message = '';
-        if (parsed.type === 'strongs') {
-          message = `No verses containing Strong's number "${parsed.value}" found in ${bibleData.title}. Note: Strong's numbers require Bible translations with Strong's data.`;
-        } else if (parsed.type === 'phrase') {
-          message = `No results found for phrase "${parsed.value}" in ${bibleData.title}.`;
-        } else {
-          message = `No results found for "${query}" in ${bibleData.title}.`;
-        }
-        showMessage(message);
+        showMessage(buildNoResultsMessage(query, bibleData));
         announce('No results found.');
       } else {
         // Announce result count to screen readers

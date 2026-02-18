@@ -381,6 +381,31 @@ function backtrack(trace, a, b, n, m) {
 // ==================== Difference Classifier ====================
 
 /**
+ * Look up the canonical (modern) form of a word in either spelling direction.
+ * Returns undefined when the word is not in either variant map.
+ *
+ * @param {string} norm - Normalized word
+ * @returns {string|undefined}
+ */
+function canonicalSpelling(norm) {
+  return spellingVariants.get(norm) || spellingVariantsReverse.get(norm);
+}
+
+/**
+ * Return true when aNorm and bNorm are known spelling variants of each other
+ * (British/American or archaic/modern), checking all four pairing directions.
+ *
+ * @param {string} aNorm
+ * @param {string} bNorm
+ * @returns {boolean}
+ */
+function isSpellingVariant(aNorm, bNorm) {
+  const aCanon = canonicalSpelling(aNorm);
+  const bCanon = canonicalSpelling(bNorm);
+  return aCanon === bNorm || bCanon === aNorm;
+}
+
+/**
  * Classify the type of difference between two tokens
  *
  * @param {Token} aToken - Token from first text (or null if insert)
@@ -388,47 +413,142 @@ function backtrack(trace, a, b, n, m) {
  * @returns {string} DiffCategory value
  */
 function classifyDifference(aToken, bToken) {
-  // Pure insert
   if (!aToken) return DiffCategory.ADD;
-
-  // Pure delete
   if (!bToken) return DiffCategory.OMIT;
 
-  // Both exist - compare for category
-
-  // Check if only punctuation changed
   if (aToken.type === TokenType.PUNCT && bToken.type === TokenType.PUNCT) {
     return DiffCategory.PUNCT;
   }
 
-  // Check if case-only difference
   if (aToken.normalized === bToken.normalized) {
     return DiffCategory.TYPO;
   }
 
-  // Check spelling variants
-  const aNorm = aToken.normalized;
-  const bNorm = bToken.normalized;
-
-  if (spellingVariants.has(aNorm) && spellingVariants.get(aNorm) === bNorm) {
-    return DiffCategory.SPELLING;
-  }
-  if (spellingVariantsReverse.has(aNorm) && spellingVariantsReverse.get(aNorm) === bNorm) {
+  if (isSpellingVariant(aToken.normalized, bToken.normalized)) {
     return DiffCategory.SPELLING;
   }
 
-  // Check both directions
-  const aVariant = spellingVariants.get(aNorm) || spellingVariantsReverse.get(aNorm);
-  const bVariant = spellingVariants.get(bNorm) || spellingVariantsReverse.get(bNorm);
-  if (aVariant === bNorm || bVariant === aNorm) {
-    return DiffCategory.SPELLING;
-  }
-
-  // Default: substantive difference
   return DiffCategory.SUBSTANTIVE;
 }
 
 // ==================== Main Comparison Function ====================
+
+/**
+ * Return true when the edit at index i is the start of a delete+insert pair
+ * (i.e. a token replacement rather than a standalone deletion).
+ *
+ * @param {Array} editScript
+ * @param {number} i - current index
+ * @returns {boolean}
+ */
+function isReplacePair(editScript, i) {
+  return (
+    editScript[i].op === DiffOp.DELETE &&
+    i + 1 < editScript.length &&
+    editScript[i + 1].op === DiffOp.INSERT
+  );
+}
+
+/**
+ * Build a REPLACE diff entry from a delete+insert pair.
+ *
+ * @param {Array} editScript
+ * @param {number} i - index of the DELETE edit
+ * @param {Token[]} tokensA
+ * @param {Token[]} tokensB
+ * @returns {Object} diff entry
+ */
+function buildReplaceDiff(editScript, i, tokensA, tokensB) {
+  const aToken = tokensA[editScript[i].aIndex];
+  const bToken = tokensB[editScript[i + 1].bIndex];
+  return {
+    op: DiffOp.REPLACE,
+    aToken,
+    bToken,
+    category: classifyDifference(aToken, bToken),
+    aOffset: aToken.offset,
+    bOffset: bToken.offset
+  };
+}
+
+/**
+ * Build a DELETE (omission) diff entry.
+ *
+ * @param {Object} edit
+ * @param {Token[]} tokensA
+ * @returns {Object} diff entry
+ */
+function buildDeleteDiff(edit, tokensA) {
+  const aToken = tokensA[edit.aIndex];
+  return {
+    op: DiffOp.DELETE,
+    aToken,
+    bToken: null,
+    category: DiffCategory.OMIT,
+    aOffset: aToken.offset,
+    bOffset: null
+  };
+}
+
+/**
+ * Build an INSERT (addition) diff entry.
+ *
+ * @param {Object} edit
+ * @param {Token[]} tokensB
+ * @returns {Object} diff entry
+ */
+function buildInsertDiff(edit, tokensB) {
+  const bToken = tokensB[edit.bIndex];
+  return {
+    op: DiffOp.INSERT,
+    aToken: null,
+    bToken,
+    category: DiffCategory.ADD,
+    aOffset: null,
+    bOffset: bToken.offset
+  };
+}
+
+/**
+ * Process a Myers edit script into classified diff entries.
+ *
+ * @param {Array} editScript
+ * @param {Token[]} tokensA
+ * @param {Token[]} tokensB
+ * @returns {Array} classified diffs
+ */
+function processEditScript(editScript, tokensA, tokensB) {
+  const diffs = [];
+  let i = 0;
+
+  while (i < editScript.length) {
+    const edit = editScript[i];
+
+    if (edit.op === DiffOp.EQUAL) { i++; continue; }
+
+    if (isReplacePair(editScript, i)) {
+      diffs.push(buildReplaceDiff(editScript, i, tokensA, tokensB));
+      i += 2;
+      continue;
+    }
+
+    if (edit.op === DiffOp.DELETE) {
+      diffs.push(buildDeleteDiff(edit, tokensA));
+      i++;
+      continue;
+    }
+
+    if (edit.op === DiffOp.INSERT) {
+      diffs.push(buildInsertDiff(edit, tokensB));
+      i++;
+      continue;
+    }
+
+    i++;
+  }
+
+  return diffs;
+}
 
 /**
  * Compare two texts and return classified differences
@@ -438,84 +558,14 @@ function classifyDifference(aToken, bToken) {
  * @returns {Object} Comparison result with diffs and metadata
  */
 function compareTexts(textA, textB) {
-  // Normalize texts
   const normA = normalizeText(textA);
   const normB = normalizeText(textB);
 
-  // Tokenize
   const tokensA = tokenize(normA);
   const tokensB = tokenize(normB);
 
-  // Run Myers diff
   const editScript = myersDiff(tokensA, tokensB);
-
-  // Process edit script into classified diffs
-  const diffs = [];
-  let i = 0;
-
-  while (i < editScript.length) {
-    const edit = editScript[i];
-
-    if (edit.op === DiffOp.EQUAL) {
-      // No diff needed for equal tokens
-      i++;
-      continue;
-    }
-
-    // Check for replace pattern (delete followed by insert)
-    if (edit.op === DiffOp.DELETE &&
-        i + 1 < editScript.length &&
-        editScript[i + 1].op === DiffOp.INSERT) {
-
-      const aToken = tokensA[edit.aIndex];
-      const bToken = tokensB[editScript[i + 1].bIndex];
-      const category = classifyDifference(aToken, bToken);
-
-      diffs.push({
-        op: DiffOp.REPLACE,
-        aToken,
-        bToken,
-        category,
-        aOffset: aToken.offset,
-        bOffset: bToken.offset
-      });
-
-      i += 2;
-      continue;
-    }
-
-    // Single delete
-    if (edit.op === DiffOp.DELETE) {
-      const aToken = tokensA[edit.aIndex];
-      diffs.push({
-        op: DiffOp.DELETE,
-        aToken,
-        bToken: null,
-        category: DiffCategory.OMIT,
-        aOffset: aToken.offset,
-        bOffset: null
-      });
-      i++;
-      continue;
-    }
-
-    // Single insert
-    if (edit.op === DiffOp.INSERT) {
-      const bToken = tokensB[edit.bIndex];
-      diffs.push({
-        op: DiffOp.INSERT,
-        aToken: null,
-        bToken,
-        category: DiffCategory.ADD,
-        aOffset: null,
-        bOffset: bToken.offset
-      });
-      i++;
-      continue;
-    }
-
-    i++;
-  }
+  const diffs = processEditScript(editScript, tokensA, tokensB);
 
   return {
     textA: normA,
@@ -547,39 +597,38 @@ function countByCategory(diffs) {
 // ==================== Rendering ====================
 
 /**
- * Render text with highlighted differences
+ * Build a lookup map from DiffCategory to the corresponding show-flag value.
+ * This replaces the multi-branch ||/&& chain in renderWithHighlights.
  *
- * @param {string} text - Original text to render
- * @param {Array} diffs - Diff results from compareTexts
- * @param {string} side - 'a' for base text, 'b' for compare text
- * @param {Object} options - Rendering options
- * @returns {string} HTML with highlighted spans
+ * @param {Object} flags - The resolved options flags
+ * @returns {Map<string,boolean>} category -> visible
  */
-function renderWithHighlights(text, diffs, side, options = {}) {
-  const {
-    showTypo = false,      // Typo differences are subtle, often hidden
-    showPunct = true,
-    showSpelling = true,
-    showSubstantive = true,
-    showAddOmit = true
-  } = options;
+function buildCategoryVisibilityMap(flags) {
+  return new Map([
+    [DiffCategory.TYPO,        flags.showTypo],
+    [DiffCategory.PUNCT,       flags.showPunct],
+    [DiffCategory.SPELLING,    flags.showSpelling],
+    [DiffCategory.SUBSTANTIVE, flags.showSubstantive],
+    [DiffCategory.ADD,         flags.showAddOmit],
+    [DiffCategory.OMIT,        flags.showAddOmit]
+  ]);
+}
 
-  // Build list of ranges to highlight
+/**
+ * Collect the highlight ranges that should be rendered for one side of the diff.
+ *
+ * @param {Array} diffs - Classified diffs from compareTexts
+ * @param {string} side - 'a' or 'b'
+ * @param {Map<string,boolean>} visibility - category visibility map
+ * @returns {Array} Sorted highlight descriptors
+ */
+function collectHighlights(diffs, side, visibility) {
   const highlights = [];
 
   for (const diff of diffs) {
     const token = side === 'a' ? diff.aToken : diff.bToken;
-    if (!token) continue;  // Skip if no token on this side
-
-    // Check if this category should be shown
-    const shouldShow =
-      (diff.category === DiffCategory.TYPO && showTypo) ||
-      (diff.category === DiffCategory.PUNCT && showPunct) ||
-      (diff.category === DiffCategory.SPELLING && showSpelling) ||
-      (diff.category === DiffCategory.SUBSTANTIVE && showSubstantive) ||
-      ((diff.category === DiffCategory.ADD || diff.category === DiffCategory.OMIT) && showAddOmit);
-
-    if (!shouldShow) continue;
+    if (!token) continue;
+    if (!visibility.get(diff.category)) continue;
 
     highlights.push({
       offset: token.offset,
@@ -589,20 +638,26 @@ function renderWithHighlights(text, diffs, side, options = {}) {
     });
   }
 
-  // Sort by offset
   highlights.sort((a, b) => a.offset - b.offset);
+  return highlights;
+}
 
-  // Build HTML
+/**
+ * Convert a sorted list of highlight descriptors into an HTML string.
+ *
+ * @param {string} text - The original (normalized) text
+ * @param {Array} highlights - Sorted highlight descriptors
+ * @returns {string} HTML with diff spans
+ */
+function buildHighlightedHtml(text, highlights) {
   let result = '';
   let pos = 0;
 
   for (const h of highlights) {
-    // Add text before this highlight
     if (h.offset > pos) {
       result += escapeHtml(text.slice(pos, h.offset));
     }
 
-    // Add highlighted span
     const span = document.createElement('span');
     span.className = `diff-${h.category}`;
     span.textContent = h.original;
@@ -610,12 +665,34 @@ function renderWithHighlights(text, diffs, side, options = {}) {
     pos = h.offset + h.length;
   }
 
-  // Add remaining text
   if (pos < text.length) {
     result += escapeHtml(text.slice(pos));
   }
 
   return result;
+}
+
+/**
+ * Render text with highlighted differences
+ *
+ * @param {string} text - Original text to render
+ * @param {Array} diffs - Diff results from compareTexts
+ * @param {string} side - 'a' for base text, 'b' for compare text
+ * @param {Object} options - Rendering options
+ * @returns {string} HTML with highlighted spans
+ */
+function renderWithHighlights(text, diffs, side, options = {}) {
+  const flags = {
+    showTypo:        options.showTypo        ?? false,
+    showPunct:       options.showPunct        ?? true,
+    showSpelling:    options.showSpelling     ?? true,
+    showSubstantive: options.showSubstantive  ?? true,
+    showAddOmit:     options.showAddOmit      ?? true
+  };
+
+  const visibility = buildCategoryVisibilityMap(flags);
+  const highlights = collectHighlights(diffs, side, visibility);
+  return buildHighlightedHtml(text, highlights);
 }
 
 /**

@@ -99,17 +99,16 @@
   }
 
   /**
-   * Handles the download Bibles action
+   * Validates checked Bible checkboxes and returns a normalized list of Bibles.
+   * Returns null and shows an error message when validation fails.
    *
-   * @param {Object} OfflineManager - The OfflineManager instance
+   * @param {NodeList} checkboxes - Checked .bible-download-checkbox elements
+   * @returns {Array|null} Array of validated Bible objects, or null on failure
    */
-  async function handleDownloadBibles(OfflineManager) {
-    // Get all selected Bibles
-    const checkboxes = document.querySelectorAll('.bible-download-checkbox:checked');
-
+  function validateBibleSelection(checkboxes) {
     if (checkboxes.length === 0) {
       showMessage('Please select at least one Bible to download', 'error');
-      return;
+      return null;
     }
 
     const selectedBibles = Array.from(checkboxes)
@@ -122,38 +121,33 @@
 
     if (selectedBibles.length === 0) {
       showMessage('Invalid Bible selection', 'error');
-      return;
+      return null;
     }
 
-    // Get base path from the page
-    const basePath = window.location.pathname.split('/')[1] === 'bibles'
-      ? '/bible'
-      : '/bible'; // fallback
+    return selectedBibles;
+  }
 
-    // Disable controls during download
-    setDownloadControlsEnabled(false);
-
-    // Show progress container
-    showProgressContainer(true);
-
+  /**
+   * Downloads a list of Bibles sequentially, updating progress and status UI
+   * for each one. Returns cumulative success and failure counts.
+   *
+   * @param {Object} OfflineManager - The OfflineManager instance
+   * @param {Array}  selectedBibles - Array of validated Bible objects
+   * @param {string} basePath       - Base URL path for Bible content
+   * @returns {Promise<{successCount: number, failCount: number}>}
+   */
+  async function downloadBiblesSequentially(OfflineManager, selectedBibles, basePath) {
     let successCount = 0;
     let failCount = 0;
 
-    // Download each Bible sequentially
     for (let i = 0; i < selectedBibles.length; i++) {
       const bible = selectedBibles[i];
+      updateProgressLabel(`Downloading ${bible.abbrev} (${i + 1} of ${selectedBibles.length})...`);
+      updateBibleStatus(bible.id, 'Downloading...', 'is-downloading');
 
       try {
-        // Update progress label
-        updateProgressLabel(`Downloading ${bible.abbrev} (${i + 1} of ${selectedBibles.length})...`);
-
-        // Update Bible status
-        updateBibleStatus(bible.id, 'Downloading...', 'is-downloading');
-
-        // Download the Bible
         await OfflineManager.downloadBible(bible.id, basePath);
         successCount++;
-
       } catch (error) {
         console.error(`[Offline Settings] Failed to download ${bible.abbrev}:`, error);
         updateBibleStatus(bible.id, 'Failed', 'is-error');
@@ -162,24 +156,61 @@
       }
     }
 
-    // Show summary message if multiple downloads
-    if (selectedBibles.length > 1) {
-      if (failCount === 0) {
-        showMessage(`Successfully downloaded ${successCount} Bible(s)`, 'success');
-      } else if (successCount === 0) {
-        showMessage(`Failed to download all ${failCount} Bible(s)`, 'error');
-      } else {
-        showMessage(`Downloaded ${successCount} Bible(s), ${failCount} failed`, 'info');
-      }
+    return { successCount, failCount };
+  }
+
+  /**
+   * Displays a summary message after a multi-Bible download batch.
+   * No message is shown when only a single Bible was attempted.
+   *
+   * @param {number} successCount - Number of successfully downloaded Bibles
+   * @param {number} failCount    - Number of failed downloads
+   * @param {number} total        - Total Bibles attempted
+   */
+  function showDownloadSummary(successCount, failCount, total) {
+    if (total <= 1) {
+      return;
     }
+
+    if (failCount === 0) {
+      showMessage(`Successfully downloaded ${successCount} Bible(s)`, 'success');
+    } else if (successCount === 0) {
+      showMessage(`Failed to download all ${failCount} Bible(s)`, 'error');
+    } else {
+      showMessage(`Downloaded ${successCount} Bible(s), ${failCount} failed`, 'info');
+    }
+  }
+
+  /**
+   * Handles the download Bibles action
+   *
+   * @param {Object} OfflineManager - The OfflineManager instance
+   */
+  async function handleDownloadBibles(OfflineManager) {
+    const checkboxes = document.querySelectorAll('.bible-download-checkbox:checked');
+    const selectedBibles = validateBibleSelection(checkboxes);
+
+    if (!selectedBibles) {
+      return;
+    }
+
+    // Get base path from the page
+    const basePath = window.location.pathname.split('/')[1] === 'bibles'
+      ? '/bible'
+      : '/bible'; // fallback
+
+    setDownloadControlsEnabled(false);
+    showProgressContainer(true);
+
+    const { successCount, failCount } = await downloadBiblesSequentially(
+      OfflineManager, selectedBibles, basePath
+    );
+
+    showDownloadSummary(successCount, failCount, selectedBibles.length);
 
     // Re-enable controls (except for already-cached Bibles)
     setDownloadControlsEnabled(true);
-
-    // Re-disable checkboxes for cached Bibles
     await updateBibleCacheStatuses(OfflineManager);
-
-    // Hide progress container
     showProgressContainer(false);
   }
 
@@ -220,6 +251,82 @@
   }
 
   /**
+   * Returns the partial-cache label for a Bible: percentage if total is known,
+   * otherwise a raw chapter count.
+   *
+   * @param {Object} status - Cache status object with cachedChapters and totalChapters
+   * @returns {string} Display label for partial cache state
+   */
+  function getPartialStatusLabel(status) {
+    if (status.totalChapters > 0) {
+      const percent = Math.round((status.cachedChapters / status.totalChapters) * 100);
+      return `${percent}%`;
+    }
+    return `${status.cachedChapters}ch`;
+  }
+
+  /**
+   * Applies the resolved cache status for one Bible to the UI and sorts the
+   * chip into the appropriate bucket (cachedBibles / uncachedBibles).
+   *
+   * @param {string} bibleId - The Bible identifier
+   * @param {Element|null} chip - The .bible-chip element, or null
+   * @param {Object} status - Cache status returned by OfflineManager
+   * @param {HTMLElement} checkbox - The checkbox element for this Bible
+   * @param {Element[]} cachedBibles - Accumulator for fully-cached chip elements
+   * @param {Element[]} uncachedBibles - Accumulator for not-fully-cached chip elements
+   */
+  function applyBibleCacheStatusToUI(bibleId, chip, status, checkbox, cachedBibles, uncachedBibles) {
+    if (status.isFullyCached) {
+      // Show cached state visually — keep checkbox interactive for deselection
+      checkbox.checked = true;
+      updateBibleStatus(bibleId, '', 'is-cached');
+      if (chip) {
+        chip.classList.add('is-cached');
+        cachedBibles.push(chip);
+      }
+      return;
+    }
+
+    if (status.cachedChapters > 0) {
+      // Show partial cache status with percentage if we know total, otherwise just count
+      updateBibleStatus(bibleId, getPartialStatusLabel(status), 'is-partial');
+    } else {
+      // Not cached - clear any previous status
+      updateBibleStatus(bibleId, '', '');
+    }
+
+    if (chip) {
+      chip.classList.remove('is-cached');
+      uncachedBibles.push(chip);
+    }
+  }
+
+  /**
+   * Fetches the cache status for a single Bible checkbox and updates the UI.
+   *
+   * @param {Element} checkbox - A .bible-download-checkbox element
+   * @param {string} basePath - Base URL path used for cache lookups
+   * @param {Object} OfflineManager - The OfflineManager instance
+   * @param {Element[]} cachedBibles - Accumulator for fully-cached chip elements
+   * @param {Element[]} uncachedBibles - Accumulator for not-fully-cached chip elements
+   */
+  async function processBibleCheckboxStatus(checkbox, basePath, OfflineManager, cachedBibles, uncachedBibles) {
+    const bibleId = checkbox.dataset.bibleId;
+    if (!bibleId) return;
+
+    const chip = checkbox.closest('.bible-chip');
+
+    try {
+      const status = await OfflineManager.getBibleCacheStatus(bibleId, basePath);
+      applyBibleCacheStatusToUI(bibleId, chip, status, checkbox, cachedBibles, uncachedBibles);
+    } catch (error) {
+      console.warn(`[Offline Settings] Failed to get cache status for ${bibleId}:`, error);
+      if (chip) uncachedBibles.push(chip);
+    }
+  }
+
+  /**
    * Checks and updates cache status for all Bible checkboxes
    * Also sorts the chips to show cached Bibles first
    *
@@ -232,46 +339,7 @@
     const uncachedBibles = [];
 
     for (const checkbox of checkboxes) {
-      const bibleId = checkbox.dataset.bibleId;
-      if (!bibleId) continue;
-
-      const chip = checkbox.closest('.bible-chip');
-
-      try {
-        const status = await OfflineManager.getBibleCacheStatus(bibleId, basePath);
-
-        if (status.isFullyCached) {
-          // Show cached state visually — keep checkbox interactive for deselection
-          checkbox.checked = true;
-          updateBibleStatus(bibleId, '', 'is-cached');
-          if (chip) {
-            chip.classList.add('is-cached');
-            cachedBibles.push(chip);
-          }
-        } else if (status.cachedChapters > 0) {
-          // Show partial cache status with percentage if we know total, otherwise just count
-          if (status.totalChapters > 0) {
-            const percent = Math.round((status.cachedChapters / status.totalChapters) * 100);
-            updateBibleStatus(bibleId, `${percent}%`, 'is-partial');
-          } else {
-            updateBibleStatus(bibleId, `${status.cachedChapters}ch`, 'is-partial');
-          }
-          if (chip) {
-            chip.classList.remove('is-cached');
-            uncachedBibles.push(chip);
-          }
-        } else {
-          // Not cached - clear any previous status
-          updateBibleStatus(bibleId, '', '');
-          if (chip) {
-            chip.classList.remove('is-cached');
-            uncachedBibles.push(chip);
-          }
-        }
-      } catch (error) {
-        console.warn(`[Offline Settings] Failed to get cache status for ${bibleId}:`, error);
-        if (chip) uncachedBibles.push(chip);
-      }
+      await processBibleCheckboxStatus(checkbox, basePath, OfflineManager, cachedBibles, uncachedBibles);
     }
 
     // Sort: cached Bibles first, then uncached
@@ -365,6 +433,53 @@
   }
 
   /**
+   * Resets all Bible status indicator elements to their default (empty) state.
+   * Preserves the correct base class for each element type.
+   */
+  function resetStatusElements() {
+    const statusElements = document.querySelectorAll('.bible-download-status, .bible-chip__status');
+    statusElements.forEach(el => {
+      el.textContent = '';
+      el.className = el.classList.contains('bible-chip__status')
+        ? 'bible-chip__status'
+        : 'bible-download-status';
+    });
+
+    const chips = document.querySelectorAll('.bible-chip.is-cached');
+    chips.forEach(chip => chip.classList.remove('is-cached'));
+  }
+
+  /**
+   * Re-enables all Bible download checkboxes and unchecks them.
+   */
+  function resetCheckboxes() {
+    const checkboxes = document.querySelectorAll('.bible-download-checkbox');
+    checkboxes.forEach(cb => {
+      cb.disabled = false;
+      cb.checked = false;
+    });
+  }
+
+  /**
+   * Restores the clear-cache button to its default enabled state.
+   * Does nothing when the button element is absent from the DOM.
+   */
+  function resetClearButton() {
+    const clearBtn = document.getElementById('clear-cache-btn');
+    if (!clearBtn) {
+      return;
+    }
+
+    clearBtn.disabled = false;
+    clearBtn.textContent = '';
+    const iconSpan = document.createElement('span');
+    iconSpan.setAttribute('aria-hidden', 'true');
+    iconSpan.textContent = '\u{1F5D1}';
+    clearBtn.appendChild(iconSpan);
+    clearBtn.appendChild(document.createTextNode(' Clear Cache'));
+  }
+
+  /**
    * Handles cache cleared event
    *
    * @param {Object} detail - Clear event detail
@@ -372,42 +487,12 @@
    */
   async function handleCacheCleared(detail, OfflineManager) {
     try {
-      // Clear all Bible status indicators
-      const statusElements = document.querySelectorAll('.bible-download-status, .bible-chip__status');
-      statusElements.forEach(el => {
-        el.textContent = '';
-        el.className = el.classList.contains('bible-chip__status')
-          ? 'bible-chip__status'
-          : 'bible-download-status';
-      });
+      resetStatusElements();
+      resetCheckboxes();
+      resetClearButton();
 
-      // Clear cached classes from chips
-      const chips = document.querySelectorAll('.bible-chip.is-cached');
-      chips.forEach(chip => chip.classList.remove('is-cached'));
-
-      // Re-enable all checkboxes and uncheck
-      const checkboxes = document.querySelectorAll('.bible-download-checkbox');
-      checkboxes.forEach(cb => {
-        cb.disabled = false;
-        cb.checked = false;
-      });
-
-      // Re-enable clear button
-      const clearBtn = document.getElementById('clear-cache-btn');
-      if (clearBtn) {
-        clearBtn.disabled = false;
-        clearBtn.textContent = '';
-        const iconSpan = document.createElement('span');
-        iconSpan.setAttribute('aria-hidden', 'true');
-        iconSpan.textContent = '\u{1F5D1}';
-        clearBtn.appendChild(iconSpan);
-        clearBtn.appendChild(document.createTextNode(' Clear Cache'));
-      }
-
-      // Update cache status
       await updateCacheStatus(OfflineManager);
 
-      // Show success message
       const itemsCleared = detail?.itemsCleared || 0;
       showMessage(`Cache cleared successfully (${itemsCleared} items removed)`, 'success');
     } catch (error) {

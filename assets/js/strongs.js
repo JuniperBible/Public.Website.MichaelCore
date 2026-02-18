@@ -228,6 +228,63 @@
   const addedStrongsNotes = new Set();
 
   /**
+   * Find the active Strong's notes list and its parent row element.
+   * Tries SSS mode first, then VVV mode, then any visible fallback list.
+   *
+   * @returns {{ notesList: HTMLElement|null, notesRow: HTMLElement|null }}
+   */
+  function findNotesList() {
+    let notesList = document.getElementById('sss-strongs-list');
+    let notesRow = document.getElementById('sss-notes-row');
+
+    // SSS list exists but its row is hidden — fall through to VVV
+    if (!notesList || notesRow?.classList.contains('hidden')) {
+      notesList = document.getElementById('vvv-strongs-list');
+      notesRow = document.getElementById('vvv-notes-row');
+    }
+
+    // Fallback: any visible strongs list (compare page or chapter page)
+    if (!notesList) {
+      notesList = document.querySelector('.strongs-notes-list');
+      notesRow = notesList?.closest('.compare-notes-row, .chapter-notes-row') || null;
+    }
+
+    return { notesList, notesRow };
+  }
+
+  /**
+   * Flash a brief highlight on an already-added note entry.
+   * @param {string} cacheKey - e.g. "H430"
+   */
+  function highlightExistingNote(cacheKey) {
+    const existingEntry = document.getElementById(`strongs-note-${cacheKey}`);
+    if (!existingEntry) return;
+    existingEntry.style.backgroundColor = 'var(--brand-100)';
+    setTimeout(() => { existingEntry.style.backgroundColor = ''; }, TIMING.HIGHLIGHT_ANIMATION);
+  }
+
+  /**
+   * Append local-definition detail nodes (lemma, xlit, definition) to a list item.
+   * @param {HTMLElement} li - The list item to append content into
+   * @param {StrongsDefinition} def - Local definition data
+   */
+  function appendLocalNoteContent(li, def) {
+    if (def.lemma) {
+      li.appendChild(document.createTextNode(' — '));
+      const lemmaSpan = document.createElement('span');
+      lemmaSpan.className = 'strongs-lemma';
+      lemmaSpan.textContent = def.lemma;
+      li.appendChild(lemmaSpan);
+      if (def.xlit) {
+        li.appendChild(document.createTextNode(` (${def.xlit})`));
+      }
+    }
+    if (def.definition) {
+      li.appendChild(document.createTextNode(`: ${def.definition}`));
+    }
+  }
+
+  /**
    * Add a Strong's definition to the Strong's Notes section
    * @param {string} number - Strong's number (e.g., "430")
    * @param {string} type - Language type: "H" for Hebrew or "G" for Greek
@@ -236,64 +293,30 @@
   function addToStrongsNotes(number, type, def) {
     const cacheKey = `${type}${number}`;
 
-    // Find the appropriate Strong's notes list (SSS mode or VVV mode)
-    let notesList = document.getElementById('sss-strongs-list');
-    let notesRow = document.getElementById('sss-notes-row');
-
-    // If SSS mode list doesn't exist or is hidden, try VVV mode
-    if (!notesList || notesRow?.classList.contains('hidden')) {
-      notesList = document.getElementById('vvv-strongs-list');
-      notesRow = document.getElementById('vvv-notes-row');
-    }
-
-    // Fallback: look for any visible strongs list (compare page or chapter page)
-    if (!notesList) {
-      notesList = document.querySelector('.strongs-notes-list');
-      notesRow = notesList?.closest('.compare-notes-row, .chapter-notes-row');
-    }
-
+    const { notesList, notesRow } = findNotesList();
     if (!notesList) return;
 
-    // Check if already added (avoid duplicates)
+    // Highlight and bail out if already added (avoid duplicates)
     if (addedStrongsNotes.has(cacheKey)) {
-      // Highlight existing entry briefly
-      const existingEntry = document.getElementById(`strongs-note-${cacheKey}`);
-      if (existingEntry) {
-        existingEntry.style.backgroundColor = 'var(--brand-100)';
-        setTimeout(() => { existingEntry.style.backgroundColor = ''; }, TIMING.HIGHLIGHT_ANIMATION);
-      }
+      highlightExistingNote(cacheKey);
       return;
     }
 
     addedStrongsNotes.add(cacheKey);
 
-    // Build the note using DOM APIs (avoids innerHTML)
+    // Build the note list item using DOM APIs (avoids innerHTML)
     const typeName = type === 'H' ? 'Hebrew' : 'Greek';
     const displayNumber = parseInt(number, 10).toString();
 
-    // Create and append the list item
     const li = document.createElement('li');
     li.id = `strongs-note-${cacheKey}`;
 
-    // Add strong element for type and number
     const strong = document.createElement('strong');
     strong.textContent = `${typeName} ${displayNumber}`;
     li.appendChild(strong);
 
     if (def.source === 'local') {
-      if (def.lemma) {
-        li.appendChild(document.createTextNode(' — '));
-        const lemmaSpan = document.createElement('span');
-        lemmaSpan.className = 'strongs-lemma';
-        lemmaSpan.textContent = def.lemma;
-        li.appendChild(lemmaSpan);
-        if (def.xlit) {
-          li.appendChild(document.createTextNode(` (${def.xlit})`));
-        }
-      }
-      if (def.definition) {
-        li.appendChild(document.createTextNode(`: ${def.definition}`));
-      }
+      appendLocalNoteContent(li, def);
     } else if (def.note) {
       li.appendChild(document.createTextNode(`: ${def.note}`));
     }
@@ -412,9 +435,100 @@
 
 
   /**
-   * Renders definition content into the tooltip
+   * Build a <p> element for the lemma line, including optional xlit and pron.
+   * Returns null when there is no lemma text.
+   *
+   * @param {StrongsDefinition} def
+   * @returns {HTMLElement|null}
+   */
+  function buildLemmaNode(def) {
+    if (!def.lemma) return null;
+
+    const p = document.createElement('p');
+    p.className = 'strongs-lemma';
+
+    const label = document.createElement('strong');
+    label.textContent = 'Lemma:';
+    p.appendChild(label);
+    p.appendChild(document.createTextNode(' ' + def.lemma));
+
+    if (def.xlit) {
+      p.appendChild(document.createTextNode(' (' + def.xlit + ')'));
+    }
+
+    if (def.pron) {
+      p.appendChild(document.createTextNode(' '));
+      const pronEm = document.createElement('em');
+      pronEm.textContent = '[' + def.pron + ']';
+      p.appendChild(pronEm);
+    }
+
+    return p;
+  }
+
+  /**
+   * Build a <p> element for the definition line.
+   * Returns null when there is no definition text.
+   *
+   * @param {StrongsDefinition} def
+   * @returns {HTMLElement|null}
+   */
+  function buildDefinitionNode(def) {
+    if (!def.definition) return null;
+
+    const p = document.createElement('p');
+    p.className = 'strongs-def';
+
+    const label = document.createElement('strong');
+    label.textContent = 'Definition:';
+    p.appendChild(label);
+    p.appendChild(document.createTextNode(' ' + def.definition));
+
+    return p;
+  }
+
+  /**
+   * Build a <p> element for the derivation line.
+   * Returns null when there is no derivation text.
+   *
+   * @param {StrongsDefinition} def
+   * @returns {HTMLElement|null}
+   */
+  function buildDerivationNode(def) {
+    if (!def.derivation) return null;
+
+    const p = document.createElement('p');
+    p.className = 'strongs-deriv';
+
+    const small = document.createElement('small');
+    const label = document.createElement('strong');
+    label.textContent = 'Derivation:';
+    small.appendChild(label);
+    small.appendChild(document.createTextNode(' ' + def.derivation));
+    p.appendChild(small);
+
+    return p;
+  }
+
+  /**
+   * Assemble a DocumentFragment containing all local definition paragraphs.
+   *
+   * @param {StrongsDefinition} def
+   * @returns {DocumentFragment}
+   */
+  function buildLocalDefinitionFragment(def) {
+    const fragment = document.createDocumentFragment();
+
+    [buildLemmaNode(def), buildDefinitionNode(def), buildDerivationNode(def)]
+      .forEach(node => { if (node) fragment.appendChild(node); });
+
+    return fragment;
+  }
+
+  /**
+   * Renders definition content into the tooltip.
    * Formats local definitions with full details (lemma, transliteration, etc.)
-   * or shows simple text for fallback definitions
+   * or shows simple text for fallback definitions.
    *
    * @param {HTMLElement} tip - The tooltip element to update
    * @param {StrongsDefinition} def - The definition data to display
@@ -423,71 +537,14 @@
     const defEl = tip.querySelector('.strongs-definition');
 
     if (def.source === 'local') {
-      // Build definition content using DOM APIs to avoid innerHTML
-      const fragment = document.createDocumentFragment();
-
-      if (def.lemma) {
-        const lemmaP = document.createElement('p');
-        lemmaP.className = 'strongs-lemma';
-
-        const lemmaLabel = document.createElement('strong');
-        lemmaLabel.textContent = 'Lemma:';
-        lemmaP.appendChild(lemmaLabel);
-        lemmaP.appendChild(document.createTextNode(' ' + def.lemma));
-
-        if (def.xlit) {
-          lemmaP.appendChild(document.createTextNode(' (' + def.xlit + ')'));
-        }
-
-        if (def.pron) {
-          lemmaP.appendChild(document.createTextNode(' '));
-          const pronEm = document.createElement('em');
-          pronEm.textContent = '[' + def.pron + ']';
-          lemmaP.appendChild(pronEm);
-        }
-
-        fragment.appendChild(lemmaP);
-      }
-
-      if (def.definition) {
-        const defP = document.createElement('p');
-        defP.className = 'strongs-def';
-
-        const defLabel = document.createElement('strong');
-        defLabel.textContent = 'Definition:';
-        defP.appendChild(defLabel);
-        defP.appendChild(document.createTextNode(' ' + def.definition));
-
-        fragment.appendChild(defP);
-      }
-
-      if (def.derivation) {
-        const derivP = document.createElement('p');
-        derivP.className = 'strongs-deriv';
-
-        const derivSmall = document.createElement('small');
-        const derivLabel = document.createElement('strong');
-        derivLabel.textContent = 'Derivation:';
-        derivSmall.appendChild(derivLabel);
-        derivSmall.appendChild(document.createTextNode(' ' + def.derivation));
-        derivP.appendChild(derivSmall);
-
-        fragment.appendChild(derivP);
-      }
-
       defEl.textContent = '';
-      defEl.appendChild(fragment);
-    } else {
-      // Fallback or API definition - show simple text
-      defEl.textContent = def.note || 'Definition not available';
-
-      // Add offline indicator styling if applicable
-      if (def.offline) {
-        defEl.style.color = '#888';
-      } else {
-        defEl.style.color = ''; // Reset color
-      }
+      defEl.appendChild(buildLocalDefinitionFragment(def));
+      return;
     }
+
+    // Fallback or API definition - show simple text
+    defEl.textContent = def.note || 'Definition not available';
+    defEl.style.color = def.offline ? '#888' : '';
   }
 
   /**
@@ -583,7 +640,101 @@
   // ============================================================================
 
   /**
-   * Scans Bible text for Strong's numbers and converts them to interactive elements
+   * Create an accessible <span> button representing a single Strong's number.
+   *
+   * @param {string} langType - "H" or "G"
+   * @param {string} rawNumber - Raw digit string from regex match (e.g., "0430")
+   * @returns {HTMLElement} Configured span element
+   */
+  function buildStrongsSpan(langType, rawNumber) {
+    const normalizedNum = normalizeStrongsNumber(rawNumber);
+    const displayNum = parseInt(normalizedNum, 10).toString();
+    const langName = langType === 'H' ? 'Hebrew' : 'Greek';
+
+    const span = document.createElement('span');
+    span.className = 'strongs-ref';
+    span.dataset.strongsType = langType;
+    span.dataset.strongsNumber = normalizedNum;
+    span.textContent = `${langType}${displayNum}`;
+    span.setAttribute('role', 'button');
+    span.setAttribute('aria-label', `Strong's ${langName} ${displayNum}`);
+    span.setAttribute('tabindex', '0');
+
+    return span;
+  }
+
+  /**
+   * Replace a text node that contains one or more Strong's numbers with a
+   * DocumentFragment of plain text nodes and interactive span buttons.
+   *
+   * @param {Text} textNode - The DOM text node to transform
+   */
+  function replaceTextNodeWithSpans(textNode) {
+    const text = textNode.textContent;
+    const fragment = document.createDocumentFragment();
+    const regex = /([HG])(\d{1,5})/g;
+    let lastIndex = 0;
+    let match;
+
+    while ((match = regex.exec(text)) !== null) {
+      if (match.index > lastIndex) {
+        fragment.appendChild(document.createTextNode(text.slice(lastIndex, match.index)));
+      }
+      fragment.appendChild(buildStrongsSpan(match[1], match[2]));
+      lastIndex = regex.lastIndex;
+    }
+
+    if (lastIndex < text.length) {
+      fragment.appendChild(document.createTextNode(text.slice(lastIndex)));
+    }
+
+    textNode.parentNode.replaceChild(fragment, textNode);
+  }
+
+  /**
+   * Attach click and keyboard event listeners to all unprocessed .strongs-ref
+   * elements anywhere in the document.
+   */
+  function attachStrongsRefListeners() {
+    document.querySelectorAll('.strongs-ref').forEach(el => {
+      if (el.dataset.strongsListenerAdded) return;
+      el.dataset.strongsListenerAdded = 'true';
+
+      el.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        showTooltip(el, el.dataset.strongsNumber, el.dataset.strongsType);
+      });
+
+      el.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          showTooltip(el, el.dataset.strongsNumber, el.dataset.strongsType);
+        }
+      });
+    });
+  }
+
+  /**
+   * Collect text nodes inside a container that contain Strong's number patterns.
+   *
+   * @param {HTMLElement} container
+   * @returns {Text[]}
+   */
+  function collectStrongsTextNodes(container) {
+    const walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT, null, false);
+    const nodes = [];
+    let node;
+    while ((node = walker.nextNode())) {
+      if (/[HG]\d{1,5}/.test(node.textContent)) {
+        nodes.push(node);
+      }
+    }
+    return nodes;
+  }
+
+  /**
+   * Scans Bible text for Strong's numbers and converts them to interactive elements.
    *
    * Process:
    * 1. Find all .bible-text containers
@@ -605,111 +756,22 @@
    * - Focus management on tooltip open/close
    */
   function processStrongsNumbers() {
-    // Find all Bible text containers in the document
-    // Include compare page panes and parallel content for Strong's tooltips
+    // Find all Bible text containers; include compare panes and parallel content
     const bibleTexts = document.querySelectorAll('.bible-text, .compare-pane, #parallel-content');
 
     bibleTexts.forEach(container => {
-      // Skip containers already processed to avoid duplicate work
       if (container.dataset.strongsProcessed) return;
       container.dataset.strongsProcessed = 'true';
 
-      // Process OSIS <w> elements with lemma attributes
-      // Format: <w lemma="strong:H430" morph="...">word</w>
+      // Process OSIS <w lemma="strong:H430"> elements first
       processOsisWordElements(container);
 
-      // TreeWalker efficiently traverses only text nodes (skips elements)
-      const walker = document.createTreeWalker(
-        container,
-        NodeFilter.SHOW_TEXT,
-        null,
-        false
-      );
-
-      // Collect text nodes containing Strong's numbers
-      const nodesToProcess = [];
-      let node;
-      while (node = walker.nextNode()) {
-        // Quick regex test before adding to processing queue
-        if (/[HG]\d{1,5}/.test(node.textContent)) {
-          nodesToProcess.push(node);
-        }
-      }
-
-      // Transform text nodes: replace Strong's numbers with interactive spans
-      nodesToProcess.forEach(textNode => {
-        const text = textNode.textContent;
-        const fragment = document.createDocumentFragment();
-        let lastIndex = 0;
-
-        // Match Strong's numbers: H1234 or G5678
-        // Capture groups: [1] = language (H/G), [2] = number
-        const regex = /([HG])(\d{1,5})/g;
-        let match;
-
-        while ((match = regex.exec(text)) !== null) {
-          // Preserve text before this Strong's number
-          if (match.index > lastIndex) {
-            fragment.appendChild(document.createTextNode(text.slice(lastIndex, match.index)));
-          }
-
-          // Normalize number for consistent lookup and display
-          const normalizedNum = normalizeStrongsNumber(match[2]);
-          const displayNum = parseInt(normalizedNum, 10).toString();
-
-          // Create accessible button for the Strong's number
-          const span = document.createElement('span');
-          span.className = 'strongs-ref';
-          span.dataset.strongsType = match[1];       // Store language type (H/G)
-          span.dataset.strongsNumber = normalizedNum; // Store normalized number for lookup
-          span.textContent = `${match[1]}${displayNum}`; // Display without leading zeros (e.g., "H430")
-
-          // Accessibility attributes
-          span.setAttribute('role', 'button');
-          span.setAttribute('aria-label', `Strong's ${match[1] === 'H' ? 'Hebrew' : 'Greek'} ${displayNum}`);
-          span.setAttribute('tabindex', '0');
-
-          fragment.appendChild(span);
-          lastIndex = regex.lastIndex;
-        }
-
-        // Preserve remaining text after last Strong's number
-        if (lastIndex < text.length) {
-          fragment.appendChild(document.createTextNode(text.slice(lastIndex)));
-        }
-
-        // Replace original text node with new fragment containing interactive spans
-        if (nodesToProcess.length > 0) {
-          textNode.parentNode.replaceChild(fragment, textNode);
-        }
-      });
+      // Replace plain-text Strong's numbers with interactive spans
+      collectStrongsTextNodes(container).forEach(replaceTextNodeWithSpans);
     });
 
-    // ============================================================================
-    // EVENT HANDLERS
-    // ============================================================================
-
-    // Attach event listeners to all Strong's reference buttons
-    document.querySelectorAll('.strongs-ref').forEach(el => {
-      // Prevent duplicate listeners on already-processed elements
-      if (el.dataset.strongsListenerAdded) return;
-      el.dataset.strongsListenerAdded = 'true';
-
-      // Mouse/touch activation
-      el.addEventListener('click', (e) => {
-        e.preventDefault();      // Prevent default link/button behavior
-        e.stopPropagation();     // Don't trigger document click listener
-        showTooltip(el, el.dataset.strongsNumber, el.dataset.strongsType);
-      });
-
-      // Keyboard activation (Enter or Space per ARIA button pattern)
-      el.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault(); // Prevent page scroll on Space
-          showTooltip(el, el.dataset.strongsNumber, el.dataset.strongsType);
-        }
-      });
-    });
+    // Attach listeners to every new .strongs-ref across all containers
+    attachStrongsRefListeners();
   }
 
   // ============================================================================

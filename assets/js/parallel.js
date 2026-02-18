@@ -412,6 +412,94 @@
      ======================================================================== */
 
   /**
+   * Attach an event listener only when the element exists
+   * @private
+   * @param {Element|null} element - Target DOM element (no-op when falsy)
+   * @param {string} event - Event type (e.g. 'change', 'click')
+   * @param {Function} handler - Event handler function
+   */
+  function registerIfExists(element, event, handler) {
+    if (element) {
+      element.addEventListener(event, handler);
+    }
+  }
+
+  /**
+   * Set up event listeners for SSS (Side-by-Side-by-Side) mode controls
+   * Covers the enter/exit buttons and the bible/book/chapter selectors
+   * @private
+   */
+  function setupSSSControls() {
+    addTapListener(document.getElementById('sss-mode-btn'), () => enterSSSMode());
+    addTapListener(document.getElementById('sss-back-btn'), () => exitSSSMode());
+    addTapListener(document.getElementById('sss-toggle-btn'), () => exitSSSMode());
+
+    // SSS selectors (change events work fine on mobile)
+    registerIfExists(sssBibleLeft, 'change', handleSSSBibleChange);
+    registerIfExists(sssBibleRight, 'change', handleSSSBibleChange);
+    registerIfExists(sssBookSelect, 'change', handleSSSBookChange);
+    registerIfExists(sssChapterSelect, 'change', handleSSSChapterChange);
+  }
+
+  /**
+   * Set up event listeners for normal-mode and SSS-mode highlight toggles
+   * Also synchronises the sssHighlightEnabled flag and the legend visibility
+   * @private
+   */
+  function setupHighlightToggles() {
+    const highlightToggle = document.getElementById('highlight-toggle');
+    const diffLegend = document.getElementById('diff-legend');
+    registerIfExists(highlightToggle, 'change', (e) => {
+      normalHighlightEnabled = e.target.checked;
+      if (diffLegend) diffLegend.classList.toggle('hidden', !e.target.checked);
+      if (canLoadComparison()) {
+        loadComparison();
+      }
+    });
+
+    const sssHighlightToggle = document.getElementById('sss-highlight-toggle');
+    const sssDiffLegend = document.getElementById('sss-diff-legend');
+    registerIfExists(sssHighlightToggle, 'change', (e) => {
+      sssHighlightEnabled = e.target.checked;
+      if (sssDiffLegend) sssDiffLegend.classList.toggle('hidden', !e.target.checked);
+      if (canLoadSSSComparison()) {
+        loadSSSComparison();
+      }
+    });
+
+    // Sync sssHighlightEnabled with checkbox state and update legend
+    if (sssHighlightToggle) {
+      sssHighlightEnabled = sssHighlightToggle.checked;
+      if (sssDiffLegend) {
+        sssDiffLegend.classList.toggle('hidden', !sssHighlightToggle.checked);
+      }
+    }
+  }
+
+  /**
+   * Set up color picker event listeners for both normal and SSS modes
+   * @private
+   */
+  function setupColorPickers() {
+    setupColorPicker('highlight-color-btn', 'highlight-color-picker', '.color-option');
+    setupColorPicker('sss-highlight-color-btn', 'sss-highlight-color-picker', '.sss-color-option');
+  }
+
+  /**
+   * Set up event listeners for book/chapter navigation and verse buttons
+   * @private
+   */
+  function setupNavigationListeners() {
+    // Book and chapter selectors (change events work fine on mobile)
+    bookSelect.addEventListener('change', handleBookChange);
+    chapterSelect.addEventListener('change', handleChapterChange);
+
+    // Verse buttons - use click for immediate response
+    registerIfExists(allVersesBtn, 'click', handleAllVersesClick);
+    registerIfExists(sssAllVersesBtn, 'click', handleSSSAllVersesClick);
+  }
+
+  /**
    * Set up all event listeners for the parallel view
    * Attaches handlers for translation selection, book/chapter navigation,
    * verse selection, SSS mode toggles, and highlighting controls
@@ -423,83 +511,10 @@
       cb.addEventListener('change', handleTranslationChange);
     });
 
-    // SSS mode toggle button (on normal mode page)
-    const sssModeBtn = document.getElementById('sss-mode-btn');
-    addTapListener(sssModeBtn, () => enterSSSMode());
-
-    // SSS back button
-    const sssBackBtn = document.getElementById('sss-back-btn');
-    addTapListener(sssBackBtn, () => exitSSSMode());
-
-    // SSS selectors (change events work fine on mobile)
-    if (sssBibleLeft) {
-      sssBibleLeft.addEventListener('change', handleSSSBibleChange);
-    }
-    if (sssBibleRight) {
-      sssBibleRight.addEventListener('change', handleSSSBibleChange);
-    }
-    if (sssBookSelect) {
-      sssBookSelect.addEventListener('change', handleSSSBookChange);
-    }
-    if (sssChapterSelect) {
-      sssChapterSelect.addEventListener('change', handleSSSChapterChange);
-    }
-
-    // SSS toggle button (logo click to exit SSS mode)
-    const sssToggleBtn = document.getElementById('sss-toggle-btn');
-    addTapListener(sssToggleBtn, () => exitSSSMode());
-
-    // Normal mode highlight toggle
-    const highlightToggle = document.getElementById('highlight-toggle');
-    const diffLegend = document.getElementById('diff-legend');
-    if (highlightToggle) {
-      highlightToggle.addEventListener('change', (e) => {
-        normalHighlightEnabled = e.target.checked;
-        if (diffLegend) diffLegend.classList.toggle('hidden', !e.target.checked);
-        if (canLoadComparison()) {
-          loadComparison();
-        }
-      });
-    }
-
-    // SSS mode highlight toggle
-    const sssHighlightToggle = document.getElementById('sss-highlight-toggle');
-    const sssDiffLegend = document.getElementById('sss-diff-legend');
-    if (sssHighlightToggle) {
-      sssHighlightToggle.addEventListener('change', (e) => {
-        sssHighlightEnabled = e.target.checked;
-        if (sssDiffLegend) sssDiffLegend.classList.toggle('hidden', !e.target.checked);
-        if (canLoadSSSComparison()) {
-          loadSSSComparison();
-        }
-      });
-      // Sync sssHighlightEnabled with checkbox state and update legend
-      sssHighlightEnabled = sssHighlightToggle.checked;
-      if (sssDiffLegend) {
-        sssDiffLegend.classList.toggle('hidden', !sssHighlightToggle.checked);
-      }
-    }
-
-    // Color picker setup (normal mode)
-    setupColorPicker('highlight-color-btn', 'highlight-color-picker', '.color-option');
-    // Color picker setup (SSS mode)
-    setupColorPicker('sss-highlight-color-btn', 'sss-highlight-color-picker', '.sss-color-option');
-
-    // Book selection (change events work fine on mobile)
-    bookSelect.addEventListener('change', handleBookChange);
-
-    // Chapter selection - auto-load on change
-    chapterSelect.addEventListener('change', handleChapterChange);
-
-    // All verses button - use click for immediate response
-    if (allVersesBtn) {
-      allVersesBtn.addEventListener('click', handleAllVersesClick);
-    }
-
-    // SSS All verses button - use click for immediate response
-    if (sssAllVersesBtn) {
-      sssAllVersesBtn.addEventListener('click', handleSSSAllVersesClick);
-    }
+    setupSSSControls();
+    setupHighlightToggles();
+    setupColorPickers();
+    setupNavigationListeners();
   }
 
   /**
@@ -1225,19 +1240,36 @@
   }
 
   /**
+   * Activate SSS mode UI and optionally load the comparison
+   * Hides normal-mode elements, shows SSS-mode elements, and triggers a load
+   * when canLoadSSSComparison() is satisfied.
+   * @private
+   */
+  function activateSSSModeUI() {
+    sssMode = true;
+    updateSSSModeStatus();
+    if (normalModeEl) normalModeEl.classList.add('hidden');
+    if (sssModeEl) sssModeEl.classList.remove('hidden');
+    document.getElementById('parallel-content')?.classList.add('hidden');
+    if (canLoadSSSComparison()) loadSSSComparison();
+  }
+
+  /**
    * Handle single Bible SSS mode (auto-select random second Bible)
    * @private
    * @returns {boolean} True if SSS mode was entered
    */
   function handleSingleBibleSSSMode(refParam) {
-    if (selectedTranslations.length !== 1 || !refParam) return false;
+    if (selectedTranslations.length !== 1) return false;
+    if (!refParam) return false;
 
     const singleBible = selectedTranslations[0];
     const otherBibles = bibleData?.bibles?.filter(b => b.id !== singleBible) || [];
     if (otherBibles.length === 0) return false;
 
     const ref = parseReference(refParam);
-    if (!ref.book || ref.chapter <= 0) return false;
+    if (!ref.book) return false;
+    if (ref.chapter <= 0) return false;
 
     // Set up SSS mode with single Bible and random Bible
     const randomIndex = Math.floor(Math.random() * otherBibles.length);
@@ -1251,13 +1283,7 @@
     updateSSSSelectors();
 
     // Enter SSS mode directly
-    sssMode = true;
-    updateSSSModeStatus();
-    if (normalModeEl) normalModeEl.classList.add('hidden');
-    if (sssModeEl) sssModeEl.classList.remove('hidden');
-    document.getElementById('parallel-content')?.classList.add('hidden');
-
-    if (canLoadSSSComparison()) loadSSSComparison();
+    activateSSSModeUI();
     return true;
   }
 
@@ -1538,6 +1564,106 @@
   let triedBiblesWithNoVerses = new Set();
 
   /**
+   * Clear Strong's notes when loading a new chapter
+   * @private
+   */
+  function clearSSSStrongsNotes() {
+    window.Michael?.Strongs?.clearNotes?.();
+  }
+
+  /**
+   * Show loading indicators in both SSS panes
+   * @private
+   */
+  function showSSSLoadingIndicators() {
+    if (sssLeftPane) {
+      sssLeftPane.replaceChildren(window.Michael.DomUtils.createLoadingIndicator());
+    }
+    if (sssRightPane) {
+      sssRightPane.replaceChildren(window.Michael.DomUtils.createLoadingIndicator());
+    }
+  }
+
+  /**
+   * Attempt to switch to an untried right Bible when the current one has no verses.
+   * Returns true if a new Bible was selected and loadSSSComparison should be retried,
+   * false if no alternatives remain and rendering should proceed with what we have.
+   * @private
+   * @returns {boolean}
+   */
+  function tryAlternateSSSBible() {
+    triedBiblesWithNoVerses.add(sssRightBible);
+
+    const availableBibles = bibleData?.bibles?.filter(b =>
+      b.id !== sssLeftBible && !triedBiblesWithNoVerses.has(b.id)
+    ) || [];
+
+    if (availableBibles.length === 0) return false;
+
+    // Pick a random one from remaining options
+    const randomIndex = Math.floor(Math.random() * availableBibles.length);
+    sssRightBible = availableBibles[randomIndex].id;
+    if (sssBibleRight) sssBibleRight.value = sssRightBible;
+
+    return true;
+  }
+
+  /**
+   * Render both SSS panes with the provided verse data
+   * @private
+   * @param {Array<Object>} leftVerses - Verses for the left pane
+   * @param {Array<Object>} rightVerses - Verses for the right pane
+   */
+  function renderSSSPanes(leftVerses, rightVerses) {
+    const leftBible = bibleData.bibles.find(b => b.id === sssLeftBible);
+    const rightBible = bibleData.bibles.find(b => b.id === sssRightBible);
+    const bookInfo = bibleData.books.find(b => b.id === sssBook);
+    const bookName = bookInfo?.name || sssBook;
+
+    // Filter verses if specific verse selected
+    const leftFiltered = sssVerse > 0 ? leftVerses?.filter(v => v.number === sssVerse) : leftVerses;
+    const rightFiltered = sssVerse > 0 ? rightVerses?.filter(v => v.number === sssVerse) : rightVerses;
+
+    if (sssLeftPane) {
+      sssLeftPane.replaceChildren(buildSSSPaneHTML(leftFiltered, leftBible, bookName, rightFiltered, rightBible));
+    }
+    if (sssRightPane) {
+      sssRightPane.replaceChildren(buildSSSPaneHTML(rightFiltered, rightBible, bookName, leftFiltered, leftBible));
+    }
+  }
+
+  /**
+   * Process footnotes for both SSS panes and update the Strong's notes row visibility
+   * @private
+   */
+  function processSSSFootnotes() {
+    if (!window.Michael?.Footnotes) return;
+
+    const leftFootnotesSection = document.getElementById('sss-left-footnotes-section');
+    const leftFootnotesList = document.getElementById('sss-left-footnotes-list');
+    const rightFootnotesSection = document.getElementById('sss-right-footnotes-section');
+    const rightFootnotesList = document.getElementById('sss-right-footnotes-list');
+
+    // Process left pane footnotes
+    window.Michael.Footnotes.process(
+      sssLeftPane, leftFootnotesSection, leftFootnotesList, 'sss-left-'
+    );
+
+    // Process right pane footnotes
+    window.Michael.Footnotes.process(
+      sssRightPane, rightFootnotesSection, rightFootnotesList, 'sss-right-'
+    );
+
+    // Hide Strong's notes row if no Strong's notes (footnotes are now per-pane)
+    const notesRow = document.getElementById('sss-notes-row');
+    if (!notesRow) return;
+
+    // The notes row now only contains Strong's, check if it has any
+    const strongsList = document.getElementById('sss-strongs-list');
+    notesRow.classList.toggle('hidden', !strongsList || strongsList.children.length === 0);
+  }
+
+  /**
    * Load and display SSS comparison
    * Fetches both translations in parallel and renders side-by-side
    * If the right Bible has no verses, automatically tries another Bible
@@ -1548,18 +1674,8 @@
   async function loadSSSComparison() {
     if (!canLoadSSSComparison()) return;
 
-    // Clear Strong's notes when loading new chapter
-    if (window.Michael?.Strongs?.clearNotes) {
-      window.Michael.Strongs.clearNotes();
-    }
-
-    // Show loading
-    if (sssLeftPane) {
-      sssLeftPane.replaceChildren(window.Michael.DomUtils.createLoadingIndicator());
-    }
-    if (sssRightPane) {
-      sssRightPane.replaceChildren(window.Michael.DomUtils.createLoadingIndicator());
-    }
+    clearSSSStrongsNotes();
+    showSSSLoadingIndicators();
 
     // Fetch both chapters
     const [leftVerses, rightVerses] = await Promise.all([
@@ -1568,27 +1684,10 @@
     ]);
 
     // If right Bible has no verses, try to pick another one automatically
-    if ((!rightVerses || rightVerses.length === 0) && leftVerses && leftVerses.length > 0) {
-      triedBiblesWithNoVerses.add(sssRightBible);
-
-      // Find another Bible that we haven't tried yet
-      const availableBibles = bibleData?.bibles?.filter(b =>
-        b.id !== sssLeftBible && !triedBiblesWithNoVerses.has(b.id)
-      ) || [];
-
-      if (availableBibles.length > 0) {
-        // Pick a random one from remaining options
-        const randomIndex = Math.floor(Math.random() * availableBibles.length);
-        const newBible = availableBibles[randomIndex].id;
-
-        // Update the right Bible and selector
-        sssRightBible = newBible;
-        if (sssBibleRight) sssBibleRight.value = sssRightBible;
-
-        // Recursively try loading again with the new Bible
-        return loadSSSComparison();
-      }
-      // If no more Bibles to try, fall through and display what we have
+    const rightEmpty = !rightVerses || rightVerses.length === 0;
+    const leftHasVerses = leftVerses && leftVerses.length > 0;
+    if (rightEmpty && leftHasVerses && tryAlternateSSSBible()) {
+      return loadSSSComparison();
     }
 
     // Reset tried Bibles set when we successfully load (for next time)
@@ -1596,56 +1695,9 @@
       triedBiblesWithNoVerses.clear();
     }
 
-    // Populate verse grid
     populateSSSVerseGrid(leftVerses || rightVerses);
-
-    // Get Bible info
-    const leftBible = bibleData.bibles.find(b => b.id === sssLeftBible);
-    const rightBible = bibleData.bibles.find(b => b.id === sssRightBible);
-    const bookInfo = bibleData.books.find(b => b.id === sssBook);
-    const bookName = bookInfo?.name || sssBook;
-
-    // Filter verses if specific verse selected
-    const leftFiltered = sssVerse > 0 ? leftVerses?.filter(v => v.number === sssVerse) : leftVerses;
-    const rightFiltered = sssVerse > 0 ? rightVerses?.filter(v => v.number === sssVerse) : rightVerses;
-
-    // Render left pane
-    if (sssLeftPane) {
-      sssLeftPane.replaceChildren(buildSSSPaneHTML(leftFiltered, leftBible, bookName, rightFiltered, rightBible));
-    }
-
-    // Render right pane
-    if (sssRightPane) {
-      sssRightPane.replaceChildren(buildSSSPaneHTML(rightFiltered, rightBible, bookName, leftFiltered, leftBible));
-    }
-
-    // Process footnotes for SSS mode - separate per pane
-    if (window.Michael?.Footnotes) {
-      const leftFootnotesSection = document.getElementById('sss-left-footnotes-section');
-      const leftFootnotesList = document.getElementById('sss-left-footnotes-list');
-      const rightFootnotesSection = document.getElementById('sss-right-footnotes-section');
-      const rightFootnotesList = document.getElementById('sss-right-footnotes-list');
-
-      // Process left pane footnotes
-      const leftFootnoteCount = window.Michael.Footnotes.process(
-        sssLeftPane, leftFootnotesSection, leftFootnotesList, 'sss-left-'
-      );
-
-      // Process right pane footnotes
-      const rightFootnoteCount = window.Michael.Footnotes.process(
-        sssRightPane, rightFootnotesSection, rightFootnotesList, 'sss-right-'
-      );
-
-      // Hide Strong's notes row if no Strong's notes (footnotes are now per-pane)
-      const notesRow = document.getElementById('sss-notes-row');
-      if (notesRow) {
-        // The notes row now only contains Strong's, check if it has any
-        const strongsList = document.getElementById('sss-strongs-list');
-        notesRow.classList.toggle('hidden', !strongsList || strongsList.children.length === 0);
-      }
-    }
-
-    // Synchronize verse row heights between panes
+    renderSSSPanes(leftVerses, rightVerses);
+    processSSSFootnotes();
     syncSSSVerseHeights();
   }
 
@@ -1894,6 +1946,85 @@
      DIFF HIGHLIGHTING
      ======================================================================== */
 
+  // -- Shared helpers for diff highlighting --
+
+  /** Regex matching <note ...>...</note> elements (shared constant). */
+  const DIFF_NOTE_REGEX = /<note[^>]*>[\s\S]*?<\/note>/gi;
+
+  /**
+   * Strip all HTML/OSIS markup tags from a string, collapsing whitespace.
+   * @private
+   * @param {string} str
+   * @returns {string}
+   */
+  function stripAllMarkup(str) {
+    return str.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+  }
+
+  /**
+   * Lowercase a word and strip leading/trailing punctuation for comparison.
+   * @private
+   * @param {string} word
+   * @returns {string}
+   */
+  function normalizeWord(word) {
+    return word.toLowerCase().replace(/[.,;:!?'"]/g, '');
+  }
+
+  /**
+   * Build a Set of normalized words from a cleaned (markup-stripped) text string.
+   * @private
+   * @param {string} cleanText - Markup-free text.
+   * @returns {Set<string>}
+   */
+  function collectNormalizedWords(cleanText) {
+    const wordSet = new Set();
+    cleanText.toLowerCase().split(/\s+/).forEach(w => {
+      wordSet.add(w.replace(/[.,;:!?'"]/g, ''));
+    });
+    return wordSet;
+  }
+
+  /**
+   * Find normalized words in cleanText that are absent from referenceWordSet.
+   * @private
+   * @param {string} cleanText - Markup-free text to scan.
+   * @param {Set<string>} referenceWordSet - Words to compare against.
+   * @returns {Set<string>} Normalized words that differ.
+   */
+  function findDiffWords(cleanText, referenceWordSet) {
+    const diffWords = new Set();
+    cleanText.split(/\s+/).filter(w => w.length > 0).forEach(word => {
+      const clean = normalizeWord(word);
+      if (clean.length > 0 && !referenceWordSet.has(clean)) {
+        diffWords.add(clean);
+      }
+    });
+    return diffWords;
+  }
+
+  /**
+   * Wrap each word token in textWithoutNotes with a diff-insert span when it
+   * appears in diffWordsLower; HTML tags are passed through unchanged.
+   * @private
+   * @param {string} textWithoutNotes - Source text (notes already removed).
+   * @param {Set<string>} diffWordsLower - Normalized words to highlight.
+   * @returns {string}
+   */
+  function applyDiffSpans(textWithoutNotes, diffWordsLower) {
+    return textWithoutNotes.replace(
+      /(<[^>]+>)|([^<\s]+)/g,
+      (match, tag, word) => {
+        if (tag) return tag;
+        const clean = normalizeWord(word);
+        if (word && diffWordsLower.has(clean)) {
+          return `<span class="diff-insert">${escapeHtml(word)}</span>`;
+        }
+        return match;
+      }
+    );
+  }
+
   /**
    * Highlight differences for normal mode (words not in ANY other translation)
    * Uses TextCompare engine if available, falls back to simple word matching
@@ -1909,73 +2040,24 @@
     if (!normalHighlightEnabled || otherTexts.length === 0) return text;
 
     // Extract <note> elements to preserve them (CSS hides them, footnotes.js processes them)
-    const noteRegex = /<note[^>]*>[\s\S]*?<\/note>/gi;
-    const notes = text.match(noteRegex) || [];
-    const textWithoutNotes = text.replace(noteRegex, '');
-    const otherTextsWithoutNotes = otherTexts.map(t => t ? t.replace(noteRegex, '') : t);
+    const notes = text.match(DIFF_NOTE_REGEX) || [];
+    const textWithoutNotes = text.replace(DIFF_NOTE_REGEX, '');
 
-    // For diff comparison, strip ALL HTML/OSIS markup tags but keep the text content
-    const stripAllMarkup = (str) => str
-      .replace(/<[^>]+>/g, ' ')
-      .replace(/\s+/g, ' ')
-      .trim();
-
-    const cleanText = stripAllMarkup(textWithoutNotes);
-    const cleanOtherTexts = otherTextsWithoutNotes.map(t => t ? stripAllMarkup(t) : t);
-
-    // Collect all words from other translations into a Set for fast lookup (lowercase, no punctuation)
+    // Build a unified word set from all other translations
     const otherWords = new Set();
-    cleanOtherTexts.forEach(t => {
-      if (t) {
-        t.toLowerCase().split(/\s+/).forEach(w => {
-          otherWords.add(w.replace(/[.,;:!?'"]/g, ''));
-        });
-      }
+    otherTexts.forEach(t => {
+      if (!t) return;
+      const clean = stripAllMarkup(t.replace(DIFF_NOTE_REGEX, ''));
+      collectNormalizedWords(clean).forEach(w => otherWords.add(w));
     });
 
-    // Find words that don't appear in any other translation
-    const words = cleanText.split(/\s+/).filter(w => w.length > 0);
-    const diffWordsLower = new Set();
-
-    words.forEach(word => {
-      const cleanWord = word.toLowerCase().replace(/[.,;:!?'"]/g, '');
-      if (!otherWords.has(cleanWord) && cleanWord.length > 0) {
-        diffWordsLower.add(cleanWord);
-      }
-    });
+    const diffWordsLower = findDiffWords(stripAllMarkup(textWithoutNotes), otherWords);
 
     // If no differences, return original text unchanged
-    if (diffWordsLower.size === 0) {
-      return text;
-    }
-
-    // Apply highlighting to the ORIGINAL text (preserving HTML structure)
-    // We work on textWithoutNotes to avoid corrupting note elements
-    // Then append notes at the end
-    let highlighted = textWithoutNotes;
-
-    // Process text nodes only - find words and wrap them with spans
-    // This regex finds word boundaries while preserving HTML tags
-    highlighted = highlighted.replace(
-      /(<[^>]+>)|([^<\s]+)/g,
-      (match, tag, word) => {
-        if (tag) {
-          // It's an HTML tag, preserve it
-          return tag;
-        }
-        if (word) {
-          // It's a word (possibly with punctuation)
-          const cleanWord = word.toLowerCase().replace(/[.,;:!?'"]/g, '');
-          if (diffWordsLower.has(cleanWord)) {
-            return `<span class="diff-insert">${escapeHtml(word)}</span>`;
-          }
-        }
-        return match;
-      }
-    );
+    if (diffWordsLower.size === 0) return text;
 
     // Append notes at the end (CSS will hide them, footnotes.js processes them)
-    return highlighted + notes.join('');
+    return applyDiffSpans(textWithoutNotes, diffWordsLower) + notes.join('');
   }
 
   /**
@@ -1994,68 +2076,19 @@
     if (!sssHighlightEnabled || !compareText) return text;
 
     // Extract <note> elements to preserve them (CSS hides them, footnotes.js processes them)
-    const noteRegex = /<note[^>]*>[\s\S]*?<\/note>/gi;
-    const notes = text.match(noteRegex) || [];
-    const textWithoutNotes = text.replace(noteRegex, '');
-    const compareWithoutNotes = compareText.replace(noteRegex, '');
+    const notes = text.match(DIFF_NOTE_REGEX) || [];
+    const textWithoutNotes = text.replace(DIFF_NOTE_REGEX, '');
+    const compareWithoutNotes = compareText.replace(DIFF_NOTE_REGEX, '');
 
-    // For diff comparison, strip ALL HTML/OSIS markup tags but keep the text content
-    const stripAllMarkup = (str) => str
-      .replace(/<[^>]+>/g, ' ')
-      .replace(/\s+/g, ' ')
-      .trim();
-
-    const cleanText = stripAllMarkup(textWithoutNotes);
-    const cleanCompare = stripAllMarkup(compareWithoutNotes);
-
-    // Collect words from comparison text for lookup (lowercase, no punctuation)
-    const compareWords = new Set(
-      cleanCompare.toLowerCase().split(/\s+/).map(w => w.replace(/[.,;:!?'"]/g, ''))
-    );
-
-    // Find words in our text that don't appear in comparison
-    const words = cleanText.split(/\s+/).filter(w => w.length > 0);
-    const diffWordsLower = new Set();
-
-    words.forEach(word => {
-      const cleanWord = word.toLowerCase().replace(/[.,;:!?'"]/g, '');
-      if (!compareWords.has(cleanWord) && cleanWord.length > 0) {
-        diffWordsLower.add(cleanWord);
-      }
-    });
+    // Build word set from comparison text, then find words unique to our text
+    const compareWords = collectNormalizedWords(stripAllMarkup(compareWithoutNotes));
+    const diffWordsLower = findDiffWords(stripAllMarkup(textWithoutNotes), compareWords);
 
     // If no differences, return original text unchanged
-    if (diffWordsLower.size === 0) {
-      return text;
-    }
-
-    // Apply highlighting to the ORIGINAL text (preserving HTML structure)
-    // We work on textWithoutNotes to avoid corrupting note elements
-    // Then append notes at the end
-    let highlighted = textWithoutNotes;
-
-    // Process text nodes only - find words and wrap them with spans
-    // This regex finds word boundaries while preserving HTML tags
-    highlighted = highlighted.replace(
-      /(<[^>]+>)|([^<\s]+)/g,
-      (match, tag, word) => {
-        if (tag) {
-          // It's an HTML tag, preserve it
-          return tag;
-        }
-        if (word) {
-          // It's a word (possibly with punctuation)
-          const cleanWord = word.toLowerCase().replace(/[.,;:!?'"]/g, '');
-          if (diffWordsLower.has(cleanWord)) {
-            return `<span class="diff-insert">${escapeHtml(word)}</span>`;
-          }
-        }
-        return match;
-      }
-    );
+    if (diffWordsLower.size === 0) return text;
 
     // Append notes at the end (CSS will hide them, footnotes.js processes them)
-    return highlighted + notes.join('');
+    return applyDiffSpans(textWithoutNotes, diffWordsLower) + notes.join('');
   }
 
   /**
