@@ -288,11 +288,13 @@ searchQuery = '<script>alert("XSS")</script>';
 **Preferred methods (in order of safety):**
 
 1. **textContent** (safest - no HTML parsing)
+
 ```javascript
 element.textContent = userInput;  // Always safe
 ```
 
 2. **createElement + appendChild** (safe - explicit DOM construction)
+
 ```javascript
 const span = document.createElement('span');
 span.className = 'verse-num';
@@ -301,6 +303,7 @@ parent.appendChild(span);
 ```
 
 3. **innerHTML with escaped content** (safe if properly escaped)
+
 ```javascript
 element.innerHTML = `<mark>${escapeHtml(userInput)}</mark>`;
 ```
@@ -333,6 +336,7 @@ if (def.lemma) {
 ```
 
 **Why this matters:**
+
 - Strong's data comes from external JSON files
 - Could potentially contain malicious content if data source compromised
 - Escaping ensures even compromised data cannot execute scripts
@@ -344,6 +348,7 @@ if (def.lemma) {
 ### Runtime Dependencies
 
 **Zero external runtime dependencies**
+
 - No jQuery, React, Vue, or other frameworks
 - No CDN-hosted libraries
 - All JavaScript written in vanilla ES6+
@@ -361,6 +366,7 @@ const STRONGS_URLS = {
 ```
 
 **Security characteristics:**
+
 - External links open in new tab (`target="_blank"`)
 - Include `rel="noopener"` to prevent `window.opener` access
 - Used only for "View Full Entry" links (user-initiated navigation)
