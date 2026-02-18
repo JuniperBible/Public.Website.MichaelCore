@@ -13,6 +13,35 @@ window.Michael.BibleAPI = (function() {
   'use strict';
 
   /**
+   * Validate that a URL path is safe for fetching (same-origin, relative path only).
+   * Prevents SSRF by rejecting absolute URLs and external domains.
+   * @param {string} path - The URL path to validate
+   * @returns {boolean} True if the path is safe for fetching
+   */
+  function isValidInternalPath(path) {
+    if (!path || typeof path !== 'string') {
+      return false;
+    }
+    // Reject absolute URLs (http://, https://, //, etc.)
+    if (/^[a-z][a-z0-9+.-]*:/i.test(path) || path.startsWith('//')) {
+      return false;
+    }
+    // Reject javascript: and data: protocols
+    if (/^(javascript|data):/i.test(path.trim())) {
+      return false;
+    }
+    // Allow only paths starting with /
+    if (!path.startsWith('/')) {
+      return false;
+    }
+    // Reject path traversal attempts
+    if (path.includes('..')) {
+      return false;
+    }
+    return true;
+  }
+
+  /**
    * Cache for fetched chapter data
    * Key format: "{bibleId}/{bookId}/{chapterNum}"
    * Value: Array of verse objects { number: int, text: string }
@@ -54,7 +83,21 @@ window.Michael.BibleAPI = (function() {
    * // Later: controller.abort();
    */
   async function fetchChapter(basePath, bibleId, bookId, chapterNum, signal) {
-    const cacheKey = `${bibleId}/${bookId}/${chapterNum}`;
+    // Validate input parameters to prevent injection
+    if (!basePath || typeof basePath !== 'string') {
+      return null;
+    }
+    if (!bibleId || !/^[a-zA-Z0-9-]+$/.test(bibleId)) {
+      return null;
+    }
+    if (!bookId || !/^[a-zA-Z0-9]+$/.test(bookId)) {
+      return null;
+    }
+    if (typeof chapterNum !== 'number' || chapterNum < 1 || chapterNum > 200) {
+      return null;
+    }
+
+    const cacheKey = bibleId + '/' + bookId + '/' + chapterNum;
 
     // Return cached data if available
     if (chapterCache.has(cacheKey)) {
@@ -76,15 +119,20 @@ window.Michael.BibleAPI = (function() {
       activeFetches.set(cacheKey, controller);
     }
 
-    // Construct URL (bookId should be lowercase in URL)
-    const url = `${basePath}/${bibleId}/${bookId.toLowerCase()}/${chapterNum}/`;
+    // Construct URL from validated components (bookId should be lowercase in URL)
+    const url = basePath + '/' + bibleId + '/' + bookId.toLowerCase() + '/' + chapterNum + '/';
+
+    // Validate the constructed URL before fetching
+    if (!isValidInternalPath(url)) {
+      return null;
+    }
 
     try {
-      // Fetch chapter HTML page
-      const response = await fetch(url, { signal: fetchSignal });
+      // Fetch chapter HTML page (URL is pre-validated as internal path)
+      const response = await fetch(url, { signal: fetchSignal, credentials: 'same-origin' });
 
       if (!response.ok) {
-        console.warn(`Failed to fetch ${url}: ${response.status}`);
+        console.warn('Failed to fetch URL:', url, 'status:', response.status);
         return null;
       }
 
@@ -386,7 +434,7 @@ window.Michael.BibleAPI = (function() {
    * }
    */
   function hasInCache(bibleId, bookId, chapterNum) {
-    const cacheKey = `${bibleId}/${bookId}/${chapterNum}`;
+    const cacheKey = bibleId + '/' + bookId + '/' + chapterNum;
     return chapterCache.has(cacheKey);
   }
 
