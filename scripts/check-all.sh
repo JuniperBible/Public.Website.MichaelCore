@@ -170,10 +170,10 @@ if $UPDATE_README; then
 | Regression Tests | ${RESULTS["Regression Tests"]:-skip} | 15 E2E tests passing |
 | Clean Worktree | ${RESULTS["Clean Worktree"]:-skip} | No uncommitted changes |"
 
-    # Convert pass/fail/skip to emoji
-    TABLE=$(echo "$TABLE" | sed 's/| pass |/| ✅ Pass |/g')
-    TABLE=$(echo "$TABLE" | sed 's/| fail |/| ❌ Fail |/g')
-    TABLE=$(echo "$TABLE" | sed 's/| skip |/| ⊘ Skip |/g')
+    # Convert pass/fail/skip to emoji using bash parameter expansion
+    TABLE="${TABLE//| pass |/| ✅ Pass |}"
+    TABLE="${TABLE//| fail |/| ❌ Fail |}"
+    TABLE="${TABLE//| skip |/| ⊘ Skip |}"
 
     # Update README using sed (with macOS compatibility)
     # Detect macOS vs Linux
