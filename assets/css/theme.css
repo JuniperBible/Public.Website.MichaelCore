@@ -1,26 +1,22 @@
-/* ==========================================================================
-   Focus with Justin — Starter Theme
-   Drop-in CSS: tokens + shared components
-   Goal: unify header/footer, panels, buttons, chips, badges, cards, forms,
-         chapter grid, and reading controls across all pages.
-   ========================================================================== */
-
-/* ==========================================================================
-   Focus with Justin — Starter Theme
-   Drop-in CSS: tokens + shared components
-
-   NOTE: This file is concatenated with other theme-*.css modules via Hugo.
-   See layouts/_default/baseof.html for the bundle order:
-   1. theme-colors.css    - Color tokens
-   2. theme.css           - Core styles (this file)
-   3. theme-compare.css   - Compare page, diff highlighting
-   4. theme-share.css     - Share menu, toasts
-   5. theme-strongs.css   - Strong's concordance
-   6. theme-pwa.css       - PWA standalone mode
-   7. theme-offline.css   - Offline settings
-   8. theme-print.css     - Print stylesheet
-   9. theme-custom.css    - Custom overrides (loaded last)
-   ========================================================================== */
+/*
+ * Focus with Justin - Starter Theme
+ * Drop-in CSS: tokens + shared components
+ *
+ * Goal: unify header/footer, panels, buttons, chips, badges, cards, forms,
+ * chapter grid, and reading controls across all pages.
+ *
+ * NOTE: This file is concatenated with other theme-*.css modules via Hugo.
+ * See layouts/_default/baseof.html for the bundle order:
+ * 1. theme-colors.css    - Color tokens
+ * 2. theme.css           - Core styles (this file)
+ * 3. theme-compare.css   - Compare page, diff highlighting
+ * 4. theme-share.css     - Share menu, toasts
+ * 5. theme-strongs.css   - Strongs concordance
+ * 6. theme-pwa.css       - PWA standalone mode
+ * 7. theme-offline.css   - Offline settings
+ * 8. theme-print.css     - Print stylesheet
+ * 9. theme-custom.css    - Custom overrides (loaded last)
+ */
 
 /* -----------------------------
    0) Design Tokens (non-color)

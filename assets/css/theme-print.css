@@ -1,7 +1,7 @@
-/* ==========================================================================
-   Michael Bible Module — Print Stylesheet
-   Optimized for Bible study, sharing, and archival printing
-   ========================================================================== */
+/*
+ * Michael Bible Module - Print Stylesheet
+ * Optimized for Bible study, sharing, and archival printing
+ */
 
 @media print {
   /* ===== 1) HIDE NON-ESSENTIAL INTERACTIVE ELEMENTS ===== */

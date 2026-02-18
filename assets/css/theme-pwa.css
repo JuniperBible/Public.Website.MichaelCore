@@ -1,15 +1,15 @@
-/* ==========================================================================
-   Michael Bible Module — PWA Standalone Mode Styles
-   Styles for when app is installed as PWA (Add to Home Screen)
-
-   Two detection paths, one set of rules:
-   1. CSS @media display-mode (modern browsers)
-   2. JS-added .pwa-standalone class (iOS Safari, TWA, height heuristic)
-
-   The media query adds .pwa-standalone via JS at runtime (baseof.html).
-   Both paths are covered by the class-based selectors below.
-   The media query block ONLY handles edge cases where JS hasn't run yet.
-   ========================================================================== */
+/*
+ * Michael Bible Module - PWA Standalone Mode Styles
+ * Styles for when app is installed as PWA (Add to Home Screen)
+ *
+ * Two detection paths, one set of rules:
+ * 1. CSS @media display-mode (modern browsers)
+ * 2. JS-added .pwa-standalone class (iOS Safari, TWA, height heuristic)
+ *
+ * The media query adds .pwa-standalone via JS at runtime (baseof.html).
+ * Both paths are covered by the class-based selectors below.
+ * The media query block ONLY handles edge cases where JS hasn't run yet.
+ */
 
 /* Display-mode media query — ensures styles apply even before JS runs */
 @media all and (display-mode: standalone),
