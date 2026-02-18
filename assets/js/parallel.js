@@ -772,9 +772,11 @@
       }
 
       updateURL();
+      // eslint-disable-next-line no-unsanitized/property -- createLoadingIndicator returns safe HTML
       parallelContent.innerHTML = window.Michael.DomUtils.createLoadingIndicator();
 
       const chaptersData = await fetchAllChapters();
+      // eslint-disable-next-line no-unsanitized/property -- buildComparisonHTML returns sanitized HTML
       parallelContent.innerHTML = buildComparisonHTML(chaptersData);
 
       processComparisonFootnotes();
@@ -1019,7 +1021,7 @@
         const bible = bibleData.bibles.find(b => b.id === id);
         return escapeHtml(bible?.abbrev || id);
       }).join(', ');
-    // security-scanner-ignore: bookName escaped, currentChapter/verseRef are integers, abbrevList pre-escaped
+    // eslint-disable-next-line @anthropic/no-html-template-literals -- bookName escaped, integers, abbrevList pre-escaped
     html += `<header style="text-align: center; margin-bottom: 1.5rem;">
       <h2 style=" margin-bottom: 0.25rem;">${escapeHtml(bookName)} ${currentChapter}${verseRef}</h2>
       <p style="color: var(--michael-text-muted);  font-size: 0.875rem; margin: 0;">${abbrevList}</p>
@@ -1034,7 +1036,7 @@
     versesToShow.forEach((verse) => {
       const verseNum = verse.number;
 
-      // security-scanner-ignore: verseNum/currentChapter are integers, bookName uses escapeHtml()
+      // eslint-disable-next-line @anthropic/no-html-template-literals -- verseNum/currentChapter are integers, bookName escaped
       html += `<article class="parallel-verse" data-verse="${verseNum}">
         <header>
           <h3 style=" font-weight: bold; color: var(--michael-accent); margin-bottom: 0.5rem; font-size: 1rem;">${escapeHtml(bookName)} ${currentChapter}:${verseNum}</h3>
@@ -1062,7 +1064,7 @@
           text = highlightNormalDifferences(v.text, otherTexts);
         }
 
-        // security-scanner-ignore: bibleAbbrev pre-escaped, text from trusted Bible data
+        // eslint-disable-next-line @anthropic/no-html-template-literals -- bibleAbbrev pre-escaped, text from trusted Bible data
         const bibleAbbrev = escapeHtml(bible?.abbrev || translationId);
         html += `<div class="translation-label" style="margin-top: 0.75rem;">
           <strong style="color: var(--michael-accent);  font-size: 0.75rem;">${bibleAbbrev}</strong>
@@ -1506,9 +1508,11 @@
     // Show loading
     const loadingHtml = window.Michael.DomUtils.createLoadingIndicator();
     if (sssLeftPane) {
+      // eslint-disable-next-line no-unsanitized/property -- loadingHtml is safe HTML from DomUtils
       sssLeftPane.innerHTML = loadingHtml;
     }
     if (sssRightPane) {
+      // eslint-disable-next-line no-unsanitized/property -- loadingHtml is safe HTML from DomUtils
       sssRightPane.innerHTML = loadingHtml;
     }
 
@@ -1562,11 +1566,13 @@
 
     // Render left pane
     if (sssLeftPane) {
+      // eslint-disable-next-line no-unsanitized/property -- buildSSSPaneHTML returns sanitized HTML
       sssLeftPane.innerHTML = buildSSSPaneHTML(leftFiltered, leftBible, bookName, rightFiltered, rightBible);
     }
 
     // Render right pane
     if (sssRightPane) {
+      // eslint-disable-next-line no-unsanitized/property -- buildSSSPaneHTML returns sanitized HTML
       sssRightPane.innerHTML = buildSSSPaneHTML(rightFiltered, rightBible, bookName, leftFiltered, leftBible);
     }
 
@@ -1765,20 +1771,20 @@
 
     // Check for versification mismatch (e.g., Masoretic vs Septuagint)
     // Display warning when comparing Bibles with different verse numbering systems
-    // security-scanner-ignore: bible.versification uses escapeHtml()
+    // eslint-disable-next-line @anthropic/no-html-template-literals -- bible.versification uses escapeHtml()
     const versificationWarning = (compareBible && bible?.versification && compareBible?.versification &&
       bible.versification !== compareBible.versification)
       ? `<small style="color: var(--michael-text-muted); display: block; font-size: 0.7rem;">${escapeHtml(bible.versification)} versification</small>`
       : '';
 
-    // security-scanner-ignore: bibleAbbrev pre-escaped, versificationWarning pre-escaped
+    // eslint-disable-next-line @anthropic/no-html-template-literals -- bibleAbbrev/versificationWarning pre-escaped
     const bibleAbbrev = escapeHtml(bible?.abbrev || 'Unknown');
     let html = `<header class="translation-label" style="text-align: center; padding-bottom: 0.5rem;">
       <strong>${bibleAbbrev}</strong>${versificationWarning}
     </header>`;
 
     // Render each verse with highlighting based on comparison
-    // security-scanner-ignore: verse.number is integer, highlightedText from trusted Bible data
+    // eslint-disable-next-line @anthropic/no-html-template-literals -- verse.number integer, highlightedText from trusted data
     verses.forEach(verse => {
       const compareVerse = compareVerses?.find(v => v.number === verse.number);
       const highlightedText = highlightDifferences(verse.text, compareVerse?.text);
@@ -2032,7 +2038,7 @@
       highlights.sort((a, b) => a.offset - b.offset);
 
       // Build HTML with highlighted spans
-      // security-scanner-ignore: all text uses TC.escapeHtml()
+      // eslint-disable-next-line @anthropic/no-html-template-literals -- all text uses TC.escapeHtml()
       for (const h of highlights) {
         // Add text before this highlight
         if (h.offset > pos) {

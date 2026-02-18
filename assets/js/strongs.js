@@ -268,7 +268,7 @@
     // SECURITY: typeName is a constant ('Hebrew'/'Greek'), displayNumber is parseInt output
     const typeName = type === 'H' ? 'Hebrew' : 'Greek';
     const displayNumber = parseInt(number, 10).toString();
-    // security-scanner-ignore: template uses safe constant values only
+    // eslint-disable-next-line @anthropic/no-html-template-literals -- template uses safe constant values only
     let html = `<strong>${typeName} ${displayNumber}</strong>`;
 
     if (def.source === 'local') {
@@ -287,6 +287,7 @@
     // Create and append the list item
     const li = document.createElement('li');
     li.id = `strongs-note-${cacheKey}`;
+    // eslint-disable-next-line no-unsanitized/property -- html built from escapeHtml() values
     li.innerHTML = html;
     notesList.appendChild(li);
 
@@ -414,7 +415,7 @@
 
     if (def.source === 'local') {
       // Format local definition with rich HTML
-      // security-scanner-ignore: all interpolated values use escapeHtml()
+      // eslint-disable-next-line @anthropic/no-html-template-literals -- all interpolated values use escapeHtml()
       let html = '';
 
       if (def.lemma) {
@@ -436,6 +437,7 @@
         html += `<p class="strongs-deriv"><small><strong>Derivation:</strong> ${escapeHtml(def.derivation)}</small></p>`;
       }
 
+      // eslint-disable-next-line no-unsanitized/property -- html built from escapeHtml() values
       defEl.innerHTML = html;
     } else {
       // Fallback or API definition - show simple text

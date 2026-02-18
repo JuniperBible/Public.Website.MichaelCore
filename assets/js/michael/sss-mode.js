@@ -231,9 +231,11 @@
     // Show loading - DomUtils.createLoadingIndicator() returns safe HTML
     const loadingHtml = window.Michael.DomUtils.createLoadingIndicator();
     if (sssLeftPane) {
+      // eslint-disable-next-line no-unsanitized/property -- loadingHtml is safe HTML from DomUtils
       sssLeftPane.innerHTML = loadingHtml;
     }
     if (sssRightPane) {
+      // eslint-disable-next-line no-unsanitized/property -- loadingHtml is safe HTML from DomUtils
       sssRightPane.innerHTML = loadingHtml;
     }
 
@@ -259,9 +261,11 @@
       const rightFiltered = sssVerse > 0 ? rightVerses?.filter(v => v.number === sssVerse) : rightVerses;
 
       if (sssLeftPane) {
+        // eslint-disable-next-line no-unsanitized/property -- buildSSSPaneHTML returns sanitized HTML
         sssLeftPane.innerHTML = buildSSSPaneHTML(leftFiltered, leftBible, bookName, rightFiltered, rightBible);
       }
       if (sssRightPane) {
+        // eslint-disable-next-line no-unsanitized/property -- buildSSSPaneHTML returns sanitized HTML
         sssRightPane.innerHTML = buildSSSPaneHTML(rightFiltered, rightBible, bookName, leftFiltered, leftBible);
       }
     } catch (err) {
@@ -351,19 +355,19 @@
     }
 
     // Versification warning
-    // security-scanner-ignore: bible.versification uses escapeHtml()
+    // eslint-disable-next-line @anthropic/no-html-template-literals -- bible.versification uses escapeHtml()
     const versificationWarning = (compareBible && bible?.versification && compareBible?.versification &&
       bible.versification !== compareBible.versification)
       ? `<small style="color: var(--michael-text-muted); display: block; font-size: 0.7rem;">${escapeHtml(bible.versification)} versification</small>`
       : '';
 
-    // security-scanner-ignore: bibleAbbrev pre-escaped, versificationWarning pre-escaped
+    // eslint-disable-next-line @anthropic/no-html-template-literals -- bibleAbbrev/versificationWarning pre-escaped
     const bibleAbbrev = escapeHtml(bible?.abbrev || 'Unknown');
     let html = `<header class="translation-label" style="text-align: center; padding-bottom: 0.5rem;">
       <strong>${bibleAbbrev}</strong>${versificationWarning}
     </header>`;
 
-    // security-scanner-ignore: verse.number is integer, highlightedText from trusted Bible data
+    // eslint-disable-next-line @anthropic/no-html-template-literals -- verse.number integer, highlightedText from trusted data
     verses.forEach(verse => {
       const compareVerse = compareVerses?.find(v => v.number === verse.number);
       const highlightedText = highlightDiffsFn(verse.text, compareVerse?.text, sssHighlightEnabled);

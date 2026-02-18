@@ -393,7 +393,7 @@
         if (signal.aborted) return;
 
         if (verses && verses.length > 0) {
-          // security-scanner-ignore: v.number/v.text from trusted BibleAPI (vetted Bible data)
+          // eslint-disable-next-line @anthropic/no-html-template-literals -- v.number/v.text from trusted BibleAPI
           rightVerses = verses.map(v => ({
             number: parseInt(v.number, 10),
             html: `<sup>${v.number}</sup> ${v.text}`
@@ -526,6 +526,7 @@
 
     // SECURITY: Safe - verseRows contains trusted HTML from page DOM and Bible API data
     // Bible names in "missing" messages are escaped via escapeHtml()
+    // eslint-disable-next-line no-unsanitized/property -- verseRows contains trusted Bible HTML
     sssVersesContainer.innerHTML = verseRows.join('');
 
     // Process Strong's numbers in both left and right columns
