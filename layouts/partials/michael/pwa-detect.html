@@ -1,0 +1,27 @@
+{{/*
+  Partial: pwa-detect.html
+  Purpose: Inline script that detects PWA standalone display mode via multiple
+  methods (media-query display-mode, iOS navigator.standalone, Android TWA
+  referrer, and a window height heuristic) and adds the 'pwa-standalone' class
+  to <html> and <body> when any method matches.
+*/}}
+<script>
+  (function() {
+    var displayModes = ['standalone', 'fullscreen', 'minimal-ui', 'window-controls-overlay'];
+    var isStandalone = displayModes.some(function(m) {
+      return window.matchMedia('(display-mode: ' + m + ')').matches;
+    });
+
+    isStandalone = isStandalone
+      || window.navigator.standalone === true
+      || document.referrer.indexOf('android-app://') === 0
+      || (window.outerHeight && window.innerHeight
+          && (window.outerHeight - window.innerHeight) < 100
+          && (window.outerHeight - window.innerHeight) >= 0);
+
+    if (isStandalone) {
+      document.documentElement.classList.add('pwa-standalone');
+      document.body.classList.add('pwa-standalone');
+    }
+  })();
+</script>

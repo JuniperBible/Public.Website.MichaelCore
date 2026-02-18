@@ -1,0 +1,30 @@
+{{/*
+  Renders a software-dependency table.
+  Expects a dict with keys:
+    heading  - i18n key for the section heading (string)
+    default  - English fallback for the heading (string)
+    items    - slice of dependency objects (.name .version .license .description .downloadLocation)
+*/}}
+{{ with .items }}
+<h3>{{ i18n $.heading | default $.default }}</h3>
+<table class="license-table">
+  <thead>
+    <tr>
+      <th>{{ i18n "name" | default "Name" }}</th>
+      <th>{{ i18n "version" | default "Version" }}</th>
+      <th>{{ i18n "license" | default "License" }}</th>
+      <th>{{ i18n "description" | default "Description" }}</th>
+    </tr>
+  </thead>
+  <tbody>
+    {{ range . }}
+    <tr>
+      <td><a href="{{ .downloadLocation }}" target="_blank" rel="noopener">{{ .name }}</a></td>
+      <td><code>{{ .version }}</code></td>
+      <td><span class="badge">{{ .license }}</span></td>
+      <td>{{ .description }}</td>
+    </tr>
+    {{ end }}
+  </tbody>
+</table>
+{{ end }}

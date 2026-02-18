@@ -27,58 +27,74 @@
 (function() {
   'use strict';
 
-  // Wait for reading tracker to be available
-  function initContinueReading() {
-    if (!window.Michael?.ReadingTracker) {
-      // Retry after a short delay
-      setTimeout(initContinueReading, 100);
-      return;
-    }
+  // Build a human-readable chapter title from a lastRead record.
+  function buildDisplayTitle(lastRead) {
+    const bookName = lastRead.bookId.charAt(0).toUpperCase() + lastRead.bookId.slice(1);
+    const bible = lastRead.bibleId.toUpperCase();
+    return `${bookName} ${lastRead.chapter} (${bible})`;
+  }
 
-    const tracker = window.Michael.ReadingTracker;
+  // Return false when lastRead is missing required fields.
+  function isValidLastRead(lastRead) {
+    return lastRead && lastRead.bibleId && lastRead.bookId && lastRead.chapter;
+  }
+
+  // Populate the widget elements and make the container visible.
+  function showChapter(elements, lastRead) {
+    const url = `/bible/${lastRead.bibleId}/${lastRead.bookId}/${lastRead.chapter}/`;
+    if (window.location.pathname === url) return;
+
+    elements.link.href = url;
+    elements.title.textContent = buildDisplayTitle(lastRead);
+    elements.container.classList.remove('hidden');
+  }
+
+  // Attach the dismiss button listener.
+  function setupDismissButton(container, dismissBtn) {
+    if (!dismissBtn) return;
+    dismissBtn.addEventListener('click', () => {
+      container.classList.add('hidden');
+      sessionStorage.setItem('continue-reading-dismissed', 'true');
+    });
+  }
+
+  // Query required DOM nodes; return null when any are absent.
+  function getElements() {
     const container = document.getElementById('continue-reading');
-    const link = document.getElementById('continue-reading-link');
-    const title = document.getElementById('continue-reading-title');
+    const link     = document.getElementById('continue-reading-link');
+    const title    = document.getElementById('continue-reading-title');
+    if (!container || !link || !title) return null;
+    return { container, link, title };
+  }
+
+  // Core initializer - runs once ReadingTracker is present.
+  function runInit() {
+    const elements = getElements();
+    if (!elements) return;
+
+    if (sessionStorage.getItem('continue-reading-dismissed') === 'true') return;
+
     const dismissBtn = document.getElementById('continue-reading-dismiss');
+    setupDismissButton(elements.container, dismissBtn);
 
-    if (!container || !link || !title) return;
-
-    // Check if user dismissed continue reading
-    const dismissed = sessionStorage.getItem('continue-reading-dismissed');
-    if (dismissed === 'true') return;
-
-    // Get last read chapter
-    tracker.getLastRead().then(lastRead => {
-      if (!lastRead || !lastRead.bibleId || !lastRead.bookId || !lastRead.chapter) return;
-
-      // Build URL from parts
-      const url = `/bible/${lastRead.bibleId}/${lastRead.bookId}/${lastRead.chapter}/`;
-
-      // Don't show if we're already on that page
-      if (window.location.pathname === url) return;
-
-      // Format the title - capitalize book name
-      const bookName = lastRead.bookId.charAt(0).toUpperCase() + lastRead.bookId.slice(1);
-      const bible = lastRead.bibleId.toUpperCase();
-      const displayTitle = `${bookName} ${lastRead.chapter} (${bible})`;
-
-      link.href = url;
-      title.textContent = displayTitle;
-      container.classList.remove('hidden');
+    window.Michael.ReadingTracker.getLastRead().then(lastRead => {
+      if (!isValidLastRead(lastRead)) return;
+      showChapter(elements, lastRead);
     }).catch(err => {
       console.debug('Continue reading not available:', err);
     });
-
-    // Handle dismiss
-    if (dismissBtn) {
-      dismissBtn.addEventListener('click', () => {
-        container.classList.add('hidden');
-        sessionStorage.setItem('continue-reading-dismissed', 'true');
-      });
-    }
   }
 
-  // Initialize when DOM is ready
+  // Wait for ReadingTracker to be available, then delegate to runInit.
+  function initContinueReading() {
+    if (!window.Michael?.ReadingTracker) {
+      setTimeout(initContinueReading, 100);
+      return;
+    }
+    runInit();
+  }
+
+  // Bootstrap when the DOM is ready.
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initContinueReading);
   } else {

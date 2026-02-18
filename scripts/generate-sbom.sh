@@ -37,47 +37,40 @@ cleanup() {
 # Set trap to cleanup on exit
 trap cleanup EXIT INT TERM
 
-# Parse arguments
-while [[ $# -gt 0 ]]; do
-    case $1 in
-        --all)
-            GENERATE_ALL=true
-            shift
-            ;;
-        --spdx-json)
-            GENERATE_ALL=false
-            FORMATS+=("spdx-json")
-            shift
-            ;;
-        --cyclonedx)
-            GENERATE_ALL=false
-            FORMATS+=("cyclonedx-json")
-            shift
-            ;;
-        --cyclonedx-xml)
-            GENERATE_ALL=false
-            FORMATS+=("cyclonedx-xml")
-            shift
-            ;;
-        --syft)
-            GENERATE_ALL=false
-            FORMATS+=("syft-json")
-            shift
-            ;;
-        --output-dir)
-            OUTPUT_DIR="$2"
-            shift 2
-            ;;
-        --help)
-            head -16 "$0" | tail -14
-            exit 0
-            ;;
-        *)
-            echo "Unknown option: $1"
-            exit 1
-            ;;
-    esac
-done
+# ---------------------------------------------------------------------------
+# Argument parsing
+# ---------------------------------------------------------------------------
+
+# Lookup table: CLI flag -> syft format name
+declare -A FLAG_FORMAT=(
+    [--spdx-json]="spdx-json"
+    [--cyclonedx]="cyclonedx-json"
+    [--cyclonedx-xml]="cyclonedx-xml"
+    [--syft]="syft-json"
+)
+
+# parse_args: process all command-line flags
+# CC = 1(base) + 1(while) + 4(case arms) = 6
+parse_args() {
+    while [[ $# -gt 0 ]]; do
+        case $1 in
+            --all)        GENERATE_ALL=true; shift ;;
+            --output-dir) OUTPUT_DIR="$2";   shift 2 ;;
+            --help)       head -16 "$0" | tail -14; exit 0 ;;
+            *)
+                if [[ -v FLAG_FORMAT[$1] ]]; then
+                    GENERATE_ALL=false
+                    FORMATS+=("${FLAG_FORMAT[$1]}")
+                    shift
+                else
+                    echo "Unknown option: $1"; exit 1
+                fi
+                ;;
+        esac
+    done
+}
+
+parse_args "$@"
 
 # If generating all formats
 if $GENERATE_ALL; then
@@ -88,19 +81,13 @@ fi
 mkdir -p "$OUTPUT_DIR"
 
 # ---------------------------------------------------------------------------
-# Tool resolution order: local binary → nix-shell → build from source
+# Tool resolution order: local binary -> nix-shell -> build from source
 # ---------------------------------------------------------------------------
 
-# resolve_tool: find a tool binary in order of preference
-# Usage: resolve_tool NAME LOCAL_BIN NIX_PKG [BUILD_DIR BUILD_CMD]
-resolve_tool() {
-    local name="$1" local_bin="$2" nix_pkg="$3" build_dir="${4:-}" build_cmd="${5:-}"
-
-    # 1. Local binary (pre-built in tools/)
-    if [[ -n "$local_bin" && -f "$local_bin" && -x "$local_bin" ]]; then
-        printf '%s' "$local_bin"; return 0
-    fi
-    # 2. nix-shell (resolve to actual binary path)
+# try_nix_tool: resolve a tool binary via nix-shell; prints path or returns 1
+# CC = 1(base) + 1(if nix-shell) + 1(if nix_bin) = 3
+try_nix_tool() {
+    local name="$1" nix_pkg="$2"
     if command -v nix-shell &> /dev/null; then
         local nix_bin
         nix_bin="$(nix-shell -p "$nix_pkg" --run "command -v $name" 2>/dev/null)"
@@ -108,11 +95,13 @@ resolve_tool() {
             printf '%s' "$nix_bin"; return 0
         fi
     fi
-    # 3. System PATH
-    if command -v "$name" &> /dev/null; then
-        printf '%s' "$(command -v "$name")"; return 0
-    fi
-    # 4. Build from source
+    return 1
+}
+
+# try_build_tool: build a tool from source and print its binary path on success
+# CC = 1(base) + 1(if build_dir) + 1(|| short-circuit) + 1(if local_bin exists) = 4
+try_build_tool() {
+    local name="$1" local_bin="$2" nix_pkg="$3" build_dir="$4" build_cmd="$5"
     if [[ -n "$build_dir" && -d "$build_dir" ]]; then
         echo "Building $name from source..." >&2
         (cd "$build_dir" && $build_cmd) || { echo "Error: failed to build $name" >&2; exit 1; }
@@ -120,6 +109,28 @@ resolve_tool() {
             printf '%s' "$local_bin"; return 0
         fi
     fi
+    return 1
+}
+
+# resolve_tool: find a tool binary in order of preference
+# Usage: resolve_tool NAME LOCAL_BIN NIX_PKG [BUILD_DIR BUILD_CMD]
+# CC = 1(base) + 1(if local) + 1(if nix) + 1(if PATH) + 1(if build) = 5
+resolve_tool() {
+    local name="$1" local_bin="$2" nix_pkg="$3" build_dir="${4:-}" build_cmd="${5:-}"
+
+    # 1. Local binary (pre-built in tools/)
+    if [[ -n "$local_bin" && -f "$local_bin" && -x "$local_bin" ]]; then
+        printf '%s' "$local_bin"; return 0
+    fi
+    # 2. nix-shell
+    if try_nix_tool "$name" "$nix_pkg"; then return 0; fi
+    # 3. System PATH
+    if command -v "$name" &> /dev/null; then
+        printf '%s' "$(command -v "$name")"; return 0
+    fi
+    # 4. Build from source
+    if try_build_tool "$name" "$local_bin" "$nix_pkg" "$build_dir" "$build_cmd"; then return 0; fi
+
     echo "Error: $name not found. Install with: nix-shell -p $nix_pkg" >&2
     exit 1
 }
@@ -143,27 +154,37 @@ else
     echo "Continuing without manual dependencies..."
 fi
 
-# Project metadata
+# ---------------------------------------------------------------------------
+# Project version resolution
+# ---------------------------------------------------------------------------
+
+# resolve_version: determine the project version from git or fallback
+resolve_version() {
+    if git describe --tags --always 2>/dev/null; then
+        return 0
+    fi
+    if [[ -d "$PROJECT_ROOT/.git" ]]; then
+        echo "Warning: Unable to get version from git tags, using commit: $PROJECT_VERSION" >&2
+        git rev-parse --short HEAD 2>/dev/null || echo "unknown"
+        return 0
+    fi
+    echo "Warning: Not a git repository, using version: 0.0.0" >&2
+    echo "0.0.0"
+}
+
 PROJECT_NAME="michael"
-# Handle git describe failures gracefully (e.g., shallow clones)
-if PROJECT_VERSION=$(git describe --tags --always 2>/dev/null); then
-    : # Success, use the version
-elif [[ -d "$PROJECT_ROOT/.git" ]]; then
-    # Git repo exists but describe failed (shallow clone?)
-    PROJECT_VERSION=$(git rev-parse --short HEAD 2>/dev/null || echo "unknown")
-    echo "Warning: Unable to get version from git tags, using commit: $PROJECT_VERSION"
-else
-    # Not a git repo
-    PROJECT_VERSION="0.0.0"
-    echo "Warning: Not a git repository, using version: $PROJECT_VERSION"
-fi
+PROJECT_VERSION="$(resolve_version)"
 
 echo "Generating SBOM for $PROJECT_NAME v$PROJECT_VERSION"
 echo "Output directory: $OUTPUT_DIR"
 echo "Manual deps: $MANUAL_DEPS"
 echo ""
 
-# Function to merge manual deps into SPDX JSON
+# ---------------------------------------------------------------------------
+# Manual-dependency merge helpers (one per format)
+# ---------------------------------------------------------------------------
+
+# merge_spdx_json: merge manual deps into SPDX JSON
 merge_spdx_json() {
     local syft_file="$1"
     local output_file="$2"
@@ -190,7 +211,7 @@ merge_spdx_json() {
     ' "$syft_file" > "$output_file"
 }
 
-# Function to merge manual deps into CycloneDX JSON
+# merge_cdx_json: merge manual deps into CycloneDX JSON
 merge_cdx_json() {
     local syft_file="$1"
     local output_file="$2"
@@ -217,7 +238,7 @@ merge_cdx_json() {
     ' "$syft_file" > "$output_file"
 }
 
-# Function to merge manual deps into Syft JSON
+# merge_syft_json: merge manual deps into Syft JSON
 merge_syft_json() {
     local syft_file="$1"
     local output_file="$2"
@@ -249,57 +270,67 @@ merge_syft_json() {
     ' "$syft_file" > "$output_file"
 }
 
-# Generate each format
-for format in "${FORMATS[@]}"; do
+# ---------------------------------------------------------------------------
+# Format dispatch
+# ---------------------------------------------------------------------------
+
+# format_output_file: map a syft format name to its output filename
+format_output_file() {
+    local format="$1"
     case $format in
-        spdx-json)
-            output_file="$OUTPUT_DIR/sbom.spdx.json"
-            temp_file=$(mktemp)
-            TEMP_FILES+=("$temp_file")
-            echo "Generating SPDX 2.3 JSON -> $output_file"
-            "$SYFT_BIN" scan "$PROJECT_ROOT" \
-                --source-name "$PROJECT_NAME" \
-                --source-version "$PROJECT_VERSION" \
-                -o "spdx-json=$temp_file" \
-                --quiet
-            merge_spdx_json "$temp_file" "$output_file"
-            ;;
-        cyclonedx-json)
-            output_file="$OUTPUT_DIR/sbom.cdx.json"
-            temp_file=$(mktemp)
-            TEMP_FILES+=("$temp_file")
-            echo "Generating CycloneDX JSON -> $output_file"
-            "$SYFT_BIN" scan "$PROJECT_ROOT" \
-                --source-name "$PROJECT_NAME" \
-                --source-version "$PROJECT_VERSION" \
-                -o "cyclonedx-json=$temp_file" \
-                --quiet
-            merge_cdx_json "$temp_file" "$output_file"
-            ;;
-        cyclonedx-xml)
-            output_file="$OUTPUT_DIR/sbom.cdx.xml"
-            echo "Generating CycloneDX XML -> $output_file"
-            # XML merging is complex, generate directly (manual deps won't be included)
-            "$SYFT_BIN" scan "$PROJECT_ROOT" \
-                --source-name "$PROJECT_NAME" \
-                --source-version "$PROJECT_VERSION" \
-                -o "cyclonedx-xml=$output_file" \
-                --quiet
-            echo "  Note: Manual deps not merged into XML format"
-            ;;
-        syft-json)
-            output_file="$OUTPUT_DIR/sbom.syft.json"
-            temp_file=$(mktemp)
-            TEMP_FILES+=("$temp_file")
-            echo "Generating Syft JSON -> $output_file"
-            "$SYFT_BIN" scan "$PROJECT_ROOT" \
-                --source-name "$PROJECT_NAME" \
-                --source-version "$PROJECT_VERSION" \
-                -o "syft-json=$temp_file" \
-                --quiet
-            merge_syft_json "$temp_file" "$output_file"
-            ;;
+        spdx-json)     echo "$OUTPUT_DIR/sbom.spdx.json" ;;
+        cyclonedx-json) echo "$OUTPUT_DIR/sbom.cdx.json" ;;
+        cyclonedx-xml)  echo "$OUTPUT_DIR/sbom.cdx.xml"  ;;
+        syft-json)      echo "$OUTPUT_DIR/sbom.syft.json" ;;
     esac
+}
+
+# merge_into_output: run the appropriate merge helper for formats that need it;
+# for formats that generate directly (XML), do nothing.
+merge_into_output() {
+    local format="$1" temp_file="$2" output_file="$3"
+    case $format in
+        spdx-json)      merge_spdx_json  "$temp_file" "$output_file" ;;
+        cyclonedx-json) merge_cdx_json   "$temp_file" "$output_file" ;;
+        syft-json)      merge_syft_json  "$temp_file" "$output_file" ;;
+    esac
+}
+
+# generate_format: run Syft and merge manual deps for one format
+generate_format() {
+    local format="$1"
+    local output_file
+    output_file="$(format_output_file "$format")"
+
+    if [[ "$format" == "cyclonedx-xml" ]]; then
+        # XML merging is complex; generate directly (manual deps won't be included)
+        echo "Generating CycloneDX XML -> $output_file"
+        "$SYFT_BIN" scan "$PROJECT_ROOT" \
+            --source-name "$PROJECT_NAME" \
+            --source-version "$PROJECT_VERSION" \
+            -o "cyclonedx-xml=$output_file" \
+            --quiet
+        echo "  Note: Manual deps not merged into XML format"
+        return 0
+    fi
+
+    local temp_file
+    temp_file="$(mktemp)"
+    TEMP_FILES+=("$temp_file")
+
+    echo "Generating $format -> $output_file"
+    "$SYFT_BIN" scan "$PROJECT_ROOT" \
+        --source-name "$PROJECT_NAME" \
+        --source-version "$PROJECT_VERSION" \
+        -o "$format=$temp_file" \
+        --quiet
+
+    merge_into_output "$format" "$temp_file" "$output_file"
+}
+
+# Generate each requested format
+for format in "${FORMATS[@]}"; do
+    generate_format "$format"
 done
 
 echo ""

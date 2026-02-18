@@ -1,0 +1,32 @@
+{{/*
+  Partial: bible-single-nav.html
+  Purpose: Renders the bottom action navigation for bible/single.html
+
+  Params (dict):
+    - page:     the Hugo page context
+    - basePath: the resolved bible base path string
+*/}}
+{{ $page := .page }}
+{{ $basePath := .basePath }}
+
+<nav class="actions">
+  {{ if $page.Params.chapter }}
+    <a href="{{ printf "%s/%s/%s/" $basePath $page.Params.bible $page.Params.book | relLangURL }}" class="btn">
+      &larr; {{ i18n "backToBook" | default "Back to Book" }}
+    </a>
+    <a href="{{ printf "%s/compare/?bibles=%s&ref=%s.%d" $basePath $page.Params.bible $page.Params.book $page.Params.chapter | relLangURL }}" class="btn btn--secondary">
+      {{ i18n "compareTranslations" | default "Compare Translations" }}
+    </a>
+  {{ else if $page.Params.book }}
+    <a href="{{ printf "%s/%s/" $basePath $page.Params.bible | relLangURL }}" class="btn">
+      &larr; {{ i18n "backToBible" | default "Back to Bible" }}
+    </a>
+  {{ else }}
+    <a href="{{ printf "%s/" $basePath | relLangURL }}" class="btn">
+      &larr; {{ i18n "allBibles" | default "All Bibles" }}
+    </a>
+    <a href="{{ printf "%s/compare/?bibles=%s" $basePath $page.Params.bible | relLangURL }}" class="btn btn--secondary">
+      {{ i18n "compareTranslations" | default "Compare Translations" }}
+    </a>
+  {{ end }}
+</nav>

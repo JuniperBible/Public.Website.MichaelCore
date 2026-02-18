@@ -1,0 +1,44 @@
+{{/*
+  Partial: bible-single-content.html
+  Purpose: Renders the main content area for bible/single.html
+
+  Params (dict):
+    - page:     the Hugo page context
+    - basePath: the resolved bible base path string
+*/}}
+{{ $page := .page }}
+{{ $basePath := .basePath }}
+
+{{ if $page.Params.chapter }}
+  <!-- Chapter view: show verses -->
+  <section>
+    <!-- Navigation with dropdowns -->
+    {{ partial "michael/bible-nav.html" (dict "page" $page "bible" $page.Params.bible "book" $page.Params.book "chapter" $page.Params.chapter "basePath" $basePath) }}
+
+    <div class="prose bible-text" id="chapter-content">
+      {{ $page.Content }}
+    </div>
+
+    <!-- Notes sections (side by side) -->
+    <div class="chapter-notes-row" id="chapter-notes-row">
+      {{ partial "michael/notes-section.html" (dict "type" "both") }}
+    </div>
+
+    <!-- Bottom navigation for convenience -->
+    {{ partial "michael/bible-nav.html" (dict "page" $page "bible" $page.Params.bible "book" $page.Params.book "chapter" $page.Params.chapter "basePath" $basePath) }}
+  </section>
+
+{{ else if $page.Params.book }}
+  <!-- Book view: show chapter list -->
+  {{ partial "michael/bible-nav.html" (dict "page" $page "bible" $page.Params.bible "book" $page.Params.book "chapter" 0 "basePath" $basePath) }}
+  <div class="book-content">
+    {{ $page.Content }}
+  </div>
+
+{{ else }}
+  <!-- Bible overview: show book list -->
+  {{ partial "michael/bible-nav.html" (dict "page" $page "bible" $page.Params.bible "book" "" "chapter" 0 "basePath" $basePath) }}
+  <div class="book-content">
+    {{ $page.Content }}
+  </div>
+{{ end }}

@@ -14,7 +14,10 @@ README="$PROJECT_ROOT/README.md"
 UPDATE_README=false
 HUGO_PID=""
 
-# Cleanup function to kill background processes
+# ---------------------------------------------------------------------------
+# Cleanup
+# ---------------------------------------------------------------------------
+
 cleanup() {
     if [[ -n "$HUGO_PID" ]] && kill -0 "$HUGO_PID" 2>/dev/null; then
         echo "Cleaning up Hugo server (PID: $HUGO_PID)..."
@@ -23,25 +26,28 @@ cleanup() {
     fi
 }
 
-# Set trap to cleanup on exit
 trap cleanup EXIT INT TERM
 
-# Parse arguments
+# ---------------------------------------------------------------------------
+# Arguments and colours
+# ---------------------------------------------------------------------------
+
 if [[ "${1:-}" == "--update-readme" ]]; then
     UPDATE_README=true
 fi
 
-# Colors for output
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
-NC='\033[0m' # No Color
+NC='\033[0m'
 
-# Track results
+# ---------------------------------------------------------------------------
+# Result tracking
+# ---------------------------------------------------------------------------
+
 declare -A RESULTS
 ALL_PASSED=true
 
-# Helper functions
 pass() {
     echo -e "${GREEN}✓${NC} $1"
     RESULTS["$1"]="pass"
@@ -58,111 +64,124 @@ skip() {
     RESULTS["$1"]="skip"
 }
 
-echo "========================================"
-echo "Michael Build Checks"
-echo "========================================"
-echo ""
+# ---------------------------------------------------------------------------
+# Individual check functions
+# ---------------------------------------------------------------------------
 
-cd "$PROJECT_ROOT"
+check_hugo() {
+    echo "Checking Hugo build..."
+    rm -rf public/ resources/
+    if hugo --minify --quiet 2>/dev/null; then
+        pass "Hugo Build"
+    else
+        fail "Hugo Build" "hugo --minify failed"
+    fi
+}
 
-# 1. Clean Build Check
-echo "Checking Hugo build..."
-rm -rf public/ resources/
-if hugo --minify --quiet 2>/dev/null; then
-    pass "Hugo Build"
-else
-    fail "Hugo Build" "hugo --minify failed"
-fi
-
-# 2. SBOM Generation Check
-echo "Checking SBOM generation..."
-if [ -x "./scripts/generate-sbom.sh" ]; then
+check_sbom() {
+    echo "Checking SBOM generation..."
+    if [ ! -x "./scripts/generate-sbom.sh" ]; then
+        skip "SBOM Generation" "generate-sbom.sh not found or not executable"
+        return
+    fi
     if ./scripts/generate-sbom.sh --quiet 2>/dev/null; then
         pass "SBOM Generation"
     else
         fail "SBOM Generation" "generate-sbom.sh failed"
     fi
-else
-    skip "SBOM Generation" "generate-sbom.sh not found or not executable"
-fi
+}
 
-# 3. JuniperBible Tests
-echo "Checking JuniperBible tests..."
-if [ -d "tools/juniper" ]; then
+check_juniper() {
+    echo "Checking JuniperBible tests..."
+    if [ ! -d "tools/juniper" ]; then
+        skip "JuniperBible Tests" "tools/juniper not found"
+        return
+    fi
     cd tools/juniper
-    if go test ./... -count=1 -short 2>/dev/null | grep -q "PASS"; then
-        pass "JuniperBible Tests"
-    elif go test ./... -count=1 -short 2>&1 | grep -q "ok"; then
+    local output
+    output=$(go test ./... -count=1 -short 2>&1)
+    cd "$PROJECT_ROOT"
+    if echo "$output" | grep -qE "PASS|ok"; then
         pass "JuniperBible Tests"
     else
         fail "JuniperBible Tests" "go test failed"
     fi
-    cd "$PROJECT_ROOT"
-else
-    skip "JuniperBible Tests" "tools/juniper not found"
-fi
+}
 
-# 4. Regression Tests (only if Hugo server can be started)
-echo "Checking regression tests..."
-if [ -d "tests" ] && [ -f "tests/go.mod" ]; then
-    # Start Hugo server in background
+# Returns 0 if Hugo is ready, 1 if it timed out.
+wait_for_hugo() {
+    local max_retries="${1:-10}"
+    local port="${PORT:-1313}"
+    local retries=0
+    while [ "$retries" -lt "$max_retries" ]; do
+        if curl -s "http://localhost:${port}/" &>/dev/null; then
+            return 0
+        fi
+        sleep 1
+        retries=$((retries + 1))
+    done
+    return 1
+}
+
+check_regression() {
+    echo "Checking regression tests..."
+    if [ ! -d "tests" ] || [ ! -f "tests/go.mod" ]; then
+        skip "Regression Tests" "tests directory not found"
+        return
+    fi
+
     hugo server --port "${PORT:-1313}" --buildDrafts &>/dev/null &
     HUGO_PID=$!
 
-    # Wait for Hugo to start with retry logic
-    RETRY_COUNT=0
-    MAX_RETRIES=10
-    HUGO_READY=false
-
-    while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
-        if curl -s "http://localhost:${PORT:-1313}/" &>/dev/null; then
-            HUGO_READY=true
-            break
-        fi
-        sleep 1
-        RETRY_COUNT=$((RETRY_COUNT + 1))
-    done
-
-    # Check if Hugo started successfully
-    if [ "$HUGO_READY" = true ]; then
-        cd tests
-        if go test -v ./regression/... -count=1 2>&1 | grep -q "PASS"; then
-            pass "Regression Tests"
-        else
-            fail "Regression Tests" "E2E tests failed"
-        fi
-        cd "$PROJECT_ROOT"
-    else
-        skip "Regression Tests" "Hugo server failed to start within ${MAX_RETRIES} seconds"
+    local max_retries=10
+    if ! wait_for_hugo "$max_retries"; then
+        skip "Regression Tests" "Hugo server failed to start within ${max_retries} seconds"
+        kill "$HUGO_PID" 2>/dev/null || true
+        return
     fi
 
-    # Stop Hugo (cleanup trap will handle this, but try anyway)
+    cd tests
+    local output
+    output=$(go test -v ./regression/... -count=1 2>&1)
+    cd "$PROJECT_ROOT"
+
     kill "$HUGO_PID" 2>/dev/null || true
-else
-    skip "Regression Tests" "tests directory not found"
-fi
 
-# 5. Clean Worktree Check
-echo "Checking worktree status..."
-if git diff --quiet && git diff --cached --quiet; then
-    pass "Clean Worktree"
-else
-    fail "Clean Worktree" "uncommitted changes detected"
-fi
+    if echo "$output" | grep -q "PASS"; then
+        pass "Regression Tests"
+    else
+        fail "Regression Tests" "E2E tests failed"
+    fi
+}
 
-echo ""
-echo "========================================"
-echo "Results Summary"
-echo "========================================"
+check_worktree() {
+    echo "Checking worktree status..."
+    if git diff --quiet && git diff --cached --quiet; then
+        pass "Clean Worktree"
+    else
+        fail "Clean Worktree" "uncommitted changes detected"
+    fi
+}
 
-# Update README.md if requested
-if $UPDATE_README; then
+# ---------------------------------------------------------------------------
+# README update
+# ---------------------------------------------------------------------------
+
+detect_sed_inplace() {
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+        echo "-i ''"
+    else
+        echo "-i"
+    fi
+}
+
+update_readme() {
     echo "Updating README.md..."
+    local today
+    today=$(date +%Y-%m-%d)
 
-    TODAY=$(date +%Y-%m-%d)
-
-    # Build the new table
-    TABLE="| Check | Status | Description |
+    local table
+    table="| Check | Status | Description |
 |-------|--------|-------------|
 | Hugo Build | ${RESULTS["Hugo Build"]:-skip} | Site builds without errors |
 | SBOM Generation | ${RESULTS["SBOM Generation"]:-skip} | SBOM files generated successfully |
@@ -170,31 +189,55 @@ if $UPDATE_README; then
 | Regression Tests | ${RESULTS["Regression Tests"]:-skip} | 15 E2E tests passing |
 | Clean Worktree | ${RESULTS["Clean Worktree"]:-skip} | No uncommitted changes |"
 
-    # Convert pass/fail/skip to emoji using bash parameter expansion
-    TABLE="${TABLE//| pass |/| ✅ Pass |}"
-    TABLE="${TABLE//| fail |/| ❌ Fail |}"
-    TABLE="${TABLE//| skip |/| ⊘ Skip |}"
+    table="${table//| pass |/| ✅ Pass |}"
+    table="${table//| fail |/| ❌ Fail |}"
+    table="${table//| skip |/| ⊘ Skip |}"
 
-    # Update README using sed (with macOS compatibility)
-    # Detect macOS vs Linux
+    local sed_inplace
     if [[ "$OSTYPE" == "darwin"* ]]; then
-        SED_INPLACE=(-i '')
+        sed_inplace=(-i '')
     else
-        SED_INPLACE=(-i)
+        sed_inplace=(-i)
     fi
 
-    # Match from AUTO-GENERATED to END AUTO-GENERATED and replace
-    sed "${SED_INPLACE[@]}" "/<!-- AUTO-GENERATED: Do not edit manually/,/<!-- END AUTO-GENERATED -->/c\\
+    sed "${sed_inplace[@]}" \
+        "/<!-- AUTO-GENERATED: Do not edit manually/,/<!-- END AUTO-GENERATED -->/c\\
 <!-- AUTO-GENERATED: Do not edit manually. Run \`make check\` to update. -->\\
 \\
-$TABLE\\
+$table\\
 \\
 <!-- END AUTO-GENERATED -->" "$README"
 
-    # Update last verified date
-    sed "${SED_INPLACE[@]}" "s/\\*Last verified: [0-9-]*\\*/\\*Last verified: $TODAY\\*/" "$README"
+    sed "${sed_inplace[@]}" \
+        "s/\\*Last verified: [0-9-]*\\*/\\*Last verified: $today\\*/" "$README"
 
     echo "README.md updated with check results"
+}
+
+# ---------------------------------------------------------------------------
+# Main
+# ---------------------------------------------------------------------------
+
+echo "========================================"
+echo "Michael Build Checks"
+echo "========================================"
+echo ""
+
+cd "$PROJECT_ROOT"
+
+check_hugo
+check_sbom
+check_juniper
+check_regression
+check_worktree
+
+echo ""
+echo "========================================"
+echo "Results Summary"
+echo "========================================"
+
+if $UPDATE_README; then
+    update_readme
 fi
 
 echo ""

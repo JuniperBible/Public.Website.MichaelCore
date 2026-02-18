@@ -1,0 +1,49 @@
+{{/*
+  Partial: bible-nav-chapter-nav.html
+  Purpose: Renders the chapter <select> and prev/next buttons for bible-nav.html
+
+  Parameters (via dict):
+    - bible:        Currently selected Bible ID (required)
+    - book:         Current book ID (required)
+    - chapter:      Current chapter number (required)
+    - chapterCount: Total number of chapters in the current book (required)
+    - basePath:     Base URL path for Bible content (required)
+*/}}
+{{ $bible := .bible }}
+{{ $book := .book }}
+{{ $chapter := .chapter }}
+{{ $chapterCount := .chapterCount }}
+{{ $basePath := .basePath }}
+
+<label for="chapter-select" class="sr-only">{{ i18n "selectChapter" | default "Select Chapter" }}</label>
+<select id="chapter-select"
+        class="select bible-nav__select"
+        aria-label="{{ i18n "selectChapter" | default "Select Chapter" }}">
+  {{ range $i := seq $chapterCount }}
+  <option value="{{ printf "%s/%s/%s/%d/" $basePath $bible $book $i | relLangURL }}" {{ if eq $i $chapter }}selected{{ end }}>
+    {{ i18n "chapter" | default "Ch" }} {{ $i }}
+  </option>
+  {{ end }}
+</select>
+
+{{ if gt $chapter 1 }}
+<a href="{{ printf "%s/%s/%s/%d/" $basePath $bible $book (sub $chapter 1) | relLangURL }}"
+   class="btn btn--sm"
+   aria-label="{{ i18n "previousChapter" | default "Previous Chapter" }}"
+   title="{{ i18n "previousChapter" | default "Previous Chapter" }}">
+  ←
+</a>
+{{ else }}
+<button type="button" class="btn btn--sm" disabled aria-label="{{ i18n "previousChapter" | default "Previous Chapter" }} {{ i18n "disabled" | default "(disabled)" }}">&larr;</button>
+{{ end }}
+
+{{ if lt $chapter $chapterCount }}
+<a href="{{ printf "%s/%s/%s/%d/" $basePath $bible $book (add $chapter 1) | relLangURL }}"
+   class="btn btn--sm"
+   aria-label="{{ i18n "nextChapter" | default "Next Chapter" }}"
+   title="{{ i18n "nextChapter" | default "Next Chapter" }}">
+  →
+</a>
+{{ else }}
+<button type="button" class="btn btn--sm" disabled aria-label="{{ i18n "nextChapter" | default "Next Chapter" }} {{ i18n "disabled" | default "(disabled)" }}">&rarr;</button>
+{{ end }}

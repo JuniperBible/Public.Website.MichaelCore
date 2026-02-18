@@ -10,31 +10,18 @@
 {{- end -}}
 
 {{- /* Get SPDX license metadata */ -}}
-{{- $spdxLicenses := .Site.Data.spdx.licenses.licenses -}}
 {{- $spdxInfo := dict -}}
-{{- range $spdxLicenses -}}
+{{- range .Site.Data.spdx.licenses.licenses -}}
   {{- if eq (lower .licenseId) (lower $licenseId) -}}
     {{- $spdxInfo = . -}}
   {{- end -}}
 {{- end -}}
 
-{{- /* Get choosealicense.com license data */ -}}
-{{- $choosealicenseLicenses := .Site.Data.choosealicense.licenses.licenses -}}
+{{- /* Get choosealicense.com license data via partial */ -}}
 {{- $choosealicenseRules := .Site.Data.choosealicense.rules -}}
-{{- $licenseRights := dict -}}
-
-{{- /* Try exact match first, then case-insensitive, then base license ID */ -}}
-{{- /* Strip -or-later, -only suffixes for base matching */ -}}
-{{- $baseLicenseId := replaceRE "-or-later$|-only$" "" $licenseId -}}
-{{- range $id, $data := $choosealicenseLicenses -}}
-  {{- if eq $id $licenseId -}}
-    {{- $licenseRights = $data -}}
-  {{- else if eq (lower $id) (lower $licenseId) -}}
-    {{- $licenseRights = $data -}}
-  {{- else if eq (lower $id) (lower $baseLicenseId) -}}
-    {{- $licenseRights = $data -}}
-  {{- end -}}
-{{- end -}}
+{{- $licenseRights := partial "michael/license-data.html" (dict
+      "licenseId" $licenseId
+      "licenses"  .Site.Data.choosealicense.licenses.licenses) -}}
 
 {{- /* Build lookup maps for rules */ -}}
 {{- $permissionRules := dict -}}
@@ -89,81 +76,35 @@
       {{ if or $licenseRights.permissions $licenseRights.conditions $licenseRights.limitations }}
       <section class="panel--inner license-section">
         <h2 class="mt-0">{{ i18n "yourRights" | default "Your Rights" }}</h2>
-
         <div class="license-rights-grid">
-          {{- /* Permissions */ -}}
-          {{ with $licenseRights.permissions }}
-          <div class="license-rights-col license-rights-col--permissions">
-            <h3>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" focusable="false" aria-hidden="true">
-                <circle cx="12" cy="12" r="10"/>
-                <path d="m9 12 2 2 4-4"/>
-              </svg>
-              {{ i18n "permissions" | default "Permissions" }}
-            </h3>
-            <ul>
-              {{ range . }}
-              {{- $rule := index $permissionRules . -}}
-              <li title="{{ with $rule }}{{ .description }}{{ end }}">
-                {{ with $rule }}{{ .label }}{{ else }}{{ . }}{{ end }}
-              </li>
-              {{ end }}
-            </ul>
-          </div>
-          {{ end }}
-
-          {{- /* Conditions */ -}}
-          {{ with $licenseRights.conditions }}
-          <div class="license-rights-col license-rights-col--conditions">
-            <h3>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" focusable="false" aria-hidden="true">
-                <circle cx="12" cy="12" r="10"/>
-                <path d="M12 8v4M12 16h.01"/>
-              </svg>
-              {{ i18n "conditions" | default "Conditions" }}
-            </h3>
-            <ul>
-              {{ range . }}
-              {{- $rule := index $conditionRules . -}}
-              <li title="{{ with $rule }}{{ .description }}{{ end }}">
-                {{ with $rule }}{{ .label }}{{ else }}{{ . }}{{ end }}
-              </li>
-              {{ end }}
-            </ul>
-          </div>
-          {{ end }}
-
-          {{- /* Limitations */ -}}
-          {{ with $licenseRights.limitations }}
-          <div class="license-rights-col license-rights-col--limitations">
-            <h3>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" focusable="false" aria-hidden="true">
-                <circle cx="12" cy="12" r="10"/>
-                <path d="m15 9-6 6M9 9l6 6"/>
-              </svg>
-              {{ i18n "limitations" | default "Limitations" }}
-            </h3>
-            <ul>
-              {{ range . }}
-              {{- $rule := index $limitationRules . -}}
-              <li title="{{ with $rule }}{{ .description }}{{ end }}">
-                {{ with $rule }}{{ .label }}{{ else }}{{ . }}{{ end }}
-              </li>
-              {{ end }}
-            </ul>
-          </div>
-          {{ end }}
+          {{ partial "michael/license-rights-col.html" (dict
+              "items"   $licenseRights.permissions
+              "rules"   $permissionRules
+              "type"    "permissions"
+              "svgPath" "m9 12 2 2 4-4"
+              "label"   (i18n "permissions" | default "Permissions")) }}
+          {{ partial "michael/license-rights-col.html" (dict
+              "items"   $licenseRights.conditions
+              "rules"   $conditionRules
+              "type"    "conditions"
+              "svgPath" "M12 8v4M12 16h.01"
+              "label"   (i18n "conditions" | default "Conditions")) }}
+          {{ partial "michael/license-rights-col.html" (dict
+              "items"   $licenseRights.limitations
+              "rules"   $limitationRules
+              "type"    "limitations"
+              "svgPath" "m15 9-6 6M9 9l6 6"
+              "label"   (i18n "limitations" | default "Limitations")) }}
         </div>
       </section>
       {{ end }}
 
       {{- /* Bible-specific license texts */ -}}
-      {{ if $bibles }}
+      {{ with $bibles }}
       <section class="panel--inner license-section">
         <h2 class="mt-0">{{ i18n "licenseStatementsFromBibles" | default "License Statements from Bible Modules" }}</h2>
         <p class="muted mb-2">{{ i18n "licenseStatementsDescription" | default "Each Bible module includes its own license statement from the publisher:" }}</p>
-
-        {{ range $bible := $bibles }}
+        {{ range $bible := . }}
         {{ with $bible.licenseText }}
         <details class="license-details">
           <summary>
@@ -190,9 +131,9 @@
 
       {{- /* Bible translations using this license */ -}}
       <h2>{{ i18n "bibleTranslationsUsingLicense" | default "Bible Translations Using This License" }}</h2>
-      {{ if $bibles }}
+      {{ with $bibles }}
       <div class="grid-2">
-        {{ range $bibles }}
+        {{ range . }}
         <a href="{{ printf "/bible/%s/" .id | relLangURL }}" class="card">
           <h3 class="card__title">{{ .title }}</h3>
           <p class="card__meta">{{ .abbrev }}</p>

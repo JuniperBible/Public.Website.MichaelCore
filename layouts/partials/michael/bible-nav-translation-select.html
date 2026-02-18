@@ -1,0 +1,31 @@
+{{/*
+  Partial: bible-nav-translation-select.html
+  Purpose: Renders the Bible translation <select> dropdown for bible-nav.html
+
+  Parameters (via dict):
+    - page:     Current page context (required)
+    - bible:    Currently selected Bible ID (required)
+    - book:     Current book ID (optional) - preserved as data attribute
+    - chapter:  Current chapter number (optional) - preserved as data attribute
+    - basePath: Base URL path for Bible content (required)
+*/}}
+{{ $page := .page }}
+{{ $bible := .bible }}
+{{ $basePath := .basePath }}
+
+<label for="bible-select" class="sr-only">{{ i18n "selectBibleTranslation" | default "Select Bible Translation" }}</label>
+<select id="bible-select"
+        class="select bible-nav__select"
+        data-base-path="{{ $basePath }}"
+        {{ with .book }}data-book="{{ . }}"{{ end }}
+        {{ with .chapter }}data-chapter="{{ . }}"{{ end }}
+        aria-label="{{ i18n "selectBibleTranslation" | default "Select Bible Translation" }}">
+  {{ range (partialCached "michael/bible-data.html" $page.Site) }}
+    {{ $bibleItem := . }}
+    {{ with index $page.Site.Data.bibles_auxiliary $bibleItem.id }}
+  <option value="{{ $bibleItem.id }}" {{ if eq $bibleItem.id $bible }}selected{{ end }}>
+    {{ $bibleItem.abbrev }}
+  </option>
+    {{ end }}
+  {{ end }}
+</select>

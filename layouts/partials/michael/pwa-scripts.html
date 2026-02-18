@@ -1,0 +1,12 @@
+{{/*
+  Partial: pwa-scripts.html
+  Purpose: Load PWA core JavaScript assets (dom-utils, user-storage,
+  reading-tracker) as deferred scripts. Each asset is only emitted when the
+  corresponding file exists under assets/js/michael/.
+*/}}
+{{ $domUtils       := resources.Get "js/michael/dom-utils.js" }}
+{{ $userStorage    := resources.Get "js/michael/user-storage.js" }}
+{{ $readingTracker := resources.Get "js/michael/reading-tracker.js" }}
+{{ with $domUtils       }}<script src="{{ .RelPermalink }}" defer></script>{{ end }}
+{{ with $userStorage    }}<script src="{{ .RelPermalink }}" defer></script>{{ end }}
+{{ with $readingTracker }}<script src="{{ .RelPermalink }}" defer></script>{{ end }}

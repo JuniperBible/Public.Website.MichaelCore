@@ -1,0 +1,16 @@
+{{/*
+  Partial: css-bundle.html
+  Purpose: Build, concatenate, minify, and fingerprint all theme CSS files.
+  Outputs a single <link> tag for the bundled stylesheet.
+*/}}
+{{ $colors  := resources.Get "css/theme-colors.css" }}
+{{ $main    := resources.Get "css/theme.css" }}
+{{ $compare := resources.Get "css/theme-compare.css" }}
+{{ $share   := resources.Get "css/theme-share.css" }}
+{{ $strongs := resources.Get "css/theme-strongs.css" }}
+{{ $pwa     := resources.Get "css/theme-pwa.css" }}
+{{ $offline := resources.Get "css/theme-offline.css" }}
+{{ $print   := resources.Get "css/theme-print.css" }}
+{{ $custom  := resources.Get "css/theme-custom.css" }}
+{{ $theme   := slice $colors $main $compare $share $strongs $pwa $offline $print $custom | resources.Concat "css/theme.bundle.css" | minify | fingerprint }}
+<link rel="stylesheet" href="{{ $theme.RelPermalink }}" integrity="{{ $theme.Data.Integrity }}">

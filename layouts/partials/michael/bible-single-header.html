@@ -1,0 +1,40 @@
+{{/*
+  Partial: bible-single-header.html
+  Purpose: Renders the page header for bible/single.html
+
+  Params (dict):
+    - page:      the Hugo page context
+    - bibleData: the resolved bible metadata dict
+*/}}
+{{ $page := .page }}
+{{ $bibleData := .bibleData }}
+
+<header class="page-header">
+  {{/* On Bible overview pages, prefer override title and description */}}
+  {{ if not (or $page.Params.chapter $page.Params.book) }}
+    <h1>{{ with $bibleData.title }}{{ . }}{{ else }}{{ $page.Title }}{{ end }}</h1>
+    {{ with $bibleData.description }}<p>{{ . }}</p>{{ end }}
+  {{ else }}
+    <h1>{{ $page.Title }}</h1>
+    {{ with $page.Params.description }}<p>{{ . }}</p>{{ end }}
+  {{ end }}
+
+  <!-- Features/tags -->
+  <div class="row row--center mt-1">
+    {{ with $bibleData.language }}
+    <span class="badge">{{ . }}</span>
+    {{ end }}
+    {{ with $bibleData.license }}
+    <a href="{{ printf "/license/%s/" (. | lower) | relLangURL }}" class="badge" title="SPDX License: {{ . }}">{{ . }}</a>
+    {{ end }}
+    {{/* Fallback to params if not in bibles.json */}}
+    {{ if not $page.Site.Data.bibles.bibles }}
+      {{ with $page.Params.language }}
+      <span class="badge">{{ . }}</span>
+      {{ end }}
+    {{ end }}
+    {{ range $page.Params.features }}
+    <span class="badge">{{ . }}</span>
+    {{ end }}
+  </div>
+</header>

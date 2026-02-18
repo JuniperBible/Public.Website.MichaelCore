@@ -1,0 +1,27 @@
+{{- /*
+  Partial: michael/license-data.html
+  Returns the choosealicense.com license data for a given licenseId.
+
+  Input: dict with keys:
+    - licenseId  (string) SPDX license identifier
+    - licenses   (map)    .Site.Data.choosealicense.licenses.licenses
+
+  Resolution order:
+    1. Exact match on key
+    2. Case-insensitive match on key
+    3. Case-insensitive match after stripping -or-later / -only suffix
+*/ -}}
+{{- $licenseId := .licenseId -}}
+{{- $licenses  := .licenses -}}
+{{- $result    := dict -}}
+{{- $baseLicenseId := replaceRE "-or-later$|-only$" "" $licenseId -}}
+{{- range $id, $data := $licenses -}}
+  {{- if eq $id $licenseId -}}
+    {{- $result = $data -}}
+  {{- else if and (not $result) (eq (lower $id) (lower $licenseId)) -}}
+    {{- $result = $data -}}
+  {{- else if and (not $result) (eq (lower $id) (lower $baseLicenseId)) -}}
+    {{- $result = $data -}}
+  {{- end -}}
+{{- end -}}
+{{- return $result -}}

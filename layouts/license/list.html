@@ -1,5 +1,6 @@
 {{ define "main" }}
 {{- $softwareDeps := .Site.Data.software_deps -}}
+{{- $allBibles   := partialCached "michael/bible-data.html" .Site -}}
 <main class="container pad-3-2">
   <div class="panel">
     <header class="page-header">
@@ -12,21 +13,15 @@
       <h2 class="mt-0">{{ i18n "sbomSummary" | default "SBOM Summary" }}</h2>
       <div class="row row--wrap gap-2">
         <div>
-          <strong>{{ len (partialCached "michael/bible-data.html" .Site) }}</strong> {{ i18n "bibles" | default "Bible Translations" }}
+          <strong>{{ len $allBibles }}</strong> {{ i18n "bibles" | default "Bible Translations" }}
         </div>
         <div>
           <strong>{{ len .Pages }}</strong> {{ i18n "uniqueLicenses" | default "Unique Licenses" }}
         </div>
         {{ with $softwareDeps }}
-        <div>
-          <strong>{{ len .tools }}</strong> {{ i18n "buildTools" | default "Build Tools" }}
-        </div>
-        <div>
-          <strong>{{ len .libraries }}</strong> {{ i18n "libraries" | default "Libraries" }}
-        </div>
-        <div>
-          <strong>{{ len .data_sources }}</strong> {{ i18n "dataSources" | default "Data Sources" }}
-        </div>
+        <div><strong>{{ len .tools }}</strong> {{ i18n "buildTools" | default "Build Tools" }}</div>
+        <div><strong>{{ len .libraries }}</strong> {{ i18n "libraries" | default "Libraries" }}</div>
+        <div><strong>{{ len .data_sources }}</strong> {{ i18n "dataSources" | default "Data Sources" }}</div>
         {{ end }}
         <div>
           {{ i18n "generated" | default "Generated" }}: <code>{{ now.Format "2006-01-02" }}</code>
@@ -38,98 +33,16 @@
     {{ with $softwareDeps }}
     <section class="panel--inner license-section">
       <h2 class="mt-0">{{ i18n "softwareDependencies" | default "Software Dependencies" }}</h2>
-
-      {{ with .tools }}
-      <h3>{{ i18n "buildTools" | default "Build Tools" }}</h3>
-      <table class="license-table">
-        <thead>
-          <tr>
-            <th>{{ i18n "name" | default "Name" }}</th>
-            <th>{{ i18n "version" | default "Version" }}</th>
-            <th>{{ i18n "license" | default "License" }}</th>
-            <th>{{ i18n "description" | default "Description" }}</th>
-          </tr>
-        </thead>
-        <tbody>
-          {{ range . }}
-          <tr>
-            <td>
-              <a href="{{ .downloadLocation }}" target="_blank" rel="noopener">{{ .name }}</a>
-            </td>
-            <td><code>{{ .version }}</code></td>
-            <td><span class="badge">{{ .license }}</span></td>
-            <td>{{ .description }}</td>
-          </tr>
-          {{ end }}
-        </tbody>
-      </table>
-      {{ end }}
-
-      {{ with .libraries }}
-      <h3>{{ i18n "libraries" | default "Libraries" }}</h3>
-      <table class="license-table">
-        <thead>
-          <tr>
-            <th>{{ i18n "name" | default "Name" }}</th>
-            <th>{{ i18n "version" | default "Version" }}</th>
-            <th>{{ i18n "license" | default "License" }}</th>
-            <th>{{ i18n "description" | default "Description" }}</th>
-          </tr>
-        </thead>
-        <tbody>
-          {{ range . }}
-          <tr>
-            <td>
-              <a href="{{ .downloadLocation }}" target="_blank" rel="noopener">{{ .name }}</a>
-            </td>
-            <td><code>{{ .version }}</code></td>
-            <td><span class="badge">{{ .license }}</span></td>
-            <td>{{ .description }}</td>
-          </tr>
-          {{ end }}
-        </tbody>
-      </table>
-      {{ end }}
-
-      {{ with .data_sources }}
-      <h3>{{ i18n "dataSources" | default "Data Sources" }}</h3>
-      <table class="license-table">
-        <thead>
-          <tr>
-            <th>{{ i18n "name" | default "Name" }}</th>
-            <th>{{ i18n "version" | default "Version" }}</th>
-            <th>{{ i18n "license" | default "License" }}</th>
-            <th>{{ i18n "description" | default "Description" }}</th>
-          </tr>
-        </thead>
-        <tbody>
-          {{ range . }}
-          <tr>
-            <td>
-              <a href="{{ .downloadLocation }}" target="_blank" rel="noopener">{{ .name }}</a>
-            </td>
-            <td><code>{{ .version }}</code></td>
-            <td><span class="badge">{{ .license }}</span></td>
-            <td>{{ .description }}</td>
-          </tr>
-          {{ end }}
-        </tbody>
-      </table>
-      {{ end }}
+      {{ partial "michael/dep-table.html" (dict "heading" "buildTools"  "default" "Build Tools"  "items" .tools) }}
+      {{ partial "michael/dep-table.html" (dict "heading" "libraries"   "default" "Libraries"    "items" .libraries) }}
+      {{ partial "michael/dep-table.html" (dict "heading" "dataSources" "default" "Data Sources" "items" .data_sources) }}
     </section>
     {{ end }}
 
     <!-- Bible License breakdown -->
     <h2>{{ i18n "bibleTranslationLicenses" | default "Bible Translation Licenses" }}</h2>
     {{ range .Pages }}
-    {{ $licenseId := .Params.licenseId }}
-    {{ $bibles := slice }}
-    {{ range (partialCached "michael/bible-data.html" $.Site) }}
-      {{ if eq .license $licenseId }}
-        {{ $bibles = $bibles | append . }}
-      {{ end }}
-    {{ end }}
-
+    {{- $bibles := where $allBibles "license" .Params.licenseId -}}
     <section class="panel--inner license-section">
       <div class="row row--space-between gap-1">
         <div>
@@ -138,9 +51,7 @@
           </h3>
           <p class="muted mt-xs mb-0">
             SPDX: <code>{{ .Params.licenseId }}</code>
-            {{ if .Params.isOsiApproved }}
-            <span class="badge badge--success ml-1">OSI Approved</span>
-            {{ end }}
+            {{ with .Params.isOsiApproved }}<span class="badge badge--success ml-1">OSI Approved</span>{{ end }}
           </p>
         </div>
         <div>
@@ -150,7 +61,7 @@
         </div>
       </div>
 
-      {{ if $bibles }}
+      {{ with $bibles }}
       <div class="mt-1">
         <table class="license-table">
           <thead>
@@ -161,11 +72,9 @@
             </tr>
           </thead>
           <tbody>
-            {{ range $bibles }}
+            {{ range . }}
             <tr>
-              <td>
-                <a href="{{ printf "/bible/%s/" .id | relLangURL }}">{{ .title }}</a>
-              </td>
+              <td><a href="{{ printf "/bible/%s/" .id | relLangURL }}">{{ .title }}</a></td>
               <td><code>{{ .abbrev }}</code></td>
               <td><span class="badge">{{ .language }}</span></td>
             </tr>
@@ -182,18 +91,10 @@
       <h3 class="mt-0">{{ i18n "exportSbom" | default "Export SBOM" }}</h3>
       <p class="muted">{{ i18n "exportSbomDescription" | default "Download the full Software Bill of Materials in standard formats:" }}</p>
       <div class="row row--wrap gap-1">
-        <a href="/downloads/sbom/sbom.spdx.json" class="btn btn--secondary" download>
-          SPDX JSON
-        </a>
-        <a href="/downloads/sbom/sbom.cdx.json" class="btn btn--secondary" download>
-          CycloneDX JSON
-        </a>
-        <a href="/downloads/sbom/sbom.cdx.xml" class="btn btn--secondary" download>
-          CycloneDX XML
-        </a>
-        <a href="/downloads/sbom/sbom.syft.json" class="btn btn--secondary" download>
-          Syft JSON
-        </a>
+        <a href="/downloads/sbom/sbom.spdx.json" class="btn btn--secondary" download>SPDX JSON</a>
+        <a href="/downloads/sbom/sbom.cdx.json" class="btn btn--secondary" download>CycloneDX JSON</a>
+        <a href="/downloads/sbom/sbom.cdx.xml" class="btn btn--secondary" download>CycloneDX XML</a>
+        <a href="/downloads/sbom/sbom.syft.json" class="btn btn--secondary" download>Syft JSON</a>
       </div>
     </section>
 

@@ -1,0 +1,39 @@
+{{/*
+  Partial: bible-nav-book-select.html
+  Purpose: Renders the book <select> dropdown for bible-nav.html
+
+  Parameters (via dict):
+    - bible:      Currently selected Bible ID (required)
+    - book:       Current book ID (optional) - marks the selected option
+    - basePath:   Base URL path for Bible content (required)
+    - bibleData:  Auxiliary Bible data object with .books slice (required)
+    - validBooks: Optional slice of book objects to restrict visible options
+*/}}
+{{ $bible := .bible }}
+{{ $book := .book }}
+{{ $basePath := .basePath }}
+{{ $bibleData := .bibleData }}
+{{ $validBooks := .validBooks }}
+
+<label for="book-select" class="sr-only">{{ i18n "selectBook" | default "Select Book" }}</label>
+<select id="book-select"
+        class="select bible-nav__select"
+        aria-label="{{ i18n "selectBook" | default "Select Book" }}">
+  {{ if not $book }}
+  <option value="" selected disabled>{{ i18n "selectBook" | default "Select Book" }}</option>
+  {{ end }}
+  {{ if $validBooks }}
+    {{ range $validBooks }}
+  <option value="{{ printf "%s/%s/%s/" $basePath $bible .id | relLangURL }}" {{ if eq .id $book }}selected{{ end }}>
+    {{ .name }}
+  </option>
+    {{ end }}
+  {{ else }}
+    {{ range $bibleData.books }}
+      {{ $bookIdLower := .id | lower }}
+  <option value="{{ printf "%s/%s/%s/" $basePath $bible $bookIdLower | relLangURL }}" {{ if eq $bookIdLower $book }}selected{{ end }}>
+    {{ .name }}
+  </option>
+    {{ end }}
+  {{ end }}
+</select>

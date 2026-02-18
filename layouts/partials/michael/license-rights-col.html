@@ -1,0 +1,35 @@
+{{- /*
+  Partial: michael/license-rights-col.html
+  Renders one column of the license rights grid.
+
+  Input: dict with keys:
+    - items     (slice)  list of rule tag strings (e.g. $licenseRights.permissions)
+    - rules     (map)    lookup map of tag -> rule object {label, description}
+    - type      (string) "permissions" | "conditions" | "limitations"
+    - svgPath   (string) SVG <path> d attribute for the column icon
+    - label     (string) column heading text
+*/ -}}
+{{- $items   := .items -}}
+{{- $rules   := .rules -}}
+{{- $colType := .type -}}
+{{- $svgPath := .svgPath -}}
+{{- $label   := .label -}}
+{{ with $items }}
+<div class="license-rights-col license-rights-col--{{ $colType }}">
+  <h3>
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" focusable="false" aria-hidden="true">
+      <circle cx="12" cy="12" r="10"/>
+      <path d="{{ $svgPath }}"/>
+    </svg>
+    {{ $label }}
+  </h3>
+  <ul>
+    {{ range . }}
+    {{- $rule := index $rules . -}}
+    <li title="{{ with $rule }}{{ .description }}{{ end }}">
+      {{ with $rule }}{{ .label }}{{ else }}{{ . }}{{ end }}
+    </li>
+    {{ end }}
+  </ul>
+</div>
+{{ end }}
