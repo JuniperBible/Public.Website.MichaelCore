@@ -37,6 +37,7 @@ All interactive elements are fully accessible via keyboard:
 - **No Keyboard Traps**: Users can always navigate in and out of components
 
 **Interactive Components**:
+
 - Bible translation selectors (dropdowns)
 - Book and chapter selectors
 - Verse selection buttons

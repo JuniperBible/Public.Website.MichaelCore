@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+
 - **Unified Toast Notification System** - Generic notification component
   - `assets/js/michael/dom-utils.js` - `showMessage()` with type variants
     - Supports `info`, `success`, `warning`, `error` types
@@ -69,6 +70,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Each branch tracks matching submodule branches (main→main, development→development)
 
 ### Changed
+
 - **Juniper Submodule Update** - Migrated to JuniperBible repository
   - Changed submodule URL from `juniper.git` to `JuniperBible.git`
   - Submodules track matching branches (main→main, development→development)
@@ -94,6 +96,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.1.0] - 2026-01-25
 
 ### Added
+
 - **Code Cleanup Charter** — Comprehensive cleanup plan
   - `docs/CODE_CLEANUP_CHARTER.md` — Charter document
   - `docs/TODO.txt` — Task tracking with phases and subtasks
@@ -161,6 +164,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Standalone development mode with example data
 
 ### Changed
+
 - **JavaScript Refactoring**
   - `parallel.js` refactored to use shared modules (`dom-utils.js`, `bible-api.js`, `verse-grid.js`, `chapter-dropdown.js`)
   - `bible-search.js` refactored to use `bible-api.js` for chapter fetching
@@ -182,6 +186,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Homepage layout now works with both `/bible` and `/religion/bible` paths
 
 ### Security
+
 - **CSP Implementation**
   - CSP meta tag added to `baseof.html`
   - CSP audit completed (21 innerHTML usages documented)
@@ -189,6 +194,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - User search terms now properly escaped to prevent code injection
 
 ### Documentation
+
 - Added comprehensive JSDoc to `parallel.js`, `bible-search.js`, `share.js`, `strongs.js`
 - Added section separators to all main JavaScript files
 - Added documentation header to `list.html`
@@ -197,6 +203,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.0.0] - 2026-01-24
 
 ### Added
+
 - Complete Bible reading and comparison module for Hugo sites
 - Bible layouts: list, single, compare, and search pages
 - Bible navigation partial with book/chapter dropdown selectors
@@ -219,6 +226,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `shell.nix` for standalone Nix development environment
 
 ### Changed
+
 - Refactored from Tailwind CSS to PicoCSS with semantic HTML5
 - CSS architecture uses CSS variables for AirFold paper theme integration
 - Templates use semantic CSS classes instead of utility classes
@@ -227,6 +235,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Content mount removed - consuming sites provide their own content
 
 ### Fixed
+
 - Language prefix in Bible content links for i18n support
 - Navigation URLs use i18n-aware paths
 - Menu links include language prefix in multilingual sites
@@ -241,6 +250,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.1.0] - 2026-01-01
 
 ### Added
+
 - Initial repository structure
 - Hugo module configuration (`go.mod`, `hugo.toml`)
 - Module mount configuration for layouts, assets, i18n, static, and data
@@ -259,6 +269,7 @@ Michael is a standalone Hugo module that provides Bible reading, comparison, and
 ### Data Requirements
 
 Consuming sites must provide:
+
 1. `data/bible.json` - Bible metadata
 2. `data/bible_auxiliary/{id}.json` - Per-translation verse data
 

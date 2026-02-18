@@ -14,12 +14,14 @@ The service worker provides offline functionality with intelligent caching strat
 
 ### 1. `/static/sw.js`
 The main service worker script that handles:
+
 - Pre-caching of shell assets and default chapters
 - Request interception and caching strategies
 - Cache version management
 - Cleanup of old caches
 
 **Key Features:**
+
 - Cache versioning with `CACHE_VERSION` constant
 - Two separate caches: `michael-shell-v1` and `michael-chapters-v1`
 - Pre-caches 4 default chapters (Genesis 1, Psalm 23, Matthew 1, John 1)

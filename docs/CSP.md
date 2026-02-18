@@ -44,6 +44,7 @@ The CSP is implemented as a meta tag in `/home/justin/Programming/Workspace/mich
 ### 1.3 What This CSP Blocks
 
 ✅ **Blocked (Security Benefits):**
+
 - External JavaScript from CDNs (prevents supply chain attacks)
 - External CSS from CDNs
 - External fonts (Google Fonts, etc.)
@@ -54,6 +55,7 @@ The CSP is implemented as a meta tag in `/home/justin/Programming/Workspace/mich
 - External AJAX requests (data exfiltration prevention)
 
 ✅ **Allowed (Functionality Requirements):**
+
 - Scripts from `/assets/js/` (Hugo-generated)
 - Stylesheets from `/assets/css/` (Hugo-generated)
 - Inline CSS in `style` attributes (for dynamic values)

@@ -79,6 +79,7 @@ Michael includes **23 Hugo template files** that render Bible content and naviga
 ### Template Language
 
 All templates use:
+
 - **Hugo template syntax** - Go's `text/template` and `html/template` packages
 - **No JavaScript templating** - Templates render at build time, not in the browser
 - **OSIS markup support** - Handles OSIS XML structure from SWORD modules
@@ -86,6 +87,7 @@ All templates use:
 ### Versioning
 
 Templates are versioned with the Michael project:
+
 - **License:** Same as Michael project (see root `LICENSE`)
 - **No separate versioning** - Templates are integral to the module
 

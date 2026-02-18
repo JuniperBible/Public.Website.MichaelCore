@@ -17,6 +17,7 @@ The application is fully self-contained and works 100% offline with no external 
 From `docs/CODE_CLEANUP_CHARTER.md`:
 
 > **Target:** 0 external runtime dependencies by default
+>
 > - No external API calls at runtime (Blue Letter Bible API only as fallback for missing local data)
 > - No CDN dependencies
 > - No external fonts
