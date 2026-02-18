@@ -401,10 +401,9 @@
       verseDiv.appendChild(numSpan);
 
       const textSpan = document.createElement('span');
-      // highlightDiffsFn returns a sanitized HTML string with <mark> tags for diffs;
-      // this is the only intentional innerHTML use and is safe by design.
-      // eslint-disable-next-line no-unsanitized/property -- highlightDiffsFn output is sanitized
-      textSpan.innerHTML = highlightedText;
+      // Parse highlighted text using DOMParser via shared utility
+      const { parseHtmlFragment } = window.Michael.DomUtils;
+      textSpan.appendChild(parseHtmlFragment(highlightedText));
       verseDiv.appendChild(textSpan);
 
       fragment.appendChild(verseDiv);

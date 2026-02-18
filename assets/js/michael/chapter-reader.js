@@ -513,18 +513,13 @@
 
     /**
      * Populate a container element from an HTML string sourced from trusted Bible data.
-     * Uses a temporary element to parse the markup into DOM nodes, then moves those
-     * nodes into the target container so no innerHTML assignment is made on live DOM.
+     * Uses DOMParser via the shared utility to safely parse HTML into DOM nodes.
      * @param {HTMLElement} container - The element to populate
      * @param {string} html - Trusted HTML from page DOM clone or BibleAPI
      */
     function setTrustedHtml(container, html) {
-      const tmp = document.createElement('div');
-      // Reading innerHTML on a detached element to parse trusted Bible HTML into nodes
-      tmp.innerHTML = html; // eslint-disable-line no-unsanitized/property -- trusted Bible HTML parsed into detached element
-      while (tmp.firstChild) {
-        container.appendChild(tmp.firstChild);
-      }
+      const { parseHtmlFragment } = window.Michael.DomUtils;
+      container.appendChild(parseHtmlFragment(html));
     }
 
     /**

@@ -1105,8 +1105,9 @@
             const otherTexts = allVerseTexts.filter((_, i) => i !== idx && allVerseTexts[i]);
             htmlText = highlightNormalDifferences(v.text, otherTexts);
           }
-          // verse text contains trusted OSIS/HTML markup (w tags, note tags, diff spans)
-          textP.innerHTML = htmlText; // trusted Bible data with controlled markup
+          // Parse trusted Bible HTML using DOMParser via shared utility
+          const { parseHtmlFragment } = window.Michael.DomUtils;
+          textP.appendChild(parseHtmlFragment(htmlText));
         } else {
           const em = document.createElement('em');
           em.style.color = 'var(--michael-text-muted)';
@@ -1860,8 +1861,9 @@
       verseDiv.appendChild(numSpan);
 
       const textSpan = document.createElement('span');
-      // verse text contains trusted OSIS/HTML markup (w tags, note tags, diff spans)
-      textSpan.innerHTML = highlightedText; // trusted Bible data with controlled markup
+      // Parse trusted Bible HTML using DOMParser via shared utility
+      const { parseHtmlFragment } = window.Michael.DomUtils;
+      textSpan.appendChild(parseHtmlFragment(highlightedText));
       verseDiv.appendChild(textSpan);
 
       fragment.appendChild(verseDiv);

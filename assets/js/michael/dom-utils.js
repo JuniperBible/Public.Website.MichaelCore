@@ -272,6 +272,30 @@ window.Michael.DomUtils = (function() {
   }
 
   /**
+   * Parse an HTML string into a DocumentFragment using DOMParser.
+   *
+   * Uses DOMParser which is the browser-standard safe parsing mechanism.
+   * The parsed nodes are moved into a DocumentFragment for efficient DOM insertion.
+   *
+   * @param {string} html - HTML string to parse (should be from trusted sources)
+   * @returns {DocumentFragment} Fragment containing the parsed DOM nodes
+   *
+   * @example
+   * const fragment = parseHtmlFragment('<span class="highlight">text</span>');
+   * container.appendChild(fragment);
+   */
+  function parseHtmlFragment(html) {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString('<body>' + html + '</body>', 'text/html');
+    const fragment = document.createDocumentFragment();
+    const body = doc.body;
+    while (body.firstChild) {
+      fragment.appendChild(body.firstChild);
+    }
+    return fragment;
+  }
+
+  /**
    * Create a loading indicator element
    *
    * Creates a semantic loading indicator using the aria-busy pattern
@@ -305,6 +329,7 @@ window.Michael.DomUtils = (function() {
     showMessage,
     dismissToast,
     escapeHtml,
+    parseHtmlFragment,
     createLoadingIndicator
   };
 })();
