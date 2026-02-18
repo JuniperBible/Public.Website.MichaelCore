@@ -40,8 +40,13 @@ window.Michael.ChapterDropdown = (function() {
    * Clear dropdown and set to disabled state
    */
   ChapterDropdown.prototype.clear = function() {
-    // eslint-disable-next-line no-unsanitized/property -- placeholder is from trusted config
-    this.selectElement.innerHTML = '<option value="">' + this.options.placeholder + '</option>';
+    while (this.selectElement.firstChild) {
+      this.selectElement.removeChild(this.selectElement.firstChild);
+    }
+    const placeholder = document.createElement('option');
+    placeholder.value = '';
+    placeholder.textContent = this.options.placeholder;
+    this.selectElement.appendChild(placeholder);
     this.selectElement.disabled = true;
   };
 

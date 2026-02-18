@@ -317,7 +317,7 @@ window.Michael.ReadingTracker = (function() {
             const anchor = document.createElement('a');
             anchor.href = url;
             anchor.textContent = displayText;
-            display.innerHTML = '';
+            display.textContent = '';
             display.appendChild(anchor);
           }
           display.classList.remove('hidden');

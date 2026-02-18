@@ -73,6 +73,40 @@
   // ============================================================================
 
   /**
+   * Create an SVG icon element using DOM APIs (avoids innerHTML)
+   * @param {string} pathD - SVG path d attribute
+   * @param {number} size - Icon size in pixels
+   * @returns {SVGSVGElement} SVG element
+   */
+  function createSvgIcon(pathD, size = 16) {
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('width', String(size));
+    svg.setAttribute('height', String(size));
+    svg.setAttribute('fill', 'none');
+    svg.setAttribute('stroke', 'currentColor');
+    svg.setAttribute('viewBox', '0 0 24 24');
+    svg.setAttribute('aria-hidden', 'true');
+    svg.style.display = 'inline-block';
+    svg.style.verticalAlign = 'middle';
+    svg.style.marginRight = '0.25rem';
+
+    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    path.setAttribute('stroke-linecap', 'round');
+    path.setAttribute('stroke-linejoin', 'round');
+    path.setAttribute('stroke-width', '2');
+    path.setAttribute('d', pathD);
+    svg.appendChild(path);
+
+    return svg;
+  }
+
+  // SVG path constants for icons
+  const SVG_PATHS = {
+    share: 'M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z',
+    check: 'M5 13l4 4L19 7'
+  };
+
+  /**
    * Active toast timeout ID for cleanup
    * @type {number|null}
    */
@@ -242,9 +276,7 @@
         btn.setAttribute('aria-label', `${UI.shareVerse} ${num}`);
         btn.setAttribute('title', `${UI.shareVerse} ${num}`);
         btn.setAttribute('data-verse', num);
-        btn.innerHTML = `<svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/>
-        </svg>`;
+        btn.appendChild(createSvgIcon(SVG_PATHS.share, 12));
 
         btn.addEventListener('click', (e) => {
           e.preventDefault();
@@ -269,9 +301,7 @@
       btn.setAttribute('aria-label', `${UI.shareVerse} ${num}`);
       btn.setAttribute('title', `${UI.shareVerse} ${num}`);
       btn.setAttribute('data-verse', num);
-      btn.innerHTML = `<svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/>
-      </svg>`;
+      btn.appendChild(createSvgIcon(SVG_PATHS.share, 12));
 
       btn.addEventListener('click', (e) => {
         e.preventDefault();
@@ -299,11 +329,9 @@
     const actionsDiv = header.querySelector('.actions');
 
     const btn = document.createElement('button');
-    // Chapter share button includes icon + text label
-    // eslint-disable-next-line no-unsanitized/property -- static SVG icon, UI.share is constant string
-    btn.innerHTML = `<svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true" style="display: inline-block; vertical-align: middle; margin-right: 0.25rem;">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/>
-    </svg> ${UI.share}`;
+    // Chapter share button includes icon + text label (using DOM API to avoid innerHTML)
+    btn.appendChild(createSvgIcon(SVG_PATHS.share, 16));
+    btn.appendChild(document.createTextNode(' ' + UI.share));
     btn.setAttribute('aria-label', 'Share this chapter');
 
     btn.addEventListener('click', (e) => {
@@ -523,17 +551,17 @@
         await navigator.clipboard.writeText(url);
         // Show visual feedback on the button
         if (feedbackEl) {
-          const originalText = feedbackEl.innerHTML;
-          // Replace button content with checkmark icon + "Copied!" text
-          // eslint-disable-next-line no-unsanitized/property -- static SVG icon, UI.copied is constant string
-          feedbackEl.innerHTML = `<svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true" style="display: inline-block; vertical-align: middle; margin-right: 0.25rem;">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-          </svg> ${UI.copied}`;
+          // Store original children for restoration
+          const originalChildren = Array.from(feedbackEl.childNodes).map(n => n.cloneNode(true));
+          // Replace button content with checkmark icon + "Copied!" text (using DOM API)
+          feedbackEl.textContent = '';
+          feedbackEl.appendChild(createSvgIcon(SVG_PATHS.check, 16));
+          feedbackEl.appendChild(document.createTextNode(' ' + UI.copied));
           feedbackEl.classList.add('copied');
           // Restore original button content after 2 seconds
           setTimeout(() => {
-            // eslint-disable-next-line no-unsanitized/property -- restoring previously captured innerHTML
-            feedbackEl.innerHTML = originalText;
+            feedbackEl.textContent = '';
+            originalChildren.forEach(n => feedbackEl.appendChild(n));
             feedbackEl.classList.remove('copied');
           }, 2000);
         }

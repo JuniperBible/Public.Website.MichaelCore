@@ -374,8 +374,11 @@
     const signal = loadSSSAbortController.signal;
 
     // Show loading state
-    // SECURITY: Safe - static HTML with no user input
-    sssVersesContainer.innerHTML = '<div class="sss-loading">Loading...</div>';
+    sssVersesContainer.textContent = '';
+    const loadingDiv = document.createElement('div');
+    loadingDiv.className = 'sss-loading';
+    loadingDiv.textContent = 'Loading...';
+    sssVersesContainer.appendChild(loadingDiv);
 
     try {
       let rightVerses = [];
@@ -500,34 +503,77 @@
 
     // Handle case where no verses found at all
     if (sortedNums.length === 0) {
-      // SECURITY: Safe - static HTML with no user input
-      sssVersesContainer.innerHTML = '<div class="sss-loading">No verses found</div>';
+      sssVersesContainer.textContent = '';
+      const noVersesDiv = document.createElement('div');
+      noVersesDiv.className = 'sss-loading';
+      noVersesDiv.textContent = 'No verses found';
+      sssVersesContainer.appendChild(noVersesDiv);
       return;
     }
 
-    // Build verse rows using safe HTML escaping
-    const verseRows = [];
-    sortedNums.forEach(num => {
-      // SECURITY: Bible names are escaped via escapeHtml() to prevent XSS in missing verse messages
-      const leftHtml = leftMap.get(num) || `<em class="sss-missing">(not in ${escapeHtml(leftBibleName)})</em>`;
-      const rightHtml = rightMap.get(num) || `<em class="sss-missing">(not in ${escapeHtml(rightBibleName)})</em>`;
-
-      // SECURITY: leftHtml and rightHtml come from trusted sources (page DOM or BibleAPI)
-      // and contain formatted HTML with sup tags, Strong's links, etc.
-      // Bible names in missing messages are escaped via escapeHtml()
-      // Validate num is an integer to prevent XSS in data-verse attribute
-      if (Number.isInteger(num)) {
-        verseRows.push(`<div class="sss-verse-row" data-verse="${num}">
-          <div class="sss-verse-left">${leftHtml}</div>
-          <div class="sss-verse-right">${rightHtml}</div>
-        </div>`);
+    /**
+     * Populate a container element from an HTML string sourced from trusted Bible data.
+     * Uses a temporary element to parse the markup into DOM nodes, then moves those
+     * nodes into the target container so no innerHTML assignment is made on live DOM.
+     * @param {HTMLElement} container - The element to populate
+     * @param {string} html - Trusted HTML from page DOM clone or BibleAPI
+     */
+    function setTrustedHtml(container, html) {
+      const tmp = document.createElement('div');
+      // Reading innerHTML on a detached element to parse trusted Bible HTML into nodes
+      tmp.innerHTML = html; // eslint-disable-line no-unsanitized/property -- trusted Bible HTML parsed into detached element
+      while (tmp.firstChild) {
+        container.appendChild(tmp.firstChild);
       }
+    }
+
+    /**
+     * Build a "missing verse" element for when a translation lacks a verse.
+     * @param {string} bibleName - Already-escaped Bible translation name
+     * @returns {HTMLElement} An <em> element with the missing-verse message
+     */
+    function buildMissingVerseNode(bibleName) {
+      const em = document.createElement('em');
+      em.className = 'sss-missing';
+      em.textContent = '(not in ' + bibleName + ')';
+      return em;
+    }
+
+    // Build verse rows using DOM APIs
+    const fragment = document.createDocumentFragment();
+    sortedNums.forEach(num => {
+      // Validate num is an integer to prevent unexpected values in data-verse attribute
+      if (!Number.isInteger(num)) return;
+
+      const row = document.createElement('div');
+      row.className = 'sss-verse-row';
+      row.dataset.verse = num;
+
+      const leftCell = document.createElement('div');
+      leftCell.className = 'sss-verse-left';
+      if (leftMap.has(num)) {
+        // leftMap values are from page DOM clones - trusted HTML with sup tags, Strong's links, etc.
+        setTrustedHtml(leftCell, leftMap.get(num));
+      } else {
+        leftCell.appendChild(buildMissingVerseNode(leftBibleName));
+      }
+
+      const rightCell = document.createElement('div');
+      rightCell.className = 'sss-verse-right';
+      if (rightMap.has(num)) {
+        // rightMap values are from BibleAPI or parsed same-origin HTML - trusted Bible HTML
+        setTrustedHtml(rightCell, rightMap.get(num));
+      } else {
+        rightCell.appendChild(buildMissingVerseNode(rightBibleName));
+      }
+
+      row.appendChild(leftCell);
+      row.appendChild(rightCell);
+      fragment.appendChild(row);
     });
 
-    // SECURITY: Safe - verseRows contains trusted HTML from page DOM and Bible API data
-    // Bible names in "missing" messages are escaped via escapeHtml()
-    // eslint-disable-next-line no-unsanitized/property -- verseRows contains trusted Bible HTML
-    sssVersesContainer.innerHTML = verseRows.join('');
+    sssVersesContainer.textContent = '';
+    sssVersesContainer.appendChild(fragment);
 
     // Process Strong's numbers in both left and right columns
     if (window.Michael && window.Michael.processStrongsContent) {

@@ -57,7 +57,7 @@ window.Michael.VerseGrid = (function() {
 
     // Clear existing buttons
     if (this.buttonsContainer) {
-      this.buttonsContainer.innerHTML = '';
+      this.buttonsContainer.textContent = '';
 
       // Create button for each verse
       verses.forEach(verse => {
@@ -143,7 +143,7 @@ window.Michael.VerseGrid = (function() {
       this.container.classList.add('hidden');
     }
     if (this.buttonsContainer) {
-      this.buttonsContainer.innerHTML = '';
+      this.buttonsContainer.textContent = '';
     }
     this.selectedVerse = 0;
   };

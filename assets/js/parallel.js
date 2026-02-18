@@ -689,7 +689,7 @@
    */
   function populateChapterDropdown() {
     // Clear existing options safely
-    chapterSelect.innerHTML = '';
+    chapterSelect.replaceChildren();
 
     const defaultOption = document.createElement('option');
     defaultOption.value = '';
@@ -772,12 +772,10 @@
       }
 
       updateURL();
-      // eslint-disable-next-line no-unsanitized/property -- createLoadingIndicator returns safe HTML
-      parallelContent.innerHTML = window.Michael.DomUtils.createLoadingIndicator();
+      parallelContent.replaceChildren(window.Michael.DomUtils.createLoadingIndicator());
 
       const chaptersData = await fetchAllChapters();
-      // eslint-disable-next-line no-unsanitized/property -- buildComparisonHTML returns sanitized HTML
-      parallelContent.innerHTML = buildComparisonHTML(chaptersData);
+      parallelContent.replaceChildren(buildComparisonHTML(chaptersData));
 
       processComparisonFootnotes();
       announceComparisonLoaded();
@@ -867,7 +865,7 @@
       verseGrid.classList.add('hidden');
     }
     if (verseButtons) {
-      verseButtons.innerHTML = '';
+      verseButtons.replaceChildren();
 
       // Always create a fresh All button
       const newAllBtn = document.createElement('button');
@@ -909,7 +907,7 @@
 
     // Populate verse buttons grid
     if (verseButtons) {
-      verseButtons.innerHTML = '';
+      verseButtons.replaceChildren();
 
       // Add verse buttons
       verses.forEach(verse => {
@@ -1002,13 +1000,21 @@
    * // [[{number: 1, text: "In the beginning..."}], [{number: 1, text: "Au commencement..."}]]
    */
   function buildComparisonHTML(chaptersData) {
-    let html = '';
+    const fragment = document.createDocumentFragment();
 
     // Find first translation with verses to get verse count
     const firstVerses = chaptersData.find(verses => verses && verses.length > 0);
 
     if (!firstVerses) {
-      return '<article><p style="text-align: center; color: var(--michael-text-muted);  padding: 2rem 0;">No verses found for this chapter.</p></article>';
+      const article = document.createElement('article');
+      const p = document.createElement('p');
+      p.style.textAlign = 'center';
+      p.style.color = 'var(--michael-text-muted)';
+      p.style.padding = '2rem 0';
+      p.textContent = 'No verses found for this chapter.';
+      article.appendChild(p);
+      fragment.appendChild(article);
+      return fragment;
     }
 
     // Get book name from metadata (books is now an array)
@@ -1019,13 +1025,26 @@
     const verseRef = currentVerse > 0 ? `:${currentVerse}` : '';
     const abbrevList = selectedTranslations.map(id => {
         const bible = bibleData.bibles.find(b => b.id === id);
-        return escapeHtml(bible?.abbrev || id);
+        return bible?.abbrev || id;
       }).join(', ');
-    // eslint-disable-next-line @anthropic/no-html-template-literals -- bookName escaped, integers, abbrevList pre-escaped
-    html += `<header style="text-align: center; margin-bottom: 1.5rem;">
-      <h2 style=" margin-bottom: 0.25rem;">${escapeHtml(bookName)} ${currentChapter}${verseRef}</h2>
-      <p style="color: var(--michael-text-muted);  font-size: 0.875rem; margin: 0;">${abbrevList}</p>
-    </header>`;
+
+    const header = document.createElement('header');
+    header.style.textAlign = 'center';
+    header.style.marginBottom = '1.5rem';
+
+    const h2 = document.createElement('h2');
+    h2.style.marginBottom = '0.25rem';
+    h2.textContent = `${bookName} ${currentChapter}${verseRef}`;
+    header.appendChild(h2);
+
+    const abbrevP = document.createElement('p');
+    abbrevP.style.color = 'var(--michael-text-muted)';
+    abbrevP.style.fontSize = '0.875rem';
+    abbrevP.style.margin = '0';
+    abbrevP.textContent = abbrevList;
+    header.appendChild(abbrevP);
+
+    fragment.appendChild(header);
 
     // Filter verses if specific verse selected
     const versesToShow = currentVerse > 0
@@ -1036,46 +1055,74 @@
     versesToShow.forEach((verse) => {
       const verseNum = verse.number;
 
-      // eslint-disable-next-line @anthropic/no-html-template-literals -- verseNum/currentChapter are integers, bookName escaped
-      html += `<article class="parallel-verse" data-verse="${verseNum}">
-        <header>
-          <h3 style=" font-weight: bold; color: var(--michael-accent); margin-bottom: 0.5rem; font-size: 1rem;">${escapeHtml(bookName)} ${currentChapter}:${verseNum}</h3>
-        </header>
-        <div>`;
+      const article = document.createElement('article');
+      article.className = 'parallel-verse';
+      article.dataset.verse = verseNum;
+
+      const verseHeader = document.createElement('header');
+      const h3 = document.createElement('h3');
+      h3.style.fontWeight = 'bold';
+      h3.style.color = 'var(--michael-accent)';
+      h3.style.marginBottom = '0.5rem';
+      h3.style.fontSize = '1rem';
+      h3.textContent = `${bookName} ${currentChapter}:${verseNum}`;
+      verseHeader.appendChild(h3);
+      article.appendChild(verseHeader);
+
+      const versesDiv = document.createElement('div');
 
       // Collect all verse texts for this verse number for diff highlighting
       const allVerseTexts = selectedTranslations.map((tid, i) => {
-        const verses = chaptersData[i] || [];
-        const v = verses.find(v => v.number === verseNum);
+        const chapterVerses = chaptersData[i] || [];
+        const v = chapterVerses.find(v => v.number === verseNum);
         return v?.text || '';
       });
 
       // Render each translation for this verse
       selectedTranslations.forEach((translationId, idx) => {
         const bible = bibleData.bibles.find(b => b.id === translationId);
-        const verses = chaptersData[idx] || [];
-        const v = verses.find(v => v.number === verseNum);
+        const chapterVerses = chaptersData[idx] || [];
+        const v = chapterVerses.find(v => v.number === verseNum);
 
-        let text = v?.text || '<em style="color: var(--michael-text-muted);">Verse not available</em>';
+        const translationDiv = document.createElement('div');
+        translationDiv.className = 'translation-label';
+        translationDiv.style.marginTop = '0.75rem';
 
-        // Apply highlighting if enabled (compares against all other translations)
-        if (normalHighlightEnabled && v?.text) {
-          const otherTexts = allVerseTexts.filter((_, i) => i !== idx && allVerseTexts[i]);
-          text = highlightNormalDifferences(v.text, otherTexts);
+        const strong = document.createElement('strong');
+        strong.style.color = 'var(--michael-accent)';
+        strong.style.fontSize = '0.75rem';
+        strong.textContent = bible?.abbrev || translationId;
+        translationDiv.appendChild(strong);
+
+        const textP = document.createElement('p');
+        textP.style.margin = '0.25rem 0 0 0';
+        textP.style.lineHeight = '1.8';
+
+        if (v?.text) {
+          // Apply highlighting if enabled (compares against all other translations)
+          let htmlText = v.text;
+          if (normalHighlightEnabled) {
+            const otherTexts = allVerseTexts.filter((_, i) => i !== idx && allVerseTexts[i]);
+            htmlText = highlightNormalDifferences(v.text, otherTexts);
+          }
+          // verse text contains trusted OSIS/HTML markup (w tags, note tags, diff spans)
+          textP.innerHTML = htmlText; // trusted Bible data with controlled markup
+        } else {
+          const em = document.createElement('em');
+          em.style.color = 'var(--michael-text-muted)';
+          em.textContent = 'Verse not available';
+          textP.appendChild(em);
         }
 
-        // eslint-disable-next-line @anthropic/no-html-template-literals -- bibleAbbrev pre-escaped, text from trusted Bible data
-        const bibleAbbrev = escapeHtml(bible?.abbrev || translationId);
-        html += `<div class="translation-label" style="margin-top: 0.75rem;">
-          <strong style="color: var(--michael-accent);  font-size: 0.75rem;">${bibleAbbrev}</strong>
-          <p style="margin: 0.25rem 0 0 0; line-height: 1.8;">${text}</p>
-        </div>`;
+        translationDiv.appendChild(textP);
+        versesDiv.appendChild(translationDiv);
       });
 
-      html += `</div></article>`;
+      article.appendChild(versesDiv);
+      fragment.appendChild(article);
     });
 
-    return html;
+    return fragment;
   }
 
   /* ========================================================================
@@ -1432,7 +1479,7 @@
     if (!sssChapterSelect) return;
 
     // Clear and add default option safely
-    sssChapterSelect.innerHTML = '';
+    sssChapterSelect.replaceChildren();
     const defaultOption = document.createElement('option');
     defaultOption.value = '';
     defaultOption.textContent = '...';
@@ -1506,14 +1553,11 @@
     }
 
     // Show loading
-    const loadingHtml = window.Michael.DomUtils.createLoadingIndicator();
     if (sssLeftPane) {
-      // eslint-disable-next-line no-unsanitized/property -- loadingHtml is safe HTML from DomUtils
-      sssLeftPane.innerHTML = loadingHtml;
+      sssLeftPane.replaceChildren(window.Michael.DomUtils.createLoadingIndicator());
     }
     if (sssRightPane) {
-      // eslint-disable-next-line no-unsanitized/property -- loadingHtml is safe HTML from DomUtils
-      sssRightPane.innerHTML = loadingHtml;
+      sssRightPane.replaceChildren(window.Michael.DomUtils.createLoadingIndicator());
     }
 
     // Fetch both chapters
@@ -1566,14 +1610,12 @@
 
     // Render left pane
     if (sssLeftPane) {
-      // eslint-disable-next-line no-unsanitized/property -- buildSSSPaneHTML returns sanitized HTML
-      sssLeftPane.innerHTML = buildSSSPaneHTML(leftFiltered, leftBible, bookName, rightFiltered, rightBible);
+      sssLeftPane.replaceChildren(buildSSSPaneHTML(leftFiltered, leftBible, bookName, rightFiltered, rightBible));
     }
 
     // Render right pane
     if (sssRightPane) {
-      // eslint-disable-next-line no-unsanitized/property -- buildSSSPaneHTML returns sanitized HTML
-      sssRightPane.innerHTML = buildSSSPaneHTML(rightFiltered, rightBible, bookName, leftFiltered, leftBible);
+      sssRightPane.replaceChildren(buildSSSPaneHTML(rightFiltered, rightBible, bookName, leftFiltered, leftBible));
     }
 
     // Process footnotes for SSS mode - separate per pane
@@ -1655,7 +1697,7 @@
     if (!verses || verses.length === 0) {
       if (sssVerseGrid) sssVerseGrid.classList.add('hidden');
       if (sssVerseButtons) {
-        sssVerseButtons.innerHTML = '';
+        sssVerseButtons.replaceChildren();
 
         // Always create a fresh All button
         const newAllBtn = document.createElement('button');
@@ -1673,7 +1715,7 @@
     }
 
     if (sssVerseButtons) {
-      sssVerseButtons.innerHTML = '';
+      sssVerseButtons.replaceChildren();
 
       // Add verse buttons
       verses.forEach(verse => {
@@ -1765,37 +1807,67 @@
    * @returns {string} HTML string for the pane content
    */
   function buildSSSPaneHTML(verses, bible, bookName, compareVerses, compareBible) {
+    const fragment = document.createDocumentFragment();
+
     if (!verses || verses.length === 0) {
-      return '<article><p style="text-align: center; color: var(--michael-text-muted);  padding: 2rem 0;">No verses found</p></article>';
+      const article = document.createElement('article');
+      const p = document.createElement('p');
+      p.style.textAlign = 'center';
+      p.style.color = 'var(--michael-text-muted)';
+      p.style.padding = '2rem 0';
+      p.textContent = 'No verses found';
+      article.appendChild(p);
+      fragment.appendChild(article);
+      return fragment;
     }
+
+    // Build pane header with Bible abbreviation
+    const paneHeader = document.createElement('header');
+    paneHeader.className = 'translation-label';
+    paneHeader.style.textAlign = 'center';
+    paneHeader.style.paddingBottom = '0.5rem';
+
+    const strong = document.createElement('strong');
+    strong.textContent = bible?.abbrev || 'Unknown';
+    paneHeader.appendChild(strong);
 
     // Check for versification mismatch (e.g., Masoretic vs Septuagint)
     // Display warning when comparing Bibles with different verse numbering systems
-    // eslint-disable-next-line @anthropic/no-html-template-literals -- bible.versification uses escapeHtml()
-    const versificationWarning = (compareBible && bible?.versification && compareBible?.versification &&
-      bible.versification !== compareBible.versification)
-      ? `<small style="color: var(--michael-text-muted); display: block; font-size: 0.7rem;">${escapeHtml(bible.versification)} versification</small>`
-      : '';
+    const hasVersificationMismatch = compareBible && bible?.versification &&
+      compareBible?.versification && bible.versification !== compareBible.versification;
+    if (hasVersificationMismatch) {
+      const small = document.createElement('small');
+      small.style.color = 'var(--michael-text-muted)';
+      small.style.display = 'block';
+      small.style.fontSize = '0.7rem';
+      small.textContent = `${bible.versification} versification`;
+      paneHeader.appendChild(small);
+    }
 
-    // eslint-disable-next-line @anthropic/no-html-template-literals -- bibleAbbrev/versificationWarning pre-escaped
-    const bibleAbbrev = escapeHtml(bible?.abbrev || 'Unknown');
-    let html = `<header class="translation-label" style="text-align: center; padding-bottom: 0.5rem;">
-      <strong>${bibleAbbrev}</strong>${versificationWarning}
-    </header>`;
+    fragment.appendChild(paneHeader);
 
     // Render each verse with highlighting based on comparison
-    // eslint-disable-next-line @anthropic/no-html-template-literals -- verse.number integer, highlightedText from trusted data
     verses.forEach(verse => {
       const compareVerse = compareVerses?.find(v => v.number === verse.number);
       const highlightedText = highlightDifferences(verse.text, compareVerse?.text);
 
-      html += `<div class="parallel-verse">
-        <span class="parallel-verse-num">${verse.number}</span>
-        <span>${highlightedText}</span>
-      </div>`;
+      const verseDiv = document.createElement('div');
+      verseDiv.className = 'parallel-verse';
+
+      const numSpan = document.createElement('span');
+      numSpan.className = 'parallel-verse-num';
+      numSpan.textContent = verse.number;
+      verseDiv.appendChild(numSpan);
+
+      const textSpan = document.createElement('span');
+      // verse text contains trusted OSIS/HTML markup (w tags, note tags, diff spans)
+      textSpan.innerHTML = highlightedText; // trusted Bible data with controlled markup
+      verseDiv.appendChild(textSpan);
+
+      fragment.appendChild(verseDiv);
     });
 
-    return html;
+    return fragment;
   }
 
   /**

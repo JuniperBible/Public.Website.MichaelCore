@@ -146,6 +146,85 @@ window.Michael.ShareMenu = (function() {
   };
 
   /**
+   * Create an SVG element with a single path for use as a menu item icon.
+   * @param {Object} opts
+   * @param {string} opts.fill - SVG fill attribute value
+   * @param {string} opts.stroke - SVG stroke attribute value (optional)
+   * @param {string} opts.pathD - The "d" attribute for the inner <path>
+   * @param {string} [opts.pathExtra] - Additional space-separated "attr=value" pairs for the path
+   * @returns {SVGElement}
+   */
+  ShareMenu.prototype.createMenuIcon = function(opts) {
+    const NS = 'http://www.w3.org/2000/svg';
+    const svg = document.createElementNS(NS, 'svg');
+    svg.setAttribute('width', '16');
+    svg.setAttribute('height', '16');
+    svg.setAttribute('fill', opts.fill);
+    if (opts.stroke) {
+      svg.setAttribute('stroke', opts.stroke);
+    }
+    svg.setAttribute('viewBox', '0 0 24 24');
+    svg.setAttribute('aria-hidden', 'true');
+
+    const path = document.createElementNS(NS, 'path');
+    path.setAttribute('d', opts.pathD);
+    if (opts.pathExtra) {
+      opts.pathExtra.forEach(function(pair) {
+        path.setAttribute(pair[0], pair[1]);
+      });
+    }
+    svg.appendChild(path);
+    return svg;
+  };
+
+  /**
+   * Create a menu item <button> element.
+   * @param {Object} opts
+   * @param {string[]} [opts.extraClasses] - Additional CSS classes beyond 'share-menu-item'
+   * @param {string} [opts.action] - Value for data-action attribute (omit for disabled buttons)
+   * @param {boolean} [opts.disabled] - Whether the button is disabled
+   * @param {string} [opts.title] - Title/tooltip text
+   * @param {string} [opts.ariaLabel] - aria-label override
+   * @param {SVGElement} opts.icon - SVG icon element to prepend
+   * @param {string} opts.label - Visible text label (set as textContent, never as HTML)
+   * @returns {HTMLButtonElement}
+   */
+  ShareMenu.prototype.createMenuItem = function(opts) {
+    const btn = document.createElement('button');
+    btn.className = 'share-menu-item';
+    if (opts.extraClasses) {
+      opts.extraClasses.forEach(function(cls) { btn.classList.add(cls); });
+    }
+    btn.setAttribute('role', 'menuitem');
+    if (opts.action) {
+      btn.dataset.action = opts.action;
+    }
+    if (opts.disabled) {
+      btn.disabled = true;
+    }
+    if (opts.title) {
+      btn.setAttribute('title', opts.title);
+    }
+    if (opts.ariaLabel) {
+      btn.setAttribute('aria-label', opts.ariaLabel);
+    }
+    btn.appendChild(opts.icon);
+    btn.appendChild(document.createTextNode(opts.label));
+    return btn;
+  };
+
+  /**
+   * Create a divider <hr> element.
+   * @returns {HTMLHRElement}
+   */
+  ShareMenu.prototype.createDivider = function() {
+    const hr = document.createElement('hr');
+    hr.className = 'share-menu-divider';
+    hr.setAttribute('role', 'separator');
+    return hr;
+  };
+
+  /**
    * Build the menu HTML structure with ARIA attributes
    * @returns {HTMLElement} The menu element
    */
@@ -161,99 +240,84 @@ window.Michael.ShareMenu = (function() {
     menu.setAttribute('role', 'menu');
     menu.setAttribute('aria-label', 'Share options');
 
-    const items = [];
+    // SVG path data constants
+    const ICON_LINK_PATH = 'M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1';
+    const ICON_COPY_PATH = 'M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3';
+    const ICON_TWITTER_PATH = 'M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z';
+    const ICON_FACEBOOK_PATH = 'M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z';
 
-    // Escape UI strings to prevent XSS (defense in depth)
-    const safeUi = {
-      copyLink: this.escapeHtml(this.ui.copyLink),
-      copyText: this.escapeHtml(this.ui.copyText),
-      shareTwitter: this.escapeHtml(this.ui.shareTwitter),
-      shareFacebook: this.escapeHtml(this.ui.shareFacebook)
-    };
+    // Stroke path attributes shared by link/copy icons
+    const STROKE_ATTRS = [
+      ['stroke-linecap', 'round'],
+      ['stroke-linejoin', 'round'],
+      ['stroke-width', '2']
+    ];
 
     // Copy link option
-    items.push(`
-      <button class="share-menu-item" role="menuitem" data-action="copy-link">
-        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
-        </svg>
-        ${safeUi.copyLink}
-      </button>
-    `);
+    menu.appendChild(this.createMenuItem({
+      action: 'copy-link',
+      icon: this.createMenuIcon({ fill: 'none', stroke: 'currentColor', pathD: ICON_LINK_PATH, pathExtra: STROKE_ATTRS }),
+      label: this.ui.copyLink
+    }));
 
     // Copy text option (if enabled)
     if (this.options.includeTextCopy) {
-      items.push(`
-        <button class="share-menu-item" role="menuitem" data-action="copy-text">
-          <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/>
-          </svg>
-          ${safeUi.copyText}
-        </button>
-      `);
+      menu.appendChild(this.createMenuItem({
+        action: 'copy-text',
+        icon: this.createMenuIcon({ fill: 'none', stroke: 'currentColor', pathD: ICON_COPY_PATH, pathExtra: STROKE_ATTRS }),
+        label: this.ui.copyText
+      }));
     }
 
     // If offline, show only copy options with special formatted text
     if (this.offlineMode) {
       // If we have offline text formatter, add special offline copy option
       if (this.options.getOfflineText) {
-        items.push('<hr class="share-menu-divider" role="separator">');
-        items.push(`
-          <button class="share-menu-item" role="menuitem" data-action="copy-offline">
-            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/>
-            </svg>
-            Copy for sharing
-          </button>
-        `);
+        menu.appendChild(this.createDivider());
+        menu.appendChild(this.createMenuItem({
+          action: 'copy-offline',
+          icon: this.createMenuIcon({ fill: 'none', stroke: 'currentColor', pathD: ICON_COPY_PATH, pathExtra: STROKE_ATTRS }),
+          label: 'Copy for sharing'
+        }));
       }
 
       // Show disabled social share buttons with tooltip
-      items.push('<hr class="share-menu-divider" role="separator">');
-      items.push(`
-        <button class="share-menu-item share-btn--disabled" role="menuitem" disabled
-                title="Unavailable offline" aria-label="Share on X (unavailable offline)">
-          <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
-          </svg>
-          ${safeUi.shareTwitter}
-        </button>
-      `);
-      items.push(`
-        <button class="share-menu-item share-btn--disabled" role="menuitem" disabled
-                title="Unavailable offline" aria-label="Share on Facebook (unavailable offline)">
-          <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
-          </svg>
-          ${safeUi.shareFacebook}
-        </button>
-      `);
+      menu.appendChild(this.createDivider());
+      menu.appendChild(this.createMenuItem({
+        extraClasses: ['share-btn--disabled'],
+        disabled: true,
+        title: 'Unavailable offline',
+        ariaLabel: 'Share on X (unavailable offline)',
+        icon: this.createMenuIcon({ fill: 'currentColor', pathD: ICON_TWITTER_PATH }),
+        label: this.ui.shareTwitter
+      }));
+      menu.appendChild(this.createMenuItem({
+        extraClasses: ['share-btn--disabled'],
+        disabled: true,
+        title: 'Unavailable offline',
+        ariaLabel: 'Share on Facebook (unavailable offline)',
+        icon: this.createMenuIcon({ fill: 'currentColor', pathD: ICON_FACEBOOK_PATH }),
+        label: this.ui.shareFacebook
+      }));
     } else {
       // Online mode - show all social sharing options
-      items.push('<hr class="share-menu-divider" role="separator">');
+      menu.appendChild(this.createDivider());
 
       // Twitter/X share option
-      items.push(`
-        <button class="share-menu-item" role="menuitem" data-action="share-twitter">
-          <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
-          </svg>
-          ${safeUi.shareTwitter}
-        </button>
-      `);
+      menu.appendChild(this.createMenuItem({
+        action: 'share-twitter',
+        icon: this.createMenuIcon({ fill: 'currentColor', pathD: ICON_TWITTER_PATH }),
+        label: this.ui.shareTwitter
+      }));
 
       // Facebook share option
-      items.push(`
-        <button class="share-menu-item" role="menuitem" data-action="share-facebook">
-          <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
-          </svg>
-          ${safeUi.shareFacebook}
-        </button>
-      `);
+      menu.appendChild(this.createMenuItem({
+        action: 'share-facebook',
+        icon: this.createMenuIcon({ fill: 'currentColor', pathD: ICON_FACEBOOK_PATH }),
+        label: this.ui.shareFacebook
+      }));
     }
 
-    menu.innerHTML = items.join('');
     return menu;
   };
 

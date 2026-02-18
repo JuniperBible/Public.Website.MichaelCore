@@ -603,8 +603,10 @@ function renderWithHighlights(text, diffs, side, options = {}) {
     }
 
     // Add highlighted span
-    // eslint-disable-next-line @anthropic/no-html-template-literals -- h.category is enum, h.original uses escapeHtml()
-    result += `<span class="diff-${h.category}">${escapeHtml(h.original)}</span>`;
+    const span = document.createElement('span');
+    span.className = `diff-${h.category}`;
+    span.textContent = h.original;
+    result += span.outerHTML;
     pos = h.offset + h.length;
   }
 

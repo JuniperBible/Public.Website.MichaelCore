@@ -176,20 +176,12 @@
     if (canLoadSSSComparison()) loadSSSComparison();
   }
 
-  /**
-   * Escape HTML special characters to prevent XSS
-   * @private
-   */
-  function escapeHtml(str) {
-    return window.Michael.DomUtils.escapeHtml(str);
-  }
-
   /** Populate SSS chapter dropdown */
   function populateSSSChapterDropdown() {
     if (!sssChapterSelect) return;
 
     // Clear and add default option safely
-    sssChapterSelect.innerHTML = '';
+    sssChapterSelect.textContent = '';
     const defaultOption = document.createElement('option');
     defaultOption.value = '';
     defaultOption.textContent = '...';
@@ -228,15 +220,12 @@
     currentFetchController = new AbortController();
     const signal = currentFetchController.signal;
 
-    // Show loading - DomUtils.createLoadingIndicator() returns safe HTML
-    const loadingHtml = window.Michael.DomUtils.createLoadingIndicator();
+    // Show loading - createLoadingIndicator() returns a DOM element
     if (sssLeftPane) {
-      // eslint-disable-next-line no-unsanitized/property -- loadingHtml is safe HTML from DomUtils
-      sssLeftPane.innerHTML = loadingHtml;
+      sssLeftPane.replaceChildren(window.Michael.DomUtils.createLoadingIndicator());
     }
     if (sssRightPane) {
-      // eslint-disable-next-line no-unsanitized/property -- loadingHtml is safe HTML from DomUtils
-      sssRightPane.innerHTML = loadingHtml;
+      sssRightPane.replaceChildren(window.Michael.DomUtils.createLoadingIndicator());
     }
 
     try {
@@ -261,12 +250,10 @@
       const rightFiltered = sssVerse > 0 ? rightVerses?.filter(v => v.number === sssVerse) : rightVerses;
 
       if (sssLeftPane) {
-        // eslint-disable-next-line no-unsanitized/property -- buildSSSPaneHTML returns sanitized HTML
-        sssLeftPane.innerHTML = buildSSSPaneHTML(leftFiltered, leftBible, bookName, rightFiltered, rightBible);
+        sssLeftPane.replaceChildren(buildSSSPaneFragment(leftFiltered, leftBible, bookName, rightFiltered, rightBible));
       }
       if (sssRightPane) {
-        // eslint-disable-next-line no-unsanitized/property -- buildSSSPaneHTML returns sanitized HTML
-        sssRightPane.innerHTML = buildSSSPaneHTML(rightFiltered, rightBible, bookName, leftFiltered, leftBible);
+        sssRightPane.replaceChildren(buildSSSPaneFragment(rightFiltered, rightBible, bookName, leftFiltered, leftBible));
       }
     } catch (err) {
       // Handle abort gracefully
@@ -275,11 +262,20 @@
         return;
       }
       console.error('[SSS] Error loading comparison:', err);
+      const buildErrorNode = () => {
+        const article = document.createElement('article');
+        const p = document.createElement('p');
+        p.style.textAlign = 'center';
+        p.style.color = 'var(--michael-text-muted)';
+        p.textContent = 'Error loading content';
+        article.appendChild(p);
+        return article;
+      };
       if (sssLeftPane) {
-        sssLeftPane.innerHTML = '<article><p style="text-align: center; color: var(--michael-text-muted);">Error loading content</p></article>';
+        sssLeftPane.replaceChildren(buildErrorNode());
       }
       if (sssRightPane) {
-        sssRightPane.innerHTML = '<article><p style="text-align: center; color: var(--michael-text-muted);">Error loading content</p></article>';
+        sssRightPane.replaceChildren(buildErrorNode());
       }
     } finally {
       // Clear controller reference if this was the active one
@@ -341,44 +337,80 @@
   }
 
   /**
-   * Build HTML for one SSS pane
+   * Build a DocumentFragment for one SSS pane using DOM APIs
    * @param {Array<Object>} verses - Verses to display
    * @param {Object} bible - Bible metadata
    * @param {string} bookName - Book name
    * @param {Array<Object>} compareVerses - Verses for comparison
    * @param {Object} compareBible - Comparison Bible metadata
-   * @returns {string} HTML string
+   * @returns {DocumentFragment} DOM fragment ready to be inserted
    */
-  function buildSSSPaneHTML(verses, bible, bookName, compareVerses, compareBible) {
+  function buildSSSPaneFragment(verses, bible, bookName, compareVerses, compareBible) {
+    const fragment = document.createDocumentFragment();
+
     if (!verses || verses.length === 0) {
-      return '<article><p style="text-align: center; color: var(--michael-text-muted); padding: 2rem 0;">No verses found</p></article>';
+      const article = document.createElement('article');
+      const p = document.createElement('p');
+      p.style.textAlign = 'center';
+      p.style.color = 'var(--michael-text-muted)';
+      p.style.padding = '2rem 0';
+      p.textContent = 'No verses found';
+      article.appendChild(p);
+      fragment.appendChild(article);
+      return fragment;
     }
 
-    // Versification warning
-    // eslint-disable-next-line @anthropic/no-html-template-literals -- bible.versification uses escapeHtml()
-    const versificationWarning = (compareBible && bible?.versification && compareBible?.versification &&
-      bible.versification !== compareBible.versification)
-      ? `<small style="color: var(--michael-text-muted); display: block; font-size: 0.7rem;">${escapeHtml(bible.versification)} versification</small>`
-      : '';
+    // Build translation label header
+    const header = document.createElement('header');
+    header.className = 'translation-label';
+    header.style.textAlign = 'center';
+    header.style.paddingBottom = '0.5rem';
 
-    // eslint-disable-next-line @anthropic/no-html-template-literals -- bibleAbbrev/versificationWarning pre-escaped
-    const bibleAbbrev = escapeHtml(bible?.abbrev || 'Unknown');
-    let html = `<header class="translation-label" style="text-align: center; padding-bottom: 0.5rem;">
-      <strong>${bibleAbbrev}</strong>${versificationWarning}
-    </header>`;
+    const strong = document.createElement('strong');
+    strong.textContent = bible?.abbrev || 'Unknown';
+    header.appendChild(strong);
 
-    // eslint-disable-next-line @anthropic/no-html-template-literals -- verse.number integer, highlightedText from trusted data
+    // Versification warning (shown when bibles use different versification schemes)
+    const showVersificationWarning = compareBible &&
+      bible?.versification &&
+      compareBible?.versification &&
+      bible.versification !== compareBible.versification;
+
+    if (showVersificationWarning) {
+      const small = document.createElement('small');
+      small.style.color = 'var(--michael-text-muted)';
+      small.style.display = 'block';
+      small.style.fontSize = '0.7rem';
+      small.textContent = bible.versification + ' versification';
+      header.appendChild(small);
+    }
+
+    fragment.appendChild(header);
+
+    // Build each verse row
     verses.forEach(verse => {
       const compareVerse = compareVerses?.find(v => v.number === verse.number);
       const highlightedText = highlightDiffsFn(verse.text, compareVerse?.text, sssHighlightEnabled);
 
-      html += `<div class="parallel-verse">
-        <span class="parallel-verse-num">${verse.number}</span>
-        <span>${highlightedText}</span>
-      </div>`;
+      const verseDiv = document.createElement('div');
+      verseDiv.className = 'parallel-verse';
+
+      const numSpan = document.createElement('span');
+      numSpan.className = 'parallel-verse-num';
+      numSpan.textContent = verse.number;
+      verseDiv.appendChild(numSpan);
+
+      const textSpan = document.createElement('span');
+      // highlightDiffsFn returns a sanitized HTML string with <mark> tags for diffs;
+      // this is the only intentional innerHTML use and is safe by design.
+      // eslint-disable-next-line no-unsanitized/property -- highlightDiffsFn output is sanitized
+      textSpan.innerHTML = highlightedText;
+      verseDiv.appendChild(textSpan);
+
+      fragment.appendChild(verseDiv);
     });
 
-    return html;
+    return fragment;
   }
 
   // Export public API

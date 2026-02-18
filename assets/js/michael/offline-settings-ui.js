@@ -195,7 +195,8 @@
     }
 
     const clearBtn = document.getElementById('clear-cache-btn');
-    const originalHtml = clearBtn.innerHTML;
+    // Store original children for restoration
+    const originalChildren = Array.from(clearBtn.childNodes).map(n => n.cloneNode(true));
 
     try {
       clearBtn.disabled = true;
@@ -205,14 +206,16 @@
 
       // Reset button on success
       clearBtn.disabled = false;
-      clearBtn.innerHTML = originalHtml;
+      clearBtn.textContent = '';
+      originalChildren.forEach(n => clearBtn.appendChild(n.cloneNode(true)));
     } catch (error) {
       console.error('[Offline Settings] Failed to clear cache:', error);
       showMessage('Failed to clear cache: ' + error.message, 'error');
 
       // Reset button on error
       clearBtn.disabled = false;
-      clearBtn.innerHTML = originalHtml;
+      clearBtn.textContent = '';
+      originalChildren.forEach(n => clearBtn.appendChild(n.cloneNode(true)));
     }
   }
 
@@ -393,7 +396,12 @@
       const clearBtn = document.getElementById('clear-cache-btn');
       if (clearBtn) {
         clearBtn.disabled = false;
-        clearBtn.innerHTML = '<span aria-hidden="true">🗑</span> Clear Cache';
+        clearBtn.textContent = '';
+        const iconSpan = document.createElement('span');
+        iconSpan.setAttribute('aria-hidden', 'true');
+        iconSpan.textContent = '\u{1F5D1}';
+        clearBtn.appendChild(iconSpan);
+        clearBtn.appendChild(document.createTextNode(' Clear Cache'));
       }
 
       // Update cache status

@@ -362,18 +362,18 @@
   // ============================================================================
 
   /**
-   * Highlights matching text within a verse using <mark> tags.
+   * Highlights matching text within a verse using DOM <mark> elements.
    *
-   * Security: This function is CSP-compliant and XSS-safe.
-   * - HTML is escaped BEFORE regex replacement to prevent injection
-   * - Only <mark> tags are added, no user content becomes HTML
-   * - Uses Content Security Policy safe inline styles (via CSS variables)
+   * Security: This function is XSS-safe by construction.
+   * - Text content is set via textContent, never innerHTML
+   * - No HTML string concatenation or parsing is performed
+   * - Only <mark> elements are created programmatically; no user content becomes markup
    *
    * Highlighting Process:
    * 1. Parse query to extract search term and determine type
-   * 2. Escape HTML in both verse text and search term (XSS prevention)
-   * 3. Build regex with appropriate flags based on search type
-   * 4. Replace matches with <mark>$1</mark> wrapper
+   * 2. Build regex with appropriate flags based on search type
+   * 3. Split plain text on match boundaries
+   * 4. Append alternating text nodes and <mark> elements to a DocumentFragment
    *
    * Regex Flags:
    * - Strong's numbers: 'gi' (always case-insensitive, global)
@@ -381,37 +381,40 @@
    * - Case-insensitive text: 'gi' (case-insensitive, global)
    *
    * @private
-   * @param {string} text - The verse text to highlight (may contain HTML-unsafe chars)
+   * @param {string} text - The verse text to highlight
    * @param {string} query - The original search query
    * @param {boolean} caseSensitive - Whether search was case-sensitive
-   * @returns {string} HTML string with matches wrapped in <mark> tags
+   * @returns {DocumentFragment} Fragment with text nodes and <mark> elements
    *
    * @example
-   * highlightMatches('For God so loved the world', 'love', false)
-   * // Returns: 'For God so <mark>love</mark>d the world'
-   *
-   * @example
-   * highlightMatches('<script>alert("xss")</script>', 'script', false)
-   * // Returns: '&lt;<mark>script</mark>&gt;alert("xss")&lt;/<mark>script</mark>&gt;'
-   * // Note: HTML is escaped, preventing XSS attack
+   * // highlightMatches('For God so loved the world', 'love', false)
+   * // Returns a DocumentFragment equivalent to: 'For God so <mark>love</mark>d the world'
    */
   function highlightMatches(text, query, caseSensitive) {
     const parsed = parseQuery(query);
-    let searchTerm = parsed.value;
-
-    // CRITICAL XSS FIX: Escape HTML BEFORE applying regex highlighting
-    // This prevents malicious verse content or search terms from injecting HTML/JS
-    // The escapeHtml() function converts characters like < > & " to entities
-    const escapedText = escapeHtml(text);
-    const escapedTerm = escapeHtml(searchTerm);
+    const searchTerm = parsed.value;
 
     // For Strong's numbers, use case-insensitive matching (Strong's are standardized)
     // For text search, respect the caseSensitive parameter
     const flags = (parsed.type === 'strongs') ? 'gi' : (caseSensitive ? 'g' : 'gi');
-    const regex = new RegExp(`(${escapeRegex(escapedTerm)})`, flags);
+    const regex = new RegExp(`(${escapeRegex(searchTerm)})`, flags);
 
-    // Replace matches with <mark> wrapper - this is safe because we escaped HTML first
-    return escapedText.replace(regex, '<mark>$1</mark>');
+    const fragment = document.createDocumentFragment();
+    const parts = text.split(regex);
+
+    for (let i = 0; i < parts.length; i++) {
+      if (parts[i] === '') continue;
+      // Every odd-indexed part is a regex capture group match (the highlighted term)
+      if (i % 2 === 1) {
+        const mark = document.createElement('mark');
+        mark.textContent = parts[i];
+        fragment.appendChild(mark);
+      } else {
+        fragment.appendChild(document.createTextNode(parts[i]));
+      }
+    }
+
+    return fragment;
   }
 
   /**
@@ -477,7 +480,7 @@
 
     // Show searching status and announce to screen readers
     statusEl.classList.remove('hidden');
-    resultsEl.innerHTML = '';
+    resultsEl.textContent = '';
     announce(`Searching for "${query}" in ${bibleSelect.options[bibleSelect.selectedIndex]?.text || 'Bible'}...`);
 
     const bibleData = indexData.bibles?.[bible];
@@ -604,44 +607,55 @@
     const limitedResults = results.slice(0, 100);
     const parsed = parseQuery(query);
 
-    // Build search type description for header
-    let searchDesc = '';
-    if (parsed.type === 'strongs') {
-      searchDesc = ` for Strong's ${parsed.language} ${parsed.value}`;
-    } else if (parsed.type === 'phrase') {
-      searchDesc = ` for phrase "${parsed.value}"`;
-    } else {
-      searchDesc = ` for "${query}"`;
-    }
+    const fragment = document.createDocumentFragment();
 
-    let html = `
-      <p style="color: var(--michael-text-muted); margin-bottom: 1rem;">
-        Found ${results.length} result${results.length !== 1 ? 's' : ''}${searchDesc} in ${bibleData.title}
-        ${results.length > 100 ? ' (showing first 100)' : ''}
-      </p>
-    `;
+    // Build summary paragraph
+    const summary = document.createElement('p');
+    summary.style.color = 'var(--michael-text-muted)';
+    summary.style.marginBottom = '1rem';
+
+    let summaryText = `Found ${results.length} result${results.length !== 1 ? 's' : ''}`;
+    if (parsed.type === 'strongs') {
+      summaryText += ` for Strong's ${parsed.language} ${parsed.value}`;
+    } else if (parsed.type === 'phrase') {
+      summaryText += ` for phrase "${parsed.value}"`;
+    } else {
+      summaryText += ` for "${query}"`;
+    }
+    summaryText += ` in ${bibleData.title}`;
+    if (results.length > 100) {
+      summaryText += ' (showing first 100)';
+    }
+    summary.textContent = summaryText;
+    fragment.appendChild(summary);
 
     for (const result of limitedResults) {
       // Build URL: /bible/{bible}/{book}/{chapter}/?v={verse}
       // The ?v= parameter triggers auto-scroll to verse in reader view
       const url = `${basePath}/${bible}/${result.bookId.toLowerCase()}/${result.chapter}/?v=${result.verse}`;
-      const highlightedText = highlightMatches(result.text, query, caseSensitive);
 
-      html += `
-        <article class="search-result">
-          <header>
-            <h3>
-              <a href="${url}">${result.book} ${result.chapter}:${result.verse}</a>
-            </h3>
-          </header>
-          <div class="verse-text">
-            ${highlightedText}
-          </div>
-        </article>
-      `;
+      const article = document.createElement('article');
+      article.className = 'search-result';
+
+      const header = document.createElement('header');
+      const h3 = document.createElement('h3');
+      const a = document.createElement('a');
+      a.href = url;
+      a.textContent = `${result.book} ${result.chapter}:${result.verse}`;
+      h3.appendChild(a);
+      header.appendChild(h3);
+      article.appendChild(header);
+
+      const verseDiv = document.createElement('div');
+      verseDiv.className = 'verse-text';
+      verseDiv.appendChild(highlightMatches(result.text, query, caseSensitive));
+      article.appendChild(verseDiv);
+
+      fragment.appendChild(article);
     }
 
-    resultsEl.innerHTML = html;
+    resultsEl.textContent = '';
+    resultsEl.appendChild(fragment);
   }
 
   /**
@@ -656,7 +670,7 @@
    */
   function showMessage(msg) {
     statusEl.classList.add('hidden');
-    resultsEl.innerHTML = '';
+    resultsEl.textContent = '';
     const p = document.createElement('p');
     p.className = 'center muted';
     p.style.padding = '3rem 0';

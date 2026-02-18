@@ -278,17 +278,21 @@ window.Michael.DomUtils = (function() {
    * for screen reader accessibility.
    *
    * @param {string} [message='Loading...'] - Loading message to display
-   * @returns {string} HTML string for loading indicator
+   * @returns {HTMLElement} DOM element for loading indicator
    *
    * @example
-   * element.innerHTML = createLoadingIndicator();
+   * element.replaceChildren(createLoadingIndicator());
    *
    * @example
-   * element.innerHTML = createLoadingIndicator('Fetching chapter data...');
+   * element.replaceChildren(createLoadingIndicator('Fetching chapter data...'));
    */
-  // eslint-disable-next-line @anthropic/no-html-template-literals -- message uses escapeHtml()
   function createLoadingIndicator(message = 'Loading...') {
-    return `<article aria-busy="true" style="text-align: center; padding: 2rem 0;">${escapeHtml(message)}</article>`;
+    const article = document.createElement('article');
+    article.setAttribute('aria-busy', 'true');
+    article.style.textAlign = 'center';
+    article.style.padding = '2rem 0';
+    article.textContent = message;
+    return article;
   }
 
   // ============================================================================

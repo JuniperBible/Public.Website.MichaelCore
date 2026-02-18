@@ -120,10 +120,13 @@
     tooltip.setAttribute('role', 'tooltip');
     tooltip.id = 'strongs-tooltip';
     tooltip.setAttribute('aria-hidden', 'true');
-    tooltip.innerHTML = `
-      <h4 class="strongs-number"></h4>
-      <div class="strongs-definition"></div>
-    `;
+    // Build tooltip structure using DOM APIs (avoids innerHTML)
+    const h4 = document.createElement('h4');
+    h4.className = 'strongs-number';
+    const defDiv = document.createElement('div');
+    defDiv.className = 'strongs-definition';
+    tooltip.appendChild(h4);
+    tooltip.appendChild(defDiv);
     document.body.appendChild(tooltip);
 
     // Close tooltip when clicking outside of it or its trigger
@@ -264,31 +267,37 @@
 
     addedStrongsNotes.add(cacheKey);
 
-    // Build the note HTML (display number without leading zeros)
-    // SECURITY: typeName is a constant ('Hebrew'/'Greek'), displayNumber is parseInt output
+    // Build the note using DOM APIs (avoids innerHTML)
     const typeName = type === 'H' ? 'Hebrew' : 'Greek';
     const displayNumber = parseInt(number, 10).toString();
-    // eslint-disable-next-line @anthropic/no-html-template-literals -- template uses safe constant values only
-    let html = `<strong>${typeName} ${displayNumber}</strong>`;
-
-    if (def.source === 'local') {
-      if (def.lemma) {
-        html += ` — <span class="strongs-lemma">${escapeHtml(def.lemma)}</span>`;
-        if (def.xlit) html += ` (${escapeHtml(def.xlit)})`;
-      }
-      if (def.definition) {
-        html += `: ${escapeHtml(def.definition)}`;
-      }
-    } else if (def.note) {
-      html += `: ${escapeHtml(def.note)}`;
-    }
-
 
     // Create and append the list item
     const li = document.createElement('li');
     li.id = `strongs-note-${cacheKey}`;
-    // eslint-disable-next-line no-unsanitized/property -- html built from escapeHtml() values
-    li.innerHTML = html;
+
+    // Add strong element for type and number
+    const strong = document.createElement('strong');
+    strong.textContent = `${typeName} ${displayNumber}`;
+    li.appendChild(strong);
+
+    if (def.source === 'local') {
+      if (def.lemma) {
+        li.appendChild(document.createTextNode(' — '));
+        const lemmaSpan = document.createElement('span');
+        lemmaSpan.className = 'strongs-lemma';
+        lemmaSpan.textContent = def.lemma;
+        li.appendChild(lemmaSpan);
+        if (def.xlit) {
+          li.appendChild(document.createTextNode(` (${def.xlit})`));
+        }
+      }
+      if (def.definition) {
+        li.appendChild(document.createTextNode(`: ${def.definition}`));
+      }
+    } else if (def.note) {
+      li.appendChild(document.createTextNode(`: ${def.note}`));
+    }
+
     notesList.appendChild(li);
 
     // Show the notes row if it was hidden
@@ -306,7 +315,7 @@
   function clearStrongsNotes() {
     addedStrongsNotes.clear();
     const lists = document.querySelectorAll('.strongs-notes-list');
-    lists.forEach(list => { list.innerHTML = ''; });
+    lists.forEach(list => { list.textContent = ''; });
   }
 
   // Expose clearStrongsNotes for use by parallel.js
@@ -414,31 +423,60 @@
     const defEl = tip.querySelector('.strongs-definition');
 
     if (def.source === 'local') {
-      // Format local definition with rich HTML
-      // eslint-disable-next-line @anthropic/no-html-template-literals -- all interpolated values use escapeHtml()
-      let html = '';
+      // Build definition content using DOM APIs to avoid innerHTML
+      const fragment = document.createDocumentFragment();
 
       if (def.lemma) {
-        html += `<p class="strongs-lemma"><strong>Lemma:</strong> ${escapeHtml(def.lemma)}`;
+        const lemmaP = document.createElement('p');
+        lemmaP.className = 'strongs-lemma';
+
+        const lemmaLabel = document.createElement('strong');
+        lemmaLabel.textContent = 'Lemma:';
+        lemmaP.appendChild(lemmaLabel);
+        lemmaP.appendChild(document.createTextNode(' ' + def.lemma));
+
         if (def.xlit) {
-          html += ` (${escapeHtml(def.xlit)})`;
+          lemmaP.appendChild(document.createTextNode(' (' + def.xlit + ')'));
         }
+
         if (def.pron) {
-          html += ` <em>[${escapeHtml(def.pron)}]</em>`;
+          lemmaP.appendChild(document.createTextNode(' '));
+          const pronEm = document.createElement('em');
+          pronEm.textContent = '[' + def.pron + ']';
+          lemmaP.appendChild(pronEm);
         }
-        html += '</p>';
+
+        fragment.appendChild(lemmaP);
       }
 
       if (def.definition) {
-        html += `<p class="strongs-def"><strong>Definition:</strong> ${escapeHtml(def.definition)}</p>`;
+        const defP = document.createElement('p');
+        defP.className = 'strongs-def';
+
+        const defLabel = document.createElement('strong');
+        defLabel.textContent = 'Definition:';
+        defP.appendChild(defLabel);
+        defP.appendChild(document.createTextNode(' ' + def.definition));
+
+        fragment.appendChild(defP);
       }
 
       if (def.derivation) {
-        html += `<p class="strongs-deriv"><small><strong>Derivation:</strong> ${escapeHtml(def.derivation)}</small></p>`;
+        const derivP = document.createElement('p');
+        derivP.className = 'strongs-deriv';
+
+        const derivSmall = document.createElement('small');
+        const derivLabel = document.createElement('strong');
+        derivLabel.textContent = 'Derivation:';
+        derivSmall.appendChild(derivLabel);
+        derivSmall.appendChild(document.createTextNode(' ' + def.derivation));
+        derivP.appendChild(derivSmall);
+
+        fragment.appendChild(derivP);
       }
 
-      // eslint-disable-next-line no-unsanitized/property -- html built from escapeHtml() values
-      defEl.innerHTML = html;
+      defEl.textContent = '';
+      defEl.appendChild(fragment);
     } else {
       // Fallback or API definition - show simple text
       defEl.textContent = def.note || 'Definition not available';

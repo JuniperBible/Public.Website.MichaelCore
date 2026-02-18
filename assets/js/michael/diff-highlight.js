@@ -50,6 +50,19 @@
   }
 
   /**
+   * Create a diff-insert span element and return its outerHTML
+   * Uses DOM APIs to safely construct the element without template literals
+   * @param {string} word - Plain text word to wrap (not pre-escaped)
+   * @returns {string} The outerHTML of the constructed span element
+   */
+  function makeDiffInsertSpan(word) {
+    const span = document.createElement('span');
+    span.className = 'diff-insert';
+    span.textContent = word;
+    return span.outerHTML;
+  }
+
+  /**
    * Highlight differences for normal mode (words not in ANY other translation)
    * @param {string} text - Text to highlight
    * @param {Array<string>} otherTexts - Array of other texts to compare against
@@ -80,7 +93,7 @@
     return words.map(word => {
       const cleanWord = normalizeWord(word);
       if (!otherWords.has(cleanWord) && cleanWord.length > 0) {
-        return `<span class="diff-insert">${escapeHtml(word)}</span>`;
+        return makeDiffInsertSpan(word);
       }
       return escapeHtml(word);
     }).join(' ');
@@ -108,7 +121,7 @@
     return words.map(word => {
       const cleanWord = normalizeWord(word);
       if (!compareWords.includes(cleanWord) && cleanWord.length > 0) {
-        return `<span class="diff-insert">${escapeHtml(word)}</span>`;
+        return makeDiffInsertSpan(word);
       }
       return escapeHtml(word);
     }).join(' ');
