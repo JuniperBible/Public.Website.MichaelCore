@@ -378,18 +378,21 @@ const STRONGS_URLS = {
 **Bible text data sources:**
 
 All Bible translations are derived from SWORD Project modules:
+
 - Source: [CrossWire Bible Society](https://crosswire.org/sword/)
 - Format: OSIS XML converted to JSON
 - Licenses: Public domain or open licenses (see `/content/licenses/`)
 - Integrity: SWORD modules are cryptographically signed by maintainers
 
 **Data integrity verification:**
+
 - Bible data is static JSON (generated at build time)
 - Served with Subresource Integrity (SRI) hashes via Hugo fingerprinting
 - Any modification to data files breaks SRI and fails to load
 - No runtime data modification or injection possible
 
 **Bible data pipeline:**
+
 1. SWORD modules downloaded from CrossWire
 2. Converted to OSIS XML
 3. Processed into normalized JSON format
@@ -419,6 +422,7 @@ self.addEventListener('fetch', (event) => {
 ```
 
 **Security guarantees:**
+
 - Service Worker only intercepts same-origin requests
 - External API calls (if any) bypass the Service Worker entirely
 - No cross-origin data caching
@@ -439,6 +443,7 @@ if (isStaticAsset(url)) {
 ```
 
 **Cache segmentation:**
+
 - **Shell cache**: Static assets (CSS, JS, fonts) from same origin only
 - **Chapters cache**: Bible chapter pages from same origin only
 - **No external content cached**: CDN resources, images, etc. never cached
@@ -455,12 +460,14 @@ function isChapterPage(url) {
 ### No External API Calls
 
 **Current implementation:**
+
 - No external fetch requests made by service worker
 - All Bible data served from static JSON files on same origin
 - Future API integrations (if any) would require explicit security review
 
 **Future considerations:**
 If external APIs are added (e.g., for Strong's definitions), they must:
+
 1. Use HTTPS only
 2. Implement CSP `connect-src` whitelist
 3. Validate and sanitize all API responses
@@ -478,12 +485,14 @@ const CHAPTERS_CACHE = `michael-chapters-v${CACHE_VERSION}`;
 ```
 
 **Update mechanism:**
+
 1. Increment `CACHE_VERSION` in `sw.js`
 2. New service worker installs with new cache names
 3. Old caches automatically deleted on activation (lines 97-125)
 4. Users receive updated content without manual cache clearing
 
 **Security benefits:**
+
 - Prevents cache poisoning persistence
 - Forces refresh of potentially compromised cached content
 - Ensures security patches propagate to all users
@@ -506,28 +515,33 @@ const CHAPTERS_CACHE = `michael-chapters-v${CACHE_VERSION}`;
 We follow coordinated vulnerability disclosure:
 
 **Step 1: Initial Report**
+
 - Use GitHub Security Advisories for private disclosure
 - Include detailed description of vulnerability
 - Provide proof-of-concept code if applicable
 - Suggest a fix if you have one
 
 **Step 2: Acknowledgment**
+
 - We will acknowledge receipt within 48 hours
 - Confirm whether issue is accepted as a security vulnerability
 - Provide estimated timeline for fix
 
 **Step 3: Investigation**
+
 - We will investigate and reproduce the issue
 - Develop and test a fix
 - Create updated documentation if needed
 
 **Step 4: Disclosure**
+
 - Coordinate public disclosure timeline with reporter
 - Aim for fix deployment before public disclosure
 - Credit reporter in release notes (unless anonymous)
 - Publish security advisory with CVE if applicable
 
 **Step 5: Resolution**
+
 - Deploy fix to production
 - Notify users via release notes and README
 - Update CHANGELOG.md with security fix details
@@ -535,6 +549,7 @@ We follow coordinated vulnerability disclosure:
 ### What to Report
 
 **Please report:**
+
 - XSS vulnerabilities (despite our extensive escaping)
 - CSP bypass techniques
 - Service Worker cache poisoning
@@ -544,6 +559,7 @@ We follow coordinated vulnerability disclosure:
 - Any security misconfiguration
 
 **No need to report:**
+
 - Missing HTTPS (expected for local dev - deployment responsibility)
 - Missing security headers on static hosting (hosting provider responsibility)
 - Theoretical attacks requiring physical device access
