@@ -100,7 +100,7 @@ window.Michael.BibleAPI = (function() {
       if (err.name === 'AbortError') {
         throw err;
       }
-      console.error(`Error fetching ${url}:`, err);
+      console.error('Error fetching URL:', url, err);
       return null;
     } finally {
       // Clean up active fetch tracking

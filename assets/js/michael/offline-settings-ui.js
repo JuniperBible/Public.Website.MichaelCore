@@ -150,7 +150,7 @@ async function downloadBiblesSequentially(OfflineManager, selectedBibles, basePa
       await OfflineManager.downloadBible(bible.id, basePath);
       successCount++;
     } catch (error) {
-      console.error(`[Offline Settings] Failed to download ${bible.abbrev}:`, error);
+      console.error('[Offline Settings] Failed to download:', bible.abbrev, error);
       updateBibleStatus(bible.id, 'Failed', 'is-error');
       showMessage(`Failed to download ${bible.abbrev}: ${error.message}`, 'error');
       failCount++;
@@ -322,7 +322,7 @@ async function processBibleCheckboxStatus(checkbox, basePath, OfflineManager, ca
     const status = await OfflineManager.getBibleCacheStatus(bibleId, basePath);
     applyBibleCacheStatusToUI(bibleId, chip, status, checkbox, cachedBibles, uncachedBibles);
   } catch (error) {
-    console.warn(`[Offline Settings] Failed to get cache status for ${bibleId}:`, error);
+    console.warn('[Offline Settings] Failed to get cache status for:', bibleId, error);
     if (chip) uncachedBibles.push(chip);
   }
 }
