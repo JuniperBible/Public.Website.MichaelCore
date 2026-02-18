@@ -36,6 +36,20 @@
   }
 
   /**
+   * Escape HTML special characters
+   * @param {string} str - String to escape
+   * @returns {string} Escaped string
+   */
+  function escapeHtml(str) {
+    return str
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
+
+  /**
    * Highlight differences for normal mode (words not in ANY other translation)
    * @param {string} text - Text to highlight
    * @param {Array<string>} otherTexts - Array of other texts to compare against
@@ -43,7 +57,7 @@
    * @returns {string} HTML string with highlighted differences
    */
   function highlightNormalDifferences(text, otherTexts, enabled) {
-    if (!enabled || !otherTexts || otherTexts.length === 0) return text;
+    if (!enabled || !otherTexts || otherTexts.length === 0) return escapeHtml(text);
 
     // Use TextCompare engine if available
     if (window.TextCompare) {
@@ -66,9 +80,9 @@
     return words.map(word => {
       const cleanWord = normalizeWord(word);
       if (!otherWords.has(cleanWord) && cleanWord.length > 0) {
-        return `<span class="diff-insert">${word}</span>`;
+        return `<span class="diff-insert">${escapeHtml(word)}</span>`;
       }
-      return word;
+      return escapeHtml(word);
     }).join(' ');
   }
 
@@ -80,7 +94,7 @@
    * @returns {string} HTML string with highlighted differences
    */
   function highlightDifferences(text, compareText, enabled) {
-    if (!enabled || !compareText) return text;
+    if (!enabled || !compareText) return escapeHtml(text);
 
     // Use TextCompare engine if available
     if (window.TextCompare) {
@@ -94,9 +108,9 @@
     return words.map(word => {
       const cleanWord = normalizeWord(word);
       if (!compareWords.includes(cleanWord) && cleanWord.length > 0) {
-        return `<span class="diff-insert">${word}</span>`;
+        return `<span class="diff-insert">${escapeHtml(word)}</span>`;
       }
-      return word;
+      return escapeHtml(word);
     }).join(' ');
   }
 

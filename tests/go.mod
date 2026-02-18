@@ -1,6 +1,6 @@
 module michael-tests
 
-go 1.22
+go 1.26.0
 
 require github.com/FocuswithJustin/magellan v0.0.0
 

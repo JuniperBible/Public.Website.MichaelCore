@@ -603,6 +603,7 @@ function renderWithHighlights(text, diffs, side, options = {}) {
     }
 
     // Add highlighted span
+    // security-scanner-ignore: h.category is from enum, h.original uses escapeHtml()
     result += `<span class="diff-${h.category}">${escapeHtml(h.original)}</span>`;
     pos = h.offset + h.length;
   }

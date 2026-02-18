@@ -286,6 +286,7 @@ window.Michael.DomUtils = (function() {
    * @example
    * element.innerHTML = createLoadingIndicator('Fetching chapter data...');
    */
+  // security-scanner-ignore: message uses escapeHtml()
   function createLoadingIndicator(message = 'Loading...') {
     return `<article aria-busy="true" style="text-align: center; padding: 2rem 0;">${escapeHtml(message)}</article>`;
   }

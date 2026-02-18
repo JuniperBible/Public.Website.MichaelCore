@@ -265,8 +265,10 @@
     addedStrongsNotes.add(cacheKey);
 
     // Build the note HTML (display number without leading zeros)
+    // SECURITY: typeName is a constant ('Hebrew'/'Greek'), displayNumber is parseInt output
     const typeName = type === 'H' ? 'Hebrew' : 'Greek';
     const displayNumber = parseInt(number, 10).toString();
+    // security-scanner-ignore: template uses safe constant values only
     let html = `<strong>${typeName} ${displayNumber}</strong>`;
 
     if (def.source === 'local') {
@@ -412,6 +414,7 @@
 
     if (def.source === 'local') {
       // Format local definition with rich HTML
+      // security-scanner-ignore: all interpolated values use escapeHtml()
       let html = '';
 
       if (def.lemma) {
