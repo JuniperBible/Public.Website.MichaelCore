@@ -272,29 +272,11 @@
    * Sets up DOM references, parses Bible metadata, and restores saved state
    * @private
    */
-  function init() {
-    // Verify that shared modules are loaded
-    if (!window.Michael || !window.Michael.DomUtils || !window.Michael.BibleAPI) {
-      console.error('Required modules not loaded. Please ensure michael/dom-utils.js and michael/bible-api.js are included before parallel.js');
-      return;
-    }
-
-    // Parse embedded Bible data (metadata only, no verses)
-    const dataEl = document.getElementById('bible-data');
-    if (dataEl) {
-      try {
-        bibleData = JSON.parse(dataEl.textContent);
-        // Use configurable basePath if provided
-        if (bibleData.basePath) {
-          basePath = bibleData.basePath;
-        }
-      } catch (e) {
-        console.error('Failed to parse Bible data:', e);
-        return;
-      }
-    }
-
-    // Get DOM elements
+  /**
+   * Cache all required DOM element references into module-level variables.
+   * @private
+   */
+  function cacheDOMElements() {
     bookSelect = document.getElementById('book-select');
     chapterSelect = document.getElementById('chapter-select');
     parallelContent = document.getElementById('parallel-content');
@@ -316,15 +298,36 @@
     sssVerseGrid = document.getElementById('sss-verse-grid');
     sssVerseButtons = document.getElementById('sss-verse-buttons');
     sssAllVersesBtn = document.getElementById('sss-all-verses-btn');
+  }
+
+  function init() {
+    // Verify that shared modules are loaded
+    if (!window.Michael || !window.Michael.DomUtils || !window.Michael.BibleAPI) {
+      console.error('Required modules not loaded. Please ensure michael/dom-utils.js and michael/bible-api.js are included before parallel.js');
+      return;
+    }
+
+    // Parse embedded Bible data (metadata only, no verses)
+    const dataEl = document.getElementById('bible-data');
+    if (dataEl) {
+      try {
+        bibleData = JSON.parse(dataEl.textContent);
+        if (bibleData.basePath) {
+          basePath = bibleData.basePath;
+        }
+      } catch (e) {
+        console.error('Failed to parse Bible data:', e);
+        return;
+      }
+    }
+
+    cacheDOMElements();
 
     if (!bookSelect || !chapterSelect || !parallelContent) {
       return; // Not on compare page
     }
 
-    // Set up event listeners
     setupEventListeners();
-
-    // Restore state from URL or localStorage
     restoreState();
   }
 
@@ -543,6 +546,58 @@
   }
 
   /**
+   * Apply a selected highlight color: update state, UI, and reload content.
+   * @private
+   * @param {string} color - CSS color value from the color option's dataset
+   * @param {HTMLElement} picker - The color picker element to hide after selection
+   */
+  function applyColorSelection(color, picker) {
+    highlightColor = color;
+    sssHighlightEnabled = true;
+    normalHighlightEnabled = true;
+
+    // Sync checkbox states
+    const highlightToggle = document.getElementById('highlight-toggle');
+    if (highlightToggle) highlightToggle.checked = true;
+    const sssHighlightToggle = document.getElementById('sss-highlight-toggle');
+    if (sssHighlightToggle) sssHighlightToggle.checked = true;
+
+    // Sync color button backgrounds
+    document.getElementById('highlight-color-btn')?.style.setProperty('background-color', color);
+    document.getElementById('sss-highlight-color-btn')?.style.setProperty('background-color', color);
+
+    // Update CSS variable for highlight
+    document.documentElement.style.setProperty('--highlight-color', color);
+
+    picker.classList.add('hidden');
+
+    if (sssMode && canLoadSSSComparison()) {
+      loadSSSComparison();
+    } else if (canLoadComparison()) {
+      loadComparison();
+    }
+  }
+
+  /**
+   * Register document-level listeners that close the picker when the user
+   * clicks or touches outside of it.
+   * @private
+   * @param {HTMLElement} btn - The toggle button (excluded from dismiss logic)
+   * @param {HTMLElement} picker - The picker to dismiss
+   */
+  function registerPickerDismiss(btn, picker) {
+    const closePicker = (e) => {
+      if (picker.contains(e.target) || e.target === btn || btn.contains(e.target)) {
+        return;
+      }
+      picker.classList.add('hidden');
+    };
+    // Use click for mouse, touchstart for touch (touchend may fire after click)
+    document.addEventListener('click', closePicker);
+    document.addEventListener('touchstart', closePicker, { passive: true });
+  }
+
+  /**
    * Set up color picker functionality for highlight color selection
    * Creates a popup color picker that updates both normal and SSS mode highlighting
    * @private
@@ -561,57 +616,16 @@
       picker.classList.toggle('hidden');
     });
 
-    // Set background colors on color option buttons
+    // Set background colors on color option buttons and attach handlers
     picker.querySelectorAll(optionSelector).forEach(option => {
       option.style.backgroundColor = option.dataset.color;
-
       addTapListener(option, (e) => {
         e.stopPropagation();
-        const color = option.dataset.color;
-        highlightColor = color;
-
-        // Enable highlighting in both modes when color is selected
-        sssHighlightEnabled = true;
-        normalHighlightEnabled = true;
-
-        // Update checkbox states
-        const highlightToggle = document.getElementById('highlight-toggle');
-        if (highlightToggle) highlightToggle.checked = true;
-        const sssHighlightToggle = document.getElementById('sss-highlight-toggle');
-        if (sssHighlightToggle) sssHighlightToggle.checked = true;
-
-        // Update both color buttons
-        document.getElementById('highlight-color-btn')?.style.setProperty('background-color', color);
-        document.getElementById('sss-highlight-color-btn')?.style.setProperty('background-color', color);
-
-        // Update CSS variable for highlight
-        document.documentElement.style.setProperty('--highlight-color', color);
-
-        picker.classList.add('hidden');
-
-        // Reload comparison based on current mode
-        if (sssMode && canLoadSSSComparison()) {
-          loadSSSComparison();
-        } else if (canLoadComparison()) {
-          loadComparison();
-        }
+        applyColorSelection(option.dataset.color, picker);
       });
     });
 
-    // Close picker when clicking/touching outside
-    // Use a single handler that works for both mouse and touch
-    const closePicker = (e) => {
-      // Ignore if clicking inside picker or on button
-      if (picker.contains(e.target) || e.target === btn || btn.contains(e.target)) {
-        return;
-      }
-      picker.classList.add('hidden');
-    };
-
-    // Use click for mouse, touchstart for touch (touchend may fire after click)
-    document.addEventListener('click', closePicker);
-    // For touch devices, use touchstart to close before the click fires
-    document.addEventListener('touchstart', closePicker, { passive: true });
+    registerPickerDismiss(btn, picker);
   }
 
   /* ========================================================================
@@ -903,15 +917,29 @@
    * @private
    * @async
    */
+  /**
+   * Create a fresh normal-mode "All verses" button and update the global reference.
+   * @private
+   * @returns {HTMLButtonElement}
+   */
+  function buildAllButton() {
+    const btn = document.createElement('button');
+    btn.id = 'all-verses-btn';
+    btn.type = 'button';
+    btn.className = 'chip';
+    btn.textContent = 'All';
+    btn.addEventListener('click', handleAllVersesClick);
+    allVersesBtn = btn;
+    return btn;
+  }
+
   async function populateVerseGrid() {
     // Find first translation with valid data for this chapter
     let verses = null;
     for (const translationId of selectedTranslations) {
       if (window.Michael.BibleAPI.hasInCache(translationId, currentBook, currentChapter)) {
         verses = await window.Michael.BibleAPI.fetchChapter(basePath, translationId, currentBook, currentChapter);
-        if (verses && verses.length > 0) {
-          break;
-        }
+        if (verses && verses.length > 0) break;
       }
     }
 
@@ -920,11 +948,9 @@
       return;
     }
 
-    // Populate verse buttons grid
     if (verseButtons) {
       verseButtons.replaceChildren();
 
-      // Add verse buttons
       verses.forEach(verse => {
         const btn = document.createElement('button');
         btn.type = 'button';
@@ -936,22 +962,10 @@
         verseButtons.appendChild(btn);
       });
 
-      // Always create a fresh All button at the end
-      const newAllBtn = document.createElement('button');
-      newAllBtn.id = 'all-verses-btn';
-      newAllBtn.type = 'button';
-      newAllBtn.className = 'chip';
-      newAllBtn.textContent = 'All';
-      newAllBtn.addEventListener('click', handleAllVersesClick);
-      verseButtons.appendChild(newAllBtn);
-
-      // Update global reference
-      allVersesBtn = newAllBtn;
+      verseButtons.appendChild(buildAllButton());
     }
 
-    if (verseGrid) {
-      verseGrid.classList.remove('hidden');
-    }
+    if (verseGrid) verseGrid.classList.remove('hidden');
 
     updateVerseGridSelection();
   }
@@ -1014,6 +1028,127 @@
    * // chaptersData structure:
    * // [[{number: 1, text: "In the beginning..."}], [{number: 1, text: "Au commencement..."}]]
    */
+  /**
+   * Build the reference header element for the comparison view.
+   * @private
+   * @param {string} bookName - Human-readable book name
+   * @returns {HTMLElement}
+   */
+  function buildComparisonHeader(bookName) {
+    const verseRef = currentVerse > 0 ? `:${currentVerse}` : '';
+    const abbrevList = selectedTranslations.map(id => {
+      const bible = bibleData.bibles.find(b => b.id === id);
+      return bible?.abbrev || id;
+    }).join(', ');
+
+    const header = document.createElement('header');
+    header.style.textAlign = 'center';
+    header.style.marginBottom = '1.5rem';
+
+    const h2 = document.createElement('h2');
+    h2.style.marginBottom = '0.25rem';
+    h2.textContent = `${bookName} ${currentChapter}${verseRef}`;
+    header.appendChild(h2);
+
+    const abbrevP = document.createElement('p');
+    abbrevP.style.color = 'var(--michael-text-muted)';
+    abbrevP.style.fontSize = '0.875rem';
+    abbrevP.style.margin = '0';
+    abbrevP.textContent = abbrevList;
+    header.appendChild(abbrevP);
+
+    return header;
+  }
+
+  /**
+   * Build one verse article element showing all selected translations.
+   * @private
+   * @param {Object} verse - Verse object with a .number property
+   * @param {Array<Array<Object>>} chaptersData - Per-translation verse arrays
+   * @param {string} bookName - Human-readable book name
+   * @returns {HTMLElement}
+   */
+  function buildVerseArticle(verse, chaptersData, bookName) {
+    const verseNum = verse.number;
+    const article = document.createElement('article');
+    article.className = 'parallel-verse';
+    article.dataset.verse = verseNum;
+
+    const verseHeader = document.createElement('header');
+    const h3 = document.createElement('h3');
+    h3.style.fontWeight = 'bold';
+    h3.style.color = 'var(--michael-accent)';
+    h3.style.marginBottom = '0.5rem';
+    h3.style.fontSize = '1rem';
+    h3.textContent = `${bookName} ${currentChapter}:${verseNum}`;
+    verseHeader.appendChild(h3);
+    article.appendChild(verseHeader);
+
+    const versesDiv = document.createElement('div');
+    const allVerseTexts = selectedTranslations.map((tid, i) => {
+      const chapterVerses = chaptersData[i] || [];
+      const v = chapterVerses.find(cv => cv.number === verseNum);
+      return v?.text || '';
+    });
+
+    selectedTranslations.forEach((translationId, idx) => {
+      versesDiv.appendChild(
+        buildTranslationEntry(translationId, idx, verseNum, chaptersData, allVerseTexts)
+      );
+    });
+
+    article.appendChild(versesDiv);
+    return article;
+  }
+
+  /**
+   * Build the translation label + text paragraph for one translation in a verse.
+   * @private
+   * @param {string} translationId - Bible translation ID
+   * @param {number} idx - Index into chaptersData / selectedTranslations
+   * @param {number} verseNum - Verse number to look up
+   * @param {Array<Array<Object>>} chaptersData - Per-translation verse arrays
+   * @param {Array<string>} allVerseTexts - All verse texts for this verse number
+   * @returns {HTMLElement}
+   */
+  function buildTranslationEntry(translationId, idx, verseNum, chaptersData, allVerseTexts) {
+    const bible = bibleData.bibles.find(b => b.id === translationId);
+    const chapterVerses = chaptersData[idx] || [];
+    const v = chapterVerses.find(cv => cv.number === verseNum);
+
+    const translationDiv = document.createElement('div');
+    translationDiv.className = 'translation-label';
+    translationDiv.style.marginTop = '0.75rem';
+
+    const strong = document.createElement('strong');
+    strong.style.color = 'var(--michael-accent)';
+    strong.style.fontSize = '0.75rem';
+    strong.textContent = bible?.abbrev || translationId;
+    translationDiv.appendChild(strong);
+
+    const textP = document.createElement('p');
+    textP.style.margin = '0.25rem 0 0 0';
+    textP.style.lineHeight = '1.8';
+
+    if (v?.text) {
+      let htmlText = v.text;
+      if (normalHighlightEnabled) {
+        const otherTexts = allVerseTexts.filter((_, i) => i !== idx && allVerseTexts[i]);
+        htmlText = highlightNormalDifferences(v.text, otherTexts);
+      }
+      const { parseHtmlFragment } = window.Michael.DomUtils;
+      textP.appendChild(parseHtmlFragment(htmlText));
+    } else {
+      const em = document.createElement('em');
+      em.style.color = 'var(--michael-text-muted)';
+      em.textContent = 'Verse not available';
+      textP.appendChild(em);
+    }
+
+    translationDiv.appendChild(textP);
+    return translationDiv;
+  }
+
   function buildComparisonHTML(chaptersData) {
     const fragment = document.createDocumentFragment();
 
@@ -1032,110 +1167,17 @@
       return fragment;
     }
 
-    // Get book name from metadata (books is now an array)
     const bookInfo = bibleData.books.find(b => b.id === currentBook);
     const bookName = bookInfo?.name || currentBook;
 
-    // Compact header showing current reference
-    const verseRef = currentVerse > 0 ? `:${currentVerse}` : '';
-    const abbrevList = selectedTranslations.map(id => {
-        const bible = bibleData.bibles.find(b => b.id === id);
-        return bible?.abbrev || id;
-      }).join(', ');
+    fragment.appendChild(buildComparisonHeader(bookName));
 
-    const header = document.createElement('header');
-    header.style.textAlign = 'center';
-    header.style.marginBottom = '1.5rem';
-
-    const h2 = document.createElement('h2');
-    h2.style.marginBottom = '0.25rem';
-    h2.textContent = `${bookName} ${currentChapter}${verseRef}`;
-    header.appendChild(h2);
-
-    const abbrevP = document.createElement('p');
-    abbrevP.style.color = 'var(--michael-text-muted)';
-    abbrevP.style.fontSize = '0.875rem';
-    abbrevP.style.margin = '0';
-    abbrevP.textContent = abbrevList;
-    header.appendChild(abbrevP);
-
-    fragment.appendChild(header);
-
-    // Filter verses if specific verse selected
     const versesToShow = currentVerse > 0
       ? firstVerses.filter(v => v.number === currentVerse)
       : firstVerses;
 
-    // Verse-by-verse comparison - iterate through each verse
-    versesToShow.forEach((verse) => {
-      const verseNum = verse.number;
-
-      const article = document.createElement('article');
-      article.className = 'parallel-verse';
-      article.dataset.verse = verseNum;
-
-      const verseHeader = document.createElement('header');
-      const h3 = document.createElement('h3');
-      h3.style.fontWeight = 'bold';
-      h3.style.color = 'var(--michael-accent)';
-      h3.style.marginBottom = '0.5rem';
-      h3.style.fontSize = '1rem';
-      h3.textContent = `${bookName} ${currentChapter}:${verseNum}`;
-      verseHeader.appendChild(h3);
-      article.appendChild(verseHeader);
-
-      const versesDiv = document.createElement('div');
-
-      // Collect all verse texts for this verse number for diff highlighting
-      const allVerseTexts = selectedTranslations.map((tid, i) => {
-        const chapterVerses = chaptersData[i] || [];
-        const v = chapterVerses.find(v => v.number === verseNum);
-        return v?.text || '';
-      });
-
-      // Render each translation for this verse
-      selectedTranslations.forEach((translationId, idx) => {
-        const bible = bibleData.bibles.find(b => b.id === translationId);
-        const chapterVerses = chaptersData[idx] || [];
-        const v = chapterVerses.find(v => v.number === verseNum);
-
-        const translationDiv = document.createElement('div');
-        translationDiv.className = 'translation-label';
-        translationDiv.style.marginTop = '0.75rem';
-
-        const strong = document.createElement('strong');
-        strong.style.color = 'var(--michael-accent)';
-        strong.style.fontSize = '0.75rem';
-        strong.textContent = bible?.abbrev || translationId;
-        translationDiv.appendChild(strong);
-
-        const textP = document.createElement('p');
-        textP.style.margin = '0.25rem 0 0 0';
-        textP.style.lineHeight = '1.8';
-
-        if (v?.text) {
-          // Apply highlighting if enabled (compares against all other translations)
-          let htmlText = v.text;
-          if (normalHighlightEnabled) {
-            const otherTexts = allVerseTexts.filter((_, i) => i !== idx && allVerseTexts[i]);
-            htmlText = highlightNormalDifferences(v.text, otherTexts);
-          }
-          // Parse trusted Bible HTML using DOMParser via shared utility
-          const { parseHtmlFragment } = window.Michael.DomUtils;
-          textP.appendChild(parseHtmlFragment(htmlText));
-        } else {
-          const em = document.createElement('em');
-          em.style.color = 'var(--michael-text-muted)';
-          em.textContent = 'Verse not available';
-          textP.appendChild(em);
-        }
-
-        translationDiv.appendChild(textP);
-        versesDiv.appendChild(translationDiv);
-      });
-
-      article.appendChild(versesDiv);
-      fragment.appendChild(article);
+    versesToShow.forEach(verse => {
+      fragment.appendChild(buildVerseArticle(verse, chaptersData, bookName));
     });
 
     return fragment;
@@ -1378,25 +1420,14 @@
      ======================================================================== */
 
   /**
-   * Enter SSS (Side-by-Side-by-Side) mode
-   * Displays two translations in parallel panes with synchronized verse navigation
-   * Resets to defaults once per day for fresh start experience
+   * Apply SSS default selections (Isaiah 42, DRC vs KJVA) when not already set.
+   * Also resets to these defaults once per day for a fresh-start experience.
    * @private
    */
-  function enterSSSMode() {
-    sssMode = true;
-    updateSSSModeStatus();
-    if (normalModeEl) normalModeEl.classList.add('hidden');
-    if (sssModeEl) sssModeEl.classList.remove('hidden');
-    document.getElementById('parallel-content')?.classList.add('hidden');
-
-    // Check if we should reset to defaults (once per day)
+  function applySSSDefaults() {
+    // Reset state once per day
     const today = new Date().toDateString();
-    const lastSSSDate = localStorage.getItem('sss-last-date');
-    const shouldResetDefaults = lastSSSDate !== today;
-
-    if (shouldResetDefaults) {
-      // Reset to Isaiah 42:16 defaults once per day
+    if (localStorage.getItem('sss-last-date') !== today) {
       localStorage.setItem('sss-last-date', today);
       sssLeftBible = '';
       sssRightBible = '';
@@ -1404,7 +1435,6 @@
       sssChapter = 0;
     }
 
-    // Set defaults if not already set
     if (!sssLeftBible && sssBibleLeft) {
       sssLeftBible = 'drc';
       sssBibleLeft.value = 'drc';
@@ -1422,8 +1452,23 @@
       sssChapter = 42;
       sssChapterSelect.value = '42';
     }
+  }
 
-    // Auto-load with defaults
+  /**
+   * Enter SSS (Side-by-Side-by-Side) mode
+   * Displays two translations in parallel panes with synchronized verse navigation
+   * Resets to defaults once per day for fresh start experience
+   * @private
+   */
+  function enterSSSMode() {
+    sssMode = true;
+    updateSSSModeStatus();
+    if (normalModeEl) normalModeEl.classList.add('hidden');
+    if (sssModeEl) sssModeEl.classList.remove('hidden');
+    document.getElementById('parallel-content')?.classList.add('hidden');
+
+    applySSSDefaults();
+
     if (canLoadSSSComparison()) {
       loadSSSComparison();
     }
@@ -1746,23 +1791,29 @@
    * @private
    * @param {Array<Object>} verses - Array of verse objects with number and text
    */
+  /**
+   * Create a fresh SSS "All verses" button and update the global reference.
+   * @private
+   * @param {boolean} isActive - Whether to add the 'is-active' class immediately
+   * @returns {HTMLButtonElement}
+   */
+  function buildSSSAllButton(isActive) {
+    const btn = document.createElement('button');
+    btn.id = 'sss-all-verses-btn';
+    btn.type = 'button';
+    btn.className = isActive ? 'chip is-active' : 'chip';
+    btn.textContent = 'All';
+    btn.addEventListener('click', handleSSSAllVersesClick);
+    sssAllVersesBtn = btn;
+    return btn;
+  }
+
   function populateSSSVerseGrid(verses) {
     if (!verses || verses.length === 0) {
       if (sssVerseGrid) sssVerseGrid.classList.add('hidden');
       if (sssVerseButtons) {
         sssVerseButtons.replaceChildren();
-
-        // Always create a fresh All button
-        const newAllBtn = document.createElement('button');
-        newAllBtn.id = 'sss-all-verses-btn';
-        newAllBtn.type = 'button';
-        newAllBtn.className = 'chip is-active';
-        newAllBtn.textContent = 'All';
-        newAllBtn.addEventListener('click', handleSSSAllVersesClick);
-        sssVerseButtons.appendChild(newAllBtn);
-
-        // Update global reference
-        sssAllVersesBtn = newAllBtn;
+        sssVerseButtons.appendChild(buildSSSAllButton(true));
       }
       return;
     }
@@ -1770,7 +1821,6 @@
     if (sssVerseButtons) {
       sssVerseButtons.replaceChildren();
 
-      // Add verse buttons
       verses.forEach(verse => {
         const btn = document.createElement('button');
         btn.type = 'button';
@@ -1782,17 +1832,7 @@
         sssVerseButtons.appendChild(btn);
       });
 
-      // Always create a fresh All button at the end
-      const newAllBtn = document.createElement('button');
-      newAllBtn.id = 'sss-all-verses-btn';
-      newAllBtn.type = 'button';
-      newAllBtn.className = 'chip';
-      newAllBtn.textContent = 'All';
-      newAllBtn.addEventListener('click', handleSSSAllVersesClick);
-      sssVerseButtons.appendChild(newAllBtn);
-
-      // Update global reference
-      sssAllVersesBtn = newAllBtn;
+      sssVerseButtons.appendChild(buildSSSAllButton(false));
     }
 
     if (sssVerseGrid) {
@@ -1849,6 +1889,67 @@
   }
 
   /**
+   * Build the header element for one SSS pane.
+   * Includes Bible abbreviation and optional versification-mismatch warning.
+   * @private
+   * @param {Object} bible - Bible metadata object
+   * @param {Object} compareBible - Bible metadata for the other pane
+   * @returns {HTMLElement}
+   */
+  function buildSSSPaneHeader(bible, compareBible) {
+    const paneHeader = document.createElement('header');
+    paneHeader.className = 'translation-label';
+    paneHeader.style.textAlign = 'center';
+    paneHeader.style.paddingBottom = '0.5rem';
+
+    const strong = document.createElement('strong');
+    strong.textContent = bible?.abbrev || 'Unknown';
+    paneHeader.appendChild(strong);
+
+    // Check for versification mismatch (e.g., Masoretic vs Septuagint)
+    const hasVersificationMismatch = compareBible && bible?.versification &&
+      compareBible?.versification && bible.versification !== compareBible.versification;
+    if (hasVersificationMismatch) {
+      const small = document.createElement('small');
+      small.style.color = 'var(--michael-text-muted)';
+      small.style.display = 'block';
+      small.style.fontSize = '0.7rem';
+      small.textContent = `${bible.versification} versification`;
+      paneHeader.appendChild(small);
+    }
+
+    return paneHeader;
+  }
+
+  /**
+   * Build a single verse row element for an SSS pane.
+   * @private
+   * @param {Object} verse - Verse object with .number and .text
+   * @param {Array<Object>} compareVerses - Verses from the other pane for diff highlighting
+   * @returns {HTMLElement}
+   */
+  function buildSSSVerseRow(verse, compareVerses) {
+    const compareVerse = compareVerses?.find(v => v.number === verse.number);
+    const highlightedText = highlightDifferences(verse.text, compareVerse?.text);
+
+    const verseDiv = document.createElement('div');
+    verseDiv.className = 'parallel-verse';
+
+    const numSpan = document.createElement('span');
+    numSpan.className = 'parallel-verse-num';
+    numSpan.textContent = verse.number;
+    verseDiv.appendChild(numSpan);
+
+    const textSpan = document.createElement('span');
+    // Parse trusted Bible HTML using DOMParser via shared utility
+    const { parseHtmlFragment } = window.Michael.DomUtils;
+    textSpan.appendChild(parseHtmlFragment(highlightedText));
+    verseDiv.appendChild(textSpan);
+
+    return verseDiv;
+  }
+
+  /**
    * Build HTML for one SSS pane with diff highlighting
    * Creates verse-by-verse display with optional difference highlighting
    * @private
@@ -1857,7 +1958,7 @@
    * @param {string} bookName - Human-readable book name
    * @param {Array<Object>} compareVerses - Verses from the other pane for comparison
    * @param {Object} compareBible - Bible metadata for the other pane
-   * @returns {string} HTML string for the pane content
+   * @returns {DocumentFragment}
    */
   function buildSSSPaneHTML(verses, bible, bookName, compareVerses, compareBible) {
     const fragment = document.createDocumentFragment();
@@ -1874,51 +1975,10 @@
       return fragment;
     }
 
-    // Build pane header with Bible abbreviation
-    const paneHeader = document.createElement('header');
-    paneHeader.className = 'translation-label';
-    paneHeader.style.textAlign = 'center';
-    paneHeader.style.paddingBottom = '0.5rem';
+    fragment.appendChild(buildSSSPaneHeader(bible, compareBible));
 
-    const strong = document.createElement('strong');
-    strong.textContent = bible?.abbrev || 'Unknown';
-    paneHeader.appendChild(strong);
-
-    // Check for versification mismatch (e.g., Masoretic vs Septuagint)
-    // Display warning when comparing Bibles with different verse numbering systems
-    const hasVersificationMismatch = compareBible && bible?.versification &&
-      compareBible?.versification && bible.versification !== compareBible.versification;
-    if (hasVersificationMismatch) {
-      const small = document.createElement('small');
-      small.style.color = 'var(--michael-text-muted)';
-      small.style.display = 'block';
-      small.style.fontSize = '0.7rem';
-      small.textContent = `${bible.versification} versification`;
-      paneHeader.appendChild(small);
-    }
-
-    fragment.appendChild(paneHeader);
-
-    // Render each verse with highlighting based on comparison
     verses.forEach(verse => {
-      const compareVerse = compareVerses?.find(v => v.number === verse.number);
-      const highlightedText = highlightDifferences(verse.text, compareVerse?.text);
-
-      const verseDiv = document.createElement('div');
-      verseDiv.className = 'parallel-verse';
-
-      const numSpan = document.createElement('span');
-      numSpan.className = 'parallel-verse-num';
-      numSpan.textContent = verse.number;
-      verseDiv.appendChild(numSpan);
-
-      const textSpan = document.createElement('span');
-      // Parse trusted Bible HTML using DOMParser via shared utility
-      const { parseHtmlFragment } = window.Michael.DomUtils;
-      textSpan.appendChild(parseHtmlFragment(highlightedText));
-      verseDiv.appendChild(textSpan);
-
-      fragment.appendChild(verseDiv);
+      fragment.appendChild(buildSSSVerseRow(verse, compareVerses));
     });
 
     return fragment;
@@ -2092,6 +2152,48 @@
   }
 
   /**
+   * Fallback highlight renderer: wraps each differing token in a colored span
+   * using the user-selected highlight color rather than CSS diff categories.
+   * @private
+   * @param {Object} TC - The TextCompare module reference
+   * @param {Object} result - The result object from TC.compareTexts()
+   * @returns {string} HTML string with color-highlighted spans
+   */
+  function applyColorHighlights(TC, result) {
+    // eslint-disable-next-line no-unused-vars -- kept for contrast calculation
+    const textColor = getContrastColor(highlightColor);
+    let html = '';
+    let pos = 0;
+    const normalizedText = result.textA;
+
+    // Collect token ranges for all diff categories
+    const highlights = [];
+    for (const diff of result.diffs) {
+      if (diff.aToken) {
+        highlights.push({
+          offset: diff.aToken.offset,
+          length: diff.aToken.length,
+          original: diff.aToken.original
+        });
+      }
+    }
+    highlights.sort((a, b) => a.offset - b.offset);
+
+    // eslint-disable-next-line @anthropic/no-html-template-literals -- all text uses TC.escapeHtml()
+    for (const h of highlights) {
+      if (h.offset > pos) {
+        html += TC.escapeHtml(normalizedText.slice(pos, h.offset));
+      }
+      html += `<span class="diff-insert">${TC.escapeHtml(h.original)}</span>`;
+      pos = h.offset + h.length;
+    }
+    if (pos < normalizedText.length) {
+      html += TC.escapeHtml(normalizedText.slice(pos));
+    }
+    return html;
+  }
+
+  /**
    * Use TextCompare engine for sophisticated diff highlighting
    * Leverages the TextCompare library for categorized difference detection
    * (typos, punctuation, spelling, substantive changes, additions/omissions)
@@ -2104,7 +2206,6 @@
     const TC = window.TextCompare;
     const result = TC.compareTexts(text, compareText);
 
-    // If no differences found, return escaped original text
     if (result.diffs.length === 0) {
       return TC.escapeHtml(text);
     }
@@ -2114,52 +2215,15 @@
     const useCategories = true; // Could be exposed as a user preference
 
     if (useCategories) {
-      // Use the CSS classes for different diff categories
-      // Categories: typo, punctuation, spelling, substantive, add/omit
       return TC.renderWithHighlights(result.textA, result.diffs, 'a', {
-        showTypo: false,      // Too subtle for most users, skip
-        showPunct: true,      // Show punctuation differences
-        showSpelling: true,   // Show spelling variations
+        showTypo: false,       // Too subtle for most users, skip
+        showPunct: true,       // Show punctuation differences
+        showSpelling: true,    // Show spelling variations
         showSubstantive: true, // Show word substitutions
-        showAddOmit: true     // Show additions/omissions
+        showAddOmit: true      // Show additions/omissions
       });
     } else {
-      // Alternative: use user-selected highlight color for all differences
-      const textColor = getContrastColor(highlightColor);
-      let html = '';
-      let pos = 0;
-      const normalizedText = result.textA;
-
-      // Build list of ranges to highlight (all categories combined)
-      const highlights = [];
-      for (const diff of result.diffs) {
-        if (diff.aToken) {
-          highlights.push({
-            offset: diff.aToken.offset,
-            length: diff.aToken.length,
-            original: diff.aToken.original
-          });
-        }
-      }
-      // Sort by position to render in order
-      highlights.sort((a, b) => a.offset - b.offset);
-
-      // Build HTML with highlighted spans
-      // eslint-disable-next-line @anthropic/no-html-template-literals -- all text uses TC.escapeHtml()
-      for (const h of highlights) {
-        // Add text before this highlight
-        if (h.offset > pos) {
-          html += TC.escapeHtml(normalizedText.slice(pos, h.offset));
-        }
-        // Add highlighted text
-        html += `<span class="diff-insert">${TC.escapeHtml(h.original)}</span>`;
-        pos = h.offset + h.length;
-      }
-      // Add remaining text after last highlight
-      if (pos < normalizedText.length) {
-        html += TC.escapeHtml(normalizedText.slice(pos));
-      }
-      return html;
+      return applyColorHighlights(TC, result);
     }
   }
 

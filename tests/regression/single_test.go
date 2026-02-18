@@ -13,13 +13,7 @@ func TestSingleChapterArrowNavigation(t *testing.T) {
 	helpers.NavigateToSingle(t, b, "asv", "Gen", 1)
 
 	// Look for next chapter navigation
-	nextBtn := b.Find(".chapter-nav-next")
-	if !nextBtn.Exists() {
-		nextBtn = b.Find("a[rel='next']")
-	}
-	if !nextBtn.Exists() {
-		nextBtn = b.Find(".nav-next")
-	}
+	nextBtn := helpers.FindWithFallbacks(b, ".chapter-nav-next", "a[rel='next']", ".nav-next")
 
 	if !nextBtn.Exists() {
 		t.Skip("Chapter navigation arrows not found")
@@ -36,15 +30,8 @@ func TestSingleChapterArrowNavigation(t *testing.T) {
 	// Verify we navigated (URL should contain chapter 2)
 	helpers.ExpectURL(t, b, "/Gen/2")
 
-	// Look for previous button
-	prevBtn := b.Find(".chapter-nav-prev")
-	if !prevBtn.Exists() {
-		prevBtn = b.Find("a[rel='prev']")
-	}
-	if !prevBtn.Exists() {
-		prevBtn = b.Find(".nav-prev")
-	}
-
+	// Look for previous button and navigate back if found
+	prevBtn := helpers.FindWithFallbacks(b, ".chapter-nav-prev", "a[rel='prev']", ".nav-prev")
 	if prevBtn.Exists() {
 		if err := prevBtn.Click(); err != nil {
 			t.Fatalf("Failed to click previous chapter: %v", err)
@@ -64,14 +51,7 @@ func TestSingleStrongsTooltip(t *testing.T) {
 	helpers.NavigateToSingle(t, b, "asv", "Gen", 1) // ASV has Strong's numbers
 
 	// Look for Strong's number link
-	strongsLink := b.Find(".strongs-number")
-	if !strongsLink.Exists() {
-		strongsLink = b.Find("a[href*='strongs']")
-	}
-	if !strongsLink.Exists() {
-		strongsLink = b.Find("[data-strongs]")
-	}
-
+	strongsLink := helpers.FindWithFallbacks(b, ".strongs-number", "a[href*='strongs']", "[data-strongs]")
 	if !strongsLink.Exists() {
 		t.Skip("Strong's numbers not found - may not be enabled for this Bible")
 	}
@@ -84,29 +64,10 @@ func TestSingleStrongsTooltip(t *testing.T) {
 	// Wait for tooltip
 	time.Sleep(300 * time.Millisecond)
 
-	// Look for tooltip
-	tooltip := b.Find(".strongs-tooltip")
-	if !tooltip.Exists() {
-		tooltip = b.Find("[role='tooltip']")
-	}
-	if !tooltip.Exists() {
-		tooltip = b.Find(".tooltip")
-	}
-
+	// Look for tooltip and verify it if found
+	tooltip := helpers.FindWithFallbacks(b, ".strongs-tooltip", "[role='tooltip']", ".tooltip")
 	if tooltip.Exists() {
-		helpers.Assert(t, tooltip.ShouldBeVisible())
-
-		// Verify tooltip has content
-		text, _ := tooltip.Text()
-		if len(text) > 0 {
-			t.Logf("Strong's tooltip displayed: %s...", text[:min(50, len(text))])
-		}
-
-		// Test Escape to close
-		if err := b.Press("Escape"); err == nil {
-			time.Sleep(200 * time.Millisecond)
-			helpers.ExpectHidden(t, b, ".strongs-tooltip")
-		}
+		helpers.VerifyStrongsTooltip(t, b, tooltip)
 	} else {
 		t.Log("Strong's tooltip not found - display method may differ")
 	}
@@ -176,14 +137,7 @@ func TestSingleShareCopyLink(t *testing.T) {
 	time.Sleep(200 * time.Millisecond)
 
 	// Look for copy link option
-	copyBtn := b.Find("[data-action='copy-link']")
-	if !copyBtn.Exists() {
-		copyBtn = b.Find(".share-copy-link")
-	}
-	if !copyBtn.Exists() {
-		copyBtn = b.Find("[aria-label*='copy']")
-	}
-
+	copyBtn := helpers.FindWithFallbacks(b, "[data-action='copy-link']", ".share-copy-link", "[aria-label*='copy']")
 	if !copyBtn.Exists() {
 		t.Skip("Copy link button not found in share menu")
 	}
@@ -193,23 +147,9 @@ func TestSingleShareCopyLink(t *testing.T) {
 		t.Fatalf("Failed to click copy link: %v", err)
 	}
 
-	// Wait for toast notification
+	// Wait for toast notification then log result
 	time.Sleep(300 * time.Millisecond)
-
-	// Look for success indication
-	toast := b.Find(".toast")
-	if !toast.Exists() {
-		toast = b.Find("[role='alert']")
-	}
-	if !toast.Exists() {
-		toast = b.Find(".notification")
-	}
-
-	if toast.Exists() {
-		t.Log("Copy success notification displayed")
-	} else {
-		t.Log("No toast notification found - copy may have succeeded silently")
-	}
+	helpers.LogToastResult(t, b)
 }
 
 // TestSingleVerseShare tests clicking a verse share button.
@@ -255,11 +195,4 @@ func TestSingleVerseShare(t *testing.T) {
 	if menu.Exists() {
 		helpers.Assert(t, menu.ShouldBeVisible())
 	}
-}
-
-func min(a, b int) int {
-	if a < b {
-		return a
-	}
-	return b
 }

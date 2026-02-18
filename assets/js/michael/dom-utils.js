@@ -245,22 +245,10 @@ window.Michael.DomUtils = (function() {
   // ============================================================================
 
   /**
-   * Escape HTML special characters to prevent XSS
-   *
-   * Converts HTML special characters to their entity equivalents:
-   * - & becomes &amp;
-   * - < becomes &lt;
-   * - > becomes &gt;
-   * - " becomes &quot;
-   * - ' becomes &#039;
+   * Escape HTML special characters to prevent XSS.
    *
    * @param {string} text - Text to escape
    * @returns {string} Escaped text safe for HTML insertion
-   *
-   * @example
-   * const userInput = '<script>alert("XSS")</script>';
-   * const safe = escapeHtml(userInput);
-   * // Returns: &lt;script&gt;alert(&quot;XSS&quot;)&lt;/script&gt;
    */
   function escapeHtml(text) {
     return text

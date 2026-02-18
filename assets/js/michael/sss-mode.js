@@ -207,78 +207,71 @@
     sssChapterSelect.disabled = false;
   }
 
-  /** Load and display SSS comparison */
-  async function loadSSSComparison() {
-    if (!canLoadSSSComparison()) return;
+  /** Build an error placeholder article element */
+  function buildSSSErrorNode() {
+    const article = document.createElement('article');
+    const p = document.createElement('p');
+    p.style.textAlign = 'center';
+    p.style.color = 'var(--michael-text-muted)';
+    p.textContent = 'Error loading content';
+    article.appendChild(p);
+    return article;
+  }
 
-    // Cancel any previous fetch to prevent race conditions
-    if (currentFetchController) {
-      currentFetchController.abort();
-    }
-
-    // Create new AbortController for this fetch
-    currentFetchController = new AbortController();
-    const signal = currentFetchController.signal;
-
-    // Show loading - createLoadingIndicator() returns a DOM element
+  /** Show loading indicators in both SSS panes */
+  function showSSSLoadingPanes() {
     if (sssLeftPane) {
       sssLeftPane.replaceChildren(window.Michael.DomUtils.createLoadingIndicator());
     }
     if (sssRightPane) {
       sssRightPane.replaceChildren(window.Michael.DomUtils.createLoadingIndicator());
     }
+  }
+
+  /** Render fetched verses into both SSS panes */
+  function renderSSSPanes(leftVerses, rightVerses) {
+    const leftBible = bibleData.bibles.find(b => b.id === sssLeftBible);
+    const rightBible = bibleData.bibles.find(b => b.id === sssRightBible);
+    const bookName = bibleData.books.find(b => b.id === sssBook)?.name || sssBook;
+    const leftFiltered = sssVerse > 0 ? leftVerses?.filter(v => v.number === sssVerse) : leftVerses;
+    const rightFiltered = sssVerse > 0 ? rightVerses?.filter(v => v.number === sssVerse) : rightVerses;
+    if (sssLeftPane) {
+      sssLeftPane.replaceChildren(buildSSSPaneFragment(leftFiltered, leftBible, bookName, rightFiltered, rightBible));
+    }
+    if (sssRightPane) {
+      sssRightPane.replaceChildren(buildSSSPaneFragment(rightFiltered, rightBible, bookName, leftFiltered, leftBible));
+    }
+  }
+
+  /** Load and display SSS comparison */
+  async function loadSSSComparison() {
+    if (!canLoadSSSComparison()) return;
+
+    if (currentFetchController) currentFetchController.abort();
+    currentFetchController = new AbortController();
+    const signal = currentFetchController.signal;
+
+    showSSSLoadingPanes();
 
     try {
-      // Fetch both chapters with abort signal
       const [leftVerses, rightVerses] = await Promise.all([
         window.Michael.BibleAPI.fetchChapter(basePath, sssLeftBible, sssBook, sssChapter, signal),
         window.Michael.BibleAPI.fetchChapter(basePath, sssRightBible, sssBook, sssChapter, signal)
       ]);
 
-      // Check if request was aborted before rendering
       if (signal.aborted) return;
 
       populateSSSVerseGrid(leftVerses || rightVerses);
-
-      const leftBible = bibleData.bibles.find(b => b.id === sssLeftBible);
-      const rightBible = bibleData.bibles.find(b => b.id === sssRightBible);
-      const bookInfo = bibleData.books.find(b => b.id === sssBook);
-      const bookName = bookInfo?.name || sssBook;
-
-      // Filter verses if specific verse selected
-      const leftFiltered = sssVerse > 0 ? leftVerses?.filter(v => v.number === sssVerse) : leftVerses;
-      const rightFiltered = sssVerse > 0 ? rightVerses?.filter(v => v.number === sssVerse) : rightVerses;
-
-      if (sssLeftPane) {
-        sssLeftPane.replaceChildren(buildSSSPaneFragment(leftFiltered, leftBible, bookName, rightFiltered, rightBible));
-      }
-      if (sssRightPane) {
-        sssRightPane.replaceChildren(buildSSSPaneFragment(rightFiltered, rightBible, bookName, leftFiltered, leftBible));
-      }
+      renderSSSPanes(leftVerses, rightVerses);
     } catch (err) {
-      // Handle abort gracefully
       if (err.name === 'AbortError') {
         console.log('[SSS] Fetch cancelled');
         return;
       }
       console.error('[SSS] Error loading comparison:', err);
-      const buildErrorNode = () => {
-        const article = document.createElement('article');
-        const p = document.createElement('p');
-        p.style.textAlign = 'center';
-        p.style.color = 'var(--michael-text-muted)';
-        p.textContent = 'Error loading content';
-        article.appendChild(p);
-        return article;
-      };
-      if (sssLeftPane) {
-        sssLeftPane.replaceChildren(buildErrorNode());
-      }
-      if (sssRightPane) {
-        sssRightPane.replaceChildren(buildErrorNode());
-      }
+      if (sssLeftPane) sssLeftPane.replaceChildren(buildSSSErrorNode());
+      if (sssRightPane) sssRightPane.replaceChildren(buildSSSErrorNode());
     } finally {
-      // Clear controller reference if this was the active one
       if (currentFetchController && currentFetchController.signal === signal) {
         currentFetchController = null;
       }

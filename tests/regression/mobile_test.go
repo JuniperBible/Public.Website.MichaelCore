@@ -68,26 +68,10 @@ func TestMobileTranslationCheckboxes(t *testing.T) {
 	}
 
 	// Verify touch target for checkbox label (the parent label should be tappable)
-	label := b.Find(".translation-checkbox").Parent()
-	if label.Exists() {
-		_, _, width, height, err := label.BoundingRect()
-		if err == nil && (height < 44 || width < 44) {
-			t.Logf("Warning: checkbox label may be small for touch: %vx%v", width, height)
-		}
-	}
+	helpers.CheckElementTouchTarget(t, b.Find(".translation-checkbox").Parent(), "checkbox label")
 
-	// Tap to check
-	if err := checkbox.Click(); err != nil {
-		t.Errorf("Failed to tap checkbox: %v", err)
-	}
-
-	time.Sleep(100 * time.Millisecond)
-
-	// Verify it's now checked
-	checked, _ := checkbox.IsChecked()
-	if !checked {
-		t.Error("Checkbox should be checked after tap")
-	}
+	// Tap to check and verify
+	helpers.TapAndVerifyChecked(t, checkbox)
 }
 
 // TestMobileSSSModeToggle tests SSS mode toggle on mobile.

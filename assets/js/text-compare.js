@@ -166,60 +166,71 @@ class Token {
 // ==================== Tokenizer ====================
 
 /**
- * Tokenize text into words, punctuation, and whitespace tokens
- * Preserves exact character offsets for reconstruction
+ * Return the compiled regex patterns used by the tokenizer.
+ *
+ * @returns {Object} pattern map keyed by TokenType (plus 'strongs')
+ */
+function makeTokenPatterns() {
+  return {
+    strongs: /^[HG]\d+/i,                                    // Strong's numbers (H1234, G5678)
+    word:    /^[\w\u0080-\uFFFF]+(?:[''][\w\u0080-\uFFFF]+)*/,  // Words with contractions
+    punct:   /^[.,;:!?'"()[\]{}\-–—…«»""'']/,
+    space:   /^\s+/
+  };
+}
+
+/**
+ * Match the next token at the start of `remaining` and return it,
+ * or return null when no pattern matches (caller handles unknown chars).
+ *
+ * @param {string} remaining - Unconsumed portion of the source text
+ * @param {number} offset    - Absolute character offset in the original text
+ * @param {Object} patterns  - Pattern map from makeTokenPatterns()
+ * @returns {Token|null}
+ */
+function matchNextToken(remaining, offset, patterns) {
+  let match;
+
+  // Strong's numbers are atomic markup tokens (checked before word pattern)
+  match = remaining.match(patterns.strongs);
+  if (match) return new Token(TokenType.MARKUP, match[0], offset);
+
+  match = remaining.match(patterns.word);
+  if (match) return new Token(TokenType.WORD, match[0], offset);
+
+  match = remaining.match(patterns.punct);
+  if (match) return new Token(TokenType.PUNCT, match[0], offset);
+
+  match = remaining.match(patterns.space);
+  if (match) return new Token(TokenType.SPACE, match[0], offset);
+
+  return null;
+}
+
+/**
+ * Tokenize text into words, punctuation, and whitespace tokens.
+ * Preserves exact character offsets for reconstruction.
  *
  * @param {string} text - The text to tokenize
  * @returns {Token[]} Array of tokens
  */
 function tokenize(text) {
   const tokens = [];
+  const patterns = makeTokenPatterns();
   let offset = 0;
-
-  // Regex patterns
-  const wordPattern = /^[\w\u0080-\uFFFF]+(?:[''][\w\u0080-\uFFFF]+)*/;  // Words with contractions
-  const strongsPattern = /^[HG]\d+/i;  // Strong's numbers (H1234, G5678)
-  const punctPattern = /^[.,;:!?'"()[\]{}\-–—…«»""'']/;
-  const spacePattern = /^\s+/;
 
   while (offset < text.length) {
     const remaining = text.slice(offset);
+    const token = matchNextToken(remaining, offset, patterns);
 
-    // Try Strong's numbers first (they're atomic tokens)
-    let match = remaining.match(strongsPattern);
-    if (match) {
-      tokens.push(new Token(TokenType.MARKUP, match[0], offset));
-      offset += match[0].length;
-      continue;
+    if (token) {
+      tokens.push(token);
+      offset += token.length;
+    } else {
+      // Unknown character - treat as single-character punctuation
+      tokens.push(new Token(TokenType.PUNCT, remaining[0], offset));
+      offset += 1;
     }
-
-    // Try word
-    match = remaining.match(wordPattern);
-    if (match) {
-      tokens.push(new Token(TokenType.WORD, match[0], offset));
-      offset += match[0].length;
-      continue;
-    }
-
-    // Try punctuation
-    match = remaining.match(punctPattern);
-    if (match) {
-      tokens.push(new Token(TokenType.PUNCT, match[0], offset));
-      offset += match[0].length;
-      continue;
-    }
-
-    // Try whitespace
-    match = remaining.match(spacePattern);
-    if (match) {
-      tokens.push(new Token(TokenType.SPACE, match[0], offset));
-      offset += match[0].length;
-      continue;
-    }
-
-    // Unknown character - treat as punctuation
-    tokens.push(new Token(TokenType.PUNCT, remaining[0], offset));
-    offset += 1;
   }
 
   return tokens;

@@ -20,6 +20,98 @@
   window.Michael = window.Michael || {};
 
   /**
+   * Create a footnote reference anchor element
+   * @param {number} noteNum - The footnote number
+   * @param {string} noteId - The ID of the footnote list item
+   * @param {string} refId - The ID to assign to this reference
+   * @returns {HTMLElement} The anchor element
+   */
+  function createFootnoteRef(noteNum, noteId, refId) {
+    const ref = document.createElement('a');
+    ref.href = '#' + noteId;
+    ref.id = refId;
+    ref.className = 'footnote-ref';
+    ref.textContent = '[' + noteNum + ']';
+    ref.setAttribute('aria-describedby', noteId);
+    ref.title = 'See footnote ' + noteNum;
+    return ref;
+  }
+
+  /**
+   * Build the DOM nodes for a note's text content, excluding catchWord children
+   * @param {HTMLElement} note - The <note> element
+   * @returns {Node[]} Array of DOM nodes representing the note text
+   */
+  function buildNoteNodes(note) {
+    const noteNodes = [];
+    note.childNodes.forEach(function(child) {
+      if (child.nodeType === Node.TEXT_NODE) {
+        noteNodes.push(document.createTextNode(child.textContent));
+      } else if (child.nodeName.toLowerCase() !== 'catchword') {
+        if (child.nodeName.toLowerCase() === 'rdg') {
+          const rdgSpan = document.createElement('span');
+          rdgSpan.className = 'footnote-literal';
+          rdgSpan.textContent = child.textContent;
+          noteNodes.push(rdgSpan);
+        } else {
+          noteNodes.push(document.createTextNode(child.textContent));
+        }
+      }
+    });
+    if (noteNodes.length > 0) {
+      const first = noteNodes[0];
+      if (first.nodeType === Node.TEXT_NODE) {
+        first.textContent = first.textContent.trimStart();
+      }
+      const last = noteNodes[noteNodes.length - 1];
+      if (last.nodeType === Node.TEXT_NODE) {
+        last.textContent = last.textContent.trimEnd();
+      }
+    }
+    return noteNodes;
+  }
+
+  /**
+   * Create a footnote list item element
+   * @param {HTMLElement} note - The <note> element
+   * @param {number} noteNum - The footnote number
+   * @param {string} noteId - The ID to assign to the list item
+   * @param {string} refId - The ID of the in-text reference anchor
+   * @returns {HTMLElement} The <li> element
+   */
+  function createFootnoteItem(note, noteNum, noteId, refId) {
+    const li = document.createElement('li');
+    li.id = noteId;
+
+    const numSpan = document.createElement('span');
+    numSpan.className = 'footnote-num';
+    numSpan.textContent = '[' + noteNum + ']';
+    li.appendChild(numSpan);
+    li.appendChild(document.createTextNode(' '));
+
+    const catchWord = note.querySelector('catchWord');
+    if (catchWord) {
+      const cwSpan = document.createElement('span');
+      cwSpan.className = 'footnote-catchword';
+      cwSpan.textContent = catchWord.textContent;
+      li.appendChild(cwSpan);
+      li.appendChild(document.createTextNode(': '));
+    }
+
+    buildNoteNodes(note).forEach(function(node) { li.appendChild(node); });
+
+    li.appendChild(document.createTextNode(' '));
+    const backref = document.createElement('a');
+    backref.href = '#' + refId;
+    backref.className = 'footnote-backref';
+    backref.title = 'Back to text';
+    backref.textContent = '\u2191';
+    li.appendChild(backref);
+
+    return li;
+  }
+
+  /**
    * Process footnotes in a content container
    * @param {HTMLElement} content - The container with <note> elements
    * @param {HTMLElement} footnotesSection - The section to show/hide
@@ -57,81 +149,13 @@
         existingRef.remove();
       }
 
-      // Create footnote reference (superscript number)
-      const ref = document.createElement('a');
-      ref.href = '#' + noteId;
-      ref.id = refId;
-      ref.className = 'footnote-ref';
-      ref.textContent = '[' + noteNum + ']';
-      ref.setAttribute('aria-describedby', noteId);
-      ref.title = 'See footnote ' + noteNum;
-
       // Insert the reference after the note element
-      note.parentNode.insertBefore(ref, note.nextSibling);
+      note.parentNode.insertBefore(
+        createFootnoteRef(noteNum, noteId, refId),
+        note.nextSibling
+      );
 
-      // Build footnote content
-      const catchWord = note.querySelector('catchWord');
-
-      // Create footnote list item
-      const li = document.createElement('li');
-      li.id = noteId;
-
-      // Footnote number span
-      const numSpan = document.createElement('span');
-      numSpan.className = 'footnote-num';
-      numSpan.textContent = '[' + noteNum + ']';
-      li.appendChild(numSpan);
-      li.appendChild(document.createTextNode(' '));
-
-      // Optional catchword span
-      if (catchWord) {
-        const cwSpan = document.createElement('span');
-        cwSpan.className = 'footnote-catchword';
-        cwSpan.textContent = catchWord.textContent;
-        li.appendChild(cwSpan);
-        li.appendChild(document.createTextNode(': '));
-      }
-
-      // Get the text content excluding catchWord
-      const noteNodes = [];
-      note.childNodes.forEach(function(child) {
-        if (child.nodeType === Node.TEXT_NODE) {
-          noteNodes.push(document.createTextNode(child.textContent));
-        } else if (child.nodeName.toLowerCase() !== 'catchword') {
-          if (child.nodeName.toLowerCase() === 'rdg') {
-            const rdgSpan = document.createElement('span');
-            rdgSpan.className = 'footnote-literal';
-            rdgSpan.textContent = child.textContent;
-            noteNodes.push(rdgSpan);
-          } else {
-            noteNodes.push(document.createTextNode(child.textContent));
-          }
-        }
-      });
-
-      // Trim leading/trailing whitespace from the collected nodes
-      if (noteNodes.length > 0) {
-        const first = noteNodes[0];
-        if (first.nodeType === Node.TEXT_NODE) {
-          first.textContent = first.textContent.trimStart();
-        }
-        const last = noteNodes[noteNodes.length - 1];
-        if (last.nodeType === Node.TEXT_NODE) {
-          last.textContent = last.textContent.trimEnd();
-        }
-      }
-      noteNodes.forEach(function(node) { li.appendChild(node); });
-
-      // Back-reference link
-      li.appendChild(document.createTextNode(' '));
-      const backref = document.createElement('a');
-      backref.href = '#' + refId;
-      backref.className = 'footnote-backref';
-      backref.title = 'Back to text';
-      backref.textContent = '\u2191';
-      li.appendChild(backref);
-
-      footnotesList.appendChild(li);
+      footnotesList.appendChild(createFootnoteItem(note, noteNum, noteId, refId));
     });
 
     // Show the footnotes section

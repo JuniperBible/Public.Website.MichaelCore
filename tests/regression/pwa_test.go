@@ -10,6 +10,55 @@ import (
 )
 
 // =============================================================================
+// MANIFEST HELPERS
+// =============================================================================
+
+// loadManifest navigates to manifest.json and returns the parsed manifest map.
+func loadManifest(t *testing.T, b *helpers.Browser) map[string]interface{} {
+	t.Helper()
+	if err := b.Navigate(helpers.BaseURL + "/manifest.json"); err != nil {
+		t.Fatalf("Failed to navigate to manifest: %v", err)
+	}
+	content, err := b.PageContent()
+	if err != nil {
+		t.Fatalf("Failed to get manifest content: %v", err)
+	}
+	var manifest map[string]interface{}
+	if err := json.Unmarshal([]byte(content), &manifest); err != nil {
+		t.Fatalf("Invalid manifest JSON: %v", err)
+	}
+	return manifest
+}
+
+// getManifestIcons extracts the icons array from a manifest map.
+func getManifestIcons(t *testing.T, manifest map[string]interface{}) []interface{} {
+	t.Helper()
+	icons, ok := manifest["icons"].([]interface{})
+	if !ok {
+		t.Fatal("Icons field is not an array")
+	}
+	return icons
+}
+
+// checkMetaTag verifies a meta tag exists by name selector and logs the result.
+func checkMetaTag(t *testing.T, b *helpers.Browser, selector, label string) {
+	t.Helper()
+	el := b.Find(selector)
+	if !el.Exists() {
+		t.Errorf("Missing %s meta tag", label)
+	}
+}
+
+// checkLinkTag verifies a link tag exists by selector and logs the result.
+func checkLinkTag(t *testing.T, b *helpers.Browser, selector, label string) {
+	t.Helper()
+	el := b.Find(selector)
+	if !el.Exists() {
+		t.Errorf("Missing %s link", label)
+	}
+}
+
+// =============================================================================
 // MANIFEST TESTS
 // =============================================================================
 
@@ -36,25 +85,46 @@ func TestManifestExists(t *testing.T) {
 	t.Log("Manifest exists and is valid JSON")
 }
 
+// checkManifestFields verifies that all required fields exist in the manifest.
+func checkManifestFields(t *testing.T, manifest map[string]interface{}, fields []string) {
+	t.Helper()
+	for _, field := range fields {
+		if _, exists := manifest[field]; !exists {
+			t.Errorf("Required manifest field missing: %s", field)
+		} else {
+			t.Logf("Manifest field present: %s", field)
+		}
+	}
+}
+
+// checkManifestDisplay verifies the display mode is set to standalone.
+func checkManifestDisplay(t *testing.T, manifest map[string]interface{}) {
+	t.Helper()
+	if display, ok := manifest["display"].(string); ok {
+		if display != "standalone" {
+			t.Errorf("Expected display 'standalone', got '%s'", display)
+		}
+	}
+}
+
+// checkManifestIconCount verifies the icons array has at least minCount entries.
+func checkManifestIconCount(t *testing.T, manifest map[string]interface{}, minCount int) {
+	t.Helper()
+	if icons, ok := manifest["icons"].([]interface{}); ok {
+		if len(icons) < minCount {
+			t.Errorf("Expected at least %d icons, got %d", minCount, len(icons))
+		}
+		t.Logf("Manifest has %d icons", len(icons))
+	} else {
+		t.Error("Icons field is not an array")
+	}
+}
+
 // TestManifestRequiredFields verifies all required PWA manifest fields are present.
 func TestManifestRequiredFields(t *testing.T) {
 	b := helpers.NewTestBrowser(t)
+	manifest := loadManifest(t, b)
 
-	if err := b.Navigate(helpers.BaseURL + "/manifest.json"); err != nil {
-		t.Fatalf("Failed to navigate to manifest: %v", err)
-	}
-
-	content, err := b.PageContent()
-	if err != nil {
-		t.Fatalf("Failed to get manifest content: %v", err)
-	}
-
-	var manifest map[string]interface{}
-	if err := json.Unmarshal([]byte(content), &manifest); err != nil {
-		t.Fatalf("Invalid manifest JSON: %v", err)
-	}
-
-	// Check required fields
 	requiredFields := []string{
 		"name",
 		"short_name",
@@ -65,104 +135,50 @@ func TestManifestRequiredFields(t *testing.T) {
 		"icons",
 	}
 
-	for _, field := range requiredFields {
-		if _, exists := manifest[field]; !exists {
-			t.Errorf("Required manifest field missing: %s", field)
-		} else {
-			t.Logf("Manifest field present: %s", field)
-		}
-	}
-
-	// Verify display mode is standalone
-	if display, ok := manifest["display"].(string); ok {
-		if display != "standalone" {
-			t.Errorf("Expected display 'standalone', got '%s'", display)
-		}
-	}
-
-	// Verify icons array has entries
-	if icons, ok := manifest["icons"].([]interface{}); ok {
-		if len(icons) < 2 {
-			t.Errorf("Expected at least 2 icons, got %d", len(icons))
-		}
-		t.Logf("Manifest has %d icons", len(icons))
-	} else {
-		t.Error("Icons field is not an array")
-	}
+	checkManifestFields(t, manifest, requiredFields)
+	checkManifestDisplay(t, manifest)
+	checkManifestIconCount(t, manifest, 2)
 }
 
-// TestManifestIconSizes verifies icons have required sizes (192x192 and 512x512).
-func TestManifestIconSizes(t *testing.T) {
-	b := helpers.NewTestBrowser(t)
-
-	if err := b.Navigate(helpers.BaseURL + "/manifest.json"); err != nil {
-		t.Fatalf("Failed to navigate to manifest: %v", err)
-	}
-
-	content, err := b.PageContent()
-	if err != nil {
-		t.Fatalf("Failed to get manifest content: %v", err)
-	}
-
-	var manifest map[string]interface{}
-	if err := json.Unmarshal([]byte(content), &manifest); err != nil {
-		t.Fatalf("Invalid manifest JSON: %v", err)
-	}
-
-	icons, ok := manifest["icons"].([]interface{})
-	if !ok {
-		t.Fatal("Icons field is not an array")
-	}
-
-	requiredSizes := map[string]bool{
-		"192x192": false,
-		"512x512": false,
-	}
-
+// collectIconSizes scans icon entries and marks which required sizes are present.
+func collectIconSizes(icons []interface{}, required map[string]bool) {
 	for _, icon := range icons {
 		iconMap, ok := icon.(map[string]interface{})
 		if !ok {
 			continue
 		}
 		if sizes, ok := iconMap["sizes"].(string); ok {
-			if _, required := requiredSizes[sizes]; required {
-				requiredSizes[sizes] = true
-				t.Logf("Found required icon size: %s", sizes)
+			if _, isRequired := required[sizes]; isRequired {
+				required[sizes] = true
 			}
-		}
-	}
-
-	for size, found := range requiredSizes {
-		if !found {
-			t.Errorf("Missing required icon size: %s", size)
 		}
 	}
 }
 
-// TestManifestMaskableIcon verifies a maskable icon is present for Android.
-func TestManifestMaskableIcon(t *testing.T) {
+// TestManifestIconSizes verifies icons have required sizes (192x192 and 512x512).
+func TestManifestIconSizes(t *testing.T) {
 	b := helpers.NewTestBrowser(t)
+	manifest := loadManifest(t, b)
+	icons := getManifestIcons(t, manifest)
 
-	if err := b.Navigate(helpers.BaseURL + "/manifest.json"); err != nil {
-		t.Fatalf("Failed to navigate to manifest: %v", err)
+	requiredSizes := map[string]bool{
+		"192x192": false,
+		"512x512": false,
 	}
 
-	content, err := b.PageContent()
-	if err != nil {
-		t.Fatalf("Failed to get manifest content: %v", err)
-	}
+	collectIconSizes(icons, requiredSizes)
 
-	var manifest map[string]interface{}
-	if err := json.Unmarshal([]byte(content), &manifest); err != nil {
-		t.Fatalf("Invalid manifest JSON: %v", err)
+	for size, found := range requiredSizes {
+		if !found {
+			t.Errorf("Missing required icon size: %s", size)
+		} else {
+			t.Logf("Found required icon size: %s", size)
+		}
 	}
+}
 
-	icons, ok := manifest["icons"].([]interface{})
-	if !ok {
-		t.Fatal("Icons field is not an array")
-	}
-
-	hasMaskable := false
+// iconListHasMaskable reports whether any icon in the list has "maskable" purpose.
+func iconListHasMaskable(icons []interface{}) bool {
 	for _, icon := range icons {
 		iconMap, ok := icon.(map[string]interface{})
 		if !ok {
@@ -170,15 +186,23 @@ func TestManifestMaskableIcon(t *testing.T) {
 		}
 		if purpose, ok := iconMap["purpose"].(string); ok {
 			if strings.Contains(purpose, "maskable") {
-				hasMaskable = true
-				t.Log("Found maskable icon")
-				break
+				return true
 			}
 		}
 	}
+	return false
+}
 
-	if !hasMaskable {
+// TestManifestMaskableIcon verifies a maskable icon is present for Android.
+func TestManifestMaskableIcon(t *testing.T) {
+	b := helpers.NewTestBrowser(t)
+	manifest := loadManifest(t, b)
+	icons := getManifestIcons(t, manifest)
+
+	if !iconListHasMaskable(icons) {
 		t.Error("No maskable icon found - required for Android adaptive icons")
+	} else {
+		t.Log("Found maskable icon")
 	}
 }
 
@@ -235,68 +259,48 @@ func TestSVGLogoExists(t *testing.T) {
 // META TAG TESTS
 // =============================================================================
 
+// checkManifestLink verifies the manifest link tag points to /manifest.json.
+func checkManifestLink(t *testing.T, b *helpers.Browser) {
+	t.Helper()
+	manifestLink := b.Find("link[rel='manifest']")
+	if !manifestLink.Exists() {
+		t.Error("Missing manifest link")
+		return
+	}
+	href, _ := manifestLink.Attribute("href")
+	if href != "/manifest.json" {
+		t.Errorf("Unexpected manifest href: %s", href)
+	}
+	t.Log("Manifest link present")
+}
+
+// checkThemeColorMeta verifies theme-color meta tag exists and logs its value.
+func checkThemeColorMeta(t *testing.T, b *helpers.Browser) {
+	t.Helper()
+	themeColor := b.Find("meta[name='theme-color']")
+	if !themeColor.Exists() {
+		t.Error("Missing theme-color meta tag")
+		return
+	}
+	content, _ := themeColor.Attribute("content")
+	t.Logf("Theme color: %s", content)
+}
+
 // TestPWAMetaTags verifies all PWA meta tags are present in the HTML head.
 func TestPWAMetaTags(t *testing.T) {
 	b := helpers.NewTestBrowser(t)
 	helpers.NavigateToBiblesList(t, b)
 
-	// Check for manifest link
-	manifestLink := b.Find("link[rel='manifest']")
-	if !manifestLink.Exists() {
-		t.Error("Missing manifest link")
-	} else {
-		href, _ := manifestLink.Attribute("href")
-		if href != "/manifest.json" {
-			t.Errorf("Unexpected manifest href: %s", href)
-		}
-		t.Log("Manifest link present")
-	}
+	checkManifestLink(t, b)
+	checkThemeColorMeta(t, b)
 
-	// Check for theme-color meta
-	themeColor := b.Find("meta[name='theme-color']")
-	if !themeColor.Exists() {
-		t.Error("Missing theme-color meta tag")
-	} else {
-		content, _ := themeColor.Attribute("content")
-		t.Logf("Theme color: %s", content)
-	}
+	checkMetaTag(t, b, "meta[name='apple-mobile-web-app-capable']", "apple-mobile-web-app-capable")
+	checkMetaTag(t, b, "meta[name='apple-mobile-web-app-status-bar-style']", "apple-mobile-web-app-status-bar-style")
+	checkMetaTag(t, b, "meta[name='apple-mobile-web-app-title']", "apple-mobile-web-app-title")
 
-	// Check for apple-mobile-web-app-capable
-	appleCap := b.Find("meta[name='apple-mobile-web-app-capable']")
-	if !appleCap.Exists() {
-		t.Error("Missing apple-mobile-web-app-capable meta tag")
-	} else {
-		t.Log("Apple mobile web app capable: yes")
-	}
-
-	// Check for apple-mobile-web-app-status-bar-style
-	appleStatus := b.Find("meta[name='apple-mobile-web-app-status-bar-style']")
-	if !appleStatus.Exists() {
-		t.Error("Missing apple-mobile-web-app-status-bar-style meta tag")
-	}
-
-	// Check for apple-mobile-web-app-title
-	appleTitle := b.Find("meta[name='apple-mobile-web-app-title']")
-	if !appleTitle.Exists() {
-		t.Error("Missing apple-mobile-web-app-title meta tag")
-	}
-
-	// Check for apple-touch-icon
-	appleIcon := b.Find("link[rel='apple-touch-icon']")
-	if !appleIcon.Exists() {
-		t.Error("Missing apple-touch-icon link")
-	}
-
-	// Check for favicon links
-	favicon32 := b.Find("link[rel='icon'][sizes='32x32']")
-	if !favicon32.Exists() {
-		t.Error("Missing 32x32 favicon link")
-	}
-
-	favicon16 := b.Find("link[rel='icon'][sizes='16x16']")
-	if !favicon16.Exists() {
-		t.Error("Missing 16x16 favicon link")
-	}
+	checkLinkTag(t, b, "link[rel='apple-touch-icon']", "apple-touch-icon")
+	checkLinkTag(t, b, "link[rel='icon'][sizes='32x32']", "32x32 favicon")
+	checkLinkTag(t, b, "link[rel='icon'][sizes='16x16']", "16x16 favicon")
 }
 
 // =============================================================================
@@ -528,59 +532,57 @@ func TestOfflineWithCachedCSS(t *testing.T) {
 	}
 }
 
+// initiateBibleDownload finds the download form, checks a Bible, and clicks download.
+// Returns false and calls t.Skip if required UI elements are absent.
+func initiateBibleDownload(t *testing.T, b *helpers.Browser) bool {
+	t.Helper()
+	if !b.Find("#offline-download-form").Exists() {
+		t.Skip("Offline download form not found on page")
+		return false
+	}
+	checkbox := b.Find(".bible-download-checkbox")
+	if !checkbox.Exists() {
+		t.Skip("No Bible download checkboxes found")
+		return false
+	}
+	if err := checkbox.Click(); err != nil {
+		t.Fatalf("Failed to click checkbox: %v", err)
+	}
+	downloadBtn := b.Find("#download-offline-btn")
+	if !downloadBtn.Exists() {
+		t.Skip("Download button not found")
+		return false
+	}
+	if err := downloadBtn.Click(); err != nil {
+		t.Fatalf("Failed to click download: %v", err)
+	}
+	return true
+}
+
 // TestBibleDownloadFlow tests the full Bible download workflow.
 func TestBibleDownloadFlow(t *testing.T) {
 	b := helpers.NewTestBrowser(t)
 
-	// Navigate to offline settings
 	if err := b.Navigate(helpers.BaseURL + "/bible/"); err != nil {
 		t.Fatalf("Failed to navigate: %v", err)
 	}
 
-	// Look for offline settings panel
-	offlinePanel := b.Find("#offline-download-form")
-	if !offlinePanel.Exists() {
-		t.Skip("Offline download form not found on page")
-	}
-
-	// Find a Bible checkbox
-	checkbox := b.Find(".bible-download-checkbox")
-	if !checkbox.Exists() {
-		t.Skip("No Bible download checkboxes found")
-	}
-
-	// Check the first Bible
-	if err := checkbox.Click(); err != nil {
-		t.Fatalf("Failed to click checkbox: %v", err)
-	}
-
-	// Find and click download button
-	downloadBtn := b.Find("#download-offline-btn")
-	if !downloadBtn.Exists() {
-		t.Skip("Download button not found")
-	}
-
-	if err := downloadBtn.Click(); err != nil {
-		t.Fatalf("Failed to click download: %v", err)
+	if !initiateBibleDownload(t, b) {
+		return
 	}
 
 	// Wait for download to start (check for progress indicator)
 	time.Sleep(2 * time.Second)
 
-	// Check if progress is shown
-	progressBar := b.Find("#download-progress-bar")
-	if progressBar.Exists() {
+	if progressBar := b.Find("#download-progress-bar"); progressBar.Exists() {
 		t.Log("Download progress bar displayed")
 	}
 
-	// Check for download status
-	status := b.Find(".bible-download-status")
-	if status.Exists() {
+	if status := b.Find(".bible-download-status"); status.Exists() {
 		text, _ := status.Text()
 		t.Logf("Download status: %s", text)
 	}
 
-	// Note: We don't wait for full download as it could take a long time
 	t.Log("Bible download flow initiated successfully")
 }
 

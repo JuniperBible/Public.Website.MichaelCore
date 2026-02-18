@@ -267,6 +267,51 @@ func SimulateOffline(t *testing.T, b *e2e.Browser, offline bool) {
 	}
 }
 
+// FindWithFallbacks searches for an element using multiple selector fallbacks in order,
+// returning the first one that exists. If none exist, the last selector's result is returned.
+func FindWithFallbacks(b *e2e.Browser, selectors ...string) *e2e.Element {
+	for _, sel := range selectors[:len(selectors)-1] {
+		el := b.Find(sel)
+		if el.Exists() {
+			return el
+		}
+	}
+	return b.Find(selectors[len(selectors)-1])
+}
+
+// VerifyStrongsTooltip checks visibility and content of the Strong's tooltip, then tests closing it.
+func VerifyStrongsTooltip(t *testing.T, b *e2e.Browser, tooltip *e2e.Element) {
+	t.Helper()
+	Assert(t, tooltip.ShouldBeVisible())
+
+	// Verify tooltip has content
+	text, _ := tooltip.Text()
+	if len(text) > 0 {
+		limit := 50
+		if len(text) < limit {
+			limit = len(text)
+		}
+		t.Logf("Strong's tooltip displayed: %s...", text[:limit])
+	}
+
+	// Test Escape to close
+	if err := b.Press("Escape"); err == nil {
+		time.Sleep(200 * time.Millisecond)
+		ExpectHidden(t, b, ".strongs-tooltip")
+	}
+}
+
+// LogToastResult finds a toast/alert notification and logs whether it was displayed.
+func LogToastResult(t *testing.T, b *e2e.Browser) {
+	t.Helper()
+	toast := FindWithFallbacks(b, ".toast", "[role='alert']", ".notification")
+	if toast.Exists() {
+		t.Log("Copy success notification displayed")
+	} else {
+		t.Log("No toast notification found - copy may have succeeded silently")
+	}
+}
+
 // CheckManifestField verifies a specific field exists in the manifest.
 func CheckManifestField(t *testing.T, manifest map[string]interface{}, field string) bool {
 	t.Helper()
@@ -275,4 +320,29 @@ func CheckManifestField(t *testing.T, manifest map[string]interface{}, field str
 		return false
 	}
 	return true
+}
+
+// CheckElementTouchTarget logs a warning if an element's touch target is smaller than 44x44 pixels.
+func CheckElementTouchTarget(t *testing.T, label *e2e.Element, description string) {
+	t.Helper()
+	if !label.Exists() {
+		return
+	}
+	_, _, width, height, err := label.BoundingRect()
+	if err == nil && (height < 44 || width < 44) {
+		t.Logf("Warning: %s may be small for touch: %vx%v", description, width, height)
+	}
+}
+
+// TapAndVerifyChecked clicks a checkbox element and verifies it becomes checked.
+func TapAndVerifyChecked(t *testing.T, checkbox *e2e.Element) {
+	t.Helper()
+	if err := checkbox.Click(); err != nil {
+		t.Errorf("Failed to tap checkbox: %v", err)
+	}
+	time.Sleep(100 * time.Millisecond)
+	checked, _ := checkbox.IsChecked()
+	if !checked {
+		t.Error("Checkbox should be checked after tap")
+	}
 }

@@ -7,6 +7,61 @@ import (
 	"michael-tests/helpers"
 )
 
+// tabToBookSelect tabs through page elements up to maxTabs times looking for
+// the book select element to receive focus.
+func tabToBookSelect(t *testing.T, b *helpers.TestBrowser, maxTabs int) {
+	t.Helper()
+
+	for i := 0; i < maxTabs; i++ {
+		if err := b.Press("Tab"); err != nil {
+			t.Fatalf("Failed to press Tab: %v", err)
+		}
+		time.Sleep(50 * time.Millisecond)
+
+		bookSelectFocused, _ := b.Find("#book-select").IsFocused()
+		if bookSelectFocused {
+			t.Log("Book select focused via keyboard")
+			return
+		}
+	}
+}
+
+// interactWithBookSelect focuses the book select element and uses keyboard
+// keys to open it, select the next option, and confirm the selection.
+func interactWithBookSelect(t *testing.T, b *helpers.TestBrowser) {
+	t.Helper()
+
+	bookSelect := b.Find("#book-select")
+	if !bookSelect.Exists() {
+		return
+	}
+
+	if err := bookSelect.Focus(); err != nil {
+		t.Logf("Could not focus select: %v", err)
+	}
+
+	if err := b.Press("Enter"); err != nil {
+		t.Logf("Enter key failed: %v", err)
+	}
+
+	time.Sleep(100 * time.Millisecond)
+
+	if err := b.Press("ArrowDown"); err != nil {
+		t.Logf("ArrowDown failed: %v", err)
+	}
+
+	time.Sleep(50 * time.Millisecond)
+
+	if err := b.Press("Enter"); err != nil {
+		t.Logf("Enter to confirm failed: %v", err)
+	}
+
+	value, _ := bookSelect.Value()
+	if value != "" {
+		t.Logf("Successfully selected option via keyboard: %s", value)
+	}
+}
+
 // TestKeyboardNavigation tests navigating all controls with Tab/Enter/Space/Arrows.
 func TestKeyboardNavigation(t *testing.T) {
 	b := helpers.NewTestBrowser(t)
@@ -26,53 +81,10 @@ func TestKeyboardNavigation(t *testing.T) {
 	}
 
 	// Tab through to find book select
-	for i := 0; i < 15; i++ {
-		if err := b.Press("Tab"); err != nil {
-			t.Fatalf("Failed to press Tab: %v", err)
-		}
-		time.Sleep(50 * time.Millisecond)
-
-		// Check if book select has focus
-		bookSelectFocused, _ := b.Find("#book-select").IsFocused()
-		if bookSelectFocused {
-			t.Log("Book select focused via keyboard")
-			break
-		}
-	}
+	tabToBookSelect(t, b, 15)
 
 	// Test keyboard interaction with select
-	bookSelect := b.Find("#book-select")
-	if bookSelect.Exists() {
-		// Focus the select
-		if err := bookSelect.Focus(); err != nil {
-			t.Logf("Could not focus select: %v", err)
-		}
-
-		// Open with Enter or Space
-		if err := b.Press("Enter"); err != nil {
-			t.Logf("Enter key failed: %v", err)
-		}
-
-		time.Sleep(100 * time.Millisecond)
-
-		// Arrow down to select an option
-		if err := b.Press("ArrowDown"); err != nil {
-			t.Logf("ArrowDown failed: %v", err)
-		}
-
-		time.Sleep(50 * time.Millisecond)
-
-		// Confirm selection with Enter
-		if err := b.Press("Enter"); err != nil {
-			t.Logf("Enter to confirm failed: %v", err)
-		}
-
-		// Verify selection was made
-		value, _ := bookSelect.Value()
-		if value != "" {
-			t.Logf("Successfully selected option via keyboard: %s", value)
-		}
-	}
+	interactWithBookSelect(t, b)
 
 	t.Log("Keyboard navigation test completed")
 }
@@ -120,6 +132,32 @@ func TestKeyboardCheckboxToggle(t *testing.T) {
 	}
 }
 
+// exitSSSModeViaBackButton finds the SSS back button and, if present, activates
+// it via keyboard and verifies normal mode becomes visible.
+func exitSSSModeViaBackButton(t *testing.T, b *helpers.TestBrowser) {
+	t.Helper()
+
+	backBtn := b.Find("#sss-back-btn")
+	if !backBtn.Exists() {
+		return
+	}
+
+	if err := backBtn.Focus(); err != nil {
+		t.Logf("Could not focus back button: %v", err)
+	}
+
+	if err := b.Press("Enter"); err != nil {
+		t.Logf("Enter on back button failed: %v", err)
+	}
+
+	time.Sleep(300 * time.Millisecond)
+
+	normalMode := b.Find("#normal-mode")
+	if !normalMode.Visible() {
+		t.Error("Normal mode should be visible after exiting SSS mode")
+	}
+}
+
 // TestKeyboardSSSModeToggle tests entering/exiting SSS mode with keyboard.
 func TestKeyboardSSSModeToggle(t *testing.T) {
 	b := helpers.NewTestBrowser(t)
@@ -149,24 +187,7 @@ func TestKeyboardSSSModeToggle(t *testing.T) {
 	}
 
 	// Find and activate back button with keyboard
-	backBtn := b.Find("#sss-back-btn")
-	if backBtn.Exists() {
-		if err := backBtn.Focus(); err != nil {
-			t.Logf("Could not focus back button: %v", err)
-		}
-
-		if err := b.Press("Enter"); err != nil {
-			t.Logf("Enter on back button failed: %v", err)
-		}
-
-		time.Sleep(300 * time.Millisecond)
-
-		// Verify back in normal mode
-		normalMode := b.Find("#normal-mode")
-		if !normalMode.Visible() {
-			t.Error("Normal mode should be visible after exiting SSS mode")
-		}
-	}
+	exitSSSModeViaBackButton(t, b)
 }
 
 // TestKeyboardColorPicker tests color picker interaction with keyboard.
