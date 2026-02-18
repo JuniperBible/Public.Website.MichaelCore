@@ -1088,157 +1088,183 @@
    * // localStorage: ["kjv", "drc"]
    */
   function restoreState() {
-    // Try URL first
     const params = new URLSearchParams(window.location.search);
     const biblesParam = params.get('bibles');
     const refParam = params.get('ref');
 
+    // Try URL first, then localStorage
     if (biblesParam) {
-      selectedTranslations = biblesParam.split(',').filter(id =>
-        bibleData?.bibles?.some(b => b.id === id)
-      );
-
-      // Check corresponding checkboxes
-      translationCheckboxes.forEach(cb => {
-        cb.checked = selectedTranslations.includes(cb.value);
-      });
-
-      // Single Bible mode: auto-select random second Bible and enter SSS mode
-      if (selectedTranslations.length === 1 && refParam) {
-        const singleBible = selectedTranslations[0];
-
-        // Get all available Bibles except the selected one
-        const otherBibles = bibleData?.bibles?.filter(b => b.id !== singleBible) || [];
-
-        if (otherBibles.length > 0) {
-          // Randomly select another Bible
-          const randomIndex = Math.floor(Math.random() * otherBibles.length);
-          const randomBible = otherBibles[randomIndex].id;
-
-          // Parse the reference
-          const parts = refParam.split('.');
-          const bookParam = parts[0];
-          const chapter = parseInt(parts[1]) || 0;
-          const verse = parseInt(parts[2]) || 0;
-
-          // Normalize book ID to match bibleData.books (case-insensitive lookup)
-          const matchedBook = bibleData?.books?.find(b =>
-            b.id.toLowerCase() === bookParam.toLowerCase()
-          );
-          const book = matchedBook ? matchedBook.id : bookParam;
-
-          if (book && chapter > 0) {
-            // Set up SSS mode with the single Bible and random Bible
-            sssLeftBible = singleBible;
-            sssRightBible = randomBible;
-            sssBook = book;
-            sssChapter = chapter;
-            sssVerse = verse;
-
-            // Update SSS mode selectors
-            if (sssBibleLeft) sssBibleLeft.value = sssLeftBible;
-            if (sssBibleRight) sssBibleRight.value = sssRightBible;
-            if (sssBookSelect) {
-              // Set book select value - find matching option case-insensitively
-              const bookOption = Array.from(sssBookSelect.options).find(opt =>
-                opt.value.toLowerCase() === sssBook.toLowerCase()
-              );
-              if (bookOption) {
-                sssBookSelect.value = bookOption.value;
-              }
-              populateSSSChapterDropdown();
-            }
-            if (sssChapterSelect) sssChapterSelect.value = sssChapter;
-
-            // Enter SSS mode directly without resetting to defaults
-            sssMode = true;
-            updateSSSModeStatus();
-            if (normalModeEl) normalModeEl.classList.add('hidden');
-            if (sssModeEl) sssModeEl.classList.remove('hidden');
-            document.getElementById('parallel-content')?.classList.add('hidden');
-
-            // Load SSS comparison
-            if (canLoadSSSComparison()) {
-              loadSSSComparison();
-            }
-            return; // Don't continue with normal flow
-          }
-        }
-      }
+      restoreTranslationsFromURL(biblesParam);
+      if (handleSingleBibleSSSMode(refParam)) return;
     } else {
-      // Try localStorage
-      const saved = localStorage.getItem('bible-compare-translations');
-      if (saved) {
-        try {
-          selectedTranslations = JSON.parse(saved).filter(id =>
-            bibleData?.bibles?.some(b => b.id === id)
-          );
-          translationCheckboxes.forEach(cb => {
-            cb.checked = selectedTranslations.includes(cb.value);
-          });
-        } catch (e) {}
-      }
+      restoreTranslationsFromLocalStorage();
     }
 
+    // Restore reference from URL
     if (refParam) {
-      const parts = refParam.split('.');
-      const bookParam = parts[0];
-      const chapter = parts[1];
-      const verse = parts[2];
-
-      // Normalize book ID to match bibleData.books (case-insensitive lookup)
-      const matchedBook = bibleData?.books?.find(b =>
-        b.id.toLowerCase() === bookParam.toLowerCase()
-      );
-      const book = matchedBook ? matchedBook.id : bookParam;
-
-      if (book && chapter) {
-        currentBook = book;
-        currentChapter = parseInt(chapter) || 0;
-        currentVerse = parseInt(verse) || 0;
-
-        // Set book select value - find matching option case-insensitively
-        const bookOption = Array.from(bookSelect.options).find(opt =>
-          opt.value.toLowerCase() === currentBook.toLowerCase()
-        );
-        if (bookOption) {
-          bookSelect.value = bookOption.value;
-        }
-        populateChapterDropdown();
-        chapterSelect.value = currentChapter;
-
-        // Auto-load if we have valid state
-        if (canLoadComparison()) {
-          loadComparison().then(() => {
-            populateVerseGrid();
-          }).catch(error => {
-            console.error('Failed to load comparison after restoring state:', error);
-          });
-        }
-      }
+      restoreReferenceFromURL(refParam);
     }
 
-    // Set defaults if no URL params - always default to SSS mode
+    // Set defaults if no URL params
     if (!biblesParam && !refParam) {
-      // Default: DRC, KJVA - Isaiah 42:16 in SSS mode
-      selectedTranslations = ['drc', 'kjva'].filter(id =>
+      setDefaultState();
+    }
+  }
+
+  /**
+   * Restore translations from URL parameter
+   * @private
+   */
+  function restoreTranslationsFromURL(biblesParam) {
+    selectedTranslations = biblesParam.split(',').filter(id =>
+      bibleData?.bibles?.some(b => b.id === id)
+    );
+    translationCheckboxes.forEach(cb => {
+      cb.checked = selectedTranslations.includes(cb.value);
+    });
+  }
+
+  /**
+   * Restore translations from localStorage
+   * @private
+   */
+  function restoreTranslationsFromLocalStorage() {
+    const saved = localStorage.getItem('bible-compare-translations');
+    if (!saved) return;
+
+    try {
+      selectedTranslations = JSON.parse(saved).filter(id =>
         bibleData?.bibles?.some(b => b.id === id)
       );
       translationCheckboxes.forEach(cb => {
         cb.checked = selectedTranslations.includes(cb.value);
       });
-
-      currentBook = 'Isa';
-      currentChapter = 42;
-      currentVerse = 16;
-      bookSelect.value = currentBook;
-      populateChapterDropdown();
-      chapterSelect.value = currentChapter;
-
-      // Default to SSS mode ON
-      enterSSSMode();
+    } catch (e) {
+      // Ignore parse errors
     }
+  }
 
+  /**
+   * Handle single Bible SSS mode (auto-select random second Bible)
+   * @private
+   * @returns {boolean} True if SSS mode was entered
+   */
+  function handleSingleBibleSSSMode(refParam) {
+    if (selectedTranslations.length !== 1 || !refParam) return false;
+
+    const singleBible = selectedTranslations[0];
+    const otherBibles = bibleData?.bibles?.filter(b => b.id !== singleBible) || [];
+    if (otherBibles.length === 0) return false;
+
+    const ref = parseReference(refParam);
+    if (!ref.book || ref.chapter <= 0) return false;
+
+    // Set up SSS mode with single Bible and random Bible
+    const randomIndex = Math.floor(Math.random() * otherBibles.length);
+    sssLeftBible = singleBible;
+    sssRightBible = otherBibles[randomIndex].id;
+    sssBook = ref.book;
+    sssChapter = ref.chapter;
+    sssVerse = ref.verse;
+
+    // Update SSS mode selectors
+    updateSSSSelectors();
+
+    // Enter SSS mode directly
+    sssMode = true;
+    updateSSSModeStatus();
+    if (normalModeEl) normalModeEl.classList.add('hidden');
+    if (sssModeEl) sssModeEl.classList.remove('hidden');
+    document.getElementById('parallel-content')?.classList.add('hidden');
+
+    if (canLoadSSSComparison()) loadSSSComparison();
+    return true;
+  }
+
+  /**
+   * Parse reference string into components
+   * @private
+   */
+  function parseReference(refParam) {
+    const parts = refParam.split('.');
+    const bookParam = parts[0];
+    const matchedBook = bibleData?.books?.find(b =>
+      b.id.toLowerCase() === bookParam.toLowerCase()
+    );
+    return {
+      book: matchedBook ? matchedBook.id : bookParam,
+      chapter: parseInt(parts[1]) || 0,
+      verse: parseInt(parts[2]) || 0
+    };
+  }
+
+  /**
+   * Update SSS mode selectors with current state
+   * @private
+   */
+  function updateSSSSelectors() {
+    if (sssBibleLeft) sssBibleLeft.value = sssLeftBible;
+    if (sssBibleRight) sssBibleRight.value = sssRightBible;
+    if (sssBookSelect) {
+      const bookOption = Array.from(sssBookSelect.options).find(opt =>
+        opt.value.toLowerCase() === sssBook.toLowerCase()
+      );
+      if (bookOption) sssBookSelect.value = bookOption.value;
+      populateSSSChapterDropdown();
+    }
+    if (sssChapterSelect) sssChapterSelect.value = sssChapter;
+  }
+
+  /**
+   * Restore reference from URL parameter
+   * @private
+   */
+  function restoreReferenceFromURL(refParam) {
+    const ref = parseReference(refParam);
+    if (!ref.book || !ref.chapter) return;
+
+    currentBook = ref.book;
+    currentChapter = ref.chapter;
+    currentVerse = ref.verse;
+
+    // Set book select value
+    const bookOption = Array.from(bookSelect.options).find(opt =>
+      opt.value.toLowerCase() === currentBook.toLowerCase()
+    );
+    if (bookOption) bookSelect.value = bookOption.value;
+    populateChapterDropdown();
+    chapterSelect.value = currentChapter;
+
+    // Auto-load if we have valid state
+    if (canLoadComparison()) {
+      loadComparison().then(() => {
+        populateVerseGrid();
+      }).catch(error => {
+        console.error('Failed to load comparison after restoring state:', error);
+      });
+    }
+  }
+
+  /**
+   * Set default state when no URL params
+   * @private
+   */
+  function setDefaultState() {
+    selectedTranslations = ['drc', 'kjva'].filter(id =>
+      bibleData?.bibles?.some(b => b.id === id)
+    );
+    translationCheckboxes.forEach(cb => {
+      cb.checked = selectedTranslations.includes(cb.value);
+    });
+
+    currentBook = 'Isa';
+    currentChapter = 42;
+    currentVerse = 16;
+    bookSelect.value = currentBook;
+    populateChapterDropdown();
+    chapterSelect.value = currentChapter;
+
+    enterSSSMode();
   }
 
   /* ========================================================================
