@@ -156,7 +156,7 @@ Modules are tested on:
 
 Older browsers are not supported (no polyfills included).
 
-### License
+### JavaScript License
 
 All JavaScript modules:
 
@@ -218,7 +218,7 @@ CSS is processed by **Hugo's asset pipeline**:
 - Fingerprinting (cache-busting hashes)
 - PostCSS (optional, if configured)
 
-### License
+### CSS License
 
 - **Author:** Michael project contributors
 - **License:** Same as Michael project (see root `LICENSE`)

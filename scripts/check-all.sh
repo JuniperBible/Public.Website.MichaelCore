@@ -106,7 +106,7 @@ fi
 echo "Checking regression tests..."
 if [ -d "tests" ] && [ -f "tests/go.mod" ]; then
     # Start Hugo server in background
-    hugo server --port ${PORT:-1313} --buildDrafts &>/dev/null &
+    hugo server --port "${PORT:-1313}" --buildDrafts &>/dev/null &
     HUGO_PID=$!
 
     # Wait for Hugo to start with retry logic
@@ -115,7 +115,7 @@ if [ -d "tests" ] && [ -f "tests/go.mod" ]; then
     HUGO_READY=false
 
     while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
-        if curl -s http://localhost:${PORT:-1313}/ &>/dev/null; then
+        if curl -s "http://localhost:${PORT:-1313}/" &>/dev/null; then
             HUGO_READY=true
             break
         fi

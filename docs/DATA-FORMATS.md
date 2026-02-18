@@ -13,7 +13,7 @@ Michael requires two types of data files:
 
 Location: `data/bible.json` (or `data/example/bible.json` for standalone)
 
-### Schema
+### Bible Metadata Schema
 
 ```json
 {
@@ -33,7 +33,7 @@ Location: `data/bible.json` (or `data/example/bible.json` for standalone)
 }
 ```
 
-### Fields
+### Bible Metadata Fields
 
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
@@ -62,7 +62,7 @@ Location: `data/bible.json` (or `data/example/bible.json` for standalone)
 
 Location: `data/bible_auxiliary/{id}.json`
 
-### Schema
+### Auxiliary Data Schema
 
 ```json
 {
@@ -84,7 +84,7 @@ Location: `data/bible_auxiliary/{id}.json`
 }
 ```
 
-### Fields
+### Auxiliary Data Fields
 
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
@@ -152,7 +152,7 @@ Location: `data/strongs/hebrew.json` and `data/strongs/greek.json`
 
 Strong's definitions provide offline lexicon data for Hebrew and Greek words referenced by Strong's numbers in Bible texts.
 
-### Schema
+### Strongs Definition Schema
 
 ```json
 {
@@ -173,7 +173,7 @@ Strong's definitions provide offline lexicon data for Hebrew and Greek words ref
 }
 ```
 
-### Fields
+### Strongs Definition Fields
 
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|

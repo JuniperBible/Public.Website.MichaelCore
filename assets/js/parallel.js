@@ -968,7 +968,7 @@
     // Update verse number buttons
     const buttons = verseButtons.querySelectorAll('.verse-btn');
     buttons.forEach(btn => {
-      const verseNum = parseInt(btn.dataset.verse);
+      const verseNum = parseInt(btn.dataset.verse, 10);
       if (verseNum === currentVerse) {
         btn.classList.add('is-active');
         btn.setAttribute('aria-pressed', 'true');
@@ -1273,8 +1273,8 @@
     );
     return {
       book: matchedBook ? matchedBook.id : bookParam,
-      chapter: parseInt(parts[1]) || 0,
-      verse: parseInt(parts[2]) || 0
+      chapter: parseInt(parts[1], 10) || 0,
+      verse: parseInt(parts[2], 10) || 0
     };
   }
 
