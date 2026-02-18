@@ -102,7 +102,7 @@ ensure-data:
 		echo ""; \
 		echo "To fetch Bible modules, first build juniper then use:"; \
 		echo "  make juniper"; \
-		echo "  ./tools/juniper/bin/juniper repo install CrossWire <MODULE>"; \
+		echo "  ./tools/juniper/bin/juniper repoman install <MODULE>"; \
 		echo ""; \
 		echo "Available modules: KJVA, DRC, Tyndale, WEB, ASV, etc."; \
 		echo "Or run 'make vendor' to fetch and convert all default modules."; \
@@ -133,17 +133,17 @@ vendor-fetch:
 	@echo "Fetching SWORD modules..."
 	@for module in $(BIBLES); do \
 		echo "  Fetching $$module..."; \
-		$(JUNIPER)/bin/juniper repo install CrossWire $$module 2>/dev/null || \
+		$(JUNIPER)/bin/juniper repoman install -dest $(SWORD_DIR) $$module 2>/dev/null || \
 		echo "    Warning: Could not fetch $$module"; \
 	done
 
 # Convert SWORD modules to Hugo JSON
 vendor-convert:
 	@echo "Converting modules to Hugo JSON..."
-	$(JUNIPER)/bin/juniper convert \
-		--input $(SWORD_DIR) \
-		--output $(DATA_DIR) \
-		--modules $(shell echo $(BIBLES) | tr ' ' ',')
+	$(JUNIPER)/bin/juniper hugo \
+		-path $(SWORD_DIR) \
+		-output $(DATA_DIR) \
+		$(BIBLES)
 
 # Package as compressed xz archives for download
 vendor-package:
