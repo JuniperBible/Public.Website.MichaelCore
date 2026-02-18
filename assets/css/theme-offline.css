@@ -57,7 +57,7 @@
 .cache-status {
   margin-bottom: var(--pad-3);
   padding: var(--pad-2);
-  background: rgba(0,0,0,.03);
+  background: rgba(0,0,0,3%);
   border-radius: var(--radius-1);
   border: 1px solid var(--border);
 }
