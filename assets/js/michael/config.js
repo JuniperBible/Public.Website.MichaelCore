@@ -10,6 +10,8 @@
 
 'use strict';
 
+window.Michael = window.Michael || {};
+
 // Note: Config is essential for core functionality, runs in Diaspora mode
 
 const config = {
@@ -76,11 +78,9 @@ const config = {
   }
 };
 
-// Register with Michael
-if (window.Michael) {
-  Michael.register('config', config);
+// Register with Michael namespace
+if (window.Michael.register) {
+  window.Michael.register('config', config);
 }
 
-// Also expose directly for non-module usage
-window.Michael = window.Michael || {};
 window.Michael.Config = config;

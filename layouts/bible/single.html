@@ -29,7 +29,7 @@
 {{ partialCached "michael/strongs-data.html" . }}
 {{/* Load each JS resource if it exists */}}
 {{ range slice "js/michael/bible-nav.js" "js/michael/share-menu.js" "js/share.js" "js/strongs.js" "js/michael/footnotes.js" }}
-  {{ with resources.Get . }}<script src="{{ .RelPermalink }}" defer></script>{{ end }}
+  {{ with resources.Get . }}<script type="module" src="{{ .RelPermalink }}" defer></script>{{ end }}
 {{ end }}
 {{ end }}
 

@@ -51,11 +51,11 @@ These are loaded with defer to avoid blocking page rendering.
 */}}
 {{ define "scripts" }}
 {{ $showMore := resources.Get "js/michael/show-more.js" }}
-{{ if $showMore }}<script src="{{ $showMore.RelPermalink }}" defer></script>{{ end }}
+{{ if $showMore }}<script type="module" src="{{ $showMore.RelPermalink }}" defer></script>{{ end }}
 {{ $offlineManager := resources.Get "js/michael/offline-manager.js" }}
-{{ if $offlineManager }}<script src="{{ $offlineManager.RelPermalink }}" defer></script>{{ end }}
+{{ if $offlineManager }}<script type="module" src="{{ $offlineManager.RelPermalink }}" defer></script>{{ end }}
 {{ $offlineUI := resources.Get "js/michael/offline-settings-ui.js" }}
-{{ if $offlineUI }}<script src="{{ $offlineUI.RelPermalink }}" defer></script>{{ end }}
+{{ if $offlineUI }}<script type="module" src="{{ $offlineUI.RelPermalink }}" defer></script>{{ end }}
 {{ end }}
 
 {{ define "main" }}

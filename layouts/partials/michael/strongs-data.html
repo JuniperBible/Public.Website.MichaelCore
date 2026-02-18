@@ -43,4 +43,4 @@
 {{- if hugo.IsProduction -}}
   {{- $strongsJS = $strongsJS | minify | fingerprint -}}
 {{- end -}}
-<script src="{{ $strongsJS.RelPermalink }}" defer></script>
+<script type="module" src="{{ $strongsJS.RelPermalink }}" defer></script>

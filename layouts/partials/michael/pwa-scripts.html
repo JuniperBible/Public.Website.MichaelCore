@@ -7,6 +7,6 @@
 {{ $domUtils       := resources.Get "js/michael/dom-utils.js" }}
 {{ $userStorage    := resources.Get "js/michael/user-storage.js" }}
 {{ $readingTracker := resources.Get "js/michael/reading-tracker.js" }}
-{{ with $domUtils       }}<script src="{{ .RelPermalink }}" defer></script>{{ end }}
-{{ with $userStorage    }}<script src="{{ .RelPermalink }}" defer></script>{{ end }}
-{{ with $readingTracker }}<script src="{{ .RelPermalink }}" defer></script>{{ end }}
+{{ with $domUtils       }}<script type="module" src="{{ .RelPermalink }}" defer></script>{{ end }}
+{{ with $userStorage    }}<script type="module" src="{{ .RelPermalink }}" defer></script>{{ end }}
+{{ with $readingTracker }}<script type="module" src="{{ .RelPermalink }}" defer></script>{{ end }}

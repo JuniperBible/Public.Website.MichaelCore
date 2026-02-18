@@ -11,360 +11,374 @@
  * SPDX-License-Identifier: MIT
  */
 
-(function() {
-  'use strict';
+'use strict';
 
-  // Store the deferred prompt for later use
-  let deferredPrompt = null;
+window.Michael = window.Michael || {};
 
-  // LocalStorage keys
-  const STORAGE_KEY_DISMISSED = 'michael-pwa-install-dismissed';
-  const STORAGE_KEY_DISMISSED_TIME = 'michael-pwa-install-dismissed-time';
+// Store the deferred prompt for later use
+let deferredPrompt = null;
 
-  // Show banner after this many days if dismissed
-  const DAYS_BEFORE_RESHOWING = 30;
+// LocalStorage keys
+const STORAGE_KEY_DISMISSED = 'michael-pwa-install-dismissed';
+const STORAGE_KEY_DISMISSED_TIME = 'michael-pwa-install-dismissed-time';
 
-  /**
-   * Initialize the PWA install handler
-   */
-  function initialize() {
-    // Don't show install prompt if already installed
-    if (isPWAInstalled()) {
-      console.log('[PWA Install] App is already installed');
-      return;
-    }
+// Show banner after this many days if dismissed
+const DAYS_BEFORE_RESHOWING = 30;
 
-    // Listen for the beforeinstallprompt event
-    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
-
-    // Listen for the appinstalled event
-    window.addEventListener('appinstalled', handleAppInstalled);
-
-    // Set up banner UI if it exists
-    setupBannerUI();
-
-    // Set up iOS dismiss button
-    setupIOSDismissButton();
-
-    // Check if we should show iOS instructions
-    if (isIOS() && !isDismissed()) {
-      showIOSInstructions();
-    }
+/**
+ * Initialize the PWA install handler
+ */
+function initialize() {
+  // Don't show install prompt if already installed
+  if (isPWAInstalled()) {
+    console.log('[PWA Install] App is already installed');
+    return;
   }
 
-  /**
-   * Handle the beforeinstallprompt event
-   */
-  function handleBeforeInstallPrompt(event) {
-    console.log('[PWA Install] beforeinstallprompt captured');
+  // Listen for the beforeinstallprompt event
+  window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
 
-    // Prevent the mini-infobar from appearing on mobile
-    event.preventDefault();
+  // Listen for the appinstalled event
+  window.addEventListener('appinstalled', handleAppInstalled);
 
-    // Store the event for later use
-    deferredPrompt = event;
+  // Set up banner UI if it exists
+  setupBannerUI();
 
-    // Show the install banner if not dismissed
-    if (!isDismissed()) {
-      showInstallBanner();
-    }
+  // Set up iOS dismiss button
+  setupIOSDismissButton();
+
+  // Check if we should show iOS instructions
+  if (isIOS() && !isDismissed()) {
+    showIOSInstructions();
   }
+}
 
-  /**
-   * Handle the appinstalled event
-   */
-  function handleAppInstalled(event) {
-    console.log('[PWA Install] App was installed');
+/**
+ * Handle the beforeinstallprompt event
+ */
+function handleBeforeInstallPrompt(event) {
+  console.log('[PWA Install] beforeinstallprompt captured');
 
-    // Clear the deferred prompt
-    deferredPrompt = null;
+  // Prevent the mini-infobar from appearing on mobile
+  event.preventDefault();
 
-    // Hide the banner
-    hideInstallBanner();
+  // Store the event for later use
+  deferredPrompt = event;
 
-    // Clear dismissed state
-    localStorage.removeItem(STORAGE_KEY_DISMISSED);
-    localStorage.removeItem(STORAGE_KEY_DISMISSED_TIME);
-
-    // Request permissions after install (notifications, run on login)
-    showPostInstallPermissions();
+  // Show the install banner if not dismissed
+  if (!isDismissed()) {
+    showInstallBanner();
   }
+}
 
-  /**
-   * Request notification permission
-   * Called after app installation to enable push notifications
-   */
-  async function requestNotificationPermission() {
-    if (!('Notification' in window)) {
-      console.log('[PWA Install] Notifications not supported');
-      return false;
-    }
+/**
+ * Handle the appinstalled event
+ */
+function handleAppInstalled(event) {
+  console.log('[PWA Install] App was installed');
 
-    if (Notification.permission === 'granted') {
-      console.log('[PWA Install] Notifications already granted');
-      return true;
-    }
+  // Clear the deferred prompt
+  deferredPrompt = null;
 
-    if (Notification.permission === 'denied') {
-      console.log('[PWA Install] Notifications denied');
-      return false;
-    }
+  // Hide the banner
+  hideInstallBanner();
 
-    try {
-      const permission = await Notification.requestPermission();
-      console.log(`[PWA Install] Notification permission: ${permission}`);
-      return permission === 'granted';
-    } catch (error) {
-      console.error('[PWA Install] Error requesting notifications:', error);
-      return false;
-    }
-  }
+  // Clear dismissed state
+  localStorage.removeItem(STORAGE_KEY_DISMISSED);
+  localStorage.removeItem(STORAGE_KEY_DISMISSED_TIME);
 
-  /**
-   * Request run on OS login permission (Chromium-based browsers)
-   * This uses the experimental Run On OS Login API
-   */
-  async function requestRunOnLogin() {
-    // Check if the API is available (Chromium 120+)
-    if (!('launchQueue' in window) || !navigator.runOnOsLoginEnabled) {
-      console.log('[PWA Install] Run on OS login API not available');
-      return false;
-    }
+  // Request permissions after install (notifications, run on login)
+  showPostInstallPermissions();
+}
 
-    try {
-      // Request permission to run on OS login
-      const result = await navigator.permissions.query({ name: 'run-on-os-login' });
-
-      if (result.state === 'granted') {
-        console.log('[PWA Install] Run on OS login already granted');
-        return true;
-      }
-
-      if (result.state === 'prompt') {
-        // This will show a permission dialog
-        const permission = await navigator.permissions.request({ name: 'run-on-os-login' });
-        console.log(`[PWA Install] Run on OS login: ${permission.state}`);
-        return permission.state === 'granted';
-      }
-
-      return false;
-    } catch (error) {
-      // API not supported or permission denied
-      console.log('[PWA Install] Run on OS login not supported:', error.message);
-      return false;
-    }
-  }
-
-  /**
-   * Show post-install permissions dialog
-   * Asks for notifications and run-on-login after app installation
-   */
-  async function showPostInstallPermissions() {
-    // Small delay to let the install complete
-    await new Promise(resolve => setTimeout(resolve, 1000));
-
-    // Request notification permission
-    await requestNotificationPermission();
-
-    // Try to request run on login (if supported)
-    await requestRunOnLogin();
-  }
-
-  /**
-   * Check if the PWA is already installed
-   */
-  function isPWAInstalled() {
-    // Check if running in standalone mode (installed PWA)
-    if (window.matchMedia('(display-mode: standalone)').matches) {
-      return true;
-    }
-
-    // iOS-specific check
-    if (window.navigator.standalone === true) {
-      return true;
-    }
-
+/**
+ * Request notification permission
+ * Called after app installation to enable push notifications
+ */
+async function requestNotificationPermission() {
+  if (!('Notification' in window)) {
+    console.log('[PWA Install] Notifications not supported');
     return false;
   }
 
-  /**
-   * Check if the user is on iOS
-   */
-  function isIOS() {
-    return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-  }
-
-  /**
-   * Check if the user has dismissed the banner recently
-   */
-  function isDismissed() {
-    const dismissed = localStorage.getItem(STORAGE_KEY_DISMISSED);
-    if (!dismissed) {
-      return false;
-    }
-
-    // Check if enough time has passed to show again
-    const dismissedTime = localStorage.getItem(STORAGE_KEY_DISMISSED_TIME);
-    if (dismissedTime) {
-      const parsedTime = parseInt(dismissedTime, 10);
-      if (isNaN(parsedTime)) {
-        // Corrupted data — clear and allow showing again
-        localStorage.removeItem(STORAGE_KEY_DISMISSED);
-        localStorage.removeItem(STORAGE_KEY_DISMISSED_TIME);
-        return false;
-      }
-      const daysSinceDismissed = (Date.now() - parsedTime) / (1000 * 60 * 60 * 24);
-      if (daysSinceDismissed >= DAYS_BEFORE_RESHOWING) {
-        localStorage.removeItem(STORAGE_KEY_DISMISSED);
-        localStorage.removeItem(STORAGE_KEY_DISMISSED_TIME);
-        return false;
-      }
-    }
-
+  if (Notification.permission === 'granted') {
+    console.log('[PWA Install] Notifications already granted');
     return true;
   }
 
-  /**
-   * Set up event listeners for the banner UI
-   */
-  function setupBannerUI() {
-    // Install button
-    const installBtn = document.getElementById('pwa-install-btn');
-    if (installBtn) {
-      installBtn.addEventListener('click', triggerInstallPrompt);
+  if (Notification.permission === 'denied') {
+    console.log('[PWA Install] Notifications denied');
+    return false;
+  }
+
+  try {
+    const permission = await Notification.requestPermission();
+    console.log(`[PWA Install] Notification permission: ${permission}`);
+    return permission === 'granted';
+  } catch (error) {
+    console.error('[PWA Install] Error requesting notifications:', error);
+    return false;
+  }
+}
+
+/**
+ * Request run on OS login permission (Chromium-based browsers)
+ * This uses the experimental Run On OS Login API
+ */
+async function requestRunOnLogin() {
+  // Check if the API is available (Chromium 120+)
+  if (!('launchQueue' in window) || !navigator.runOnOsLoginEnabled) {
+    console.log('[PWA Install] Run on OS login API not available');
+    return false;
+  }
+
+  try {
+    // Request permission to run on OS login
+    const result = await navigator.permissions.query({ name: 'run-on-os-login' });
+
+    if (result.state === 'granted') {
+      console.log('[PWA Install] Run on OS login already granted');
+      return true;
     }
 
-    // Dismiss button
-    const dismissBtn = document.getElementById('pwa-install-dismiss');
-    if (dismissBtn) {
-      dismissBtn.addEventListener('click', dismissInstallBanner);
-    }
-  }
-
-  /**
-   * Set up iOS dismiss button event listener
-   */
-  function setupIOSDismissButton() {
-    const iosDismissBtn = document.getElementById('pwa-ios-dismiss');
-    if (iosDismissBtn) {
-      iosDismissBtn.addEventListener('click', function() {
-        const banner = document.getElementById('pwa-ios-instructions');
-        if (banner) {
-          banner.classList.add('hidden');
-          banner.setAttribute('aria-hidden', 'true');
-        }
-        // Store dismissal
-        localStorage.setItem(STORAGE_KEY_DISMISSED, 'true');
-        localStorage.setItem(STORAGE_KEY_DISMISSED_TIME, Date.now().toString());
-      });
-    }
-  }
-
-  /**
-   * Show the install banner
-   */
-  function showInstallBanner() {
-    const banner = document.getElementById('pwa-install-banner');
-    if (banner) {
-      banner.classList.remove('hidden');
-      banner.setAttribute('aria-hidden', 'false');
-    }
-  }
-
-  /**
-   * Hide the install banner
-   */
-  function hideInstallBanner() {
-    const banner = document.getElementById('pwa-install-banner');
-    if (banner) {
-      banner.classList.add('hidden');
-      banner.setAttribute('aria-hidden', 'true');
-    }
-  }
-
-  /**
-   * Dismiss the install banner and remember the choice
-   */
-  function dismissInstallBanner() {
-    hideInstallBanner();
-    localStorage.setItem(STORAGE_KEY_DISMISSED, 'true');
-    localStorage.setItem(STORAGE_KEY_DISMISSED_TIME, Date.now().toString());
-  }
-
-  /**
-   * Trigger the install prompt
-   */
-  async function triggerInstallPrompt() {
-    if (!deferredPrompt) {
-      console.warn('[PWA Install] No deferred prompt available');
-      return false;
+    if (result.state === 'prompt') {
+      // This will show a permission dialog
+      const permission = await navigator.permissions.request({ name: 'run-on-os-login' });
+      console.log(`[PWA Install] Run on OS login: ${permission.state}`);
+      return permission.state === 'granted';
     }
 
-    // Show the install prompt
-    deferredPrompt.prompt();
+    return false;
+  } catch (error) {
+    // API not supported or permission denied
+    console.log('[PWA Install] Run on OS login not supported:', error.message);
+    return false;
+  }
+}
 
-    // Wait for the user's response
-    const { outcome } = await deferredPrompt.userChoice;
-    console.log(`[PWA Install] User response: ${outcome}`);
+/**
+ * Show post-install permissions dialog
+ * Asks for notifications and run-on-login after app installation
+ */
+async function showPostInstallPermissions() {
+  // Small delay to let the install complete
+  await new Promise(resolve => setTimeout(resolve, 1000));
 
-    // Clear the deferred prompt (can only be used once)
-    deferredPrompt = null;
+  // Request notification permission
+  await requestNotificationPermission();
 
-    // Hide the banner regardless of outcome
-    hideInstallBanner();
+  // Try to request run on login (if supported)
+  await requestRunOnLogin();
+}
 
-    return outcome === 'accepted';
+/**
+ * Check if the PWA is already installed
+ */
+function isPWAInstalled() {
+  // Check if running in standalone mode (installed PWA)
+  if (window.matchMedia('(display-mode: standalone)').matches) {
+    return true;
   }
 
-  /**
-   * Show iOS-specific install instructions
-   */
-  function showIOSInstructions() {
-    const iosBanner = document.getElementById('pwa-ios-instructions');
-    if (iosBanner) {
-      iosBanner.classList.remove('hidden');
-      iosBanner.setAttribute('aria-hidden', 'false');
-    }
+  // iOS-specific check
+  if (window.navigator.standalone === true) {
+    return true;
   }
 
-  /**
-   * Check if the install prompt is available
-   */
-  function canInstall() {
-    return deferredPrompt !== null;
+  return false;
+}
+
+/**
+ * Check if the user is on iOS
+ */
+function isIOS() {
+  return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+}
+
+/**
+ * Clear corrupted dismissal data from localStorage
+ */
+function clearDismissalData() {
+  localStorage.removeItem(STORAGE_KEY_DISMISSED);
+  localStorage.removeItem(STORAGE_KEY_DISMISSED_TIME);
+}
+
+/**
+ * Check if the dismissal timestamp indicates enough time has passed to reshow
+ * Returns true if the banner should still be suppressed, false if it may be shown again
+ */
+function isDismissalStillActive() {
+  const dismissedTime = localStorage.getItem(STORAGE_KEY_DISMISSED_TIME);
+  if (!dismissedTime) {
+    return true;
   }
 
-  /**
-   * Cleanup event listeners when page unloads
-   */
-  function cleanup() {
-    window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
-    window.removeEventListener('appinstalled', handleAppInstalled);
-
-    // Clear deferred prompt
-    deferredPrompt = null;
+  const parsedTime = parseInt(dismissedTime, 10);
+  if (isNaN(parsedTime)) {
+    // Corrupted data — clear and allow showing again
+    clearDismissalData();
+    return false;
   }
 
-  // Initialize when DOM is ready
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initialize);
-  } else {
-    initialize();
+  const daysSinceDismissed = (Date.now() - parsedTime) / (1000 * 60 * 60 * 24);
+  if (daysSinceDismissed >= DAYS_BEFORE_RESHOWING) {
+    clearDismissalData();
+    return false;
   }
 
-  // Clean up on page unload
-  window.addEventListener('beforeunload', cleanup);
+  return true;
+}
 
-  // Expose public API
-  window.Michael = window.Michael || {};
-  window.Michael.PWAInstall = {
-    canInstall,
-    triggerInstallPrompt,
-    isPWAInstalled,
-    isIOS,
-    requestNotificationPermission,
-    requestRunOnLogin,
-    cleanup
-  };
+/**
+ * Check if the user has dismissed the banner recently
+ */
+function isDismissed() {
+  const dismissed = localStorage.getItem(STORAGE_KEY_DISMISSED);
+  if (!dismissed) {
+    return false;
+  }
 
-})();
+  return isDismissalStillActive();
+}
+
+/**
+ * Set up event listeners for the banner UI
+ */
+function setupBannerUI() {
+  // Install button
+  const installBtn = document.getElementById('pwa-install-btn');
+  if (installBtn) {
+    installBtn.addEventListener('click', triggerInstallPrompt);
+  }
+
+  // Dismiss button
+  const dismissBtn = document.getElementById('pwa-install-dismiss');
+  if (dismissBtn) {
+    dismissBtn.addEventListener('click', dismissInstallBanner);
+  }
+}
+
+/**
+ * Set up iOS dismiss button event listener
+ */
+function setupIOSDismissButton() {
+  const iosDismissBtn = document.getElementById('pwa-ios-dismiss');
+  if (iosDismissBtn) {
+    iosDismissBtn.addEventListener('click', function() {
+      const banner = document.getElementById('pwa-ios-instructions');
+      if (banner) {
+        banner.classList.add('hidden');
+        banner.setAttribute('aria-hidden', 'true');
+      }
+      // Store dismissal
+      localStorage.setItem(STORAGE_KEY_DISMISSED, 'true');
+      localStorage.setItem(STORAGE_KEY_DISMISSED_TIME, Date.now().toString());
+    });
+  }
+}
+
+/**
+ * Show the install banner
+ */
+function showInstallBanner() {
+  const banner = document.getElementById('pwa-install-banner');
+  if (banner) {
+    banner.classList.remove('hidden');
+    banner.setAttribute('aria-hidden', 'false');
+  }
+}
+
+/**
+ * Hide the install banner
+ */
+function hideInstallBanner() {
+  const banner = document.getElementById('pwa-install-banner');
+  if (banner) {
+    banner.classList.add('hidden');
+    banner.setAttribute('aria-hidden', 'true');
+  }
+}
+
+/**
+ * Dismiss the install banner and remember the choice
+ */
+function dismissInstallBanner() {
+  hideInstallBanner();
+  localStorage.setItem(STORAGE_KEY_DISMISSED, 'true');
+  localStorage.setItem(STORAGE_KEY_DISMISSED_TIME, Date.now().toString());
+}
+
+/**
+ * Trigger the install prompt
+ */
+async function triggerInstallPrompt() {
+  if (!deferredPrompt) {
+    console.warn('[PWA Install] No deferred prompt available');
+    return false;
+  }
+
+  // Show the install prompt
+  deferredPrompt.prompt();
+
+  // Wait for the user's response
+  const { outcome } = await deferredPrompt.userChoice;
+  console.log(`[PWA Install] User response: ${outcome}`);
+
+  // Clear the deferred prompt (can only be used once)
+  deferredPrompt = null;
+
+  // Hide the banner regardless of outcome
+  hideInstallBanner();
+
+  return outcome === 'accepted';
+}
+
+/**
+ * Show iOS-specific install instructions
+ */
+function showIOSInstructions() {
+  const iosBanner = document.getElementById('pwa-ios-instructions');
+  if (iosBanner) {
+    iosBanner.classList.remove('hidden');
+    iosBanner.setAttribute('aria-hidden', 'false');
+  }
+}
+
+/**
+ * Check if the install prompt is available
+ */
+function canInstall() {
+  return deferredPrompt !== null;
+}
+
+/**
+ * Cleanup event listeners when page unloads
+ */
+function cleanup() {
+  window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+  window.removeEventListener('appinstalled', handleAppInstalled);
+
+  // Clear deferred prompt
+  deferredPrompt = null;
+}
+
+// Initialize when DOM is ready
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initialize);
+} else {
+  initialize();
+}
+
+// Clean up on page unload
+window.addEventListener('beforeunload', cleanup);
+
+// Expose public API
+window.Michael.PWAInstall = {
+  canInstall,
+  triggerInstallPrompt,
+  isPWAInstalled,
+  isIOS,
+  requestNotificationPermission,
+  requestRunOnLogin,
+  cleanup
+};
