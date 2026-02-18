@@ -120,11 +120,13 @@ Create: `layouts/partials/michael/`
 **Purpose:** Establish safety rails so refactors don't change behavior silently.
 
 Tasks:
+
 - Inventory entry points: templates, JS files, data paths
 - Map current UI flows: compare, search, Strong's, share
 - Create a short regression checklist and run it before/after each sprint
 
 Definition of Done:
+
 - Documented baseline behaviors in `docs/TODO.txt` under "Regression checks"
 - Any known quirks documented (what's "expected weirdness" vs "bug")
 
@@ -134,12 +136,14 @@ Definition of Done:
 **Purpose:** Extract shared logic to reduce duplication and enable later security/a11y changes safely.
 
 Tasks:
+
 1. Create `assets/js/michael/` directory and module build pattern
 2. Extract `dom-utils.js` and adopt it in `parallel.js`, `share.js`, `bible-search.js`
 3. Implement `bible-api.js` and replace ad-hoc fetch/parse/caching logic
 4. Refactor `parallel.js` to orchestrate modules rather than contain everything
 
 Definition of Done:
+
 - Shared modules created and imported consistently
 - No behavior changes (validated via regression checklist)
 - `parallel.js` reduced and no longer contains duplicated utilities
@@ -150,6 +154,7 @@ Definition of Done:
 **Purpose:** Make module safer, CSP-friendly, and usable offline without remote dependencies.
 
 #### 2.1 Bundle Strong's Definitions Locally
+
 - Add `juniper extract-strongs` command (from SWORD modules)
 - Generate:
   - `data/strongs/hebrew.json`
@@ -158,9 +163,11 @@ Definition of Done:
 - Keep external link as "Learn more" only (optional)
 
 **Licensing requirement:**
+
 - Include provenance metadata for extracted data (source, version, license summary)
 
 DoD:
+
 - Strong's definitions function fully offline with local data
 - Provenance recorded in docs or within the dataset metadata
 
@@ -168,6 +175,7 @@ DoD:
 Create `static/sw.js` with intelligent caching and versioning.
 
 Caching strategy:
+
 1. Pre-cache shell assets (CSS, JS, fonts)
 2. Pre-cache small default set (e.g., KJV Genesis/Psalms/Matthew/John) **only if size is sane**
 3. Cache chapters as user navigates
@@ -175,26 +183,31 @@ Caching strategy:
 5. Provide "Clear offline cache" control
 
 DoD:
+
 - App works offline after visiting content
 - Cache versioning prevents stale asset bugs
 - User has control to download/clear offline data
 
 #### 2.3 CSP Compatibility
+
 - Remove/avoid inline event handlers
 - Reduce `innerHTML` usage in places like `highlightMatches()`
 - Prefer `textContent`, `createElement`, DOM fragments
 - Add CSP meta tag in `baseof.html` (default); document header-based CSP for standalone deployments
 
 DoD:
+
 - Works with CSP that disallows inline scripts
 - Any unavoidable exceptions explicitly documented (and minimized)
 
 #### 2.4 Social Sharing Offline Fallbacks
+
 - `isOnline()` check
 - When offline: replace social buttons with "Copy formatted text"
 - Provide toast feedback: "Copied! Share when online."
 
 DoD:
+
 - Sharing UI is usable online/offline
 - Clipboard fallback behaves consistently across browsers
 
@@ -219,12 +232,14 @@ DoD:
 | Muted text contrast | `theme.css` | use higher contrast variable |
 
 #### 3.3 Screen Reader + Motion Enhancements
+
 - `aria-live="polite"` for search results/status updates
 - Dedicated SR-only announcement region for compare updates
 - `prefers-reduced-motion` support
 - Add strong focus-visible styling
 
 DoD:
+
 - Keyboard-only usage works for all major flows
 - No automated WCAG violations in target areas
 - Visible focus indicator across controls
@@ -235,6 +250,7 @@ DoD:
 **Purpose:** Reduce inline styles, standardize components, improve mobile.
 
 Tasks:
+
 - Remove inline styles from templates where feasible
 - Replace `style.cssText` patterns with CSS classes and custom properties
 - Create reusable components in `theme.css`:
@@ -246,11 +262,13 @@ Tasks:
   - error/empty states: `.error-state`, `.empty-state`
 
 Mobile:
+
 - Bigger touch targets for `pointer: coarse`
 - Responsive control layout
 - Print stylesheet improvements
 
 DoD:
+
 - Inline styles reduced drastically
 - Consistent UI components across pages
 - Better mobile ergonomics
@@ -270,17 +288,20 @@ DoD:
 
 #### 5.2 Architecture Docs (New)
 Create `docs/`:
+
 - `ARCHITECTURE.md` — data flow, state, components
 - `DATA-FORMATS.md` — JSON schemas, data sources
 - `VERSIFICATION.md` — Protestant/Catholic/Orthodox differences
 - `HUGO-MODULE-USAGE.md` — how to embed vs standalone usage
 
 #### 5.3 Template Documentation
+
 - File headers with parameters + data sources
 - Versification notes and assumptions where relevant
 - Comments around complex template blocks
 
 DoD:
+
 - New developer can navigate system without reverse-engineering everything
 - Integration guide supports real embedding use cases
 
@@ -303,24 +324,28 @@ DoD:
 ## 8) Implementation Order (Sprints)
 
 ### Sprint 1 — Foundation (DRY + Security Core)
+
 1. Create `assets/js/michael/`
 2. Extract `dom-utils.js` and `bible-api.js`
 3. Update `parallel.js` and `bible-search.js` to use shared modules
 4. Add CSP meta tag (document recommended header approach)
 
 ### Sprint 2 — UI Components + Accessibility
+
 1. Implement `VerseGrid` and `ChapterDropdown`
 2. Add ARIA patterns + keyboard support (ShareMenu, Strong's)
 3. Extract Hugo partials (color picker, verse grid, SSS toggle)
 4. Address key contrast issues + focus-visible
 
 ### Sprint 3 — Offline + Self-Containment
+
 1. Add `juniper extract-strongs`
 2. Bundle Strong's definitions with provenance
 3. Implement service worker with versioning + user controls
 4. Add offline share/copy fallbacks
 
 ### Sprint 4 — CSS + Documentation
+
 1. Standardize CSS components, remove inline styles
 2. Finish refactor cleanup + reduce style.cssText usage
 3. Add JSDoc and docs/* architecture pages
@@ -342,18 +367,21 @@ DoD:
 ### Deviations & Explanations
 
 **⚠️ parallel.js lines increased (1264 → 1492)**
+
 - **Reason**: Comprehensive JSDoc documentation added to every function
 - **Trade-off**: Increased line count for much better maintainability
 - **Actual improvement**: Logic complexity reduced through delegation to 7 shared modules
 - **Outcome**: More readable, better documented, properly architected (meets spirit of goal)
 
 **⚠️ Inline styles preserved (127 instances)**
+
 - **Reason**: Dynamic runtime values (user-selected colors, computed visibility states)
 - **Trade-off**: Cannot move to static CSS classes (values determined at runtime)
 - **Examples**: Highlight color picker, dynamic show/hide based on state
 - **Outcome**: Static styles removed; only necessary dynamic styles remain
 
 **🔄 WCAG violations pending final testing**
+
 - **Status**: ARIA patterns implemented, keyboard navigation complete, focus management added
 - **Remaining**: Final comprehensive WCAG 2.1 AA validation testing
 - **Expected outcome**: Zero violations (all patterns follow WCAG best practices)

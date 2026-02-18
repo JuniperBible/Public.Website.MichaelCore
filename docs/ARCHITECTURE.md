@@ -146,44 +146,52 @@ michael/
 ## State Management
 
 ### URL State (shareable)
+
 - `?bibles=kjv,drc,asv` - Selected translations
 - `?ref=John.3.16` - Current reference
 - `?sss=1` - SSS mode enabled
 - `?verse=16` - Selected verse
 
 ### Local Storage (persistent)
+
 - `michael-translations` - Remembered translation selections
 - `michael-sss-state` - SSS mode preferences
 
 ### Memory State (session)
+
 - Chapter cache (`Map` in bible-api.js)
 - Current UI state (selections, toggles)
 
 ## Component Responsibilities
 
 ### dom-utils.js
+
 - Touch/click event handling
 - Contrast color calculation
 - Message display utilities
 - **No application state**
 
 ### bible-api.js
+
 - Chapter fetching with caching
 - HTML parsing to verse objects
 - **No DOM manipulation**
 
 ### verse-grid.js
+
 - Verse button grid rendering
 - Selection state management
 - Accessibility (aria-pressed)
 - **Receives data, emits events**
 
 ### chapter-dropdown.js
+
 - Chapter dropdown population
 - Book-aware chapter counts
 - **Receives data, emits events**
 
 ### share-menu.js
+
 - Share menu rendering
 - Focus management
 - Keyboard navigation
@@ -191,6 +199,7 @@ michael/
 - **Self-contained UI**
 
 ### parallel.js (Orchestrator)
+
 - Page initialization
 - Event coordination
 - State synchronization
@@ -215,12 +224,14 @@ michael/
 ```
 
 ### Bible Templates
+
 - `bibles/list.html` - Translation grid
 - `bibles/single.html` - Chapter view
 - `bibles/compare.html` - Comparison view
 - `bibles/search.html` - Search interface
 
 ### Partials
+
 - `michael/bible-nav.html` - Navigation component
 - `michael/color-picker.html` - Highlight color selection
 - `michael/verse-grid.html` - Verse selection grid

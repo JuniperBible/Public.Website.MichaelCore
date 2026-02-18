@@ -277,6 +277,7 @@ The service worker is automatically registered when the site loads. No additiona
 ### Cache Management
 
 Users can manage their offline cache through the settings panel:
+
 - View cached content
 - Clear offline cache
 - See cache size

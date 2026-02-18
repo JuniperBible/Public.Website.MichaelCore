@@ -274,6 +274,7 @@ Consuming sites must provide:
 2. `data/bible_auxiliary/{id}.json` - Per-translation verse data
 
 See the `docs/` directory for full documentation:
+
 - [ARCHITECTURE.md](ARCHITECTURE.md) — System overview
 - [DATA-FORMATS.md](DATA-FORMATS.md) — JSON schemas
 - [VERSIFICATION.md](VERSIFICATION.md) — Bible versification

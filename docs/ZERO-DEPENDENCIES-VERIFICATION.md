@@ -103,12 +103,14 @@ grep -r "cdn\|googleapis\|cloudflare\|jsdelivr\|unpkg" layouts/
 ### Strong's Concordance Module (`assets/js/strongs.js`)
 
 **Changes Made:**
+
 - ✅ Removed `fetchFromAPI()` function (lines 309-322)
 - ✅ Removed external API call code (lines 244-257)
 - ✅ Updated documentation to clarify zero runtime dependencies
 - ✅ Blue Letter Bible URLs only used for "View Full Entry" link (user-initiated)
 
 **Data Loading Strategy:**
+
 1. Check in-memory cache
 2. Check local bundled data
 3. If not found: Show fallback message with manual link
@@ -118,6 +120,7 @@ grep -r "cdn\|googleapis\|cloudflare\|jsdelivr\|unpkg" layouts/
 ### Share Menu Component (`assets/js/michael/share-menu.js`)
 
 **Behavior:**
+
 - ✅ Twitter/Facebook URLs only used for `window.open()` (user-initiated)
 - ✅ When offline: Social buttons disabled with "Unavailable offline" message
 - ✅ Copy functionality works 100% offline
@@ -128,6 +131,7 @@ grep -r "cdn\|googleapis\|cloudflare\|jsdelivr\|unpkg" layouts/
 ### Service Worker (`static/sw.js`)
 
 **Verification:**
+
 - ✅ Lines 137-139: Only handles same-origin requests
 - ✅ No `fetch()` calls to external APIs
 - ✅ All caching strategies use local resources only
@@ -138,6 +142,7 @@ grep -r "cdn\|googleapis\|cloudflare\|jsdelivr\|unpkg" layouts/
 ### Base HTML Template (`layouts/_default/baseof.html`)
 
 **Verification:**
+
 - ✅ No external CSS loaded
 - ✅ No external JavaScript loaded
 - ✅ No external fonts loaded
@@ -160,24 +165,29 @@ frame-ancestors 'none'; base-uri 'self'; form-action 'self';
 ### Core Features Working Offline
 
 ✅ **Bible Text Display**
+
 - All chapter data served from local JSON files
 - Service worker caches pages as user browses
 - No network required after initial load
 
 ✅ **Strong's Definitions**
+
 - All definitions from local bundled data
 - No API calls for missing definitions
 - "View Full Entry" requires manual user action
 
 ✅ **Parallel Bible Comparison**
+
 - All translations loaded from local data
 - No external resources required
 
 ✅ **Bible Search**
+
 - All search performed client-side
 - No external search APIs
 
 ✅ **Copy/Share Functionality**
+
 - Copy to clipboard works 100% offline
 - Offline text formatting included
 - Social sharing disabled when offline (appropriate behavior)
@@ -185,17 +195,20 @@ frame-ancestors 'none'; base-uri 'self'; form-action 'self';
 ### Service Worker Caching Strategy
 
 **Shell Assets (Pre-cached):**
+
 - `/` (homepage)
 - `/offline.html`
 - All JavaScript files
 - All CSS files
 
 **Chapter Pages (Cached on demand):**
+
 - Bible chapter pages cached as user browses
 - Network-first with cache fallback
 - Works offline after first visit
 
 **Default Pre-cached Chapters:**
+
 - Genesis 1
 - Psalm 23
 - Matthew 1
@@ -341,6 +354,7 @@ performance.getEntriesByType('resource').forEach(r => {
 The Michael Bible Module has been verified to have **ZERO external runtime dependencies**. All core functionality works 100% offline with local data only.
 
 **External URLs in the codebase are:**
+
 - Documentation/attribution links
 - User-initiated social sharing (optional)
 - Manual reference links (Strong's concordance)

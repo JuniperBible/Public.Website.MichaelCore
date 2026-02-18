@@ -25,6 +25,7 @@ The following Bible translations are extracted from SWORD Project modules using 
 | Open Scriptures Morphological Hebrew Bible | SWORD: OSMHB | Public Domain (CC-PDDC) | `data/example/bible_auxiliary/osmhb.json`, `assets/downloads/osmhb.tar.xz` |
 
 **Notes:**
+
 - CC-PDDC = Creative Commons Public Domain Dedication and Certification
 - These texts are based on historical works published before 1928, placing them in the public domain in the United States
 
@@ -37,6 +38,7 @@ The following Bible translations are extracted from SWORD Project modules using 
 | The Greek New Testament: SBL Edition | SWORD: SBLGNT | Copyrighted-Free | `data/example/bible_auxiliary/sblgnt.json`, `assets/downloads/sblgnt.tar.xz` |
 
 **Notes:**
+
 - KJVA Strong's numbers derived from The Bible Foundation (Hebrew) and KJV2003 Project at CrossWire (Greek)
 - KJVA base text rights held by Crown of England; CrossWire data licensed under GPL-3.0-or-later
 - LXX sourced from Center for Computer Analysis of Texts (CCAT) at University of Pennsylvania
@@ -95,6 +97,7 @@ The following Bible translations are extracted from SWORD Project modules using 
 
 **Data Format:**
 Each entry includes:
+
 - `lemma` - Original Hebrew or Greek word
 - `xlit` - Transliteration (romanized form)
 - `pron` - Pronunciation guide
@@ -179,10 +182,12 @@ Royalty-free, world-wide, non-exclusive license granted to JuniperBible.org (and
 **License:** Factual data, not subject to copyright
 
 **Files:**
+
 - `tools/juniper/versifications/*.yaml`
 - Versification mappings in Go code (`tools/juniper/pkg/sword/versification_*.go`)
 
 **Supported Systems:**
+
 - Protestant (66 books) - KJV versification
 - Catholic (73 books) - Vulgate versification
 - Orthodox (76-81 books) - LXX/Septuagint versification

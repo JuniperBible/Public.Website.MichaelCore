@@ -86,11 +86,13 @@ documentElement.style.setProperty('--highlight-color', selectedColor);
 ```
 
 JavaScript dynamically updates CSS variables like:
+
 - `--highlight-color` - Diff highlighting color (user-configurable)
 - Runtime theme adjustments
 
 #### 2.1.3 Dynamic Layout Values
 127 inline styles remain in templates for values that must be computed at runtime or vary by context:
+
 - Tooltip positioning (viewport-aware)
 - Share menu positioning (avoid overflow)
 - Loading states (`display: none`/`block`)
@@ -99,6 +101,7 @@ JavaScript dynamically updates CSS variables like:
 ### 2.2 Minimization Efforts
 
 During the CSS refactoring project (documented in `CODE_CLEANUP_CHARTER.md`):
+
 - ✅ Extracted 200+ static inline styles to CSS classes
 - ✅ Created component-based CSS architecture (`theme.css`)
 - ✅ Reduced inline styles from 300+ to 127
@@ -131,6 +134,7 @@ To remove `'unsafe-inline'`, two approaches are possible:
 ```
 
 **Limitations:**
+
 - Requires server-side rendering (not static HTML)
 - Incompatible with Hugo's static site architecture
 - Adds complexity to deployment
@@ -142,6 +146,7 @@ element.classList.add('tooltip--position-bottom');
 ```
 
 **Trade-offs:**
+
 - Requires predefined classes for all positioning scenarios (100+ classes)
 - Inflexible for dynamic values (tooltip coordinates, color picker)
 - Significantly increases CSS bundle size
@@ -268,11 +273,13 @@ const escapedTerm = escapeHTML(normalizedTerm);
 ```
 
 **Mitigation Applied:**
+
 1. User search terms escaped via `escapeHTML()` before rendering
 2. Search results use `<mark>` tags inserted after escaping
 3. Additional validation: patterns validated before use
 
 **Test Cases:**
+
 - ✅ Search for `<script>alert('XSS')</script>` → Renders as text, not executed
 - ✅ Search for `<img src=x onerror=alert(1)>` → Rendered harmlessly
 - ✅ Phrase search `"faith & love"` → Ampersand escaped to `&amp;`
@@ -338,12 +345,14 @@ element.appendChild(p);
 **Location:** `/home/justin/Programming/Workspace/michael/layouts/_default/baseof.html` (line 23)
 
 **Advantages:**
+
 - ✅ Works with static hosting (GitHub Pages, Netlify, Vercel)
 - ✅ No server configuration required
 - ✅ Hugo-only solution (no build-time changes)
 - ✅ Portable across hosting environments
 
 **Disadvantages:**
+
 - ⚠️ Less flexible than HTTP headers (can't use report-only mode)
 - ⚠️ Can be overridden by HTTP headers (if server adds them)
 - ⚠️ Slightly larger HTML payload (minor)
@@ -353,6 +362,7 @@ element.appendChild(p);
 ### 4.2 HTTP Header (Production Recommended)
 
 **Why Prefer Headers:**
+
 1. Stronger security (can't be removed by client-side tampering)
 2. Supports report-only mode for testing
 3. Doesn't increase HTML size
@@ -609,6 +619,7 @@ the following Content Security Policy directive: "script-src 'self'".
 ```
 
 **Violation Types to Monitor:**
+
 - ❌ Blocked external scripts
 - ❌ Blocked inline scripts (`onclick`, etc.)
 - ❌ Blocked eval() usage
@@ -616,6 +627,7 @@ the following Content Security Policy directive: "script-src 'self'".
 - ❌ Blocked external images
 
 **Expected State (No Violations):**
+
 - ✅ No CSP errors in console
 - ✅ All scripts load from `/assets/js/`
 - ✅ All styles load from `/assets/css/` or inline
@@ -879,6 +891,7 @@ element.dataset.theme = color;
 ```
 
 **Limitations:**
+
 - ❌ Not compatible with Hugo static generation
 - ❌ Requires server-side rendering (Node.js, Python, Go, etc.)
 - ❌ Breaks CSS custom property updates (`--highlight-color`)
@@ -954,6 +967,7 @@ Content-Security-Policy-Report-Only: default-src 'self'; script-src 'self';
 ```
 
 **Workflow:**
+
 1. Deploy with report-only CSP (no `'unsafe-inline'`)
 2. Monitor violation reports
 3. Identify broken functionality
@@ -970,6 +984,7 @@ tail -f /var/log/csp-violations.log
 ```
 
 **Expected Violations (from this project):**
+
 - Inline styles in tooltips, share menus (127 instances)
 - Dynamic `--highlight-color` updates
 
@@ -1002,6 +1017,7 @@ if (hasStrictCSP()) {
 ```
 
 **Trade-offs:**
+
 - ✅ Graceful degradation
 - ⚠️ Reduced functionality in high-security environments
 - ❌ Increased code complexity
