@@ -138,11 +138,12 @@ for (const [archaic, modern] of spellingVariants) {
  * Represents a single token from the text
  */
 class Token {
-  constructor(type, original, offset) {
+  constructor(type, original, offset, strongs = null) {
     this.type = type;
     this.original = original;
     this.normalized = this.normalize(original);
     this.offset = offset;
+    this.strongs = strongs;  // Array of Strong's numbers (e.g., ['H0776']) or null
   }
 
   normalize(text) {
@@ -234,6 +235,131 @@ function tokenize(text) {
   }
 
   return tokens;
+}
+
+/**
+ * Extract Strong's numbers from a lemma attribute value.
+ * Handles formats like "strong:H0776" or "strong:H0853 strong:H01254"
+ * Normalizes numbers by removing leading zeros (H08414 -> H8414)
+ *
+ * @param {string} lemma - The lemma attribute value
+ * @returns {string[]} Array of normalized Strong's numbers (e.g., ['H776'])
+ */
+function extractStrongsFromLemma(lemma) {
+  if (!lemma) return [];
+  const matches = lemma.match(/strong:([HG]\d+)/gi);
+  if (!matches) return [];
+  return matches.map(m => {
+    const raw = m.replace('strong:', '').toUpperCase();
+    // Normalize: H08414 -> H8414 (remove leading zeros from number portion)
+    return raw.replace(/^([HG])0+(\d)/, '$1$2');
+  });
+}
+
+/**
+ * Parse HTML text with <w> tags and tokenize while preserving Strong's numbers.
+ * For each word inside a <w lemma="strong:H0776"> tag, the token will have
+ * the Strong's number(s) attached.
+ *
+ * @param {string} html - HTML text potentially containing <w> tags
+ * @returns {{plainText: string, tokens: Token[]}} Plain text and tokens with Strong's
+ */
+function tokenizeWithStrongs(html) {
+  // Parse the HTML to extract text and Strong's mappings
+  const parser = new DOMParser();
+  const doc = parser.parseFromString('<body>' + html + '</body>', 'text/html');
+  const body = doc.body;
+
+  // Build plain text and a map of character ranges to Strong's numbers
+  let plainText = '';
+  const strongsRanges = [];  // [{start, end, strongs: ['H0776']}]
+
+  function processNode(node) {
+    if (node.nodeType === Node.TEXT_NODE) {
+      plainText += node.textContent;
+    } else if (node.nodeType === Node.ELEMENT_NODE) {
+      const tagName = node.tagName.toLowerCase();
+
+      // Skip certain elements entirely (verse numbers, notes, navigation elements)
+      if (tagName === 'sup' || tagName === 'note' || tagName === 'select' ||
+          tagName === 'option' || tagName === 'nav' || tagName === 'label' ||
+          tagName === 'button' || tagName === 'script' || tagName === 'style') {
+        return;
+      }
+
+      // Handle <w> tags with lemma attributes
+      if (tagName === 'w' && node.hasAttribute('lemma')) {
+        const lemma = node.getAttribute('lemma');
+        const strongs = extractStrongsFromLemma(lemma);
+        if (strongs.length > 0) {
+          const start = plainText.length;
+          // Process children to get the text content
+          for (const child of node.childNodes) {
+            processNode(child);
+          }
+          const end = plainText.length;
+          if (end > start) {
+            strongsRanges.push({ start, end, strongs });
+          }
+          return;  // Already processed children
+        }
+      }
+
+      // Process children for other elements
+      for (const child of node.childNodes) {
+        processNode(child);
+      }
+    }
+  }
+
+  processNode(body);
+
+  // Normalize the plain text
+  const normalizedText = normalizeText(plainText);
+
+  // Tokenize the normalized text
+  const tokens = tokenize(normalizedText);
+
+  // Attach Strong's numbers to tokens based on their offsets
+  // Note: After normalization, offsets may shift slightly, so we use a heuristic
+  // For simplicity, we'll re-tokenize from the original and map Strong's
+  // Actually, let's tokenize the raw plainText and attach Strong's there
+  const rawTokens = tokenize(plainText);
+
+  // Attach Strong's to raw tokens
+  for (const token of rawTokens) {
+    if (token.type !== TokenType.WORD) continue;
+    const tokenStart = token.offset;
+    const tokenEnd = tokenStart + token.length;
+
+    // Find overlapping Strong's range
+    for (const range of strongsRanges) {
+      if (tokenStart >= range.start && tokenEnd <= range.end) {
+        token.strongs = range.strongs;
+        break;
+      }
+    }
+  }
+
+  // Now tokenize the normalized text and transfer Strong's info
+  const normalizedTokens = tokenize(normalizedText);
+
+  // Simple heuristic: match word tokens by position
+  let rawWordIndex = 0;
+  for (const token of normalizedTokens) {
+    if (token.type === TokenType.WORD) {
+      // Find the corresponding raw word token
+      while (rawWordIndex < rawTokens.length && rawTokens[rawWordIndex].type !== TokenType.WORD) {
+        rawWordIndex++;
+      }
+      if (rawWordIndex < rawTokens.length) {
+        token.strongs = rawTokens[rawWordIndex].strongs;
+        rawWordIndex++;
+      }
+    }
+  }
+
+  return { plainText: normalizedText, tokens: normalizedTokens };
 }
 
 // ==================== Normalizers ====================
@@ -417,6 +543,26 @@ function isSpellingVariant(aNorm, bNorm) {
 }
 
 /**
+ * Check if two tokens have the same Strong's number(s).
+ * If both tokens have Strong's numbers and they share at least one,
+ * they represent the same underlying Hebrew/Greek word.
+ *
+ * @param {Token} aToken - First token
+ * @param {Token} bToken - Second token
+ * @returns {boolean} True if they share a Strong's number
+ */
+function haveSameStrongs(aToken, bToken) {
+  if (!aToken.strongs || !bToken.strongs) return false;
+  if (aToken.strongs.length === 0 || bToken.strongs.length === 0) return false;
+
+  // Check if any Strong's number matches
+  for (const s of aToken.strongs) {
+    if (bToken.strongs.includes(s)) return true;
+  }
+  return false;
+}
+
+/**
  * Classify the type of difference between two tokens
  *
  * @param {Token} aToken - Token from first text (or null if insert)
@@ -433,6 +579,11 @@ function classifyDifference(aToken, bToken) {
 
   if (aToken.normalized === bToken.normalized) {
     return DiffCategory.TYPO;
+  }
+
+  // Check Strong's numbers - if same Strong's, it's a spelling/translation variant
+  if (haveSameStrongs(aToken, bToken)) {
+    return DiffCategory.SPELLING;
   }
 
   if (isSpellingVariant(aToken.normalized, bToken.normalized)) {
@@ -592,6 +743,40 @@ function compareTexts(textA, textB) {
 }
 
 /**
+ * Compare two HTML texts with Strong's number awareness.
+ * If both texts have <w lemma="strong:..."> markup, words with the same
+ * Strong's number will be classified as spelling variants rather than
+ * substantive changes.
+ *
+ * @param {string} htmlA - First HTML text (base), may contain <w> tags
+ * @param {string} htmlB - Second HTML text (compare), may contain <w> tags
+ * @returns {Object} Comparison result with diffs and metadata
+ */
+function compareTextsWithStrongs(htmlA, htmlB) {
+  // Parse HTML and extract tokens with Strong's numbers
+  const parsedA = tokenizeWithStrongs(htmlA);
+  const parsedB = tokenizeWithStrongs(htmlB);
+
+  const tokensA = parsedA.tokens;
+  const tokensB = parsedB.tokens;
+
+  const editScript = myersDiff(tokensA, tokensB);
+  const diffs = processEditScript(editScript, tokensA, tokensB);
+
+  return {
+    textA: parsedA.plainText,
+    textB: parsedB.plainText,
+    tokensA,
+    tokensB,
+    diffs,
+    stats: {
+      totalDiffs: diffs.length,
+      byCategory: countByCategory(diffs)
+    }
+  };
+}
+
+/**
  * Count diffs by category
  */
 function countByCategory(diffs) {
@@ -731,7 +916,9 @@ function escapeHtml(text) {
 window.TextCompare = {
   // Core functions
   tokenize,
+  tokenizeWithStrongs,
   compareTexts,
+  compareTextsWithStrongs,
   renderWithHighlights,
 
   // Normalizers
@@ -748,5 +935,7 @@ window.TextCompare = {
 
   // Utilities
   escapeHtml,
-  classifyDifference
+  classifyDifference,
+  extractStrongsFromLemma,
+  haveSameStrongs
 };

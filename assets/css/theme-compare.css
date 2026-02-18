@@ -232,6 +232,7 @@
    Diff Highlighting
 ------------------------------ */
 /* Base diff class - shared styles */
+.diff-add,
 .diff-insert,
 .diff-punct,
 .diff-spelling,
@@ -242,6 +243,7 @@
 }
 
 /* Individual diff colors */
+.diff-add,
 .diff-insert {
   background: var(--diff-add);
 }

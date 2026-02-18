@@ -25,6 +25,9 @@
 */}}
 
 {{ define "scripts" }}
+{{/* dom-utils.js must be loaded first as bible-search.js depends on it */}}
+{{ $domUtils := resources.Get "js/michael/dom-utils.js" }}
+{{ if $domUtils }}<script type="module" src="{{ $domUtils.RelPermalink }}" defer></script>{{ end }}
 {{ $bibleApi := resources.Get "js/michael/bible-api.js" }}
 {{ if $bibleApi }}<script type="module" src="{{ $bibleApi.RelPermalink }}" defer></script>{{ end }}
 {{ $search := resources.Get "js/bible-search.js" }}

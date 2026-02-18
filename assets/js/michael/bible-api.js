@@ -176,13 +176,14 @@ window.Michael.BibleAPI = (function() {
       const num = parseInt(span.dataset.verse);
       if (isNaN(num)) return;
 
-      // Extract HTML content excluding the sup element (verse number)
+      // Extract HTML content excluding the sup element (verse number) and UI elements
       // Preserve <note>, <w>, and other semantic elements
+      const excludeTags = new Set(['SUP', 'SELECT', 'NAV', 'BUTTON', 'LABEL', 'ASIDE', 'OPTION']);
       let html = '';
       span.childNodes.forEach(node => {
         if (node.nodeType === Node.TEXT_NODE) {
           html += node.textContent;
-        } else if (node.nodeType === Node.ELEMENT_NODE && node.tagName !== 'SUP') {
+        } else if (node.nodeType === Node.ELEMENT_NODE && !excludeTags.has(node.tagName)) {
           // Preserve the full HTML of other elements (note, w, etc.)
           html += node.outerHTML;
         }
@@ -265,11 +266,19 @@ window.Michael.BibleAPI = (function() {
     const verseElements = bibleText.querySelectorAll('.verse, [data-verse]');
     if (verseElements.length === 0) return [];
 
+    // UI elements to strip from verse content
+    const UI_SELECTORS = ['select', 'nav', 'button', 'label', 'aside', '.reader-bar', '.bible-nav'];
+
     const verses = [];
     verseElements.forEach(el => {
       const verseNum = el.dataset.verse || el.querySelector('.verse-num')?.textContent?.trim();
-      // Get innerHTML and strip leading verse number
-      const html = el.innerHTML?.replace(/^<sup[^>]*>\d+<\/sup>\s*/, '').trim();
+
+      // Clone the element to avoid modifying the original DOM
+      const clone = el.cloneNode(true);
+      // Remove UI elements
+      UI_SELECTORS.forEach(sel => clone.querySelectorAll(sel).forEach(ui => ui.remove()));
+      // Strip leading verse number
+      const html = clone.innerHTML?.replace(/^<sup[^>]*>\d+<\/sup>\s*/, '').trim();
 
       if (verseNum && html) {
         const num = parseInt(verseNum);
@@ -292,13 +301,19 @@ window.Michael.BibleAPI = (function() {
     const vSpans = bibleText.querySelectorAll('span[id^="v"]');
     if (vSpans.length === 0) return [];
 
+    // UI elements to strip from verse content
+    const UI_SELECTORS = ['select', 'nav', 'button', 'label', 'aside', '.reader-bar', '.bible-nav'];
+
     const verses = [];
     vSpans.forEach(span => {
       const match = span.id.match(/v(\d+)/);
       if (match) {
+        // Clone to avoid modifying original DOM
+        const clone = span.cloneNode(true);
+        UI_SELECTORS.forEach(sel => clone.querySelectorAll(sel).forEach(ui => ui.remove()));
         verses.push({
           number: parseInt(match[1]),
-          text: span.innerHTML?.trim() || ''
+          text: clone.innerHTML?.trim() || ''
         });
       }
     });

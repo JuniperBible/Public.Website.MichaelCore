@@ -1233,17 +1233,19 @@ function restoreState() {
   // Try URL first, then localStorage
   if (biblesParam) {
     restoreTranslationsFromURL(biblesParam);
-    if (handleSingleBibleSSSMode(refParam)) return;
   } else {
     restoreTranslationsFromLocalStorage();
   }
 
-  // Restore reference from URL
+  // Restore reference from URL and load VVV mode
   if (refParam) {
     restoreReferenceFromURL(refParam);
+  } else if (biblesParam && selectedTranslations.length > 0) {
+    // Translations selected but no reference - default to Genesis 1
+    setDefaultReference();
   }
 
-  // Set defaults if no URL params
+  // Set defaults if no URL params (enters SSS mode by default)
   if (!biblesParam && !refParam) {
     setDefaultState();
   }
@@ -1299,6 +1301,7 @@ function activateSSSModeUI() {
 
 /**
  * Handle single Bible SSS mode (auto-select random second Bible)
+ * Also populates normal mode state so switching back to VVV works
  * @private
  * @returns {boolean} True if SSS mode was entered
  */
@@ -1321,6 +1324,21 @@ function handleSingleBibleSSSMode(refParam) {
   sssBook = ref.book;
   sssChapter = ref.chapter;
   sssVerse = ref.verse;
+
+  // Also populate normal mode state for switching back to VVV
+  currentBook = ref.book;
+  currentChapter = ref.chapter;
+  currentVerse = ref.verse;
+
+  // Update normal mode book/chapter selectors
+  if (bookSelect) {
+    const bookOption = Array.from(bookSelect.options).find(opt =>
+      opt.value.toLowerCase() === currentBook.toLowerCase()
+    );
+    if (bookOption) bookSelect.value = bookOption.value;
+    populateChapterDropdown();
+  }
+  if (chapterSelect) chapterSelect.value = currentChapter;
 
   // Update SSS mode selectors
   updateSSSSelectors();
@@ -1390,6 +1408,34 @@ function restoreReferenceFromURL(refParam) {
       populateVerseGrid();
     }).catch(error => {
       console.error('Failed to load comparison after restoring state:', error);
+    });
+  }
+}
+
+/**
+ * Set default reference (Genesis 1) when translations are selected but no ref in URL
+ * @private
+ */
+function setDefaultReference() {
+  currentBook = 'Gen';
+  currentChapter = 1;
+  currentVerse = 0;
+
+  if (bookSelect) {
+    const bookOption = Array.from(bookSelect.options).find(opt =>
+      opt.value.toLowerCase() === currentBook.toLowerCase()
+    );
+    if (bookOption) bookSelect.value = bookOption.value;
+    populateChapterDropdown();
+  }
+  if (chapterSelect) chapterSelect.value = currentChapter;
+
+  // Auto-load if we have valid state
+  if (canLoadComparison()) {
+    loadComparison().then(() => {
+      populateVerseGrid();
+    }).catch(error => {
+      console.error('Failed to load comparison with default reference:', error);
     });
   }
 }
@@ -1478,6 +1524,7 @@ function enterSSSMode() {
 /**
  * Exit SSS mode and return to normal comparison view
  * Restores the multi-translation comparison interface
+ * Syncs SSS state to normal mode for seamless transition
  * @private
  */
 function exitSSSMode() {
@@ -1486,6 +1533,43 @@ function exitSSSMode() {
   if (normalModeEl) normalModeEl.classList.remove('hidden');
   if (sssModeEl) sssModeEl.classList.add('hidden');
   document.getElementById('parallel-content')?.classList.remove('hidden');
+
+  // Sync SSS state to normal mode if normal mode has no selection
+  if ((!currentBook || !currentChapter) && sssBook && sssChapter) {
+    currentBook = sssBook;
+    currentChapter = sssChapter;
+    currentVerse = sssVerse;
+
+    // Update normal mode selectors
+    if (bookSelect) {
+      const bookOption = Array.from(bookSelect.options).find(opt =>
+        opt.value.toLowerCase() === currentBook.toLowerCase()
+      );
+      if (bookOption) bookSelect.value = bookOption.value;
+      populateChapterDropdown();
+    }
+    if (chapterSelect) chapterSelect.value = currentChapter;
+
+    // Sync selected translations from SSS Bibles if none selected
+    if (selectedTranslations.length === 0) {
+      if (sssLeftBible) selectedTranslations.push(sssLeftBible);
+      if (sssRightBible && sssRightBible !== sssLeftBible) {
+        selectedTranslations.push(sssRightBible);
+      }
+      translationCheckboxes.forEach(cb => {
+        cb.checked = selectedTranslations.includes(cb.value);
+      });
+    }
+
+    // Auto-load comparison
+    if (canLoadComparison()) {
+      loadComparison().then(() => {
+        populateVerseGrid();
+      }).catch(error => {
+        console.error('Failed to load comparison after exiting SSS mode:', error);
+      });
+    }
+  }
 }
 
 /**
@@ -2013,6 +2097,21 @@ function updateSSSModeStatus() {
 const DIFF_NOTE_REGEX = /<note[^>]*>[\s\S]*?<\/note>/gi;
 
 /**
+ * Strip navigation/UI elements that shouldn't appear in verse text
+ * @private
+ * @param {string} html - HTML string to clean
+ * @returns {string} HTML with UI elements removed
+ */
+function stripUIElements(html) {
+  return html
+    .replace(/<select[^>]*>[\s\S]*?<\/select>/gi, '')
+    .replace(/<nav[^>]*>[\s\S]*?<\/nav>/gi, '')
+    .replace(/<button[^>]*>[\s\S]*?<\/button>/gi, '')
+    .replace(/<label[^>]*>[\s\S]*?<\/label>/gi, '')
+    .replace(/<aside[^>]*>[\s\S]*?<\/aside>/gi, '');
+}
+
+/**
  * Strip all HTML/OSIS markup tags from a string, collapsing whitespace.
  * @private
  * @param {string} str
@@ -2087,9 +2186,9 @@ function applyDiffSpans(textWithoutNotes, diffWordsLower) {
 }
 
 /**
- * Highlight differences for normal mode (words not in ANY other translation)
- * Uses TextCompare engine if available, falls back to simple word matching
- * In normal mode, highlights words that don't appear in any other translation
+ * Highlight differences for normal mode (VVV - vertical verse view)
+ * Uses TextCompare engine with Strong's awareness for categorized diffs
+ * Compares against the first available other translation for pairwise diff
  * @private
  * @param {string} text - The text to highlight
  * @param {Array<string>} otherTexts - Array of other translation texts to compare against
@@ -2097,10 +2196,18 @@ function applyDiffSpans(textWithoutNotes, diffWordsLower) {
  */
 function highlightNormalDifferences(text, otherTexts) {
   // If highlighting disabled or no other texts to compare, return original text unchanged
-  // CSS will hide any <note> elements automatically
   if (!normalHighlightEnabled || otherTexts.length === 0) return text;
 
-  // Extract <note> elements to preserve them (CSS hides them, footnotes.js processes them)
+  // Find first non-empty comparison text
+  const compareText = otherTexts.find(t => t && t.trim());
+  if (!compareText) return text;
+
+  // Use TextCompare engine with Strong's awareness if available
+  if (window.TextCompare?.compareTextsWithStrongs) {
+    return highlightWithTextCompare(text, compareText);
+  }
+
+  // Fallback: simple word-based diff highlighting
   const notes = text.match(DIFF_NOTE_REGEX) || [];
   const textWithoutNotes = text.replace(DIFF_NOTE_REGEX, '');
 
@@ -2123,9 +2230,8 @@ function highlightNormalDifferences(text, otherTexts) {
 
 /**
  * Highlight differences between two texts (SSS mode)
- * Uses TextCompare engine if available, falls back to simple word matching
- * In SSS mode, highlights words in one translation that differ from the other
- * Preserves OSIS markup (<w> tags) for Strong's number tooltips
+ * Uses TextCompare engine with Strong's awareness for categorized diffs
+ * Falls back to simple word matching if TextCompare is unavailable
  * @private
  * @param {string} text - The text to highlight
  * @param {string} compareText - The text to compare against
@@ -2136,6 +2242,12 @@ function highlightDifferences(text, compareText) {
   // CSS will hide any <note> elements automatically
   if (!sssHighlightEnabled || !compareText) return text;
 
+  // Use TextCompare engine with Strong's awareness if available
+  if (window.TextCompare?.compareTextsWithStrongs) {
+    return highlightWithTextCompare(text, compareText);
+  }
+
+  // Fallback: simple word-based diff highlighting
   // Extract <note> elements to preserve them (CSS hides them, footnotes.js processes them)
   const notes = text.match(DIFF_NOTE_REGEX) || [];
   const textWithoutNotes = text.replace(DIFF_NOTE_REGEX, '');
@@ -2153,79 +2265,101 @@ function highlightDifferences(text, compareText) {
 }
 
 /**
- * Fallback highlight renderer: wraps each differing token in a colored span
- * using the user-selected highlight color rather than CSS diff categories.
- * @private
- * @param {Object} TC - The TextCompare module reference
- * @param {Object} result - The result object from TC.compareTexts()
- * @returns {string} HTML string with color-highlighted spans
- */
-function applyColorHighlights(TC, result) {
-  // eslint-disable-next-line no-unused-vars -- kept for contrast calculation
-  const textColor = getContrastColor(highlightColor);
-  let html = '';
-  let pos = 0;
-  const normalizedText = result.textA;
-
-  // Collect token ranges for all diff categories
-  const highlights = [];
-  for (const diff of result.diffs) {
-    if (diff.aToken) {
-      highlights.push({
-        offset: diff.aToken.offset,
-        length: diff.aToken.length,
-        original: diff.aToken.original
-      });
-    }
-  }
-  highlights.sort((a, b) => a.offset - b.offset);
-
-  // eslint-disable-next-line @anthropic/no-html-template-literals -- all text uses TC.escapeHtml()
-  for (const h of highlights) {
-    if (h.offset > pos) {
-      html += TC.escapeHtml(normalizedText.slice(pos, h.offset));
-    }
-    html += `<span class="diff-insert">${TC.escapeHtml(h.original)}</span>`;
-    pos = h.offset + h.length;
-  }
-  if (pos < normalizedText.length) {
-    html += TC.escapeHtml(normalizedText.slice(pos));
-  }
-  return html;
-}
-
-/**
  * Use TextCompare engine for sophisticated diff highlighting
  * Leverages the TextCompare library for categorized difference detection
- * (typos, punctuation, spelling, substantive changes, additions/omissions)
+ * with Strong's number awareness for better classification.
+ *
+ * Preserves original HTML structure (including <w> tags) while adding
+ * diff highlighting spans around differing words.
+ *
  * @private
- * @param {string} text - The primary text to highlight
- * @param {string} compareText - The text to compare against
+ * @param {string} text - The primary text/HTML to highlight (may contain <w> tags)
+ * @param {string} compareText - The text/HTML to compare against
  * @returns {string} HTML string with categorized highlights
  */
 function highlightWithTextCompare(text, compareText) {
   const TC = window.TextCompare;
-  const result = TC.compareTexts(text, compareText);
+
+  // Strip any navigation/UI elements that might have been included (defensive)
+  const cleanText = stripUIElements(text);
+  const cleanCompareText = stripUIElements(compareText);
+
+  // Extract <note> elements to preserve them (CSS hides them, footnotes.js processes them)
+  const notes = cleanText.match(DIFF_NOTE_REGEX) || [];
+  const textWithoutNotes = cleanText.replace(DIFF_NOTE_REGEX, '');
+  const compareWithoutNotes = cleanCompareText.replace(DIFF_NOTE_REGEX, '');
+
+  // Use Strong's-aware comparison to get classified diffs
+  const result = TC.compareTextsWithStrongs(textWithoutNotes, compareWithoutNotes);
 
   if (result.diffs.length === 0) {
-    return TC.escapeHtml(text);
+    // No differences - return original text unchanged
+    return text;
   }
 
-  // Use CSS class-based highlighting for categorized diffs
-  // or fall back to user-selected color for simple mode
-  const useCategories = true; // Could be exposed as a user preference
-
-  if (useCategories) {
-    return TC.renderWithHighlights(result.textA, result.diffs, 'a', {
-      showTypo: false,       // Too subtle for most users, skip
-      showPunct: true,       // Show punctuation differences
-      showSpelling: true,    // Show spelling variations
-      showSubstantive: true, // Show word substitutions
-      showAddOmit: true      // Show additions/omissions
-    });
-  } else {
-    return applyColorHighlights(TC, result);
+  // Build a map of normalized words to their diff categories
+  // This allows us to highlight words in the original HTML while preserving structure
+  const diffWordCategories = new Map();
+  for (const diff of result.diffs) {
+    if (diff.aToken && diff.aToken.type === 'WORD') {
+      const normalized = diff.aToken.normalized;
+      // Use the most severe category if a word appears multiple times
+      const existing = diffWordCategories.get(normalized);
+      if (!existing || getCategorySeverity(diff.category) > getCategorySeverity(existing)) {
+        diffWordCategories.set(normalized, diff.category);
+      }
+    }
   }
+
+  // If no word differences, return original
+  if (diffWordCategories.size === 0) return text;
+
+  // Apply diff spans to words in the original HTML, preserving structure
+  const highlighted = applyCategorizeDiffSpans(textWithoutNotes, diffWordCategories);
+
+  // Append notes at the end (CSS will hide them, footnotes.js processes them)
+  return highlighted + notes.join('');
+}
+
+/**
+ * Get severity ranking for diff categories (higher = more severe)
+ * @private
+ */
+function getCategorySeverity(category) {
+  const severities = { typo: 1, punct: 2, spelling: 3, subst: 4, add: 5, omit: 5 };
+  return severities[category] || 0;
+}
+
+/**
+ * Apply categorized diff spans to words in HTML while preserving structure
+ * @private
+ * @param {string} html - Original HTML with <w> tags etc.
+ * @param {Map<string, string>} diffWordCategories - Map of normalized word to category
+ * @returns {string} HTML with diff spans added
+ */
+function applyCategorizeDiffSpans(html, diffWordCategories) {
+  // Match either HTML tags or word tokens
+  return html.replace(
+    /(<[^>]+>)|([^<\s]+)/g,
+    (match, tag, word) => {
+      // Pass through HTML tags unchanged
+      if (tag) return tag;
+      if (!word) return match;
+
+      // Normalize the word for lookup
+      const normalized = word.toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/[.,;:!?'"]/g, '');
+
+      const category = diffWordCategories.get(normalized);
+      if (category) {
+        // Wrap in appropriate diff span
+        return `<span class="diff-${category}">${word}</span>`;
+      }
+      return match;
+    }
+  );
 }
 
 /* ========================================================================

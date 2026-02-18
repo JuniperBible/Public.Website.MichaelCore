@@ -27,8 +27,8 @@
 {{ define "scripts" }}
 {{/* Inject Strong's definitions data (cached — identical across all pages) */}}
 {{ partialCached "michael/strongs-data.html" . }}
-{{/* Load each JS resource if it exists */}}
-{{ range slice "js/michael/bible-nav.js" "js/michael/share-menu.js" "js/share.js" "js/strongs.js" "js/michael/footnotes.js" }}
+{{/* Load each JS resource if it exists - dom-utils.js must be first as other modules depend on it */}}
+{{ range slice "js/michael/dom-utils.js" "js/michael/bible-nav.js" "js/michael/share-menu.js" "js/share.js" "js/strongs.js" "js/michael/footnotes.js" }}
   {{ with resources.Get . }}<script type="module" src="{{ .RelPermalink }}" defer></script>{{ end }}
 {{ end }}
 {{ end }}
