@@ -758,70 +758,97 @@
    * @returns {Promise<void>}
    */
   async function loadComparison() {
-    if (!currentBook || !currentChapter) {
-      return Promise.resolve();
-    }
+    if (!currentBook || !currentChapter) return;
+    if (isLoadingComparison) return;
 
-    // Prevent concurrent calls
-    if (isLoadingComparison) return Promise.resolve();
     isLoadingComparison = true;
 
     try {
-      // Clear Strong's notes when loading new chapter
-      if (window.Michael?.Strongs?.clearNotes) {
-        window.Michael.Strongs.clearNotes();
+      clearStrongsNotesIfAvailable();
+
+      if (selectedTranslations.length === 0) {
+        showNoTranslationsMessage();
+        return;
       }
 
-    // Handle no translations selected
-    if (selectedTranslations.length === 0) {
-      parallelContent.textContent = '';
-      const article = document.createElement('article');
-      const p = document.createElement('p');
-      p.style.cssText = 'text-align: center; color: var(--michael-text-muted); padding: 2rem 0;';
-      p.textContent = 'Select at least one translation to view.';
-      article.appendChild(p);
-      parallelContent.appendChild(article);
-      return Promise.resolve();
-    }
+      updateURL();
+      parallelContent.innerHTML = window.Michael.DomUtils.createLoadingIndicator();
 
-    // Update URL with current state
-    updateURL();
+      const chaptersData = await fetchAllChapters();
+      parallelContent.innerHTML = buildComparisonHTML(chaptersData);
 
-    // Show loading state - DomUtils.createLoadingIndicator() returns safe HTML
-    parallelContent.innerHTML = window.Michael.DomUtils.createLoadingIndicator();
-
-    // Fetch chapter data for all selected translations in parallel
-    const chapterDataPromises = selectedTranslations.map(bibleId =>
-      window.Michael.BibleAPI.fetchChapter(basePath, bibleId, currentBook, currentChapter)
-    );
-
-    const chaptersData = await Promise.all(chapterDataPromises);
-
-    // Build comparison HTML
-    const html = buildComparisonHTML(chaptersData);
-    parallelContent.innerHTML = html;
-
-    // Process footnotes for VVV mode content
-    if (window.Michael?.Footnotes) {
-      const notesRow = document.getElementById('vvv-notes-row');
-      const vvvFootnotesSection = document.getElementById('vvv-footnotes-section');
-      const vvvFootnotesList = document.getElementById('vvv-footnotes-list');
-      const footnoteCount = window.Michael.Footnotes.process(parallelContent, vvvFootnotesSection, vvvFootnotesList, 'vvv-');
-
-      // Show/hide the notes row based on whether there are footnotes
-      if (notesRow) {
-        notesRow.classList.toggle('hidden', footnoteCount === 0);
-      }
-    }
-
-      // Announce completion to screen readers
-      const bookInfo = bibleData.books.find(b => b.id === currentBook);
-      const bookName = bookInfo?.name || currentBook;
-      const verseInfo = currentVerse > 0 ? ` verse ${currentVerse}` : '';
-      announce(`${bookName} chapter ${currentChapter}${verseInfo} loaded with ${selectedTranslations.length} translation${selectedTranslations.length !== 1 ? 's' : ''}.`);
+      processComparisonFootnotes();
+      announceComparisonLoaded();
     } finally {
       isLoadingComparison = false;
     }
+  }
+
+  /**
+   * Clear Strong's notes if the module is available
+   * @private
+   */
+  function clearStrongsNotesIfAvailable() {
+    if (window.Michael?.Strongs?.clearNotes) {
+      window.Michael.Strongs.clearNotes();
+    }
+  }
+
+  /**
+   * Show message when no translations are selected
+   * @private
+   */
+  function showNoTranslationsMessage() {
+    parallelContent.textContent = '';
+    const article = document.createElement('article');
+    const p = document.createElement('p');
+    p.style.cssText = 'text-align: center; color: var(--michael-text-muted); padding: 2rem 0;';
+    p.textContent = 'Select at least one translation to view.';
+    article.appendChild(p);
+    parallelContent.appendChild(article);
+  }
+
+  /**
+   * Fetch chapter data for all selected translations
+   * @private
+   * @returns {Promise<Array>}
+   */
+  async function fetchAllChapters() {
+    const promises = selectedTranslations.map(bibleId =>
+      window.Michael.BibleAPI.fetchChapter(basePath, bibleId, currentBook, currentChapter)
+    );
+    return Promise.all(promises);
+  }
+
+  /**
+   * Process footnotes for VVV mode content
+   * @private
+   */
+  function processComparisonFootnotes() {
+    if (!window.Michael?.Footnotes) return;
+
+    const notesRow = document.getElementById('vvv-notes-row');
+    const vvvFootnotesSection = document.getElementById('vvv-footnotes-section');
+    const vvvFootnotesList = document.getElementById('vvv-footnotes-list');
+    const footnoteCount = window.Michael.Footnotes.process(
+      parallelContent, vvvFootnotesSection, vvvFootnotesList, 'vvv-'
+    );
+
+    if (notesRow) {
+      notesRow.classList.toggle('hidden', footnoteCount === 0);
+    }
+  }
+
+  /**
+   * Announce comparison loaded to screen readers
+   * @private
+   */
+  function announceComparisonLoaded() {
+    const bookInfo = bibleData.books.find(b => b.id === currentBook);
+    const bookName = bookInfo?.name || currentBook;
+    const verseInfo = currentVerse > 0 ? ` verse ${currentVerse}` : '';
+    const plural = selectedTranslations.length !== 1 ? 's' : '';
+    announce(`${bookName} chapter ${currentChapter}${verseInfo} loaded with ${selectedTranslations.length} translation${plural}.`);
   }
 
   /* ========================================================================
