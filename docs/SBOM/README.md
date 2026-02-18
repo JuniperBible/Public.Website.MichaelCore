@@ -50,6 +50,7 @@ Michael processes and serves Bible texts that may be used in sensitive contexts 
 ### 2. License Compliance
 
 The project includes multiple Bible translations with different licenses:
+
 - Public domain texts (ASV, DRC, Geneva1599, etc.)
 - GPL-licensed texts (KJVA with Strong's numbers)
 - Copyrighted-free texts (LXX, SBLGNT)

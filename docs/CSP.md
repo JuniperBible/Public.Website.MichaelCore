@@ -153,6 +153,7 @@ element.classList.add('tooltip--position-bottom');
 - May reduce runtime performance (reflows from class changes)
 
 **Recommendation:** Accept `'unsafe-inline'` for styles as a pragmatic trade-off. The security risk is low because:
+
 1. No user-controlled CSS is injected
 2. All inline styles are from trusted templates/scripts
 3. `script-src` is still strict (no inline JS execution)
@@ -331,6 +332,7 @@ element.appendChild(p);
 ```
 
 **Benchmark (Firefox 133, comparing 1000 verses):**
+
 - `innerHTML`: ~45ms
 - DOM APIs: ~9000ms (200x slower)
 
@@ -569,12 +571,14 @@ sudo systemctl reload apache2
 **Best Practice:** Keep both meta tag AND HTTP header
 
 **Rationale:**
+
 1. Meta tag provides baseline protection for static hosting
 2. HTTP header adds defense-in-depth when server supports it
 3. Meta tag ignored if HTTP header present (header takes precedence)
 4. Ensures CSP works regardless of hosting environment
 
 **Implementation:**
+
 - ✅ Keep line 23 in `baseof.html` (meta tag)
 - ✅ Add HTTP header in production deployment (nginx/Apache/Netlify/etc.)
 - ✅ Document both approaches for downstream users
@@ -588,6 +592,7 @@ sudo systemctl reload apache2
 #### 5.1.1 Verify CSP is Active
 
 **Chrome/Edge:**
+
 1. Open DevTools (F12)
 2. Go to **Network** tab
 3. Reload page
@@ -640,11 +645,13 @@ the following Content Security Policy directive: "script-src 'self'".
 **URL:** https://csp-evaluator.withgoogle.com/
 
 **Steps:**
+
 1. Copy CSP string from `baseof.html` line 23
 2. Paste into evaluator
 3. Review recommendations
 
 **Expected Warnings:**
+
 - ⚠️ `'unsafe-inline'` in `style-src` (expected, documented in Section 2)
 - ⚠️ Missing `report-uri` (optional, see Section 5.4)
 
@@ -655,6 +662,7 @@ the following Content Security Policy directive: "script-src 'self'".
 **URL:** https://observatory.mozilla.org/
 
 **Steps:**
+
 1. Enter your deployed site URL
 2. Run scan
 3. Check CSP grade
@@ -816,6 +824,7 @@ app.listen(3000);
 #### 5.4.3 Third-Party Reporting Services
 
 **Free Options:**
+
 - **report-uri.com** (free tier available)
 - **Sentry** (includes CSP reporting)
 - **Datadog** (enterprise)
@@ -1033,6 +1042,7 @@ if (hasStrictCSP()) {
 | **Air-Gapped/Offline** | Add `default-src 'none'` + explicit allows | Strictest (no external anything) |
 
 **Current Configuration Justification:**
+
 - ✅ Balances security and functionality
 - ✅ Compatible with static site architecture
 - ✅ Prevents most common attacks (XSS, clickjacking, data exfiltration)
@@ -1104,6 +1114,7 @@ hugo server -D
 ---
 
 **Document Maintenance:**
+
 - Update this document when CSP policy changes
 - Re-audit innerHTML usage after major refactoring
 - Test CSP after dependency updates

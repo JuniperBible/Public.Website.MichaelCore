@@ -47,30 +47,35 @@ The following Bible translations are extracted from SWORD Project modules using 
 ### Data Sources and Attribution
 
 **The SWORD Project**
+
 - Website: https://www.crosswire.org/sword/
 - Purpose: Bible module distribution and format specification
 - License: GPL-2.0-or-later (for SWORD software)
 - Note: Individual Bible texts have their own licenses as listed above
 
 **CrossWire Bible Society**
+
 - Website: http://www.crosswire.org
 - Modules: KJVA with Strong's numbers
 - License: GPL-3.0-or-later for compiled modules
 - Contact: modules@crosswire.org
 
 **Open Scriptures**
+
 - Website: http://beta.openscriptures.org
 - Project: Morphological Hebrew Bible (OSMHB)
 - Source: Westminster Leningrad Codex with Strong's numbers
 - License: Public Domain
 
 **Center for Computer Analysis of Texts (CCAT)**
+
 - Institution: University of Pennsylvania
 - Source: http://ccat.sas.upenn.edu/gopher/text/religion/biblical/lxxmorph/
 - Data: Septuagint with morphological tagging (Rahlfs' edition)
 - License: Copyrighted-Free (academic use permitted)
 
 **Society of Biblical Literature (SBL)**
+
 - Website: https://www.sblgnt.com
 - Editor: Michael W. Holmes
 - Data: SBL Greek New Testament
@@ -85,10 +90,12 @@ The following Bible translations are extracted from SWORD Project modules using 
 **Author:** James Strong
 **License:** Public Domain (work published before 1928)
 **Files:**
+
 - `data/strongs/hebrew.json` - Hebrew/Aramaic definitions (H0001-H8674)
 - `data/strongs/greek.json` - Greek definitions (G0001-G5624)
 
 **Notes:**
+
 - Definitions extracted from public domain Strong's concordance data
 - Original work by James Strong (1822-1894) is in the public domain
 - Data format follows SWORD module lexicon structure
@@ -130,6 +137,7 @@ Amharic, Arabic, Bengali, Chinese, Czech, Danish, Dutch, English, Farsi, Finnish
 **Purpose:** Pure Go toolkit for converting SWORD and e-Sword modules to Hugo-compatible JSON
 **License:** See `tools/juniper/THIRD-PARTY-LICENSES.md`
 **Key Dependencies:**
+
 - SWORD Project file format specifications (GPL-2.0-or-later)
 - e-Sword database format (.bblx, .cmtx, .dctx)
 - OSIS (Open Scripture Information Standard) specifications
@@ -175,6 +183,7 @@ Royalty-free, world-wide, non-exclusive license granted to JuniperBible.org (and
 ## Versification Schemas
 
 **Sources:**
+
 - CrossWire SWORD versification schemas (KJV, KJVA, Vulgate, LXX)
 - OpenScriptures reference data
 - Academic biblical scholarship resources
@@ -239,6 +248,7 @@ When redistributing Bible texts from this project:
 ## Verification
 
 All Bible text licenses can be verified by:
+
 1. Checking `data/example/bible.json` for license fields
 2. Reading full license texts in `data/example/license_rights.json`
 3. Consulting original SWORD module .conf files
@@ -253,6 +263,7 @@ For module-specific questions, contact the SWORD Project or CrossWire Bible Soci
 This document reflects the data sources as of the generation date in the repository.
 
 To report license information errors or request clarifications:
+
 - Open an issue in the project repository
 - Contact the maintainers via project communication channels
 

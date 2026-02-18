@@ -648,6 +648,7 @@ pa11y --reporter html http://localhost:1313/ > report.html
 ```
 
 **Test Scenarios**:
+
 1. Navigate the Bible comparison page keyboard-only
 2. Search for a Bible verse and verify results are announced
 3. Open share menu and navigate with arrow keys

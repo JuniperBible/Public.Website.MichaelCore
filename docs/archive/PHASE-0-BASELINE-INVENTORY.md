@@ -219,6 +219,7 @@
 **Entry:** `/bible/compare/`
 
 **Flow:**
+
 1. **Initial Load**
    - Parse URL parameters (`?bibles=kjv,drc&ref=Isa.42.16`)
    - OR restore from localStorage
@@ -271,6 +272,7 @@
 **Entry:** Click "SSS" button from Normal mode OR default state
 
 **Flow:**
+
 1. **Initial State**
    - Check if state should reset (once per day via localStorage `sss-last-date`)
    - Apply defaults if reset or first load:
@@ -775,6 +777,7 @@ Runtime:
 ## 7. Key Observations for CSS Refactoring
 
 ### 7.1 Inline Styles Detected
+
 - **Compare page:** Extensive inline styles in template (padding, gaps, sizing)
 - **Bible nav:** Inline styles for dropdown widths
 - **SSS mode:** Inline color picker positioning
@@ -782,6 +785,7 @@ Runtime:
 - **Verse grid:** Inline button sizing and colors
 
 ### 7.2 CSS Class Patterns
+
 - **Utility classes:** `.hidden`, `.center`, `.muted`, `.mt-1`, `.mt-2`, `.mt-3`
 - **Component classes:** `.panel`, `.panel--inner`, `.card`, `.btn`, `.btn--sm`, `.btn--secondary`
 - **Grid classes:** `.grid-2`, `.row`, `.col`
@@ -791,12 +795,14 @@ Runtime:
 - **Share classes:** `.share-menu`, `.share-menu-item`, `.share-menu-divider`
 
 ### 7.3 JavaScript-CSS Coupling
+
 - **Dynamic classes:** `.is-active`, `.is-disabled`, `.copied`, `.highlight-verse`
 - **CSS variable reads:** `var(--michael-accent)`, `var(--michael-text-muted)`, `var(--surface-1)`, etc.
 - **CSS variable writes:** `--highlight-color` (set dynamically)
 - **Style attribute writes:** Background colors, text colors, display properties
 
 ### 7.4 Responsive Design Needs
+
 - Mobile touch handling (tap listeners)
 - Chapter grid (responsive layout)
 - Book grid (responsive layout)

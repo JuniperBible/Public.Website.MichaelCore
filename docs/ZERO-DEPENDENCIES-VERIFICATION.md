@@ -75,6 +75,7 @@ grep -r "font-face" assets/css/
 ```
 
 **Findings:**
+
 - No `@import` statements found
 - No `@font-face` declarations with external URLs
 - All CSS is bundled locally
@@ -91,6 +92,7 @@ grep -r "cdn\|googleapis\|cloudflare\|jsdelivr\|unpkg" layouts/
 ```
 
 **Findings:**
+
 - No CDN references found in any template files
 - All resources served from `'self'` origin only
 

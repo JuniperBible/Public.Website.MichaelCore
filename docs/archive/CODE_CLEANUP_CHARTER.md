@@ -27,28 +27,33 @@ It must run in two modes:
 ## 2) Cleanup Objectives (What "better" means)
 
 ### 2.1 Human Readability & Comments
+
 - Clear file headers and module boundaries
 - JSDoc for exported functions/classes
 - Consistent naming, consistent patterns
 - Minimal "magic" DOM + state, documented assumptions
 
 ### 2.2 DRY (Don't Repeat Yourself)
+
 - Remove duplicate functions across `parallel.js`, `share.js`, `bible-search.js`, templates/partials
 - Centralize common logic in shared modules and reusable partials/components
 
 ### 2.3 Security
+
 - CSP-compatible by default (no inline JS, minimized innerHTML usage)
 - Input validation/sanitization for user-controlled inputs (search terms, URL parameters, selection state)
 - Offline-first without increasing attack surface
 - Avoid remote runtime dependencies by default
 
 ### 2.4 Usability & Accessibility
+
 - Meet **WCAG 2.1 AA** (minimum) for navigation, controls, tooltips/menus, contrast, focus
 - Full keyboard support and focus visibility
 - Screen reader announcements for dynamic changes
 - Respect `prefers-reduced-motion`
 
 ### 2.5 Web Standards
+
 - Semantic HTML5 templates
 - CSS custom properties for theme + contrast control
 - Vanilla JS, no framework lock-in
