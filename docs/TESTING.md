@@ -271,6 +271,7 @@ The regression test suite covers all items from the manual QA checklist:
 - ✅ Enter Strong's number (H430), see results
 
 ### Single Page Coverage (5 tests)
+
 - ✅ Navigate between chapters with arrows
 - ✅ Click Strong's number, see tooltip
 - ✅ Click share button, see menu
@@ -278,6 +279,7 @@ The regression test suite covers all items from the manual QA checklist:
 - ✅ Click verse share button
 
 ### Cross-Cutting Coverage (3 tests)
+
 - ✅ Load cached page when offline
 - ✅ All controls usable on touch device
 - ✅ Navigate all controls with Tab/Enter/Escape/Arrows

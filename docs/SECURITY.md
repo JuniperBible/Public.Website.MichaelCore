@@ -168,6 +168,7 @@ function restoreState() {
 ```
 
 **Validation measures:**
+
 - Bible IDs filtered against known translations in metadata (whitelist)
 - Book IDs validated against available books
 - Chapter/verse numbers parsed as integers with fallback to 0
@@ -182,6 +183,7 @@ const STRONGS_PATTERN = /^[HG]\d{1,5}$/i;
 ```
 
 **Validation:**
+
 - Must start with 'H' or 'G' (Hebrew/Greek)
 - Followed by 1-5 digits only
 - Case-insensitive match
@@ -194,6 +196,7 @@ const PHRASE_PATTERN = /^"(.+)"$/;
 ```
 
 **Validation:**
+
 - Quoted strings detected and extracted
 - Inner content still HTML-escaped before display
 - No special regex characters in the pattern itself
@@ -211,12 +214,14 @@ function escapeHtml(str) {
 ```
 
 **How it works:**
+
 1. Creates temporary DOM element
 2. Assigns string to `textContent` (browser automatically escapes `<`, `>`, `&`, `"`, `'`)
 3. Reads back `innerHTML` to get escaped version
 4. Returns safe HTML string
 
 **Character escape mappings:**
+
 - `<` → `&lt;`
 - `>` → `&gt;`
 - `&` → `&amp;`
