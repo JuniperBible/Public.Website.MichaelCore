@@ -2025,6 +2025,9 @@ function buildSSSVerseRow(verse, compareVerses) {
   numSpan.textContent = verse.number;
   verseDiv.appendChild(numSpan);
 
+  // Add space between verse number and text
+  verseDiv.appendChild(document.createTextNode(' '));
+
   const textSpan = document.createElement('span');
   // Parse trusted Bible HTML using DOMParser via shared utility
   const { parseHtmlFragment } = window.Michael.DomUtils;
