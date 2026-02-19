@@ -161,8 +161,8 @@ window.Michael.BibleAPI = (function() {
   /**
    * Strategy 1: Modern format with .verse spans and data-verse attributes.
    *
-   * Extracts verse text by iterating child nodes and excluding the <sup> verse
-   * number element, preserving all other semantic markup (<note>, <w>, etc.).
+   * Extracts verse text by cloning the verse element, removing UI chrome,
+   * and preserving all semantic markup (<note>, <w>, etc.).
    *
    * @param {Element} bibleText - Root container element
    * @returns {Array<{number: number, text: string}>} Parsed verses, or empty array
@@ -171,25 +171,21 @@ window.Michael.BibleAPI = (function() {
     const verseSpans = bibleText.querySelectorAll('.verse[data-verse]');
     if (verseSpans.length === 0) return [];
 
+    // UI elements to recursively strip from verse content
+    const UI_SELECTORS = ['sup', 'select', 'nav', 'button', 'label', 'aside', 'option', '.reader-bar', '.bible-nav'];
+
     const verses = [];
     verseSpans.forEach(span => {
       const num = parseInt(span.dataset.verse);
       if (isNaN(num)) return;
 
-      // Extract HTML content excluding the sup element (verse number) and UI elements
-      // Preserve <note>, <w>, and other semantic elements
-      const excludeTags = new Set(['SUP', 'SELECT', 'NAV', 'BUTTON', 'LABEL', 'ASIDE', 'OPTION']);
-      let html = '';
-      span.childNodes.forEach(node => {
-        if (node.nodeType === Node.TEXT_NODE) {
-          html += node.textContent;
-        } else if (node.nodeType === Node.ELEMENT_NODE && !excludeTags.has(node.tagName)) {
-          // Preserve the full HTML of other elements (note, w, etc.)
-          html += node.outerHTML;
-        }
-      });
+      // Clone to avoid modifying original DOM
+      const clone = span.cloneNode(true);
+      // Recursively remove all UI elements from the clone
+      UI_SELECTORS.forEach(sel => clone.querySelectorAll(sel).forEach(ui => ui.remove()));
 
-      verses.push({ number: num, text: html.trim() });
+      const html = clone.innerHTML.trim();
+      verses.push({ number: num, text: html });
     });
 
     return verses;
