@@ -75,12 +75,17 @@
   grid-template-columns: 1fr 1fr;
   gap: var(--pad-2);
   margin-top: var(--pad-2);
+  align-items: stretch;  /* Both wrappers same height */
 }
 
 .compare-pane-wrapper {
   display: flex;
   flex-direction: column;
   min-width: 0;
+}
+
+.compare-pane-wrapper > .compare-pane {
+  flex: 1;  /* Pane fills available space so footnotes align */
 }
 
 .compare-pane-wrapper > .footnotes-section {
