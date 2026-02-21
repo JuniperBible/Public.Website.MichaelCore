@@ -1,16 +1,16 @@
 [submodule "tools/juniper"]
 	path = tools/juniper
-	url = https://github.com/JuniperBible/Public.Tool.JuniperBible.git
+	url = git@github.com:JuniperBible/Public.Tool.JuniperBible.git
 	branch = main
 [submodule "tools/hugo"]
 	path = tools/hugo
-	url = https://github.com/JuniperBible/Contrib.Tool.hugo.git
+	url = git@github.com:JuniperBible/Contrib.Tool.hugo.git
 	branch = master
 [submodule "tools/caddy"]
 	path = tools/caddy
-	url = https://github.com/JuniperBible/Contrib.Tool.caddy.git
+	url = git@github.com:JuniperBible/Contrib.Tool.caddy.git
 	branch = master
 [submodule "tools/syft"]
 	path = tools/syft
-	url = https://github.com/JuniperBible/Contrib.Tool.syft.git
+	url = git@github.com:JuniperBible/Contrib.Tool.syft.git
 	branch = main
