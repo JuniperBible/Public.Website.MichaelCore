@@ -2,7 +2,7 @@ module michael-tests
 
 go 1.26.0
 
-require github.com/FocuswithJustin/magellan v0.0.0
+require github.com/JuniperBible/magellan v0.0.0
 
 require (
 	github.com/chromedp/cdproto v0.0.0-20240202021202-6d0b6a386732 // indirect
@@ -16,4 +16,4 @@ require (
 	golang.org/x/sys v0.16.0 // indirect
 )
 
-replace github.com/FocuswithJustin/magellan => ../tools/magellan
+replace github.com/JuniperBible/magellan => ../tools/magellan

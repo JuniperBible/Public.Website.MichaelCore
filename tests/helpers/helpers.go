@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/FocuswithJustin/magellan/pkg/e2e"
+	"github.com/JuniperBible/magellan/pkg/e2e"
 )
 
 // BaseURL is the default URL for the Hugo development server

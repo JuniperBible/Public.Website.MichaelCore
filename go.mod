@@ -1,3 +1,3 @@
-module github.com/FocuswithJustin/michael
+module github.com/JuniperBible/michael
 
 go 1.26.0
