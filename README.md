@@ -22,7 +22,7 @@ Plug-and-play Hugo module that adds Bible reading functionality (reading, naviga
 # hugo.toml
 [module]
   [[module.imports]]
-    path = "github.com/FocuswithJustin/michael"
+    path = "github.com/JuniperBible/michael"
 ```
 
 ```bash
@@ -33,7 +33,7 @@ hugo mod get -u
 ### Standalone
 
 ```bash
-git clone https://github.com/FocuswithJustin/michael.git
+git clone https://github.com/JuniperBible/michael.git
 cd michael
 make dev
 ```

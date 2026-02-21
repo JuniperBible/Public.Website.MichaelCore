@@ -11,7 +11,7 @@ Add to your `hugo.toml`:
 ```toml
 [module]
   [[module.imports]]
-    path = "github.com/FocuswithJustin/michael"
+    path = "github.com/JuniperBible/michael"
 ```
 
 Initialize Hugo modules if not already done:
@@ -24,7 +24,7 @@ hugo mod get -u
 ### Method 2: Git Submodule
 
 ```bash
-git submodule add https://github.com/FocuswithJustin/michael.git themes/michael
+git submodule add https://github.com/JuniperBible/michael.git themes/michael
 ```
 
 Add to your `hugo.toml`:
@@ -38,7 +38,7 @@ theme = ["michael", "your-other-theme"]
 Clone the repository and run directly:
 
 ```bash
-git clone https://github.com/FocuswithJustin/michael.git
+git clone https://github.com/JuniperBible/michael.git
 cd michael
 make dev
 ```
@@ -206,7 +206,7 @@ const myGrid = new VerseGrid({
 ### Module Not Found
 
 ```
-Error: module "github.com/FocuswithJustin/michael" not found
+Error: module "github.com/JuniperBible/michael" not found
 ```
 
 **Solution:** Run `hugo mod get -u` to update modules.
@@ -286,7 +286,7 @@ See [SERVICE-WORKER.md](SERVICE-WORKER.md) for technical details.
 
 ## Support
 
-- **Issues:** [GitHub Issues](https://github.com/FocuswithJustin/michael/issues)
+- **Issues:** [GitHub Issues](https://github.com/JuniperBible/michael/issues)
 - **Documentation:** See `docs/` directory
 - **Charter:** [CODE_CLEANUP_CHARTER.md](CODE_CLEANUP_CHARTER.md)
 
